@@ -1,0 +1,317 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		28DEFBF815AEEE9A0096FBA4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DEFBF715AEEE9A0096FBA4 /* Cocoa.framework */; };
+		28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */; };
+		28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC0315AEEE9A0096FBA4 /* main.m */; };
+		28DEFC0815AEEE9A0096FBA4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0615AEEE9A0096FBA4 /* Credits.rtf */; };
+		28DEFC0B15AEEE9A0096FBA4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC0A15AEEE9A0096FBA4 /* AppDelegate.m */; };
+		28DEFC0E15AEEE9B0096FBA4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0C15AEEE9B0096FBA4 /* MainMenu.xib */; };
+		28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC1D15AEEF010096FBA4 /* Item.m */; };
+		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
+		28DEFC2915AEEFAA0096FBA4 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DEFC2815AEEFAA0096FBA4 /* Quartz.framework */; };
+		28DEFC2B15AEEFAF0096FBA4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DEFC2A15AEEFAF0096FBA4 /* QTKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MMFlowViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		28DEFBF715AEEE9A0096FBA4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		28DEFBFA15AEEE9A0096FBA4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		28DEFBFB15AEEE9A0096FBA4 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		28DEFBFC15AEEE9A0096FBA4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		28DEFBFF15AEEE9A0096FBA4 /* MMFlowViewDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewDemo-Info.plist"; sourceTree = "<group>"; };
+		28DEFC0115AEEE9A0096FBA4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		28DEFC0315AEEE9A0096FBA4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		28DEFC0515AEEE9A0096FBA4 /* MMFlowViewDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MMFlowViewDemo-Prefix.pch"; sourceTree = "<group>"; };
+		28DEFC0715AEEE9A0096FBA4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		28DEFC0915AEEE9A0096FBA4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		28DEFC0A15AEEE9A0096FBA4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		28DEFC0D15AEEE9B0096FBA4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		28DEFC1C15AEEF010096FBA4 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
+		28DEFC1D15AEEF010096FBA4 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
+		28DEFC2015AEEF300096FBA4 /* MMFlowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowView.h; path = MMFlowView/MMFlowView.h; sourceTree = "<group>"; };
+		28DEFC2115AEEF300096FBA4 /* MMFlowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowView.m; path = MMFlowView/MMFlowView.m; sourceTree = "<group>"; };
+		28DEFC2815AEEFAA0096FBA4 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		28DEFC2A15AEEFAF0096FBA4 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		28DEFBF015AEEE9A0096FBA4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28DEFC2B15AEEFAF0096FBA4 /* QTKit.framework in Frameworks */,
+				28DEFC2915AEEFAA0096FBA4 /* Quartz.framework in Frameworks */,
+				28DEFBF815AEEE9A0096FBA4 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		28DEFBE815AEEE9A0096FBA4 = {
+			isa = PBXGroup;
+			children = (
+				28DEFC2015AEEF300096FBA4 /* MMFlowView.h */,
+				28DEFC2115AEEF300096FBA4 /* MMFlowView.m */,
+				28DEFBFD15AEEE9A0096FBA4 /* MMFlowViewDemo */,
+				28DEFBF615AEEE9A0096FBA4 /* Frameworks */,
+				28DEFBF415AEEE9A0096FBA4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		28DEFBF415AEEE9A0096FBA4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		28DEFBF615AEEE9A0096FBA4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				28DEFC2A15AEEFAF0096FBA4 /* QTKit.framework */,
+				28DEFC2815AEEFAA0096FBA4 /* Quartz.framework */,
+				28DEFBF715AEEE9A0096FBA4 /* Cocoa.framework */,
+				28DEFBF915AEEE9A0096FBA4 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		28DEFBF915AEEE9A0096FBA4 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				28DEFBFA15AEEE9A0096FBA4 /* AppKit.framework */,
+				28DEFBFB15AEEE9A0096FBA4 /* CoreData.framework */,
+				28DEFBFC15AEEE9A0096FBA4 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		28DEFBFD15AEEE9A0096FBA4 /* MMFlowViewDemo */ = {
+			isa = PBXGroup;
+			children = (
+				28DEFC1C15AEEF010096FBA4 /* Item.h */,
+				28DEFC1D15AEEF010096FBA4 /* Item.m */,
+				28DEFC0915AEEE9A0096FBA4 /* AppDelegate.h */,
+				28DEFC0A15AEEE9A0096FBA4 /* AppDelegate.m */,
+				28DEFC0C15AEEE9B0096FBA4 /* MainMenu.xib */,
+				28DEFBFE15AEEE9A0096FBA4 /* Supporting Files */,
+			);
+			path = MMFlowViewDemo;
+			sourceTree = "<group>";
+		};
+		28DEFBFE15AEEE9A0096FBA4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				28DEFBFF15AEEE9A0096FBA4 /* MMFlowViewDemo-Info.plist */,
+				28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */,
+				28DEFC0315AEEE9A0096FBA4 /* main.m */,
+				28DEFC0515AEEE9A0096FBA4 /* MMFlowViewDemo-Prefix.pch */,
+				28DEFC0615AEEE9A0096FBA4 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		28DEFBF215AEEE9A0096FBA4 /* MMFlowViewDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 28DEFC1115AEEE9B0096FBA4 /* Build configuration list for PBXNativeTarget "MMFlowViewDemo" */;
+			buildPhases = (
+				28DEFBEF15AEEE9A0096FBA4 /* Sources */,
+				28DEFBF015AEEE9A0096FBA4 /* Frameworks */,
+				28DEFBF115AEEE9A0096FBA4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MMFlowViewDemo;
+			productName = MMFlowViewDemo;
+			productReference = 28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		28DEFBEA15AEEE9A0096FBA4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = www.isnotnil.com;
+			};
+			buildConfigurationList = 28DEFBED15AEEE9A0096FBA4 /* Build configuration list for PBXProject "MMFlowViewDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 28DEFBE815AEEE9A0096FBA4;
+			productRefGroup = 28DEFBF415AEEE9A0096FBA4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				28DEFBF215AEEE9A0096FBA4 /* MMFlowViewDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		28DEFBF115AEEE9A0096FBA4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */,
+				28DEFC0815AEEE9A0096FBA4 /* Credits.rtf in Resources */,
+				28DEFC0E15AEEE9B0096FBA4 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		28DEFBEF15AEEE9A0096FBA4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */,
+				28DEFC0B15AEEE9A0096FBA4 /* AppDelegate.m in Sources */,
+				28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */,
+				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				28DEFC0115AEEE9A0096FBA4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		28DEFC0615AEEE9A0096FBA4 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				28DEFC0715AEEE9A0096FBA4 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		28DEFC0C15AEEE9B0096FBA4 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				28DEFC0D15AEEE9B0096FBA4 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		28DEFC0F15AEEE9B0096FBA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		28DEFC1015AEEE9B0096FBA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		28DEFC1215AEEE9B0096FBA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
+				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		28DEFC1315AEEE9B0096FBA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
+				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		28DEFBED15AEEE9A0096FBA4 /* Build configuration list for PBXProject "MMFlowViewDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28DEFC0F15AEEE9B0096FBA4 /* Debug */,
+				28DEFC1015AEEE9B0096FBA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		28DEFC1115AEEE9B0096FBA4 /* Build configuration list for PBXNativeTarget "MMFlowViewDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28DEFC1215AEEE9B0096FBA4 /* Debug */,
+				28DEFC1315AEEE9B0096FBA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 28DEFBEA15AEEE9A0096FBA4 /* Project object */;
+}
