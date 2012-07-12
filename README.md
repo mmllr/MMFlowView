@@ -34,21 +34,21 @@ The image to display, can return nil if the item has no image to display. This m
 
 A string that specifies the image representation. The string can be any of the following constants:
  
- kMMFlowViewURLRepresentationType
- kMMFlowViewCGImageRepresentationType
- kMMFlowViewPDFPageRepresentationType
- kMMFlowViewPathRepresentationType
- kMMFlowViewNSImageRepresentationType
- kMMFlowViewCGImageSourceRepresentationType
- kMMFlowViewNSDataRepresentationType
- kMMFlowViewNSBitmapRepresentationType
- kMMFlowViewQTMovieRepresentationType
- kMMFlowViewQTMoviePathRepresentationType
- kMMFlowViewQCCompositionRepresentationType
- kMMFlowViewQCCompositionPathRepresentationType
- kMMFlowViewQuickLookPathRepresentationType
- kMMFlowViewIconRefPathRepresentationType
- kMMFlowViewIconRefRepresentationType
+	 kMMFlowViewURLRepresentationType
+ 	kMMFlowViewCGImageRepresentationType
+ 	kMMFlowViewPDFPageRepresentationType
+ 	kMMFlowViewPathRepresentationType
+ 	kMMFlowViewNSImageRepresentationType
+ 	kMMFlowViewCGImageSourceRepresentationType
+	 kMMFlowViewNSDataRepresentationType
+	 kMMFlowViewNSBitmapRepresentationType
+	 kMMFlowViewQTMovieRepresentationType
+ 	kMMFlowViewQTMoviePathRepresentationType
+ 	kMMFlowViewQCCompositionRepresentationType
+	 kMMFlowViewQCCompositionPathRepresentationType
+	 kMMFlowViewQuickLookPathRepresentationType
+	 kMMFlowViewIconRefPathRepresentationType
+	 kMMFlowViewIconRefRepresentationType
 
 	- (NSString*)imageItemUID;
 
