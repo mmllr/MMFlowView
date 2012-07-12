@@ -50,7 +50,7 @@ A string that specifies the image representation. The string can be any of the f
 	kMMFlowViewIconRefPathRepresentationType
 	kMMFlowViewIconRefRepresentationType
 
-
+Describes the type of the datasource item.
 
 	- (NSString*)imageItemUID;
 
