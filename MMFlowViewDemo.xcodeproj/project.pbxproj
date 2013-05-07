@@ -7,7 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		28DEFBF815AEEE9A0096FBA4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DEFBF715AEEE9A0096FBA4 /* Cocoa.framework */; };
+		287F73C216308E2D0004BA0F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C116308E2D0004BA0F /* Quartz.framework */; };
+		287F73C416308E320004BA0F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C316308E320004BA0F /* Cocoa.framework */; };
+		287F73C616308E360004BA0F /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C516308E360004BA0F /* QTKit.framework */; };
+		287F73C816308E620004BA0F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C716308E620004BA0F /* AppKit.framework */; };
+		287F73CA16308E680004BA0F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C916308E680004BA0F /* CoreData.framework */; };
+		287F73CC16308E700004BA0F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73CB16308E700004BA0F /* Foundation.framework */; };
+		287F73CE16308E7E0004BA0F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73CD16308E7E0004BA0F /* QuartzCore.framework */; };
+		288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591B4173967BE000E04EF /* MMButtonLayer.m */; };
+		288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */; };
+		288591BB17398F18000E04EF /* MMLayerAccessibilityHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */; };
+		288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BD17398F88000E04EF /* NSColor+MMAdditions.m */; };
 		28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */; };
 		28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC0315AEEE9A0096FBA4 /* main.m */; };
 		28DEFC0815AEEE9A0096FBA4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0615AEEE9A0096FBA4 /* Credits.rtf */; };
@@ -15,16 +25,25 @@
 		28DEFC0E15AEEE9B0096FBA4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0C15AEEE9B0096FBA4 /* MainMenu.xib */; };
 		28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC1D15AEEF010096FBA4 /* Item.m */; };
 		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
-		28DEFC2915AEEFAA0096FBA4 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DEFC2815AEEFAA0096FBA4 /* Quartz.framework */; };
-		28DEFC2B15AEEFAF0096FBA4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DEFC2A15AEEFAF0096FBA4 /* QTKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		287F73C116308E2D0004BA0F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
+		287F73C316308E320004BA0F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		287F73C516308E360004BA0F /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
+		287F73C716308E620004BA0F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
+		287F73C916308E680004BA0F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = DEVELOPER_DIR; };
+		287F73CB16308E700004BA0F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		287F73CD16308E7E0004BA0F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		288591B3173967BE000E04EF /* MMButtonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMButtonLayer.h; path = MMFlowView/MMButtonLayer.h; sourceTree = "<group>"; };
+		288591B4173967BE000E04EF /* MMButtonLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMButtonLayer.m; path = MMFlowView/MMButtonLayer.m; sourceTree = "<group>"; };
+		288591B6173968AD000E04EF /* MMVideoOverlayLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMVideoOverlayLayer.h; path = MMFlowView/MMVideoOverlayLayer.h; sourceTree = "<group>"; };
+		288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMVideoOverlayLayer.m; path = MMFlowView/MMVideoOverlayLayer.m; sourceTree = "<group>"; };
+		288591B917398F18000E04EF /* MMLayerAccessibilityHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMLayerAccessibilityHelper.h; path = MMFlowView/MMLayerAccessibilityHelper.h; sourceTree = "<group>"; };
+		288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMLayerAccessibilityHelper.m; path = MMFlowView/MMLayerAccessibilityHelper.m; sourceTree = "<group>"; };
+		288591BC17398F88000E04EF /* NSColor+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSColor+MMAdditions.h"; path = "MMFlowView/NSColor+MMAdditions.h"; sourceTree = "<group>"; };
+		288591BD17398F88000E04EF /* NSColor+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSColor+MMAdditions.m"; path = "MMFlowView/NSColor+MMAdditions.m"; sourceTree = "<group>"; };
 		28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MMFlowViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		28DEFBF715AEEE9A0096FBA4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		28DEFBFA15AEEE9A0096FBA4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		28DEFBFB15AEEE9A0096FBA4 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		28DEFBFC15AEEE9A0096FBA4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		28DEFBFF15AEEE9A0096FBA4 /* MMFlowViewDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewDemo-Info.plist"; sourceTree = "<group>"; };
 		28DEFC0115AEEE9A0096FBA4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		28DEFC0315AEEE9A0096FBA4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -37,8 +56,6 @@
 		28DEFC1D15AEEF010096FBA4 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
 		28DEFC2015AEEF300096FBA4 /* MMFlowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowView.h; path = MMFlowView/MMFlowView.h; sourceTree = "<group>"; };
 		28DEFC2115AEEF300096FBA4 /* MMFlowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowView.m; path = MMFlowView/MMFlowView.m; sourceTree = "<group>"; };
-		28DEFC2815AEEFAA0096FBA4 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
-		28DEFC2A15AEEFAF0096FBA4 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,20 +63,40 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28DEFC2B15AEEFAF0096FBA4 /* QTKit.framework in Frameworks */,
-				28DEFC2915AEEFAA0096FBA4 /* Quartz.framework in Frameworks */,
-				28DEFBF815AEEE9A0096FBA4 /* Cocoa.framework in Frameworks */,
+				287F73CE16308E7E0004BA0F /* QuartzCore.framework in Frameworks */,
+				287F73CC16308E700004BA0F /* Foundation.framework in Frameworks */,
+				287F73CA16308E680004BA0F /* CoreData.framework in Frameworks */,
+				287F73C816308E620004BA0F /* AppKit.framework in Frameworks */,
+				287F73C616308E360004BA0F /* QTKit.framework in Frameworks */,
+				287F73C416308E320004BA0F /* Cocoa.framework in Frameworks */,
+				287F73C216308E2D0004BA0F /* Quartz.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		28DEFBE815AEEE9A0096FBA4 = {
+		288591B21739675B000E04EF /* MMFlowView */ = {
 			isa = PBXGroup;
 			children = (
 				28DEFC2015AEEF300096FBA4 /* MMFlowView.h */,
 				28DEFC2115AEEF300096FBA4 /* MMFlowView.m */,
+				288591B3173967BE000E04EF /* MMButtonLayer.h */,
+				288591B4173967BE000E04EF /* MMButtonLayer.m */,
+				288591B6173968AD000E04EF /* MMVideoOverlayLayer.h */,
+				288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */,
+				288591B917398F18000E04EF /* MMLayerAccessibilityHelper.h */,
+				288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */,
+				288591BC17398F88000E04EF /* NSColor+MMAdditions.h */,
+				288591BD17398F88000E04EF /* NSColor+MMAdditions.m */,
+			);
+			name = MMFlowView;
+			sourceTree = "<group>";
+		};
+		28DEFBE815AEEE9A0096FBA4 = {
+			isa = PBXGroup;
+			children = (
+				288591B21739675B000E04EF /* MMFlowView */,
 				28DEFBFD15AEEE9A0096FBA4 /* MMFlowViewDemo */,
 				28DEFBF615AEEE9A0096FBA4 /* Frameworks */,
 				28DEFBF415AEEE9A0096FBA4 /* Products */,
@@ -77,9 +114,6 @@
 		28DEFBF615AEEE9A0096FBA4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				28DEFC2A15AEEFAF0096FBA4 /* QTKit.framework */,
-				28DEFC2815AEEFAA0096FBA4 /* Quartz.framework */,
-				28DEFBF715AEEE9A0096FBA4 /* Cocoa.framework */,
 				28DEFBF915AEEE9A0096FBA4 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -88,9 +122,13 @@
 		28DEFBF915AEEE9A0096FBA4 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				28DEFBFA15AEEE9A0096FBA4 /* AppKit.framework */,
-				28DEFBFB15AEEE9A0096FBA4 /* CoreData.framework */,
-				28DEFBFC15AEEE9A0096FBA4 /* Foundation.framework */,
+				287F73CD16308E7E0004BA0F /* QuartzCore.framework */,
+				287F73CB16308E700004BA0F /* Foundation.framework */,
+				287F73C916308E680004BA0F /* CoreData.framework */,
+				287F73C716308E620004BA0F /* AppKit.framework */,
+				287F73C516308E360004BA0F /* QTKit.framework */,
+				287F73C316308E320004BA0F /* Cocoa.framework */,
+				287F73C116308E2D0004BA0F /* Quartz.framework */,
 			);
 			name = "Other Frameworks";
 			sourceTree = "<group>";
@@ -188,6 +226,10 @@
 				28DEFC0B15AEEE9A0096FBA4 /* AppDelegate.m in Sources */,
 				28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */,
 				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
+				288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */,
+				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
+				288591BB17398F18000E04EF /* MMLayerAccessibilityHelper.m in Sources */,
+				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,11 +311,13 @@
 		28DEFC1215AEEE9B0096FBA4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -281,11 +325,13 @@
 		28DEFC1315AEEE9B0096FBA4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

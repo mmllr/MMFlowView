@@ -84,7 +84,7 @@ static const NSInteger kMaxPreviewSize = 400;
     if (self) {
         self.image = aPDFPage;
 		self.type = kMMFlowViewPDFPageRepresentationType;
-		self.title = [ NSString stringWithFormat:@"Page %d", [ [ aPDFPage document ] indexForPage:aPDFPage ] + 1 ];
+		self.title = [ NSString stringWithFormat:@"Page %@", @([ [ aPDFPage document ] indexForPage:aPDFPage ] + 1 ) ];
 		self.uid = self.imageItemTitle;
     }
     return self;
