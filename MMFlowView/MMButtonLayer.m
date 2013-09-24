@@ -18,10 +18,6 @@ static const CGFloat kMMButtonLayerHighlightedDarkenAlphaValue = 1;
 
 @implementation MMButtonLayer
 
-@synthesize action;
-@synthesize target;
-@synthesize image;
-@synthesize alternateImage;
 @dynamic highlighted;
 @dynamic enabled;
 @dynamic state;
@@ -61,8 +57,8 @@ static const CGFloat kMMButtonLayerHighlightedDarkenAlphaValue = 1;
 	dispatch_once(&onceToken, ^{
 		CIFilter *filter = [ CIFilter filterWithName:@"CIColorControls" ];
 		[ filter setDefaults ];
-		[ filter setValue:[ NSNumber numberWithDouble:-.5 ] forKey:@"inputBrightness" ];
-		selectedFilters = [ [ NSArray alloc ] initWithObjects:filter, nil ];
+		[ filter setValue:@-.5 forKey:@"inputBrightness" ];
+		selectedFilters = @[filter];
 	});
 	return selectedFilters;
 }
@@ -80,14 +76,6 @@ static const CGFloat kMMButtonLayerHighlightedDarkenAlphaValue = 1;
 		self.highlighted = NO;
     }
     return self;
-}
-
-- (void)dealloc
-{
-	self.image = nil;
-	self.alternateImage = nil;
-	self.target = nil;
-    [super dealloc];
 }
 
 #pragma mark -

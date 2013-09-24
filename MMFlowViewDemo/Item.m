@@ -25,46 +25,40 @@ static const NSInteger kMaxPreviewSize = 400;
 
 @implementation Item
 
-@synthesize image;
-@synthesize type;
-@synthesize title;
-@synthesize uid;
-
 + (NSString*)mapRepresentationTypeFromFlowViewItemToImageBrowserItem:(NSString*)aFlowViewItemRepresentationType
 {
 	static NSDictionary *mappingDict = nil;
 
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		mappingDict = [ [ NSDictionary alloc ] initWithObjectsAndKeys:IKImageBrowserNSURLRepresentationType, kMMFlowViewURLRepresentationType,
-					   IKImageBrowserCGImageRepresentationType, kMMFlowViewCGImageRepresentationType,
-					   IKImageBrowserPDFPageRepresentationType, kMMFlowViewPDFPageRepresentationType,
-					   IKImageBrowserPathRepresentationType, kMMFlowViewPathRepresentationType,
-					   IKImageBrowserNSImageRepresentationType, kMMFlowViewNSImageRepresentationType,
-					   IKImageBrowserCGImageSourceRepresentationType, kMMFlowViewCGImageSourceRepresentationType,
-					   IKImageBrowserNSDataRepresentationType, kMMFlowViewNSDataRepresentationType,
-					   IKImageBrowserNSBitmapImageRepresentationType, kMMFlowViewNSBitmapRepresentationType,
-					   IKImageBrowserQTMovieRepresentationType, kMMFlowViewQTMovieRepresentationType,
-					   IKImageBrowserQTMoviePathRepresentationType, kMMFlowViewQTMoviePathRepresentationType,
-					   IKImageBrowserQCCompositionRepresentationType, kMMFlowViewQCCompositionRepresentationType,
-					   IKImageBrowserQCCompositionPathRepresentationType, kMMFlowViewQCCompositionPathRepresentationType,
-					   IKImageBrowserQuickLookPathRepresentationType, kMMFlowViewQuickLookPathRepresentationType,
-					   IKImageBrowserIconRefPathRepresentationType, kMMFlowViewIconRefPathRepresentationType,
-					   IKImageBrowserIconRefRepresentationType, kMMFlowViewIconRefRepresentationType,
-					   nil ];
+		mappingDict = @{kMMFlowViewURLRepresentationType: IKImageBrowserNSURLRepresentationType,
+					   kMMFlowViewCGImageRepresentationType: IKImageBrowserCGImageRepresentationType,
+					   kMMFlowViewPDFPageRepresentationType: IKImageBrowserPDFPageRepresentationType,
+					   kMMFlowViewPathRepresentationType: IKImageBrowserPathRepresentationType,
+					   kMMFlowViewNSImageRepresentationType: IKImageBrowserNSImageRepresentationType,
+					   kMMFlowViewCGImageSourceRepresentationType: IKImageBrowserCGImageSourceRepresentationType,
+					   kMMFlowViewNSDataRepresentationType: IKImageBrowserNSDataRepresentationType,
+					   kMMFlowViewNSBitmapRepresentationType: IKImageBrowserNSBitmapImageRepresentationType,
+					   kMMFlowViewQTMovieRepresentationType: IKImageBrowserQTMovieRepresentationType,
+					   kMMFlowViewQTMoviePathRepresentationType: IKImageBrowserQTMoviePathRepresentationType,
+					   kMMFlowViewQCCompositionRepresentationType: IKImageBrowserQCCompositionRepresentationType,
+					   kMMFlowViewQCCompositionPathRepresentationType: IKImageBrowserQCCompositionPathRepresentationType,
+					   kMMFlowViewQuickLookPathRepresentationType: IKImageBrowserQuickLookPathRepresentationType,
+					   kMMFlowViewIconRefPathRepresentationType: IKImageBrowserIconRefPathRepresentationType,
+					   kMMFlowViewIconRefRepresentationType: IKImageBrowserIconRefRepresentationType};
 	});
-	return [ mappingDict objectForKey:aFlowViewItemRepresentationType ];
+	return mappingDict[aFlowViewItemRepresentationType];
 }
 
 + (id)itemWithURL:(NSURL*)anURL representationType:(NSString*)aRepresentationType
 {
-	return [ [ [ self  alloc ] initWithURL:anURL
-						representationType:aRepresentationType ] autorelease ];
+	return [ [ self  alloc ] initWithURL:anURL
+						representationType:aRepresentationType ];
 }
 
 + (id)itemWithPDFPage:(PDFPage*)aPDFPage
 {
-	return [ [ [ self  alloc ] initWithPDFPage:aPDFPage ] autorelease ];
+	return [ [ self  alloc ] initWithPDFPage:aPDFPage ];
 }
 
 - (id)initWithURL:(NSURL*)anURL representationType:(NSString*)aRepresentationType
@@ -90,13 +84,6 @@ static const NSInteger kMaxPreviewSize = 400;
     return self;
 }
 
-- (void)dealloc {
-    self.type = nil;
-	self.image = nil;
-	self.title = nil;
-	self.uid = nil;
-    [super dealloc];
-}
 
 #pragma mark -
 #pragma mark IKImageBrowserItem protocol

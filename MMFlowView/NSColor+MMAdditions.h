@@ -10,6 +10,6 @@
 
 @interface NSColor (MMAdditions)
 
-- (CGColorRef)CGColor;
+- (CGColorRef)mm_CGColor;
 
 @end

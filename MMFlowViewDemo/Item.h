@@ -24,14 +24,8 @@
 @class PDFPage;
 
 @interface Item : NSObject<MMFlowViewItem>
-{
-	id image;
-	NSString *type;
-	NSString *title;
-	NSString *uid;
-}
 
-@property (nonatomic,retain) id image;
+@property (nonatomic,strong) id image;
 @property (nonatomic,copy) NSString *type;
 @property (nonatomic,copy) NSString *title;
 @property (nonatomic,copy) NSString *uid;

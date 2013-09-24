@@ -18,23 +18,10 @@ extern NSString * const kMMButtonLayerStateKey;
 extern NSString * const kMMButtonLayerTypeKey;
 
 @interface MMButtonLayer : CALayer
-#ifdef __i386__
-{
-@private
-	BOOL highlighted;
-	BOOL enabled;
-	id target;
-	SEL action;
-	NSCellStateValue state;
-	NSButtonType type;
-	CGImageRef image;
-	CGImageRef alternateImage;
-}
-#endif
 
-@property(retain) __attribute__((NSObject)) CGImageRef image;
-@property(retain) __attribute__((NSObject)) CGImageRef alternateImage;
-@property (nonatomic, assign) id target;
+@property(strong) __attribute__((NSObject)) CGImageRef image;
+@property(strong) __attribute__((NSObject)) CGImageRef alternateImage;
+@property (nonatomic, weak) id<NSObject> target;
 @property (nonatomic, assign) SEL action;
 @property (nonatomic, assign) BOOL highlighted;
 @property (nonatomic, assign) BOOL enabled;

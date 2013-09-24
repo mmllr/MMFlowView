@@ -131,54 +131,13 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 
 
 @interface MMFlowView : NSControl<QLPreviewPanelDataSource, QLPreviewPanelDelegate>
-#ifdef __i386__
-{
-@private
-	CATransform3D leftTransform;
-	CATransform3D rightTransform;
-	CATransform3D perspective;
-	CALayer *backgroundLayer;
-	CATextLayer *titleLayer;
-	CAScrollLayer *scrollLayer;
-	CALayer *containerLayer;
-	CALayer *scrollBarLayer;
-	CALayer *selectedLayer;
-	CALayer *highlightedLayer;
-	id<MMFlowViewDataSource> dataSource;
-	id<MMFlowViewDelegate> delegate;
-	CGFloat stackedAngle;
-	CGFloat spacing;
-	CGFloat stackedScale;
-	CGFloat selectedScale;
-	CGFloat reflectionOffset;
-	CGFloat itemScale;
-	CGFloat mouseDownInKnob;
-	CGFloat previewScale;
-	CFTimeInterval scrollDuration;
-	NSUInteger selectedIndex;
-	NSUInteger numberOfItems;
-	BOOL showsReflection;
-	BOOL draggingKnob;
-	BOOL canControlQuickLookPanel;
-	NSCache *imageCache;
-	NSMutableArray *layerQueue;
-	NSIndexSet *visibleItemIndexes;
-	NSOperationQueue *operationQueue;
-	NSMutableDictionary *bindingInfo;
-	NSArray *observedItems;
-	NSString *imageRepresentationKeyPath;
-	NSString *imageRepresentationTypeKeyPath;
-	NSString *imageUIDKeyPath;
-	NSString *imageTitleKeyPath;
-}
-#endif
 
 /* title for currently selected index */
 @property (copy,nonatomic) id title;
 /* weak reference to the datasource, see MMFlowViewDataSource protocol */ 
-@property (assign) IBOutlet id<MMFlowViewDataSource> dataSource;
+@property (unsafe_unretained) IBOutlet id<MMFlowViewDataSource> dataSource;
 /* weak reference to the delegate, see MMFlowViewDelegate protocol */
-@property (assign) IBOutlet id<MMFlowViewDelegate> delegate;
+@property (unsafe_unretained) IBOutlet id<MMFlowViewDelegate> delegate;
 /* the angle in degrees around which the unselected images are rotated around the y-axis (counter clockwise for the left-stack, clockwise for the right-stack) */
 @property (assign, nonatomic) CGFloat stackedAngle;
 /* spacing between images in stack */
@@ -204,7 +163,7 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 /* number of items in view */
 @property (readonly, nonatomic) NSUInteger numberOfItems;
 /* indexes of all visible items */
-@property (retain, readonly) NSIndexSet *visibleItemIndexes;
+@property (strong, readonly) NSIndexSet *visibleItemIndexes;
 /* keypath to image representation on item in observed collection, defaults to imageItemRepresentation, see MMFlowViewItem protocol */
 @property (nonatomic,copy) NSString *imageRepresentationKeyPath;
 /* keypath to image representation type on item in observed collection, defaults to imageItemRepresentationType, see MMFlowViewItem protocol */

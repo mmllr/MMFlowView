@@ -18,20 +18,11 @@ extern NSString * const kMMVideoOverlayLayerIndicatorValueKey;
 extern NSString * const kMMVideoOverlayLayerIsPlayingKey;
 
 @interface MMVideoOverlayLayer : CALayer
-#ifdef __i386__
-{
-@private
-	CGFloat indicatorScale;
-	CGFloat indicatorValue;
-	MMButtonLayer *buttonLayer;
-	NSTimer *movieUpdateTimer;
-}
-#endif
 
 @property (assign, nonatomic) CGFloat indicatorScale;
 @property (assign, nonatomic) CGFloat indicatorValue;
-@property (readonly, nonatomic) QTMovie *movie;
-@property (readonly, retain, nonatomic) MMButtonLayer *buttonLayer;
+@property (weak, readonly, nonatomic) QTMovie *movie;
+@property (readonly, strong, nonatomic) MMButtonLayer *buttonLayer;
 
 - (void)expand;
 - (void)collapse;

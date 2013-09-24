@@ -23,22 +23,13 @@
 @class IKImageBrowserView;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
-{
-@private
-	NSMutableArray *items;
-	NSSlider *reflectionSlider;
-	IKImageBrowserView *imageBrowserView;
-	NSArrayController *itemArrayController;
-	NSWindow *window;
-	MMFlowView *flowView;
-}
 
 @property (copy,nonatomic) NSArray *items;
-@property (assign) IBOutlet NSWindow *window;
-@property (assign) IBOutlet MMFlowView *flowView;
-@property (assign) IBOutlet NSSlider *reflectionSlider;
-@property (assign) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (assign) IBOutlet NSArrayController *itemArrayController;
+@property (weak) IBOutlet NSWindow *window;
+@property (weak) IBOutlet MMFlowView *flowView;
+@property (weak) IBOutlet NSSlider *reflectionSlider;
+@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
+@property (weak) IBOutlet NSArrayController *itemArrayController;
 
 - (IBAction)toggleReflection:(id)sender;
 - (IBAction)toggleAngle:(id)sender;

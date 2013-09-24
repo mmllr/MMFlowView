@@ -29,28 +29,16 @@
 @end
 
 @implementation AppDelegate
-
-@synthesize window;
-@synthesize flowView;
-@synthesize reflectionSlider;
-@synthesize imageBrowserView;
-@synthesize itemArrayController;
+{
+	NSMutableArray *_items;
+}
 
 - (id)init {
     self = [super init];
     if (self) {
-        self.items = [ NSMutableArray array ];
+        _items = [ NSMutableArray array ];
     }
     return self;
-}
-
-- (void)dealloc
-{
-	self.itemArrayController = nil;
-	self.items = nil;
-	self.flowView = nil;
-	self.reflectionSlider = nil;
-    [super dealloc];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -59,7 +47,7 @@
 	[ self loadItems:@"/Library/Desktop Pictures" withRepresentationType:kMMFlowViewURLRepresentationType ];
 	// load all the movies
 	NSArray * paths = NSSearchPathForDirectoriesInDomains( NSMoviesDirectory, NSUserDomainMask, YES);
-	NSString *moviesPath = [paths objectAtIndex:0];
+	NSString *moviesPath = paths[0];
 	[ self loadItems:moviesPath withRepresentationType:kMMFlowViewQTMoviePathRepresentationType ];
 	// image loading via bindings
 	self.flowView.imageTitleKeyPath = @"title";
@@ -76,6 +64,7 @@
 				 options:nil ];
 	// turn quicklook on
 	[ self.flowView setCanControlQuickLookPanel:YES ];
+	[self.imageBrowserView reloadData ];
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
@@ -88,50 +77,49 @@
 
 - (NSArray*)items
 {
-	return [ [ items retain ] autorelease ];
+	return [ _items copy ];
 }
 
 - (void)setItems:(NSArray *)someItems
 {
-	if ( items != someItems ) {
-		[ items release ];
-		items = [ someItems mutableCopy ];
+	if ( _items != someItems ) {
+		_items = [ someItems mutableCopy ];
 	}
 }
 
 - (NSUInteger)countOfItems
 {
-	return [ items count ];
+	return [ _items count ];
 }
 
 - (id)objectInItemsAtIndex:(NSUInteger)index
 {
-	return [ items objectAtIndex:index ];
+	return _items[index];
 }
 
 - (NSArray*)itemsAtIndexes:(NSIndexSet *)indexes
 {
-	return [ items objectsAtIndexes:indexes ];
+	return [ _items objectsAtIndexes:indexes ];
 }
 
 - (void)insertObject:(id)object inItemsAtIndex:(NSUInteger)index
 {
-	[ items insertObject:object atIndex:index ];
+	[ _items insertObject:object atIndex:index ];
 }
 
 - (void)insertItems:(NSArray *)array atIndexes:(NSIndexSet*)indexes
 {
-	[ items insertObjects:array atIndexes:indexes ];
+	[ _items insertObjects:array atIndexes:indexes ];
 }
 
 - (void)removeObjectFromItemsAtIndex:(NSUInteger)index
 {
-	[ items removeObjectAtIndex:index ];
+	[ _items removeObjectAtIndex:index ];
 }
 
 - (void)removeItemsAtIndexes:(NSIndexSet *)indexes
 {
-	[ items removeObjectsAtIndexes:indexes ];
+	[ _items removeObjectsAtIndexes:indexes ];
 }
 
 
@@ -147,7 +135,7 @@
 	
 	if ( exists && isDirectory ) {
 		NSDirectoryEnumerator *dirEnumerator = [ fileManager enumeratorAtURL:[ NSURL fileURLWithPath:aPath ]
-												  includingPropertiesForKeys:[ NSArray arrayWithObjects:NSURLNameKey, NSURLIsDirectoryKey, nil ]
+												  includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
 																	 options:NSDirectoryEnumerationSkipsHiddenFiles
 																errorHandler:nil ];
 		for ( NSURL *url in dirEnumerator ) {
@@ -166,7 +154,7 @@
 - (void)loadPDFDocument:(NSURL*)anURL
 {
 	//[ self removeItemsAtIndexes:[ NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [ self countOfItems ] ) ] ];
-	PDFDocument *document = [ [ [ PDFDocument alloc ] initWithURL:anURL ] autorelease ];
+	PDFDocument *document = [ [ PDFDocument alloc ] initWithURL:anURL ];
 	
 	for ( NSUInteger i = 0; i < document.pageCount; ++i ) {
 		PDFPage *page = [ document pageAtIndex:i ];
@@ -224,7 +212,7 @@
 {
 	NSOpenPanel *panel = [ NSOpenPanel openPanel ];
 	
-	[ panel setAllowedFileTypes:[ NSArray arrayWithObject:@"com.adobe.pdf" ] ];
+	[ panel setAllowedFileTypes:@[@"com.adobe.pdf"] ];
 	[ panel beginWithCompletionHandler:^(NSInteger result) {
 		if ( result == NSFileHandlingPanelOKButton ) {
 			[ self loadPDFDocument:[ panel URL ] ];

@@ -123,8 +123,8 @@ static NSString * const kStringKey = @"string";
 static NSString * const kContentsKey = @"contents";
 
 /* observation context */
-static NSString * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
-static NSString * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
+static void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
+static void * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
 /* default item keys */
 static NSString * const kMMFlowViewItemImageRepresentationKey = @"imageItemRepresentation";
 static NSString * const kMMFlowViewItemImageRepresentationTypeKey = @"imageItemRepresentationType";
@@ -153,13 +153,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 @interface MMFlowView ()
 /* layers */
-@property (retain,readwrite) CALayer *backgroundLayer;
-@property (retain,readwrite) CATextLayer *titleLayer;
-@property (retain,readwrite) CAScrollLayer *scrollLayer;
-@property (retain,readwrite) CALayer *containerLayer;
-@property (retain,nonatomic) CALayer *selectedLayer;
-@property (retain,nonatomic) CALayer *highlightedLayer;
-@property (readwrite,retain) CALayer *scrollBarLayer;
+@property (strong,readwrite) CALayer *backgroundLayer;
+@property (strong,readwrite) CATextLayer *titleLayer;
+@property (strong,readwrite) CAScrollLayer *scrollLayer;
+@property (strong,readwrite) CALayer *containerLayer;
+@property (strong,nonatomic) CALayer *selectedLayer;
+@property (strong,nonatomic) CALayer *highlightedLayer;
+@property (strong,readwrite) CALayer *scrollBarLayer;
 
 /* scroll knob */
 @property (assign,nonatomic) BOOL draggingKnob;
@@ -169,16 +169,16 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 @property (assign,nonatomic) NSUInteger numberOfItems;
 
 /* indexes of all visible items */
-@property (retain, readwrite) NSIndexSet *visibleItemIndexes;
+@property (strong, readwrite) NSIndexSet *visibleItemIndexes;
 
 /* number of potentialy visible items, taking in account selection scrolled to left- and rightmost index */
 @property (readonly,nonatomic) NSUInteger maximumNumberOfStackedVisibleItems;
 
 /* operation queue for asynchronous operations such as image and movie loading */
-@property (retain) NSOperationQueue *operationQueue;
+@property (strong) NSOperationQueue *operationQueue;
 
 /* image cache which holds key-value pairs of image-uids (key) and CGImageRefs (value) */
-@property (readwrite,retain) NSCache *imageCache;
+@property (readwrite,strong) NSCache *imageCache;
 
 /* CATransform3D for all items left to the selection */
 @property (assign) CATransform3D leftTransform;
@@ -190,25 +190,25 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 @property (assign) CATransform3D perspective;
 
 /* the bound content array if bindings are used */
-@property (nonatomic, readonly) NSArray *contentArray;
+@property (weak, nonatomic, readonly) NSArray *contentArray;
 
 /* the bound NSArrayController if bindings are used */
-@property (nonatomic, readonly) NSArrayController *contentArrayController;
+@property (weak, nonatomic, readonly) NSArrayController *contentArrayController;
 
 /* the keypath for the content array in the bound array-controller */
-@property (nonatomic, readonly) NSString *contentArrayKeyPath;
+@property (weak, nonatomic, readonly) NSString *contentArrayKeyPath;
 
 /* dictionary holding bindings */
-@property (retain,nonatomic,readwrite) NSMutableDictionary *bindingInfo;
+@property (strong,nonatomic,readwrite) NSMutableDictionary *bindingInfo;
 
 /* dictionary holding item layer positions (key is the item-image uid, value is a NSNumber containing its index */
-@property (retain,readwrite) NSMutableArray *layerQueue;
+@property (strong,readwrite) NSMutableArray *layerQueue;
 
 /* array of all oberved items if bindings are used */
 @property (nonatomic,copy) NSArray *observedItems;
 
 /* set of all observed keypaths on the image items, dynamically created */
-@property (nonatomic,readonly) NSSet *observedItemKeyPaths;
+@property (weak, nonatomic,readonly) NSSet *observedItemKeyPaths;
 
 /* indicates if bindings are enabled */
 @property (nonatomic,readonly) BOOL bindingsEnabled;
@@ -376,43 +376,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 @implementation MMFlowView
 
-@synthesize backgroundLayer;
-@synthesize titleLayer;
-@synthesize scrollLayer;
-@synthesize containerLayer;
-@synthesize scrollBarLayer;
-@synthesize dataSource;
-@synthesize delegate;
-@synthesize stackedAngle;
-@synthesize selectedIndex;
-@synthesize spacing;
-@synthesize stackedScale;
-@synthesize selectedScale;
-@synthesize reflectionOffset;
-@synthesize showsReflection;
-@synthesize numberOfItems;
-@synthesize visibleItemIndexes;
-@synthesize operationQueue;
-@synthesize imageCache;
-@synthesize scrollDuration;
-@synthesize draggingKnob;
-@synthesize itemScale;
-@synthesize mouseDownInKnob;
-@synthesize leftTransform;
-@synthesize rightTransform;
-@synthesize perspective;
-@synthesize previewScale;
-@synthesize selectedLayer;
-@synthesize canControlQuickLookPanel;
-@synthesize highlightedLayer;
-@synthesize observedItems;
-@synthesize bindingInfo;
-@synthesize layerQueue;
-@synthesize imageRepresentationKeyPath;
-@synthesize imageRepresentationTypeKeyPath;
-@synthesize imageUIDKeyPath;
-@synthesize imageTitleKeyPath;
-
 #pragma mark -
 #pragma mark Class methods
 
@@ -448,7 +411,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			[ NSGraphicsContext restoreGraphicsState ];
 			image = CGBitmapContextCreateImage( context );
 			CGContextRelease( context );
-			[ gradient release ];
 		}
 	});
 	return image;
@@ -456,16 +418,16 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 + (NSArray*)backgroundGradientColors
 {
-	return [ NSArray arrayWithObjects:(__bridge id)[ [ NSColor colorWithCalibratedRed:52.f / 255.f green:55.f / 255.f blue:69.f / 255.f alpha:1.f ] CGColor ],
+	return @[(__bridge id)[ [ NSColor colorWithCalibratedRed:52.f / 255.f green:55.f / 255.f blue:69.f / 255.f alpha:1.f ] CGColor ],
 					(__bridge id)[ [ NSColor colorWithCalibratedRed:36.f / 255.f green:37.f / 255.f blue:48.f / 255.f alpha:1.f ] CGColor ],
-					(__bridge id)[[ NSColor blackColor ] CGColor ], nil ];
+					(__bridge id)[[ NSColor blackColor ] CGColor ]];
 }
 
 + (NSArray*)backgroundGradientLocations
 {
-	return [ NSArray arrayWithObjects:[ NSNumber numberWithDouble:0. ],
-			[ NSNumber numberWithDouble:.2 ],
-			[ NSNumber numberWithDouble:1. ], nil ];
+	return @[@0.,
+			@.2,
+			@1.];
 }
 
 + (NSSet*)pathRepresentationTypes
@@ -490,13 +452,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		utiDictionary = [ [ NSDictionary alloc ] initWithObjectsAndKeys:kMMFlowViewCGImageRepresentationType, (NSString*)kUTTypeImage,
-						 kMMFlowViewNSImageRepresentationType, (NSString*)kUTTypeImage,
-						 kMMFlowViewNSBitmapRepresentationType, (NSString*)kUTTypeImage,
-						 kMMFlowViewQTMovieRepresentationType, (NSString*)kUTTypeMovie,
-						 kMMFlowViewQCCompositionRepresentationType, (NSString*)kUTTypeQuartzComposerComposition,
-						 kMMFlowViewIconRefRepresentationType, (NSString*)kUTTypeImage,
-						 kMMFlowViewPDFPageRepresentationType, (NSString*)kUTTypePDF, nil ];
+		utiDictionary = @{(NSString*)kUTTypeImage: kMMFlowViewCGImageRepresentationType,
+						 (NSString*)kUTTypeImage: kMMFlowViewNSImageRepresentationType,
+						 (NSString*)kUTTypeImage: kMMFlowViewNSBitmapRepresentationType,
+						 (NSString*)kUTTypeMovie: kMMFlowViewQTMovieRepresentationType,
+						 (NSString*)kUTTypeQuartzComposerComposition: kMMFlowViewQCCompositionRepresentationType,
+						 (NSString*)kUTTypeImage: kMMFlowViewIconRefRepresentationType,
+						 (NSString*)kUTTypePDF: kMMFlowViewPDFPageRepresentationType};
 	});
 	return utiDictionary;
 }
@@ -525,10 +487,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 + (CGImageRef)newImageFromQuickLookURL:(NSURL*)anURL withSize:(CGSize)imageSize
 {
-	NSDictionary *quickLookOptions = [ NSDictionary dictionaryWithObjectsAndKeys:
-									  (id)kCFBooleanFalse, (id)kQLThumbnailOptionIconModeKey,
-									  nil ];
-	CGImageRef image = QLThumbnailImageCreate(NULL, (CFURLRef)anURL, imageSize, (CFDictionaryRef)quickLookOptions );
+	NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
+	CGImageRef image = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)anURL, imageSize, (__bridge CFDictionaryRef)quickLookOptions );
 	return image;
 }
 
@@ -611,10 +571,9 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		// if it can't find a suitable existing thumbnail image in the file.
 		// We could comment out the following line if only existing thumbnails were desired for some reason
 		// (maybe to favor performance over being guaranteed a complete set of thumbnails).
-		NSDictionary *options = [ NSDictionary dictionaryWithObjectsAndKeys:[ NSNumber numberWithBool:YES ], (NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent,
-								 [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ], (NSString *)kCGImageSourceThumbnailMaxPixelSize,
-								 nil ];
-		image = CGImageSourceCreateThumbnailAtIndex( imageSource, 0, (CFDictionaryRef)options );
+		NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
+								 (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
+		image = CGImageSourceCreateThumbnailAtIndex( imageSource, 0, (__bridge CFDictionaryRef)options );
 	}
 	return image;
 }
@@ -629,11 +588,10 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 + (CGImageRef)newImageFromData:(NSData*)data withSize:(CGSize)imageSize
 {
-	NSDictionary *options = [ NSDictionary dictionaryWithObjectsAndKeys:[ NSNumber numberWithBool:YES ], (NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent,
-							 [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ], (NSString *)kCGImageSourceThumbnailMaxPixelSize,
-							 nil ];
+	NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
+							 (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
 	CGImageRef image = NULL;
-	CGImageSourceRef imageSource = CGImageSourceCreateWithData( (CFDataRef)data, (CFDictionaryRef)options );
+	CGImageSourceRef imageSource = CGImageSourceCreateWithData( (__bridge CFDataRef)data, (__bridge CFDictionaryRef)options );
 	if ( imageSource ) {
 		image = [ self newImageFromCGImageSource:imageSource
 									 withSize:imageSize ];
@@ -644,7 +602,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 + (CGImageRef)newImageFromIcon:(IconRef)anIcon withSize:(CGSize)imageSize
 {
-	NSImage *image = [ [ [ NSImage alloc ] initWithIconRef:anIcon ] autorelease ];
+	NSImage *image = [ [ NSImage alloc ] initWithIconRef:anIcon ];
 	return [ self newImageFromNSImage:image
 						  withSize:imageSize ];
 }
@@ -664,10 +622,10 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 							  withSize:imageSize ];
 	}
 	else if ( [ representationType isEqualToString:kMMFlowViewCGImageRepresentationType ] ) {
-		image = (CGImageRef)imageRepresentation;
+		image = (__bridge CGImageRef)imageRepresentation;
 	}
 	else if ( [ representationType isEqualToString:kMMFlowViewPDFPageRepresentationType ] ) {
-		CGPDFPageRef pdfPage = [ imageRepresentation isKindOfClass:[ PDFPage class ] ] ? [ imageRepresentation pageRef ] : (CGPDFPageRef)imageRepresentation;
+		CGPDFPageRef pdfPage = [ imageRepresentation isKindOfClass:[ PDFPage class ] ] ? [ imageRepresentation pageRef ] : (__bridge CGPDFPageRef)imageRepresentation;
 		image = [ self newImageFromPDFPage:(CGPDFPageRef)pdfPage
 								  withSize:imageSize
 				  andTransparentBackground:NO ];
@@ -714,8 +672,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		NSURL *movieURL = [ representation isKindOfClass:[ NSURL class ] ] ? representation : [ NSURL fileURLWithPath:representation ];
 		
 		if ( [ QTMovie canInitWithURL:movieURL ] ) {
-			NSDictionary *options = [ NSDictionary dictionaryWithObjectsAndKeys:movieURL, QTMovieURLAttribute,
-									 [ NSNumber numberWithBool:YES ], QTMovieOpenForPlaybackAttribute, nil ];
+			NSDictionary *options = @{QTMovieURLAttribute: movieURL,
+									 QTMovieOpenForPlaybackAttribute: @YES};
 			NSError *error = nil;
 			QTMovie *movie = [ QTMovie movieWithAttributes:options
 													 error:&error ];
@@ -750,14 +708,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
     if (self) {
         // Initialization code here.
 		self.bindingInfo = [ NSMutableDictionary dictionary ];
-		self.operationQueue = [[[ NSOperationQueue alloc ] init ] autorelease ];
-		self.imageCache = [[[ NSCache alloc ] init ] autorelease ];
+		self.operationQueue = [[ NSOperationQueue alloc ] init ];
+		self.imageCache = [[ NSCache alloc ] init ];
 		self.layerQueue = [ NSMutableArray array ];
 		[ self setDefaults ];
 		[ self setupLayers ];
 		self.title = @"Title";
 		[ self setTitleSize:kDefaultTitleSize ];
-		[ self registerForDraggedTypes:[ NSArray arrayWithObjects:NSURLPboardType, nil ] ];
+		[ self registerForDraggedTypes:@[NSURLPboardType] ];
     }
     return self;
 }
@@ -768,11 +726,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	if ( self ) {
 		self.bindingInfo = [ NSMutableDictionary dictionary ];
 		self.layerQueue = [ NSMutableArray array ];
-		self.operationQueue = [[[ NSOperationQueue alloc ] init ] autorelease ];
-		self.imageCache = [[[ NSCache alloc ] init ] autorelease ];
+		self.operationQueue = [[ NSOperationQueue alloc ] init ];
+		self.imageCache = [[ NSCache alloc ] init ];
 		[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 		[ self setAcceptsTouchEvents:YES ];
-		selectedIndex = NSNotFound;
+		self.selectedIndex = NSNotFound;
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
 			self.spacing = [ aDecoder decodeDoubleForKey:kMMFlowViewSpacingKey ];
@@ -818,27 +776,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)dealloc
 {
-	self.visibleItemIndexes = nil;
-	self.layerQueue = nil;
-	self.imageRepresentationKeyPath = nil;
-	self.imageRepresentationTypeKeyPath = nil;
-	self.imageUIDKeyPath = nil;
-	self.imageTitleKeyPath = nil;
-	self.observedItems = nil;
-	self.bindingInfo = nil;
-	self.delegate = nil;
-	self.dataSource = nil;
-    self.backgroundLayer = nil;
-	self.titleLayer = nil;
-	self.containerLayer = nil;
-	self.scrollLayer = nil;
-	self.scrollBarLayer = nil;
 	[ self.operationQueue cancelAllOperations ];
-	self.operationQueue = nil;
-	self.imageCache = nil;
-	self.selectedLayer = nil;
-	self.highlightedLayer = nil;
-    [super dealloc];
 }
 
 - (void)setDefaults
@@ -850,7 +788,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	self.selectedScale = kDefaultSelectedScale;
 	self.stackedScale = kDefaultStackedScale;
 	self.reflectionOffset = kDefaultReflectionOffset;
-	selectedIndex = NSNotFound;
+	self.selectedIndex = NSNotFound;
 	self.showsReflection = YES;
 	CATransform3D perspTransform = CATransform3DIdentity;
 	perspTransform.m34 = 1. / -kDefaultEyeDistance;
@@ -877,7 +815,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setTitleFont:(NSFont*)aFont
 {
-	self.titleLayer.font = aFont;
+	self.titleLayer.font = (__bridge CFTypeRef)(aFont);
 }
 
 - (void)setTitleSize:(CGFloat)aSize
@@ -892,8 +830,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setStackedAngle:(CGFloat)anAngle
 {
-	if ( anAngle != stackedAngle ) {
-		stackedAngle = CLAMP( anAngle, 0., kMaximumStackedAngle );
+	if ( anAngle != _stackedAngle ) {
+		_stackedAngle = CLAMP( anAngle, 0., kMaximumStackedAngle );
 		self.leftTransform = CATransform3DMakeRotation( DegreesToRadians(anAngle), 0, 1, 0 );
 		self.rightTransform = CATransform3DMakeRotation( -DegreesToRadians(anAngle), 0, 1, 0 );
 		[ self.scrollLayer setNeedsLayout ];
@@ -902,18 +840,18 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setSpacing:(CGFloat)aSpacing
 {
-	if ( aSpacing != spacing ) {
-		spacing = aSpacing;
+	if ( aSpacing != _spacing ) {
+		_spacing = aSpacing;
 		[ self.scrollLayer setNeedsLayout ];
 	}
 }
 
 - (void)setSelectedIndex:(NSUInteger)index
 {
-	if ( ( selectedIndex != index ) && ( index < self.numberOfItems ) ) {
-		[ self deselectLayerAtIndex:selectedIndex ];
-		selectedIndex = index;
-		[ self updateSelectionInRange:NSMakeRange( MIN( index, selectedIndex ), ABS( selectedIndex - index ) ) ];
+	if ( ( _selectedIndex != index ) && ( index < self.numberOfItems ) ) {
+		[ self deselectLayerAtIndex:_selectedIndex ];
+		_selectedIndex = index;
+		[ self updateSelectionInRange:NSMakeRange( MIN( index, _selectedIndex ), ABS( _selectedIndex - index ) ) ];
 		[ self selectLayerAtIndex:index ];
 		if ( [ self.delegate respondsToSelector:@selector(flowViewSelectionDidChange:) ] ) {
 			[ self.delegate flowViewSelectionDidChange:self ];
@@ -926,32 +864,32 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setShowsReflection:(BOOL)shouldShowReflection
 {
-	if ( showsReflection != shouldShowReflection ) {
-		showsReflection = shouldShowReflection;
+	if ( _showsReflection != shouldShowReflection ) {
+		_showsReflection = shouldShowReflection;
 		[ self updateReflection ];
 	}
 }
 
 - (void)setReflectionOffset:(CGFloat)newReflectionOpacity
 {
-	if ( reflectionOffset != newReflectionOpacity ) {
-		reflectionOffset = CLAMP( newReflectionOpacity, -1., 0 );
+	if ( _reflectionOffset != newReflectionOpacity ) {
+		_reflectionOffset = CLAMP( newReflectionOpacity, -1., 0 );
 		[ self updateReflection ];
 	}
 }
 
 - (void)setItemScale:(CGFloat)newItemScale
 {
-	if ( itemScale != newItemScale ) {
-		itemScale = CLAMP( newItemScale, kMinimumItemScale, kMaximumItemScale );
+	if ( _itemScale != newItemScale ) {
+		_itemScale = CLAMP( newItemScale, kMinimumItemScale, kMaximumItemScale );
 		[ self.scrollLayer setNeedsLayout ];
 	}
 }
 
 - (void)setPreviewScale:(CGFloat)aPreviewScale
 {
-	if ( previewScale != aPreviewScale ) {
-		previewScale = CLAMP( aPreviewScale, 0.01, 1. );
+	if ( _previewScale != aPreviewScale ) {
+		_previewScale = CLAMP( aPreviewScale, 0.01, 1. );
 		[ self.imageCache removeAllObjects ];
 		[ self updateImages ];
 	}
@@ -972,26 +910,25 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setSelectedLayer:(CALayer *)aLayer
 {
-	if ( aLayer != selectedLayer ) {
+	if ( aLayer != _selectedLayer ) {
 		// deselect old layer
-		[ selectedLayer setValue:[ NSNumber numberWithBool:NO ]
+		[ _selectedLayer setValue:@NO
 						  forKey:kMMFlowViewHiglightedLayerKey ];
-		[ selectedLayer release ];
-		selectedLayer = [ aLayer retain ];
+		_selectedLayer = aLayer;
 	}
-	[ selectedLayer setValue:[ NSNumber numberWithBool:YES ]
+	[ _selectedLayer setValue:@YES
 					  forKey:kMMFlowViewHiglightedLayerKey ];
 }
 
 - (void)setCanControlQuickLookPanel:(BOOL)flag
 {
-	canControlQuickLookPanel = flag;
+	_canControlQuickLookPanel = flag;
 }
 
 - (void)setDraggingKnob:(BOOL)flag
 {
-	if ( draggingKnob != flag ) {
-		draggingKnob = flag;
+	if ( _draggingKnob != flag ) {
+		_draggingKnob = flag;
 		// update at end of dragging
 		if ( !flag ) {
 			[ self selectLayerAtIndex:self.selectedIndex ];
@@ -1001,13 +938,12 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setHighlightedLayer:(CALayer *)aLayer
 {
-	if ( aLayer != highlightedLayer ) {
-		[ self highlightLayer:highlightedLayer
+	if ( aLayer != _highlightedLayer ) {
+		[ self highlightLayer:_highlightedLayer
 				  highlighted:NO
 				 cornerRadius:0
 			highlightingColor:nil ];
-		[ highlightedLayer release ];
-		highlightedLayer = [ aLayer retain ];
+		_highlightedLayer = aLayer;
 		[ self highlightLayer:aLayer
 				  highlighted:YES
 				 cornerRadius:0
@@ -1093,13 +1029,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (CAReplicatorLayer*)itemLayerAtIndex:(NSUInteger)anIndex
 {
-	return ( [ self.scrollLayer.sublayers count ] > anIndex ) ? [ self.scrollLayer.sublayers objectAtIndex:anIndex ] : nil;
+	return ( [ self.scrollLayer.sublayers count ] > anIndex ) ? (self.scrollLayer.sublayers)[anIndex] : nil;
 }
 
 - (CALayer*)imageLayerAtIndex:(NSUInteger)anIndex
 {
 	CALayer *layer = [ self itemLayerAtIndex:anIndex ];
-	return [ layer.sublayers objectAtIndex:kImageLayerIndex ];
+	return (layer.sublayers)[kImageLayerIndex];
 }
 
 - (QTMovieLayer*)movieLayerAtIndex:(NSUInteger)anIndex
@@ -1107,8 +1043,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	QTMovieLayer *movieLayer = nil;
 
 	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
-	if ( [ imageLayer.sublayers count ] && [ [ imageLayer.sublayers objectAtIndex:0 ] isKindOfClass:[ QTMovieLayer class ] ]  ) {
-		movieLayer = [ imageLayer.sublayers objectAtIndex:0 ];
+	if ( [ imageLayer.sublayers count ] && [ (imageLayer.sublayers)[0] isKindOfClass:[ QTMovieLayer class ] ]  ) {
+		movieLayer = (imageLayer.sublayers)[0];
 	}
 	return movieLayer;
 }
@@ -1120,7 +1056,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	if ( overlay == nil && imageLayer.sublayers ) {
 		NSArray *overlays = [ imageLayer.sublayers valueForKey:kMMFlowViewOverlayLayerKey ];
 		if ( [ overlays count ] ) {
-			overlay = [ overlays objectAtIndex:0 ];
+			overlay = overlays[0];
 			overlay = [ overlay isKindOfClass:[ CALayer class ] ] ? overlay : nil;
 		}
 	}
@@ -1130,12 +1066,12 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex
 {
-	return UTTypeConformsTo( (CFStringRef)[ self uniformTypeIdentifierAtIndex:anIndex ], kUTTypeMovie );
+	return UTTypeConformsTo( (__bridge CFStringRef)[ self uniformTypeIdentifierAtIndex:anIndex ], kUTTypeMovie );
 }
 
 - (BOOL)isQCCompositionAtIndex:(NSUInteger)anIndex
 {
-	return UTTypeConformsTo( (CFStringRef)[ self uniformTypeIdentifierAtIndex:anIndex ], (CFStringRef)kUTTypeQuartzComposerComposition );
+	return UTTypeConformsTo( (__bridge CFStringRef)[ self uniformTypeIdentifierAtIndex:anIndex ], (__bridge CFStringRef)kUTTypeQuartzComposerComposition );
 }
 
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex
@@ -1152,7 +1088,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		uti = [ [ NSWorkspace sharedWorkspace ] typeOfFile:path error:&error ];
 	}
 	else {
-		uti = [ [ [ self class ] uniformTypesDictionary ] objectForKey:imageRepresentationType ];
+		uti = [ [ self class ] uniformTypesDictionary ][imageRepresentationType];
 	}
 	return uti;
 }
@@ -1186,18 +1122,18 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (NSArrayController*)contentArrayController
 {
-	return [ [ self infoForBinding:NSContentArrayBinding ] objectForKey:NSObservedObjectKey ];
+	return [ self infoForBinding:NSContentArrayBinding ][NSObservedObjectKey];
 }
 
 - (NSString*)contentArrayKeyPath
 {
-	return [ [ self infoForBinding:NSContentArrayBinding ] objectForKey:NSObservedKeyPathKey ];
+	return [ self infoForBinding:NSContentArrayBinding ][NSObservedKeyPathKey];
 }
 
 - (NSArray *)contentArray
 {
 	NSArray *array = [ self.contentArrayController valueForKeyPath:self.contentArrayKeyPath ];
-	return array ? array : [ NSArray array ];
+	return array ? array : @[];
 }
 
 - (NSSet*)observedItemKeyPaths
@@ -1225,64 +1161,60 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setImageRepresentationKeyPath:(NSString *)aKeyPath
 {
-	if ( aKeyPath != imageRepresentationKeyPath ) {
-		if ( imageRepresentationKeyPath ) {
+	if ( aKeyPath != _imageRepresentationKeyPath ) {
+		if ( _imageRepresentationKeyPath ) {
 			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:imageRepresentationKeyPath ] ];
+								atKeyPaths:[ NSSet setWithObject:_imageRepresentationKeyPath ] ];
 		}
-		[ imageRepresentationKeyPath release ];
-		imageRepresentationKeyPath = [ aKeyPath copy ];
-		if ( imageRepresentationKeyPath ) {
+		_imageRepresentationKeyPath = [ aKeyPath copy ];
+		if ( _imageRepresentationKeyPath ) {
 			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:imageRepresentationKeyPath ] ];
+								 atKeyPaths:[ NSSet setWithObject:_imageRepresentationKeyPath ] ];
 		}
 	}
 }
 
 - (void)setImageRepresentationTypeKeyPath:(NSString *)aKeyPath
 {
-	if ( aKeyPath != imageRepresentationTypeKeyPath ) {
-		if ( imageRepresentationTypeKeyPath ) {
+	if ( aKeyPath != _imageRepresentationTypeKeyPath ) {
+		if ( _imageRepresentationTypeKeyPath ) {
 			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:imageRepresentationTypeKeyPath ] ];
+								atKeyPaths:[ NSSet setWithObject:_imageRepresentationTypeKeyPath ] ];
 		}
-		[ imageRepresentationTypeKeyPath release ];
-		imageRepresentationTypeKeyPath = [ aKeyPath copy ];
-		if ( imageRepresentationTypeKeyPath ) {
+		_imageRepresentationTypeKeyPath = [ aKeyPath copy ];
+		if ( _imageRepresentationTypeKeyPath ) {
 			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:imageRepresentationTypeKeyPath ] ];
+								 atKeyPaths:[ NSSet setWithObject:_imageRepresentationTypeKeyPath ] ];
 		}
 	}
 }
 
 - (void)setImageUIDKeyPath:(NSString *)aKeyPath
 {
-	if ( aKeyPath != imageUIDKeyPath ) {
-		if ( imageUIDKeyPath ) {
+	if ( aKeyPath != _imageUIDKeyPath ) {
+		if ( _imageUIDKeyPath ) {
 			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:imageUIDKeyPath ] ];
+								atKeyPaths:[ NSSet setWithObject:_imageUIDKeyPath ] ];
 		}
-		[ imageUIDKeyPath release ];
-		imageUIDKeyPath = [ aKeyPath copy ];
-		if ( imageUIDKeyPath ) {
+		_imageUIDKeyPath = [ aKeyPath copy ];
+		if ( _imageUIDKeyPath ) {
 			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:imageUIDKeyPath ] ];
+								 atKeyPaths:[ NSSet setWithObject:_imageUIDKeyPath ] ];
 		}
 	}
 }
 
 - (void)setImageTitleKeyPath:(NSString *)aKeyPath
 {
-	if ( aKeyPath != imageTitleKeyPath ) {
-		if ( imageTitleKeyPath ) {
+	if ( aKeyPath != _imageTitleKeyPath ) {
+		if ( _imageTitleKeyPath ) {
 			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:imageTitleKeyPath ] ];
+								atKeyPaths:[ NSSet setWithObject:_imageTitleKeyPath ] ];
 		}
-		[ imageTitleKeyPath release ];
-		imageTitleKeyPath = [ aKeyPath copy ];
-		if ( imageTitleKeyPath ) {
+		_imageTitleKeyPath = [ aKeyPath copy ];
+		if ( _imageTitleKeyPath ) {
 			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:imageTitleKeyPath ] ];
+								 atKeyPaths:[ NSSet setWithObject:_imageTitleKeyPath ] ];
 		}
 	}
 }
@@ -1367,7 +1299,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	CGPoint mouseInView = NSPointToCGPoint( [ self convertPoint:locationInWindow fromView:nil ] );
 
 	CALayer *hitLayer = [ self hitLayerAtPoint:mouseInView ];
-	CALayer *knob = [ self.scrollBarLayer.sublayers objectAtIndex:0 ];
+	CALayer *knob = (self.scrollBarLayer.sublayers)[0];
 
 	NSUInteger clickedIndex = [ self indexOfItemAtPoint:[ self convertPoint:locationInWindow fromView:nil ] ];
 
@@ -1380,8 +1312,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		BOOL isURL = [ [ [ self class ] pathRepresentationTypes ] containsObject:representationType ];
 
 		// ask imagecache for drag image
-		NSImage *dragImage = [ [ [ NSImage alloc ] initWithCGImage:[ self lookupForImageUID:[ self imageUIDForItem:item ] ]
-															  size:NSSizeFromCGSize(hitLayer.bounds.size) ] autorelease ];
+		NSImage *dragImage = [ [ NSImage alloc ] initWithCGImage:[ self lookupForImageUID:[ self imageUIDForItem:item ] ]
+															  size:NSSizeFromCGSize(hitLayer.bounds.size) ];
 		// double click handling
 		if ( [ theEvent clickCount ] > 1 ) {
 			if ( [ self.delegate respondsToSelector:@selector(flowView:itemWasDoubleClickedAtIndex:) ] ) {
@@ -1407,7 +1339,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			}
 			else if ( isURL ) {
 				NSURL *fileURL = [ representation isKindOfClass:[ NSURL class ] ] ? representation : [ NSURL fileURLWithPath:representation ];
-				[ dragPBoard declareTypes:[ NSArray arrayWithObject:NSURLPboardType ]
+				[ dragPBoard declareTypes:@[NSURLPboardType]
 									owner:nil ];
 				[ fileURL writeToPasteboard:dragPBoard ];
 			}
@@ -1448,7 +1380,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	self.selectedLayer = [ self hitLayerAtPoint:mouseInView ];
 
 	if ( self.draggingKnob ) {
-		CALayer *knob = [ self.scrollBarLayer.sublayers objectAtIndex:0 ];
+		CALayer *knob = (self.scrollBarLayer.sublayers)[0];
 
 		CGPoint mouseInScrollBar = [ self.layer convertPoint:mouseInView toLayer:self.scrollBarLayer ];
 		CGFloat maxX = self.scrollBarLayer.bounds.size.width - knob.bounds.size.width;
@@ -1552,14 +1484,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	for ( CALayer *itemLayer in self.scrollLayer.sublayers ) {
 		[ self enqeueItemLayer:itemLayer ];
 	}
-	self.scrollLayer.sublayers = [ NSArray array ];
+	self.scrollLayer.sublayers = @[];
 
 	for ( NSUInteger itemIndex = 0; itemIndex < self.numberOfItems; ++itemIndex ) {
 		CALayer *itemLayer = [ self deqeueItemLayer ];
 		if ( itemLayer ) {
-			[ itemLayer setValue:[ NSNumber numberWithUnsignedInteger:itemIndex ] forKey:kMMFlowViewItemIndexKey ];
+			[ itemLayer setValue:@(itemIndex) forKey:kMMFlowViewItemIndexKey ];
 			[ itemLayer setValue:[ self imageUIDForItem:[ self imageItemForIndex:itemIndex ] ] forKey:kMMFlowViewItemImageUIDKey ];
-			CALayer *imageLayer = [ itemLayer.sublayers objectAtIndex:kImageLayerIndex ];
+			CALayer *imageLayer = (itemLayer.sublayers)[kImageLayerIndex];
 			[ self setAttributesForItemContentLayer:imageLayer
 											atIndex:itemIndex ];
 		}
@@ -1584,7 +1516,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	}
 	if ( self.bindingsEnabled &&
 		( anIndex < [ self.contentArray count ] ) ) {
-		return [ self.contentArray objectAtIndex:anIndex ];
+		return (self.contentArray)[anIndex];
 	}
 	else {
 		return [ self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:) ] ? [ self.dataSource flowView:self itemAtIndex:anIndex ] : nil;
@@ -1708,11 +1640,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		return [ helper.children objectsAtIndexes:weakSelf.visibleItemIndexes ];
 	} ];
 	[ axHelper addHandlerForAttribute:NSAccessibilitySelectedChildrenAttribute withBlock:^id(MMLayerAccessibilityHelper *helper) {
-		return [ helper.children objectAtIndex:weakSelf.selectedIndex ];
+		return (helper.children)[weakSelf.selectedIndex];
 	} ];
 	[ axHelper addHandlerForWritableAttribute:NSAccessibilitySelectedChildrenAttribute withBlock:^(MMLayerAccessibilityHelper *helper, id aValue ) {
 		if ( [ aValue isKindOfClass:[ NSArray class ] ] && [ aValue count ] ) {
-			NSNumber *index = [ aValue objectAtIndex:0 ];
+			NSNumber *index = aValue[0];
 			weakSelf.selectedIndex = [ index unsignedIntegerValue ];
 		}
 	} ];
@@ -1733,9 +1665,9 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	// disable animation for position
 	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ layer actions ] ];
 	// add the new action for sublayers
-	[customActions setObject:[NSNull null] forKey:kPositionKey ];
-	[customActions setObject:[NSNull null] forKey:kBoundsKey ];
-	[customActions setObject:[NSNull null] forKey:kStringKey ];
+	customActions[kPositionKey] = [NSNull null];
+	customActions[kBoundsKey] = [NSNull null];
+	customActions[kStringKey] = [NSNull null];
 	// set theLayer actions to the updated dictionary
 	layer.actions = customActions;
 	return layer;
@@ -1752,8 +1684,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	// disable animation for position
 	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ layer actions ] ];
 	// add the new action for sublayers
-	[customActions setObject:[NSNull null] forKey:kPositionKey ];
-	[customActions setObject:[NSNull null] forKey:kBoundsKey ];
+	customActions[kPositionKey] = [NSNull null];
+	customActions[kBoundsKey] = [NSNull null];
 	// set theLayer actions to the updated dictionary
 	layer.actions = customActions;
 	return layer;
@@ -1765,7 +1697,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	layer.scrollMode = kCAScrollHorizontally;
 	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	layer.layoutManager = self;
-	layer.sublayerTransform = perspective;
+	layer.sublayerTransform = self.perspective;
 	layer.masksToBounds = NO;
 	layer.delegate = self;
 	return layer;
@@ -1784,7 +1716,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	layer.preservesDepth = YES;
 	[ layer setValue:[ self imageUIDForItem:anItem ]
 			  forKey:kMMFlowViewItemImageUIDKey ];
-	[ layer setValue:[ NSNumber numberWithUnsignedInteger:anIndex ]
+	[ layer setValue:@(anIndex)
 			  forKey:kMMFlowViewItemIndexKey ];
 	CALayer *imageLayer = [ self createImageLayer ];
 	[ self setAttributesForItemContentLayer:imageLayer
@@ -1806,7 +1738,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	}
 	imageLayer.name = [ NSString stringWithFormat:@"%@%@", kMMFlowViewItemContentLayerPrefix,  suffix ];
 
-	[ imageLayer setValue:[ NSNumber numberWithUnsignedInteger:anIndex ]
+	[ imageLayer setValue:@(anIndex)
 				   forKey:kMMFlowViewItemIndexKey ];
 	// disable animation for position
 	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ imageLayer actions ] ];
@@ -1818,10 +1750,10 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	revealTransition.type = kCATransitionReveal;
 	revealTransition.duration = 0.5;
 	//[ customActions setObject:fadeTransition forKey:@"contents" ];
-	[ customActions setObject:revealTransition forKey:kCAOnOrderIn ];
-	[ customActions setObject:fadeTransition forKey:kCAOnOrderOut ];
-	[ customActions setObject:[ NSNull null ] forKey:kContentsKey ];
-	[customActions setObject:[ NSNull null ] forKey:kBoundsKey ];
+	customActions[kCAOnOrderIn] = revealTransition;
+	customActions[kCAOnOrderOut] = fadeTransition;
+	customActions[kContentsKey] = [ NSNull null ];
+	customActions[kBoundsKey] = [ NSNull null ];
 	// set theLayer actions to the updated dictionary
 	imageLayer.actions = customActions;
 
@@ -1857,8 +1789,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ sublayer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMidY relativeTo:kSuperlayerKey attribute:kCAConstraintMidY ] ];
 	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ sublayer actions ] ];
 	// add the new action for sublayers
-	[customActions setObject:[ NSNull null] forKey:kPositionKey ];
-	[customActions setObject:[ NSNull null ] forKey:kBoundsKey ];
+	customActions[kPositionKey] = [ NSNull null];
+	customActions[kBoundsKey] = [ NSNull null ];
 	// set theLayer actions to the updated dictionary
 	sublayer.actions = customActions;
 	sublayer.contentsGravity = kCAGravityResizeAspectFill;
@@ -1909,8 +1841,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	// disable animation for position
 	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ layer actions ] ];
 	// add the new action for sublayers
-	[customActions setObject:[NSNull null] forKey:kPositionKey ];
-	[customActions setObject:[ NSNull null ] forKey:kBoundsKey ];
+	customActions[kPositionKey] = [NSNull null];
+	customActions[kBoundsKey] = [ NSNull null ];
 	// set theLayer actions to the updated dictionary
 	layer.actions = customActions;
 
@@ -1938,21 +1870,21 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	knobLayer.startPoint = CGPointMake( 0.5, 1. );
 	knobLayer.anchorPoint = CGPointMake( 0.5, 0.5 );
 	knobLayer.endPoint = CGPointMake( 0.5, 0. );
-	knobLayer.colors = [ NSArray arrayWithObjects: (__bridge id)[ [ NSColor colorWithCalibratedRed:64.f / 255.f green:64.f / 255.f blue:74.f / 255.f alpha:1 ] CGColor ],
+	knobLayer.colors = @[(__bridge id)[ [ NSColor colorWithCalibratedRed:64.f / 255.f green:64.f / 255.f blue:74.f / 255.f alpha:1 ] CGColor ],
 						(__bridge id)[[ NSColor colorWithCalibratedRed:46.f / 255.f green:46.f / 255.f blue:58.f / 255.f alpha:1.f ] CGColor ],
 						(__bridge id)[[ NSColor colorWithCalibratedRed:37.f / 255.f green:37.f / 255.f blue:50.f / 255.f alpha:1.f ] CGColor ],
-						(__bridge id)[[ NSColor colorWithCalibratedRed:51.f / 255.f green:52.f / 255.f blue:66.f / 255.f alpha:1.f ] CGColor ], nil ];
-	knobLayer.locations = [ NSArray arrayWithObjects:[ NSNumber numberWithDouble:0. ],
-						   [ NSNumber numberWithDouble:0.5 ],
-						   [ NSNumber numberWithDouble:0.51 ],
-						   [ NSNumber numberWithDouble:1. ], nil ];
+						(__bridge id)[[ NSColor colorWithCalibratedRed:51.f / 255.f green:52.f / 255.f blue:66.f / 255.f alpha:1.f ] CGColor ]];
+	knobLayer.locations = @[@0.,
+						   @0.5,
+						   @0.51,
+						   @1.];
 	knobLayer.type = kCAGradientLayerAxial;
 	[ knobLayer setNeedsDisplay ];
 	// disable animation for position
 	customActions = [ NSMutableDictionary dictionaryWithDictionary:[ knobLayer actions ] ];
 	// add the new action for sublayers
-	[customActions setObject:[NSNull null] forKey:kPositionKey ];
-	[customActions setObject:[ NSNull null ] forKey:kBoundsKey ];
+	customActions[kPositionKey] = [NSNull null];
+	customActions[kBoundsKey] = [ NSNull null ];
 	// set theLayer actions to the updated dictionary
 	knobLayer.actions = customActions;
 	
@@ -1966,7 +1898,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	knobAXHelper.attributeNames = [ NSSet setWithObjects:NSAccessibilityValueAttribute, nil ];
 	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
 	[ knobAXHelper addHandlerForAttribute:NSAccessibilityValueAttribute withBlock:^id(MMLayerAccessibilityHelper *axHelper) {
-		return [ NSNumber numberWithDouble:((double)( weakSelf.selectedIndex ) ) / ( weakSelf.numberOfItems - 1 ) ];
+		return @(((double)( weakSelf.selectedIndex ) ) / ( weakSelf.numberOfItems - 1 ));
 	} ];
 	[ knobLayer setValue:knobAXHelper forKey:kMMFLowViewAccessibilityHelperKey ];
 	return layer;
@@ -1977,7 +1909,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	MMVideoOverlayLayer *layer = [ MMVideoOverlayLayer layer ];
 	// hosting layer
 	layer.name = kMMFlowViewOverlayLayerName;
-	[ layer setValue:[ NSNumber numberWithUnsignedInteger:anIndex ]
+	[ layer setValue:@(anIndex)
 					 forKey:kMMFlowViewItemIndexKey ];
 	layer.frame = CGRectMake( 0., 0., kMovieOverlayPlayingRadius * 2, kMovieOverlayPlayingRadius * 2 );
 	// initially hidden
@@ -2009,14 +1941,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	if ( anImage ) {
 		CAReplicatorLayer *itemLayer = [ self itemLayerAtIndex:anIndex ];
-		CALayer *contentLayer = [ itemLayer.sublayers objectAtIndex:kImageLayerIndex ];
+		CALayer *contentLayer = (itemLayer.sublayers)[kImageLayerIndex];
 		CGFloat aspectRatio = ((CGFloat)CGImageGetWidth(anImage)) / ((CGFloat)CGImageGetHeight(anImage));
-		[ contentLayer setValue:[ NSNumber numberWithDouble:aspectRatio ]
+		[ contentLayer setValue:@(aspectRatio)
 						 forKey:kMMFlowViewItemAspectRatioKey ];
 		contentLayer.frame = [ self boundsFromContentWithAspectRatio:aspectRatio
 														  inItemRect:itemLayer.bounds ];
 		if ( ![ contentLayer isKindOfClass:[ QTMovieLayer class ] ] ) {
-			contentLayer.contents = (id)anImage;
+			contentLayer.contents = (__bridge id)anImage;
 		}
 	}
 }
@@ -2025,7 +1957,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	NSUInteger selection = self.selectedIndex;
 	
-	CALayer *imageLayer = [ [ itemLayer sublayers ] objectAtIndex:kImageLayerIndex ];
+	CALayer *imageLayer = [ itemLayer sublayers ][kImageLayerIndex];
 
 	CGRect itemFrame = [ self rectForItem:anIndex withItemSize:itemSize ];
 	NSUInteger distanceFromSelection = abs( (int)(anIndex - self.selectedIndex) );
@@ -2082,7 +2014,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (CALayer*)deqeueItemLayer
 {
-	CALayer *aLayer = [ [ self.layerQueue lastObject ] autorelease ];
+	CALayer *aLayer = [ self.layerQueue lastObject ];
 	if ( [ self.layerQueue count ] ) {
 		[ self.layerQueue removeLastObject ];
 	}
@@ -2313,7 +2245,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	BOOL shouldHideScrollbar = ( self.numberOfItems < 2 );
 	self.scrollBarLayer.hidden = shouldHideScrollbar;
 	if ( self.numberOfItems && !shouldHideScrollbar ) {
-		CALayer *knob = [ self.scrollBarLayer.sublayers objectAtIndex:0 ];
+		CALayer *knob = (self.scrollBarLayer.sublayers)[0];
 		CGRect knobBounds = knob.frame;
 		NSUInteger numberOfVisibleItems = self.maximumNumberOfStackedVisibleItems;
 		CGFloat knobWidthProportion = ((CGFloat)numberOfVisibleItems) / (CGFloat)self.numberOfItems;
@@ -2371,10 +2303,10 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		[ self removeTrackingArea:trackingArea ];
 	}
 	if ( self.selectedIndex != NSNotFound ) {
-		NSTrackingArea *trackingArea = [ [ [ NSTrackingArea alloc ] initWithRect:[ self rectInViewForLayer:[ self imageLayerAtIndex:self.selectedIndex ] ]
+		NSTrackingArea *trackingArea = [ [ NSTrackingArea alloc ] initWithRect:[ self rectInViewForLayer:[ self imageLayerAtIndex:self.selectedIndex ] ]
 																		 options:NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside
 																		   owner:self
-																		userInfo:nil ] autorelease ];
+																		userInfo:nil ];
 		[ self addTrackingArea:trackingArea ];
 	}
 }
@@ -2400,12 +2332,12 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)cacheImage:(CGImageRef)anImage withUID:(NSString*)anUID
 {
-	[ self.imageCache setObject:(id)anImage forKey:anUID ];
+	[ self.imageCache setObject:(__bridge id)anImage forKey:anUID ];
 }
 
 - (CGImageRef)lookupForImageUID:(NSString*)anUID
 {
-	CGImageRef cachedImage = (CGImageRef)[ self.imageCache objectForKey:anUID ];
+	CGImageRef cachedImage = (__bridge CGImageRef)[ self.imageCache objectForKey:anUID ];
 	return cachedImage;
 }
 
@@ -2445,8 +2377,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	static NSArray *attributes = nil;
 	if ( attributes == nil ) {
-	    attributes = [ [ [ super accessibilityAttributeNames ] arrayByAddingObjectsFromArray:[ NSArray arrayWithObjects:NSAccessibilityContentsAttribute,
-																							  nil ] ] retain ];
+	    attributes = [ [ super accessibilityAttributeNames ] arrayByAddingObjectsFromArray:@[NSAccessibilityContentsAttribute] ];
 	}
 	return attributes;
 }
@@ -2463,13 +2394,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		MMLayerAccessibilityHelper *axListHelper = [ self.backgroundLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
 		MMLayerAccessibilityHelper *axScrollBarHelper = [ self.scrollBarLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
 
-		return NSAccessibilityUnignoredChildren( [ NSArray arrayWithObjects:axListHelper, axScrollBarHelper, nil ]  );
+		return NSAccessibilityUnignoredChildren( @[axListHelper, axScrollBarHelper]  );
     }
 	else if ( [ anAttribute isEqualToString:NSAccessibilityContentsAttribute ] ) {
 		MMLayerAccessibilityHelper *axListHelper = [ self.backgroundLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
 		MMLayerAccessibilityHelper *axScrollBarHelper = [ self.scrollBarLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
 		
-		return [ NSArray arrayWithObjects:axListHelper, axScrollBarHelper, nil ];
+		return @[axListHelper, axScrollBarHelper];
 	}
 	else {
 		return [ super accessibilityAttributeValue:anAttribute ];
@@ -2656,15 +2587,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		NSAssert( [ observableController isKindOfClass:[ NSArrayController class ] ], @"NSContentArrayBinding needs to be bound to an NSArrayController!" );
 		
 		// already set?
-		if ( [ [ self infoForBinding:binding ] objectForKey:NSObservedKeyPathKey ] != nil ) {
+		if ( [ self infoForBinding:binding ][NSObservedKeyPathKey] != nil ) {
 			[ self unbind:NSContentArrayBinding ];
 		}
 		// Register what object and what keypath are
 		// associated with this binding
-		NSDictionary *bindingsData = [ NSDictionary dictionaryWithObjectsAndKeys:
-									  observableController, NSObservedObjectKey,
-									  [ [ keyPath copy ] autorelease ], NSObservedKeyPathKey,
-									  [ [ options copy ] autorelease ], NSOptionsKey, nil];
+		NSDictionary *bindingsData = @{NSObservedObjectKey: observableController,
+									  NSObservedKeyPathKey: [ keyPath copy ],
+									  NSOptionsKey: options ? [ options copy ] : [ NSDictionary dictionary ] };
 		[ self setInfo:bindingsData
 			forBinding:binding ];
 
@@ -2723,7 +2653,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		[ onlyNew removeObjectsInArray:self.observedItems ];
 		[ self startObservingCollection:onlyNew atKeyPaths:self.observedItemKeyPaths ];
 		
-		NSMutableArray *removed = [ [ self.observedItems mutableCopy ] autorelease ];
+		NSMutableArray *removed = [ self.observedItems mutableCopy ];
 		[ removed removeObjectsInArray:newItems ];
 		[ self stopObservingCollection:removed atKeyPaths:self.observedItemKeyPaths ];
 		self.observedItems = newItems;

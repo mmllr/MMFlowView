@@ -9,26 +9,11 @@
 #import <Foundation/Foundation.h>
 
 @interface MMLayerAccessibilityHelper : NSObject
-#ifdef __i386__
-{
-	NSString *role;
-	id parent;
-	CALayer *layer;
-	NSView *view;
-	NSMutableArray *children;
-	NSSet *writableAttributeNames;
-	NSSet *attributeNames;
-	NSMutableDictionary *attributeGetHandlers;
-	NSMutableDictionary *attributeSetHandlers;
-	BOOL focused;
-	BOOL enabled;
-}
-#endif
 
 @property (readonly, copy) NSString *role;
-@property (readonly, assign) id parent;
-@property (readonly, assign) CALayer *layer;
-@property (readonly, assign) NSView *view;
+@property (readonly, weak) id parent;
+@property (readonly, weak) CALayer *layer;
+@property (readonly, weak) NSView *view;
 @property (nonatomic, copy) NSSet *writableAttributeNames;
 @property (nonatomic, copy) NSSet *attributeNames;
 @property (nonatomic, assign) BOOL focused;

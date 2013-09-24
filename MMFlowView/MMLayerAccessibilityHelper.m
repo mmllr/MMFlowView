@@ -11,34 +11,22 @@
 @interface MMLayerAccessibilityHelper ()
 
 @property (readwrite, copy) NSString *role;
-@property (readwrite, assign) id parent;
-@property (readwrite, assign) CALayer *layer;
-@property (readwrite, assign) NSView *view;
-@property (readwrite, retain) NSMutableDictionary *attributeGetHandlers;
-@property (readwrite, retain) NSMutableDictionary *attributeSetHandlers;
-@property (readwrite, nonatomic, retain) NSMutableArray *children;
+@property (readwrite, weak) id parent;
+@property (readwrite, weak) CALayer *layer;
+@property (readwrite, weak) NSView *view;
+@property (readwrite, strong) NSMutableDictionary *attributeGetHandlers;
+@property (readwrite, strong) NSMutableDictionary *attributeSetHandlers;
+@property (readwrite, nonatomic, strong) NSMutableArray *children;
 @end
 
 @implementation MMLayerAccessibilityHelper
 
-@synthesize role;
-@synthesize parent;
-@synthesize layer;
-@synthesize view;
-@synthesize children;
-@synthesize writableAttributeNames;
-@synthesize attributeNames;
-@synthesize attributeGetHandlers;
-@synthesize attributeSetHandlers;
-@synthesize focused;
-@synthesize enabled;
-
 + (id)layerAccesibilityHelperWithRole:(NSString*)aRole parent:(id)aParent layer:(CALayer*)aLayer view:(NSView*)aView
 {
-	return [ [ [ self alloc ] initWithRole:aRole
+	return [ [ self alloc ] initWithRole:aRole
 									parent:aParent
 									 layer:aLayer
-									  view:aView ] autorelease ];
+									  view:aView ];
 }
 
 - (id)initWithRole:(NSString*)aRole parent:(id)aParent layer:(CALayer*)aLayer view:(NSView*)aView
@@ -51,25 +39,11 @@
 		self.view = aView;
 		self.focused = NO;
 		self.enabled = YES;
-		children = [[ NSMutableArray alloc ] init ];
+		self.children = [[ NSMutableArray alloc ] init ];
 		self.attributeGetHandlers = [ NSMutableDictionary dictionary ];
 		self.attributeSetHandlers = [ NSMutableDictionary dictionary ];
     }
     return self;
-}
-
-- (void)dealloc
-{
-	self.writableAttributeNames = nil;
-	self.attributeNames = nil;
-	self.attributeSetHandlers = nil;
-	self.attributeGetHandlers = nil;
-	self.children = nil;
-    self.role = nil;
-	self.parent = nil;
-	self.layer = nil;
-	self.view = nil;
-    [super dealloc];
 }
 
 #pragma mark -
@@ -78,7 +52,7 @@
 - (void)adjustChildrenAttribute
 {
 	BOOL hasChildren = [ self countOfChildren ] > 0;
-	NSMutableSet *newAttributeNames = [ [ self.attributeNames mutableCopy ] autorelease ];
+	NSMutableSet *newAttributeNames = [ self.attributeNames mutableCopy ];
 	if ( hasChildren ) {
 		[ newAttributeNames addObject:NSAccessibilityChildrenAttribute ];
 	}
@@ -93,75 +67,73 @@
 
 - (NSArray*)children
 {
-	return [ [ children retain ] autorelease ];
+	return _children;
 }
 
 - (NSUInteger)countOfChildren
 {
-	return [ children count ];
+	return [ _children count ];
 }
 
 - (id)objectInChildrenAtIndex:(NSUInteger)index
 {
-	return [ children objectAtIndex:index ];
+	return _children[index];
 }
 
 - (NSArray*)childrenAtIndexes:(NSIndexSet *)indexes
 {
-	return [ children objectsAtIndexes:indexes ];
+	return [ _children objectsAtIndexes:indexes ];
 }
 
 - (void)insertObject:(MMLayerAccessibilityHelper*)aChild inChildrenAtIndex:(NSUInteger)index
 {
 	aChild.parent = self;
-	[ children insertObject:aChild atIndex:index ];
+	[ _children insertObject:aChild atIndex:index ];
 	[ self adjustChildrenAttribute ];
 }
 
 - (void)insertChildren:(NSArray *)someChilds atIndexes:(NSIndexSet *)indexes
 {
 	[ someChilds performSelector:@selector(setParent:) withObject:self ];
-	[ children insertObjects:someChilds atIndexes:indexes ];
+	[ _children insertObjects:someChilds atIndexes:indexes ];
 	[ self adjustChildrenAttribute ];
 }
 
 - (void)removeObjectFromChildrenAtIndex:(NSUInteger)index
 {
-	MMLayerAccessibilityHelper *child = [ children objectAtIndex:index ];
+	MMLayerAccessibilityHelper *child = _children[index];
 	child.parent = nil;
-	[ children removeObjectAtIndex:index ];
+	[ _children removeObjectAtIndex:index ];
 	[ self adjustChildrenAttribute ];
 }
 
 - (void)removeChildrenAtIndexes:(NSIndexSet *)indexes
 {
-	NSArray *removedChildren = [ children objectsAtIndexes:indexes ];
+	NSArray *removedChildren = [ _children objectsAtIndexes:indexes ];
 	[ removedChildren performSelector:@selector(setParent:) withObject:nil ];
-	[ children removeObjectsAtIndexes:indexes ];
+	[ _children removeObjectsAtIndexes:indexes ];
 	[ self adjustChildrenAttribute ];
 }
 
 - (void)addChildrenObject:(MMLayerAccessibilityHelper *)aChild
 {
 	aChild.parent = self;
-	[ children addObject:aChild ];
+	[ _children addObject:aChild ];
 	[ self adjustChildrenAttribute ];
 }
 
 - (void)addHandlerForAttribute:(NSString*)anAttribute withBlock:(id (^)(MMLayerAccessibilityHelper*))aHandler
 {
-	id (^copiedHandler)(MMLayerAccessibilityHelper*) = Block_copy(aHandler);
+	id (^copiedHandler)(MMLayerAccessibilityHelper*) = [aHandler copy];
 	[ self.attributeGetHandlers setValue:copiedHandler forKey:anAttribute ];
 	// avoid memory leak, NSMutableDictionary retains itself
-	Block_release(copiedHandler);
 }
 
 - (void)addHandlerForWritableAttribute:(NSString*)anAttribute withBlock:(void (^)(MMLayerAccessibilityHelper*, id))aHandler
 {
-	void (^copiedHandler)(MMLayerAccessibilityHelper*, id) = Block_copy(aHandler);
+	void (^copiedHandler)(MMLayerAccessibilityHelper*, id) = [aHandler copy];
 	[ self.attributeSetHandlers setValue:copiedHandler forKey:anAttribute ];
 	// avoid memory leak, NSMutableDictionary retains itself
-	Block_release(copiedHandler);
 }
 
 #pragma mark -
@@ -215,10 +187,10 @@
 		return [ NSValue valueWithPoint:[ [ self.view window ] convertBaseToScreen:windowPoint ] ];
 	}
 	else if ( [ anAttribute isEqualToString:NSAccessibilityFocusedAttribute ] ) {
-		return [ NSNumber numberWithBool:self.focused ];
+		return @(self.focused);
 	}
 	else if ( [ anAttribute isEqualToString:NSAccessibilityEnabledAttribute ] ) {
-		return [ NSNumber numberWithBool:self.enabled ];
+		return @(self.enabled);
 	}
 	else if ( [ anAttribute isEqualToString:NSAccessibilitySizeAttribute ] ) {
 		return [ NSValue valueWithSize:[ self.view convertSize:NSSizeFromCGSize(self.layer.bounds.size)
@@ -248,7 +220,7 @@
 
 - (NSArray*)accessibilityActionNames
 {
-    return [ NSArray array ];
+    return @[];
 }
 
 - (NSString*)accessibilityActionDescription:(NSString*)anAction

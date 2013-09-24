@@ -29,7 +29,7 @@ static const CGFloat kMovieOverlayCollapseDuration = 0.15;
 static const NSTimeInterval kMovieOverlayUpdateInterval = 0.1;
 
 static NSString * const kMMVideoOverlayLayerHiddenKey = @"hidden";
-static NSString * const kMMVideoOverlayLayerHiddenObservationContext = @"MMVideoOverlayLayerHiddenObservationContext";
+static void * const kMMVideoOverlayLayerHiddenObservationContext = @"MMVideoOverlayLayerHiddenObservationContext";
 
 const CGFloat kMovieOverlayPlayingRadius = 30.;
 
@@ -39,8 +39,8 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 @interface MMVideoOverlayLayer ()
 
-@property (retain, nonatomic) MMButtonLayer *buttonLayer;
-@property (assign, nonatomic) NSTimer *movieUpdateTimer;
+@property (strong, nonatomic) MMButtonLayer *buttonLayer;
+@property (weak, nonatomic) NSTimer *movieUpdateTimer;
 
 @end
 
@@ -48,8 +48,6 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 @dynamic indicatorScale;
 @dynamic indicatorValue;
-@synthesize buttonLayer;
-@synthesize movieUpdateTimer;
 
 #pragma mark -
 #pragma mark Class methods
@@ -160,7 +158,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 		button.type = NSPushOnPushOffButton;
 		[ button setNeedsDisplay ];
 		self.buttonLayer = button;
-		[ self addSublayer:buttonLayer ];
+		[ self addSublayer:button ];
     }
     return self;
 }
@@ -174,13 +172,6 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 		self.indicatorScale = overlayLayer.indicatorScale;
 	}
 	return self;
-}
-
-- (void)dealloc
-{
-	self.movieUpdateTimer = nil;
-    self.buttonLayer = nil;
-    [super dealloc];
 }
 
 #pragma mark -
@@ -287,8 +278,8 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 {
 	CABasicAnimation *animation = [ CABasicAnimation animationWithKeyPath:kMMVideoOverlayLayerIndicatorScaleKey ];
 	animation.duration = kMovieOverlayCollapseDuration;
-	animation.fromValue = [ NSNumber numberWithDouble:0. ];
-	animation.toValue = [ NSNumber numberWithDouble:1. ];
+	animation.fromValue = @0.;
+	animation.toValue = @1.;
 	animation.timingFunction = [ CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut ];
 	[ self addAnimation:animation forKey:kMMVideoOverlayLayerIndicatorScaleKey ];
 	self.indicatorScale = 1.;
@@ -301,8 +292,8 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 {
 	CABasicAnimation *animation = [ CABasicAnimation animationWithKeyPath:kMMVideoOverlayLayerIndicatorScaleKey ];
 	animation.duration = kMovieOverlayCollapseDuration;
-	animation.fromValue = [ NSNumber numberWithDouble:1. ];
-	animation.toValue = [ NSNumber numberWithDouble:0. ];
+	animation.fromValue = @1.;
+	animation.toValue = @0.;
 	animation.timingFunction = [ CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut ];
 	[ self addAnimation:animation forKey:kMMVideoOverlayLayerIndicatorScaleKey ];
 	self.indicatorScale = 0.;
@@ -371,7 +362,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ( context == kMMVideoOverlayLayerHiddenKey ) {
+    if ( context == kMMVideoOverlayLayerHiddenObservationContext ) {
         if ( self.hidden ) {
 			[ self stopMovieUpdateTimer ];
 		}

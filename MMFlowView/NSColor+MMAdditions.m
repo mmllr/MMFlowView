@@ -10,7 +10,7 @@
 
 @implementation NSColor (NSColorAdditions)
 
-- (CGColorRef)CGColor
+- (CGColorRef)mm_CGColor
 {
 	// Ensure that the color is in the "generic" RGB space so we can safely get the components
 	NSColor *rgbColor = [self colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
@@ -20,10 +20,10 @@
 	[rgbColor getComponents:colorComponents];
 	
 	// Create the CGColor
-	return (CGColorRef)[(id)CGColorCreateGenericRGB( colorComponents[0],
+	return (__bridge CGColorRef)((__bridge_transfer id)CGColorCreateGenericRGB( colorComponents[0],
 													colorComponents[1],
 													colorComponents[2],
-													colorComponents[3]) autorelease];
+													colorComponents[3]));
 }
 
 @end
