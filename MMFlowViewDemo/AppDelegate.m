@@ -46,9 +46,9 @@
 	// Insert code here to initialize your application
 	[ self loadItems:@"/Library/Desktop Pictures" withRepresentationType:kMMFlowViewURLRepresentationType ];
 	// load all the movies
-	NSArray * paths = NSSearchPathForDirectoriesInDomains( NSMoviesDirectory, NSUserDomainMask, YES);
+	/*NSArray * paths = NSSearchPathForDirectoriesInDomains( NSMoviesDirectory, NSUserDomainMask, YES);
 	NSString *moviesPath = paths[0];
-	[ self loadItems:moviesPath withRepresentationType:kMMFlowViewQTMoviePathRepresentationType ];
+	[ self loadItems:moviesPath withRepresentationType:kMMFlowViewQTMoviePathRepresentationType ];*/
 	// image loading via bindings
 	self.flowView.imageTitleKeyPath = @"title";
 	self.flowView.imageRepresentationKeyPath = @"image";

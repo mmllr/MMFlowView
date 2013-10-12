@@ -18,6 +18,7 @@
 		288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */; };
 		288591BB17398F18000E04EF /* MMLayerAccessibilityHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */; };
 		288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BD17398F88000E04EF /* NSColor+MMAdditions.m */; };
+		28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */; };
 		28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */; };
 		28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC0315AEEE9A0096FBA4 /* main.m */; };
 		28DEFC0815AEEE9A0096FBA4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0615AEEE9A0096FBA4 /* Credits.rtf */; };
@@ -43,6 +44,9 @@
 		288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMLayerAccessibilityHelper.m; path = MMFlowView/MMLayerAccessibilityHelper.m; sourceTree = "<group>"; };
 		288591BC17398F88000E04EF /* NSColor+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSColor+MMAdditions.h"; path = "MMFlowView/NSColor+MMAdditions.h"; sourceTree = "<group>"; };
 		288591BD17398F88000E04EF /* NSColor+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSColor+MMAdditions.m"; path = "MMFlowView/NSColor+MMAdditions.m"; sourceTree = "<group>"; };
+		28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSAccessibility.h"; path = "MMFlowView/MMFlowView+NSAccessibility.h"; sourceTree = "<group>"; };
+		28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+NSAccessibility.m"; path = "MMFlowView/MMFlowView+NSAccessibility.m"; sourceTree = "<group>"; };
+		28BD85EF1802FAB00095224B /* MMFlowView_Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MMFlowView_Private.h; path = MMFlowView/MMFlowView_Private.h; sourceTree = "<group>"; };
 		28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MMFlowViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28DEFBFF15AEEE9A0096FBA4 /* MMFlowViewDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewDemo-Info.plist"; sourceTree = "<group>"; };
 		28DEFC0115AEEE9A0096FBA4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -89,6 +93,9 @@
 				288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */,
 				288591BC17398F88000E04EF /* NSColor+MMAdditions.h */,
 				288591BD17398F88000E04EF /* NSColor+MMAdditions.m */,
+				28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */,
+				28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */,
+				28BD85EF1802FAB00095224B /* MMFlowView_Private.h */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -230,6 +237,7 @@
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
 				288591BB17398F18000E04EF /* MMLayerAccessibilityHelper.m in Sources */,
 				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
+				28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

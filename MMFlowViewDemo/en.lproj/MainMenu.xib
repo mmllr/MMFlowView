@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4510" systemVersion="12F45" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1070" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4510"/>
@@ -699,7 +699,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Normal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="30" imageScaling="proportionallyDown" inset="2" selectedItem="564" id="561">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="562">
                                 <items>
                                     <menuItem title="Small" tag="5" id="563"/>
@@ -728,7 +728,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Normal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="70" imageScaling="proportionallyDown" inset="2" selectedItem="572" id="569">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="570">
                                 <items>
                                     <menuItem title="Flat" id="571"/>
@@ -868,15 +868,15 @@
             <rect key="frame" x="0.0" y="0.0" width="406" height="517"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <clipView key="contentView" copiesOnScroll="NO" id="qhK-ym-0C2">
-                <rect key="frame" x="0.0" y="0.0" width="391" height="502"/>
+                <rect key="frame" x="0.0" y="0.0" width="406" height="517"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <ikImageBrowserView autoresizesSubviews="NO" zoomValue="0.46589082479476929" allowsMultipleSelection="NO" allowsReordering="YES" animates="YES" id="597">
-                        <rect key="frame" x="0.0" y="0.0" width="391" height="503"/>
+                    <ikImageBrowserView autoresizesSubviews="NO" zoomValue="0.45241391658782959" allowsMultipleSelection="NO" allowsReordering="YES" animates="YES" id="597">
+                        <rect key="frame" x="0.0" y="0.0" width="406" height="518"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <ikCellsStyle key="cellsStyleMask" none="YES" shadowed="YES" titled="YES"/>
                         <autoresizingMask key="contentResizingMask" heightSizable="YES"/>
-                        <size key="cellSize" width="100" height="100"/>
+                        <size key="cellSize" width="114" height="114"/>
                         <connections>
                             <binding destination="614" name="selectionIndexes" keyPath="selectionIndexes" id="Skd-Zi-pTN"/>
                             <outlet property="dataSource" destination="494" id="600"/>
@@ -884,11 +884,11 @@
                     </ikImageBrowserView>
                 </subviews>
             </clipView>
-            <scroller key="horizontalScroller" verticalHuggingPriority="750" id="599">
+            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" id="599">
                 <rect key="frame" x="0.0" y="502" width="391" height="15"/>
                 <autoresizingMask key="autoresizingMask"/>
             </scroller>
-            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" id="598">
+            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" id="598">
                 <rect key="frame" x="391" y="0.0" width="15" height="502"/>
                 <autoresizingMask key="autoresizingMask"/>
             </scroller>

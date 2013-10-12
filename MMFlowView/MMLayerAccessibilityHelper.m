@@ -137,7 +137,7 @@
 }
 
 #pragma mark -
-#pragma mark NSAccessibility protocol
+#pragma mark NSAccessibilityProtocol
 
 // attributes
 
