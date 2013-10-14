@@ -7,10 +7,8 @@
 //
 
 #import "MMFlowView+NSAccessibility.h"
-#import "MMLayerAccessibilityHelper.h"
 #import "MMFlowView_Private.h"
-
-NSString * const kMMFLowViewAccessibilityHelperKey = @"axHelper";
+#import "CALayer+NSAccessibility.h"
 
 @implementation MMFlowView (NSAccessibility)
 
@@ -26,9 +24,17 @@ NSString * const kMMFLowViewAccessibilityHelperKey = @"axHelper";
 
 - (NSArray*)accessibilityAttributeNames
 {
-	static NSArray *attributes = nil;
-	if ( attributes == nil ) {
-	    attributes = [ [ super accessibilityAttributeNames ] arrayByAddingObjectsFromArray:@[NSAccessibilityContentsAttribute] ];
+	static NSMutableArray *attributes = nil;
+	
+	if ( !attributes ) {
+		attributes = [[super accessibilityAttributeNames] mutableCopy];
+		NSArray *appendedAttributes = @[NSAccessibilityChildrenAttribute, NSAccessibilityContentsAttribute, NSAccessibilityRoleAttribute, NSAccessibilityRoleDescriptionAttribute];
+		
+		for ( NSString *attribute in appendedAttributes ) {
+			if ( ![attributes containsObject:attributes] ) {
+				[attributes addObject:attribute];
+			}
+		}
 	}
 	return attributes;
 }
@@ -42,16 +48,10 @@ NSString * const kMMFLowViewAccessibilityHelperKey = @"axHelper";
 		return NSAccessibilityRoleDescriptionForUIElement(self);
     }
 	else if ( [ anAttribute isEqualToString:NSAccessibilityChildrenAttribute ] ) {
-		MMLayerAccessibilityHelper *axListHelper = [ self.backgroundLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
-		MMLayerAccessibilityHelper *axScrollBarHelper = [ self.scrollBarLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
-		
-		return NSAccessibilityUnignoredChildren( @[axListHelper, axScrollBarHelper]  );
+		return NSAccessibilityUnignoredChildren( @[self.backgroundLayer, self.scrollBarLayer]  );
     }
 	else if ( [ anAttribute isEqualToString:NSAccessibilityContentsAttribute ] ) {
-		MMLayerAccessibilityHelper *axListHelper = [ self.backgroundLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
-		MMLayerAccessibilityHelper *axScrollBarHelper = [ self.scrollBarLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
-		
-		return @[axListHelper, axScrollBarHelper];
+		return @[self.backgroundLayer, self.scrollBarLayer];
 	}
 	else {
 		return [ super accessibilityAttributeValue:anAttribute ];
@@ -65,8 +65,7 @@ NSString * const kMMFLowViewAccessibilityHelperKey = @"axHelper";
 													 fromView:nil ] );
 	
 	CALayer *hitLayer = [ self hitLayerAtPoint:localPoint ];
-	MMLayerAccessibilityHelper *axHelper = [ hitLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
-	return axHelper ? axHelper : self;
+	return hitLayer ? NSAccessibilityUnignoredAncestor( [hitLayer modelLayer] ) : self;
 }
 
 #endif

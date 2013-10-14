@@ -22,10 +22,10 @@
 #import <QTKit/QTKit.h>
 
 #import "MMVideoOverlayLayer.h"
-#import "MMLayerAccessibilityHelper.h"
 #import "MMButtonLayer.h"
 #import "MMFlowView+NSAccessibility.h"
 #import "NSColor+MMAdditions.h"
+#import "CALayer+NSAccessibility.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -1375,14 +1375,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	self.containerLayer = [ self createContainerLayer ];
 	[ self.backgroundLayer addSublayer:self.containerLayer ];
 	[ self.backgroundLayer insertSublayer:self.titleLayer above:self.containerLayer ];
-	self.scrollLayer = [ self createScrollLayer ];
-	self.scrollBarLayer = [ self createScrollBarLayer ];
-	[ self.containerLayer addSublayer:self.scrollLayer ];
-	[ self.backgroundLayer insertSublayer:self.scrollBarLayer above:self.containerLayer ];
-	[ self setLayer:self.backgroundLayer ];
-	[ self setWantsLayer:YES ];
-	[ self.scrollLayer setNeedsLayout ];
-	[ self.layer setNeedsDisplay ];
+	self.scrollLayer = [self createScrollLayer];
+	self.scrollBarLayer = [self createScrollBarLayer];
+	[self.containerLayer addSublayer:self.scrollLayer];
+	[self.backgroundLayer insertSublayer:self.scrollBarLayer above:self.containerLayer ];
+	[self setAccessiblityEnabledLayer:self.backgroundLayer];
+	[self.scrollLayer setNeedsLayout ];
+	[self.layer setNeedsDisplay ];
 }
 
 - (CALayer*)createBackgroundLayer
@@ -1395,36 +1394,33 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	layer.locations = [ [ self class ] backgroundGradientLocations ];
 	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	layer.layoutManager = [ CAConstraintLayoutManager layoutManager ];
-
-	MMLayerAccessibilityHelper *axHelper = [ MMLayerAccessibilityHelper layerAccesibilityHelperWithRole:NSAccessibilityListRole
-																								 parent:self
-																								  layer:layer
-																								   view:self ];
-	axHelper.writableAttributeNames = [ NSSet setWithObject:NSAccessibilitySelectedChildrenAttribute ];
-	axHelper.attributeNames = [ NSSet setWithObjects:NSAccessibilityChildrenAttribute,
-							   NSAccessibilitySelectedChildrenAttribute,
-							   NSAccessibilityVisibleChildrenAttribute,
-							   NSAccessibilityOrientationAttribute, nil ];
 	
 	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
 	
-	[ axHelper addHandlerForAttribute:NSAccessibilityOrientationAttribute withBlock:^id(MMLayerAccessibilityHelper *helper) {
-		return (id)NSAccessibilityHorizontalOrientationValue;
-	} ];
-	[ axHelper addHandlerForAttribute:NSAccessibilityVisibleChildrenAttribute withBlock:^id(MMLayerAccessibilityHelper *helper) {
-		return [ helper.children objectsAtIndexes:weakSelf.visibleItemIndexes ];
-	} ];
-	[ axHelper addHandlerForAttribute:NSAccessibilitySelectedChildrenAttribute withBlock:^id(MMLayerAccessibilityHelper *helper) {
-		return (helper.children)[weakSelf.selectedIndex];
-	} ];
-	[ axHelper addHandlerForWritableAttribute:NSAccessibilitySelectedChildrenAttribute withBlock:^(MMLayerAccessibilityHelper *helper, id aValue ) {
-		if ( [ aValue isKindOfClass:[ NSArray class ] ] && [ aValue count ] ) {
-			NSNumber *index = aValue[0];
-			weakSelf.selectedIndex = [ index unsignedIntegerValue ];
-		}
-	} ];
-	[ layer setValue:axHelper
-			  forKey:kMMFLowViewAccessibilityHelperKey ];
+	[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute
+									withBlock:^id{
+										return NSAccessibilityListRole;
+									}];
+	[layer setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute
+								   withBlock:^id{
+									   return NSAccessibilityHorizontalOrientationValue;
+								   }];
+	[layer setReadableAccessibilityAttribute:NSAccessibilityVisibleChildrenAttribute
+								   withBlock:^id{
+									   NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
+									   return [children objectsAtIndexes:weakSelf.visibleItemIndexes];
+								   }];
+	[layer setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
+									readBlock:^id{
+										NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
+										return @[children[weakSelf.selectedIndex]];
+									}
+								   writeBlock:^(id value) {
+									   if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
+										   NSNumber *index = value[0];
+										   weakSelf.selectedIndex = [index unsignedIntegerValue];
+									   }
+								   }];
 
 	return layer;
 }
@@ -1532,28 +1528,21 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	// set theLayer actions to the updated dictionary
 	imageLayer.actions = customActions;
 
-	MMLayerAccessibilityHelper *axParent = [self.backgroundLayer valueForKey:kMMFLowViewAccessibilityHelperKey ];
-	MMLayerAccessibilityHelper *axHelper = [ MMLayerAccessibilityHelper layerAccesibilityHelperWithRole:NSAccessibilityImageRole
-																								 parent:axParent
-																								  layer:imageLayer
-																								   view:self ];
-	axHelper.writableAttributeNames = [ NSSet setWithObjects:NSAccessibilitySelectedAttribute, nil ];
-	axHelper.attributeNames = [ NSSet setWithObjects:NSAccessibilityTitleAttribute, NSAccessibilitySelectedAttribute, nil ];
+	[imageLayer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
+		return NSAccessibilityImageRole;
+	}];
+
 	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
-	[ axHelper addHandlerForAttribute:NSAccessibilityTitleAttribute withBlock:^id(MMLayerAccessibilityHelper *helper) {
+	[imageLayer setReadableAccessibilityAttribute:NSAccessibilityTitleAttribute withBlock:^id{
 		return [ weakSelf titleAtIndex:anIndex ];
-	} ];
-	[ axHelper addHandlerForAttribute:NSAccessibilitySelectedAttribute withBlock:^id(MMLayerAccessibilityHelper *helper) {
-		return [ NSNumber numberWithBool:( weakSelf.selectedIndex == anIndex ) ];
-	} ];
-	[ axHelper addHandlerForWritableAttribute:NSAccessibilitySelectedAttribute withBlock:^(MMLayerAccessibilityHelper *helper, id aValue) {
-		if ( [ aValue boolValue ] ) {
+	}];
+	[imageLayer setWritableAccessibilityAttribute:NSAccessibilitySelectedAttribute readBlock:^id{
+		return @( weakSelf.selectedIndex == anIndex );
+	} writeBlock:^(id value) {
+		if ( [ value boolValue ] ) {
 			weakSelf.selectedIndex = anIndex;
 		}
-	} ];
-	[ imageLayer setValue:axHelper
-				   forKey:kMMFLowViewAccessibilityHelperKey ];
-	[ axParent addChildrenObject:axHelper ];
+	}];
 }
 
 - (void)setAttributesForSublayer:(CALayer*)sublayer
@@ -1621,17 +1610,12 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	// set theLayer actions to the updated dictionary
 	layer.actions = customActions;
 
-	MMLayerAccessibilityHelper *scrollBarAXHelper = [ MMLayerAccessibilityHelper layerAccesibilityHelperWithRole:NSAccessibilityScrollBarRole
-																										  parent:self
-																										   layer:layer
-																											view:self ];
-	scrollBarAXHelper.attributeNames = [ NSSet setWithObjects:NSAccessibilityOrientationAttribute, NSAccessibilityChildrenAttribute, nil ];
-	[ scrollBarAXHelper addHandlerForAttribute:NSAccessibilityOrientationAttribute
-									 withBlock:^id(MMLayerAccessibilityHelper *helper) {
-		return (id)NSAccessibilityHorizontalOrientationValue;
-	} ];
-	[ layer setValue:scrollBarAXHelper forKey:kMMFLowViewAccessibilityHelperKey ];
-
+	[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
+									   return NSAccessibilityScrollBarRole;
+	}];
+	[layer setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute withBlock:^id{
+		return NSAccessibilityHorizontalOrientationValue;
+	}];
 	CAGradientLayer *knobLayer = [ CAGradientLayer layer ];
 	knobLayer.name = kMMFlowViewScrollKnobLayerName;
 	knobLayer.frame = CGRectMake( 10, 2, kScrollBarHeight*2 , kScrollBarHeight - 4 );
@@ -1665,17 +1649,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	
 	[ layer addSublayer:knobLayer ];
 
-	MMLayerAccessibilityHelper *knobAXHelper = [ MMLayerAccessibilityHelper layerAccesibilityHelperWithRole:NSAccessibilityValueIndicatorRole
-																									 parent:scrollBarAXHelper
-																									  layer:knobLayer
-																									   view:self ];
-	[ scrollBarAXHelper addChildrenObject:knobAXHelper ];
-	knobAXHelper.attributeNames = [ NSSet setWithObjects:NSAccessibilityValueAttribute, nil ];
-	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
-	[ knobAXHelper addHandlerForAttribute:NSAccessibilityValueAttribute withBlock:^id(MMLayerAccessibilityHelper *axHelper) {
+
+	__weak MMFlowView *weakSelf = self;
+	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
+		return NSAccessibilityValueIndicatorRole;
+	}];
+	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityValueAttribute withBlock:^id{
 		return @(((double)( weakSelf.selectedIndex ) ) / ( weakSelf.numberOfItems - 1 ));
-	} ];
-	[ knobLayer setValue:knobAXHelper forKey:kMMFLowViewAccessibilityHelperKey ];
+	}];
 	return layer;
 }
 
@@ -1689,26 +1670,20 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	layer.frame = CGRectMake( 0., 0., kMovieOverlayPlayingRadius * 2, kMovieOverlayPlayingRadius * 2 );
 	// initially hidden
 	layer.hidden = YES;
-	MMLayerAccessibilityHelper *axParent = [ [ self imageLayerAtIndex:anIndex ] valueForKey:kMMFLowViewAccessibilityHelperKey ];
-	MMLayerAccessibilityHelper *axHelper = [ MMLayerAccessibilityHelper layerAccesibilityHelperWithRole:NSAccessibilityCheckBoxRole
-																								 parent:axParent
-																								  layer:layer.buttonLayer
-																								   view:self ];
-	axHelper.attributeNames = [ NSSet setWithObjects:NSAccessibilityTitleAttribute, NSAccessibilityValueAttribute, nil ];
-	axHelper.writableAttributeNames = [ NSSet setWithObjects:NSAccessibilityValueAttribute, nil ];
-	[ axHelper addHandlerForAttribute:NSAccessibilityTitleAttribute withBlock:^id(MMLayerAccessibilityHelper *helper ) {
-		MMButtonLayer *buttonLayer = (MMButtonLayer*)helper.layer;
-		return [ buttonLayer state ] == NSOnState ? NSLocalizedString(@"Stop movie playback", @"Stop movie playback") : NSLocalizedString(@"Start movie playback", @"Start movie playback");
-	} ];
-	[ axHelper addHandlerForAttribute:NSAccessibilityValueAttribute withBlock:^id(MMLayerAccessibilityHelper *helper) {
-		return [ helper.layer valueForKey:kMMButtonLayerStateKey ];
-	} ];
-	[ axHelper addHandlerForWritableAttribute:NSAccessibilityValueAttribute withBlock:^(MMLayerAccessibilityHelper *helper, id value ) {
-		[ helper.layer setValue:value forKey:kMMButtonLayerStateKey ];
-	} ];
-	[ axParent addChildrenObject:axHelper ];
-	[ layer.buttonLayer setValue:axHelper
-						  forKey:kMMFLowViewAccessibilityHelperKey ];
+
+	MMButtonLayer *buttonLayer = layer.buttonLayer;
+	__weak MMButtonLayer *weakLayer = buttonLayer;
+	[buttonLayer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
+		return NSAccessibilityCheckBoxRole;
+	}];
+	[buttonLayer setReadableAccessibilityAttribute:NSAccessibilityTitleAttribute withBlock:^id{
+		return [ weakLayer state ] == NSOnState ? NSLocalizedString(@"Stop movie playback", @"Stop movie playback") : NSLocalizedString(@"Start movie playback", @"Start movie playback");
+	}];
+	[buttonLayer setWritableAccessibilityAttribute:NSAccessibilityValueAttribute readBlock:^id{
+		return [ weakLayer valueForKey:kMMButtonLayerStateKey ];
+	} writeBlock:^(id value) {
+		[ weakLayer setValue:value forKey:kMMButtonLayerStateKey ];
+	}];
 	return layer;
 }
 
@@ -2003,6 +1978,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ self calculateVisibleItems ];
 	[ self updateScrollKnob ];
 	self.title = [ self titleAtIndex:self.selectedIndex ];
+	// ax
+	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
 }
 
 - (void)updateReflection

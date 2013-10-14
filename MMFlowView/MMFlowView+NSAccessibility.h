@@ -8,8 +8,6 @@
 
 #import "MMFlowView.h"
 
-extern NSString * const kMMFLowViewAccessibilityHelperKey;
-
 @interface MMFlowView (NSAccessibility)
 
 @end
