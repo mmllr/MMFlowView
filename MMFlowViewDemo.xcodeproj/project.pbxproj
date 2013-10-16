@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1290F5C6EDAD4187B55E9B75 /* libPods-MMFlowViewTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */; };
+		282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */; };
+		2876FF3F180B269C00318C7B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF3E180B269C00318C7B /* SenTestingKit.framework */; };
+		2876FF45180B269C00318C7B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF43180B269C00318C7B /* InfoPlist.strings */; };
+		2876FF4F180B28B800318C7B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF4E180B28B800318C7B /* Podfile */; };
+		2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */; };
+		2876FF54180B2CA300318C7B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF53180B2CA300318C7B /* Cocoa.framework */; };
+		2876FF56180B2CBA00318C7B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF55180B2CBA00318C7B /* QuartzCore.framework */; };
 		287F73C216308E2D0004BA0F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C116308E2D0004BA0F /* Quartz.framework */; };
 		287F73C416308E320004BA0F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C316308E320004BA0F /* Cocoa.framework */; };
 		287F73C616308E360004BA0F /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C516308E360004BA0F /* QTKit.framework */; };
@@ -16,7 +24,6 @@
 		287F73CE16308E7E0004BA0F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73CD16308E7E0004BA0F /* QuartzCore.framework */; };
 		288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591B4173967BE000E04EF /* MMButtonLayer.m */; };
 		288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */; };
-		288591BB17398F18000E04EF /* MMLayerAccessibilityHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */; };
 		288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BD17398F88000E04EF /* NSColor+MMAdditions.m */; };
 		28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */; };
 		28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */; };
@@ -28,7 +35,29 @@
 		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2876FF49180B269C00318C7B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 28DEFBEA15AEEE9A0096FBA4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 28DEFBF215AEEE9A0096FBA4;
+			remoteInfo = MMFlowViewDemo;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		282FEE8618095A5200A306F5 /* CALayer+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+NSAccessibility.h"; path = "MMFlowView/CALayer+NSAccessibility.h"; sourceTree = "<group>"; };
+		282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+NSAccessibility.m"; path = "MMFlowView/CALayer+NSAccessibility.m"; sourceTree = "<group>"; };
+		2876FF3D180B269C00318C7B /* MMFlowViewTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MMFlowViewTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2876FF3E180B269C00318C7B /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		2876FF42180B269C00318C7B /* MMFlowViewTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewTests-Info.plist"; sourceTree = "<group>"; };
+		2876FF44180B269C00318C7B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2876FF48180B269C00318C7B /* MMFlowViewTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MMFlowViewTests-Prefix.pch"; sourceTree = "<group>"; };
+		2876FF4E180B28B800318C7B /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; };
+		2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerAccessibilitySpec.m; sourceTree = "<group>"; };
+		2876FF53180B2CA300318C7B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		2876FF55180B2CBA00318C7B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		287F73C116308E2D0004BA0F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C316308E320004BA0F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C516308E360004BA0F /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -40,8 +69,6 @@
 		288591B4173967BE000E04EF /* MMButtonLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMButtonLayer.m; path = MMFlowView/MMButtonLayer.m; sourceTree = "<group>"; };
 		288591B6173968AD000E04EF /* MMVideoOverlayLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMVideoOverlayLayer.h; path = MMFlowView/MMVideoOverlayLayer.h; sourceTree = "<group>"; };
 		288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMVideoOverlayLayer.m; path = MMFlowView/MMVideoOverlayLayer.m; sourceTree = "<group>"; };
-		288591B917398F18000E04EF /* MMLayerAccessibilityHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMLayerAccessibilityHelper.h; path = MMFlowView/MMLayerAccessibilityHelper.h; sourceTree = "<group>"; };
-		288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMLayerAccessibilityHelper.m; path = MMFlowView/MMLayerAccessibilityHelper.m; sourceTree = "<group>"; };
 		288591BC17398F88000E04EF /* NSColor+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSColor+MMAdditions.h"; path = "MMFlowView/NSColor+MMAdditions.h"; sourceTree = "<group>"; };
 		288591BD17398F88000E04EF /* NSColor+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSColor+MMAdditions.m"; path = "MMFlowView/NSColor+MMAdditions.m"; sourceTree = "<group>"; };
 		28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSAccessibility.h"; path = "MMFlowView/MMFlowView+NSAccessibility.h"; sourceTree = "<group>"; };
@@ -60,9 +87,21 @@
 		28DEFC1D15AEEF010096FBA4 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
 		28DEFC2015AEEF300096FBA4 /* MMFlowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowView.h; path = MMFlowView/MMFlowView.h; sourceTree = "<group>"; };
 		28DEFC2115AEEF300096FBA4 /* MMFlowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowView.m; path = MMFlowView/MMFlowView.m; sourceTree = "<group>"; };
+		BA2D2796A66E4CB9A899D451 /* Pods-MMFlowViewTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewTests.xcconfig"; path = "Pods/Pods-MMFlowViewTests.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2876FF3A180B269C00318C7B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2876FF56180B2CBA00318C7B /* QuartzCore.framework in Frameworks */,
+				2876FF54180B2CA300318C7B /* Cocoa.framework in Frameworks */,
+				2876FF3F180B269C00318C7B /* SenTestingKit.framework in Frameworks */,
+				1290F5C6EDAD4187B55E9B75 /* libPods-MMFlowViewTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		28DEFBF015AEEE9A0096FBA4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -80,17 +119,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2876FF40180B269C00318C7B /* MMFlowViewTests */ = {
+			isa = PBXGroup;
+			children = (
+				2876FF50180B2A5600318C7B /* Specs */,
+				2876FF41180B269C00318C7B /* Supporting Files */,
+			);
+			path = MMFlowViewTests;
+			sourceTree = "<group>";
+		};
+		2876FF41180B269C00318C7B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2876FF42180B269C00318C7B /* MMFlowViewTests-Info.plist */,
+				2876FF43180B269C00318C7B /* InfoPlist.strings */,
+				2876FF48180B269C00318C7B /* MMFlowViewTests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2876FF50180B2A5600318C7B /* Specs */ = {
+			isa = PBXGroup;
+			children = (
+				2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */,
+			);
+			name = Specs;
+			path = MMFlowView/Specs;
+			sourceTree = SOURCE_ROOT;
+		};
 		288591B21739675B000E04EF /* MMFlowView */ = {
 			isa = PBXGroup;
 			children = (
+				282FEE8618095A5200A306F5 /* CALayer+NSAccessibility.h */,
+				282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */,
 				28DEFC2015AEEF300096FBA4 /* MMFlowView.h */,
 				28DEFC2115AEEF300096FBA4 /* MMFlowView.m */,
 				288591B3173967BE000E04EF /* MMButtonLayer.h */,
 				288591B4173967BE000E04EF /* MMButtonLayer.m */,
 				288591B6173968AD000E04EF /* MMVideoOverlayLayer.h */,
 				288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */,
-				288591B917398F18000E04EF /* MMLayerAccessibilityHelper.h */,
-				288591BA17398F18000E04EF /* MMLayerAccessibilityHelper.m */,
 				288591BC17398F88000E04EF /* NSColor+MMAdditions.h */,
 				288591BD17398F88000E04EF /* NSColor+MMAdditions.m */,
 				28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */,
@@ -105,8 +172,10 @@
 			children = (
 				288591B21739675B000E04EF /* MMFlowView */,
 				28DEFBFD15AEEE9A0096FBA4 /* MMFlowViewDemo */,
+				2876FF40180B269C00318C7B /* MMFlowViewTests */,
 				28DEFBF615AEEE9A0096FBA4 /* Frameworks */,
 				28DEFBF415AEEE9A0096FBA4 /* Products */,
+				BA2D2796A66E4CB9A899D451 /* Pods-MMFlowViewTests.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -114,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */,
+				2876FF3D180B269C00318C7B /* MMFlowViewTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,7 +191,11 @@
 		28DEFBF615AEEE9A0096FBA4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2876FF55180B2CBA00318C7B /* QuartzCore.framework */,
+				2876FF53180B2CA300318C7B /* Cocoa.framework */,
+				2876FF3E180B269C00318C7B /* SenTestingKit.framework */,
 				28DEFBF915AEEE9A0096FBA4 /* Other Frameworks */,
+				125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -156,6 +230,7 @@
 		28DEFBFE15AEEE9A0096FBA4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				2876FF4E180B28B800318C7B /* Podfile */,
 				28DEFBFF15AEEE9A0096FBA4 /* MMFlowViewDemo-Info.plist */,
 				28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */,
 				28DEFC0315AEEE9A0096FBA4 /* main.m */,
@@ -168,6 +243,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2876FF3C180B269C00318C7B /* MMFlowViewTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2876FF4D180B269C00318C7B /* Build configuration list for PBXNativeTarget "MMFlowViewTests" */;
+			buildPhases = (
+				541EC036CEA6483999E58A90 /* Check Pods Manifest.lock */,
+				2876FF39180B269C00318C7B /* Sources */,
+				2876FF3A180B269C00318C7B /* Frameworks */,
+				2876FF3B180B269C00318C7B /* Resources */,
+				B67FCE95961E468B861CCA79 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2876FF4A180B269C00318C7B /* PBXTargetDependency */,
+			);
+			name = MMFlowViewTests;
+			productName = MMFlowViewTests;
+			productReference = 2876FF3D180B269C00318C7B /* MMFlowViewTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 		28DEFBF215AEEE9A0096FBA4 /* MMFlowViewDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 28DEFC1115AEEE9B0096FBA4 /* Build configuration list for PBXNativeTarget "MMFlowViewDemo" */;
@@ -193,6 +288,11 @@
 			attributes = {
 				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = www.isnotnil.com;
+				TargetAttributes = {
+					2876FF3C180B269C00318C7B = {
+						TestTargetID = 28DEFBF215AEEE9A0096FBA4;
+					};
+				};
 			};
 			buildConfigurationList = 28DEFBED15AEEE9A0096FBA4 /* Build configuration list for PBXProject "MMFlowViewDemo" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -207,24 +307,75 @@
 			projectRoot = "";
 			targets = (
 				28DEFBF215AEEE9A0096FBA4 /* MMFlowViewDemo */,
+				2876FF3C180B269C00318C7B /* MMFlowViewTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2876FF3B180B269C00318C7B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2876FF45180B269C00318C7B /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		28DEFBF115AEEE9A0096FBA4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */,
 				28DEFC0815AEEE9A0096FBA4 /* Credits.rtf in Resources */,
+				2876FF4F180B28B800318C7B /* Podfile in Resources */,
 				28DEFC0E15AEEE9B0096FBA4 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		541EC036CEA6483999E58A90 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B67FCE95961E468B861CCA79 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-MMFlowViewTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		2876FF39180B269C00318C7B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		28DEFBEF15AEEE9A0096FBA4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -234,8 +385,8 @@
 				28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */,
 				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
 				288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */,
+				282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */,
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
-				288591BB17398F18000E04EF /* MMLayerAccessibilityHelper.m in Sources */,
 				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
 				28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */,
 			);
@@ -243,7 +394,23 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2876FF4A180B269C00318C7B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 28DEFBF215AEEE9A0096FBA4 /* MMFlowViewDemo */;
+			targetProxy = 2876FF49180B269C00318C7B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
+		2876FF43180B269C00318C7B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2876FF44180B269C00318C7B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -271,6 +438,77 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2876FF4B180B269C00318C7B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BA2D2796A66E4CB9A899D451 /* Pods-MMFlowViewTests.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MMFlowViewDemo.app/Contents/MacOS/MMFlowViewDemo";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MMFlowViewTests/MMFlowViewTests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "MMFlowViewTests/MMFlowViewTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		2876FF4C180B269C00318C7B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BA2D2796A66E4CB9A899D451 /* Pods-MMFlowViewTests.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MMFlowViewDemo.app/Contents/MacOS/MMFlowViewDemo";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MMFlowViewTests/MMFlowViewTests-Prefix.pch";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "MMFlowViewTests/MMFlowViewTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
 		28DEFC0F15AEEE9B0096FBA4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -351,6 +589,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2876FF4D180B269C00318C7B /* Build configuration list for PBXNativeTarget "MMFlowViewTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2876FF4B180B269C00318C7B /* Debug */,
+				2876FF4C180B269C00318C7B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		28DEFBED15AEEE9A0096FBA4 /* Build configuration list for PBXProject "MMFlowViewDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
