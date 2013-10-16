@@ -15,8 +15,6 @@
 #pragma mark -
 #pragma mark NSAccessibility protocol
 
-#if 1
-
 - (BOOL)accessibilityIsIgnored
 {
 	return NO;
@@ -28,7 +26,7 @@
 	
 	if ( !attributes ) {
 		attributes = [[super accessibilityAttributeNames] mutableCopy];
-		NSArray *appendedAttributes = @[NSAccessibilityChildrenAttribute, NSAccessibilityContentsAttribute, NSAccessibilityRoleAttribute, NSAccessibilityRoleDescriptionAttribute];
+		NSArray *appendedAttributes = @[NSAccessibilityChildrenAttribute, NSAccessibilityContentsAttribute, NSAccessibilityRoleAttribute,  NSAccessibilityRoleDescriptionAttribute, NSAccessibilityHorizontalScrollBarAttribute];
 		
 		for ( NSString *attribute in appendedAttributes ) {
 			if ( ![attributes containsObject:attributes] ) {
@@ -48,10 +46,13 @@
 		return NSAccessibilityRoleDescriptionForUIElement(self);
     }
 	else if ( [ anAttribute isEqualToString:NSAccessibilityChildrenAttribute ] ) {
-		return NSAccessibilityUnignoredChildren( @[self.backgroundLayer, self.scrollBarLayer]  );
+		return NSAccessibilityUnignoredChildren( @[self.backgroundLayer] );
     }
 	else if ( [ anAttribute isEqualToString:NSAccessibilityContentsAttribute ] ) {
-		return @[self.backgroundLayer, self.scrollBarLayer];
+		return @[self.scrollLayer];
+	}
+	else if ( [anAttribute isEqualToString:NSAccessibilityHorizontalScrollBarAttribute] ) {
+		return self.scrollBarLayer;
 	}
 	else {
 		return [ super accessibilityAttributeValue:anAttribute ];
@@ -63,10 +64,9 @@
 	NSPoint windowPoint = [ [ self window ] convertScreenToBase:aPoint ];
     CGPoint localPoint = NSPointToCGPoint([ self convertPoint:windowPoint
 													 fromView:nil ] );
-	
+
 	CALayer *hitLayer = [ self hitLayerAtPoint:localPoint ];
-	return hitLayer ? NSAccessibilityUnignoredAncestor( [hitLayer modelLayer] ) : self;
+	return hitLayer ? NSAccessibilityUnignoredAncestor( hitLayer ) : self;
 }
 
-#endif
 @end

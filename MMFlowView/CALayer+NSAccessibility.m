@@ -10,10 +10,12 @@
 #import <objc/runtime.h>
 
 static const void* kMMLayerAccessibilityParentViewKey = @"mm_AXParentView";
+//static const void* kCustomAccessibilityAttributeNamesKey = @"mm_CustomAccessibilityAttributeNames";
 
-static NSString * const kCustomAccessibilityAttributeNamesKey = @"mm_AXCustomAccessibilityAttributeNames";
-static NSString * const kCustomAccessibilityActionNamesKey = @"mm_AXCustomAccessibilityActionNames";
-static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"mm_AXCustomAccessibilityParameterizedAttributeNames";
+static NSString * const kCustomAccessibilityAttributeNamesKey = @"MMCustomAccessibilityAttributeNames";
+static NSString * const kAccessibilityCachedAttributeNamesKey = @"MMAccessibilityCachedAttributeNamesKey";
+static NSString * const kCustomAccessibilityActionNamesKey = @"MMCustomAccessibilityActionNames";
+static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"MMCustomAccessibilityParameterizedAttributeNames";
 
 @implementation NSView (MMLayerAccessibility)
 
@@ -26,6 +28,12 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 
 @end
 
+@interface CALayer (MMLayerAccessibilityAdditions)
+
+@property (readonly, nonatomic) BOOL hasCustomAccessibilityAttributes;
+
+@end
+
 @implementation CALayer (NSAccessibility)
 
 #pragma mark - class methods
@@ -35,7 +43,7 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 	static NSSet *defaultAttributes = nil;
 
 	if ( !defaultAttributes ) {
-		defaultAttributes = [NSSet setWithObjects:NSAccessibilityParentAttribute, NSAccessibilitySizeAttribute, NSAccessibilityPositionAttribute, NSAccessibilityWindowAttribute, NSAccessibilityTopLevelUIElementAttribute, nil];
+		defaultAttributes = [NSSet setWithObjects:NSAccessibilityParentAttribute, NSAccessibilitySizeAttribute, NSAccessibilityPositionAttribute, NSAccessibilityWindowAttribute, NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityRoleAttribute, NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute, NSAccessibilityFocusedAttribute, nil];
 	}
 	return defaultAttributes;
 }
@@ -44,10 +52,10 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 
 - (BOOL)accessibilityIsIgnored
 {
-	if ( [self mm_hasActions] ) {
+	if ( [self mm_hasCustomAttributes] ) {
 		return NO;
 	}
-	if ( [self mm_hasCustomAttributes] ) {
+	if ( [self mm_hasActions] ) {
 		return NO;
 	}
 	if ( [self mm_hasParameterizedAttributes] ) {
@@ -58,30 +66,35 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 
 - (NSArray*)accessibilityAttributeNames
 {
-	NSSet *defaultAttributes = [ [ self class ] defaultAccessibilityAttributes ];
-	if ( self.sublayers ) {
-		defaultAttributes = [ defaultAttributes setByAddingObject:NSAccessibilityChildrenAttribute ];
-	}
-	NSSet *customAttributes = [ self valueForKey:kCustomAccessibilityAttributeNamesKey ];
+	NSMutableArray *cachedAttributeNames = [self mm_cachedAttributeNames];
+	BOOL hasChildrenAttribute = [cachedAttributeNames containsObject:NSAccessibilityChildrenAttribute];
 
-	if ( customAttributes ) {
-		if ( [ customAttributes containsObject:NSAccessibilityRoleAttribute ] ) {
-			customAttributes = [ customAttributes setByAddingObject:NSAccessibilityRoleDescriptionAttribute ];
+	if ( self.sublayers ) {
+		if ( !hasChildrenAttribute ) {
+			[cachedAttributeNames addObject:NSAccessibilityChildrenAttribute];
 		}
-		return [[ defaultAttributes setByAddingObjectsFromSet:customAttributes ] allObjects ];
 	}
-	else {
-		return [ defaultAttributes allObjects ];
+	else if ( hasChildrenAttribute ) {
+		[cachedAttributeNames removeObject:NSAccessibilityChildrenAttribute];
 	}
+	return cachedAttributeNames;
 }
 
 - (id)accessibilityAttributeValue:(NSString*)anAttribute
 {
-	if ( [ anAttribute isEqualToString:NSAccessibilityChildrenAttribute ] ) {
-		NSArray *sublayers = self.sublayers;
-
-		NSArray *children = NSAccessibilityUnignoredChildren(sublayers);
-		return children;
+	NSSet *customAttributes = [self mm_customAccessibilityAttributes];
+	if ( [customAttributes containsObject:anAttribute] ) {
+		id (^attributeGetter)(void) =  [self mm_getterForAttribute:anAttribute];
+		if ( attributeGetter ) {
+			return attributeGetter();
+		}
+	}
+	else if ( [anAttribute isEqualToString:NSAccessibilityRoleAttribute] ) {
+		// default role
+		return NSAccessibilityUnknownRole;
+	}
+	else if ( [ anAttribute isEqualToString:NSAccessibilityChildrenAttribute ] ) {
+		return NSAccessibilityUnignoredChildren(self.sublayers);
 	}
 	else if ( [ anAttribute isEqualToString:NSAccessibilityParentAttribute ] ) {
 		id parent = [ self mm_accessibilityParent ];
@@ -104,6 +117,7 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 	}
 	else if ( [anAttribute isEqualToString:NSAccessibilityPositionAttribute] ) {
 		NSView *containingView = [self mm_containingView];
+
 		CGPoint pointInView = [containingView.layer convertPoint:self.frame.origin
 													   fromLayer:self.superlayer ? self.superlayer : nil ];
 		NSPoint windowPoint = [containingView convertPoint:NSPointFromCGPoint(pointInView)
@@ -116,21 +130,18 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 	else if ( [anAttribute isEqualToString:NSAccessibilityTopLevelUIElementAttribute] ) {
 		return [[self mm_accessibilityParent] accessibilityAttributeValue:NSAccessibilityTopLevelUIElementAttribute];
 	}
-	else {
-		NSSet *customAttributes = [self valueForKey:kCustomAccessibilityAttributeNamesKey];
-		if ( [customAttributes containsObject:anAttribute] ) {
-			id (^attributeGetter)(void) =  [self mm_getterForAttribute:anAttribute];
-			if ( attributeGetter ) {
-				return attributeGetter();
-			}
-		}
+	else if ( [anAttribute isEqualToString:NSAccessibilityFocusedAttribute] ) {
+		return @NO;
+	}
+	else if ( [anAttribute isEqualToString:NSAccessibilityEnabledAttribute] ) {
+		return @YES;
 	}
 	return nil;
 }
 
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString *)attribute
 {
-	NSSet *customAttributes = [self valueForKey:kCustomAccessibilityAttributeNamesKey];
+	NSSet *customAttributes = [self mm_customAccessibilityAttributes];
 	if ( [customAttributes containsObject:attribute] ) {
 		void (^attributeSetter)(id) = [self mm_setterForAttribute:attribute];
 		if ( attributeSetter ) {
@@ -144,7 +155,7 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 {
 	NSSet *actionNames = [ self valueForKey:kCustomAccessibilityActionNamesKey];
 
-	return [ actionNames allObjects ];
+	return actionNames ? [ actionNames allObjects ] : @[];
 }
 
 - (void)accessibilityPerformAction:(NSString *)action
@@ -167,12 +178,18 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 
 - (id)accessibilityHitTest:(NSPoint)point
 {
-	return NSAccessibilityUnignoredChildren(self.sublayers);
+	return [self modelLayer];
+}
+
+- (id)accessibilityFocusedUIElement
+{
+    return NSAccessibilityUnignoredAncestor( self );
 }
 
 - (NSArray *)accessibilityParameterizedAttributeNames
 {
-	return [[self valueForKey:kCustomAccessibilityParameterizedAttributeNamesKey] allObjects];
+	NSArray *names = [[self valueForKey:kCustomAccessibilityParameterizedAttributeNamesKey] allObjects];
+	return names ? names : @[];
 }
 
 - (id)accessibilityAttributeValue:(NSString *)attribute forParameter:(id)parameter
@@ -221,7 +238,7 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 
 - (void)mm_addAXCustomAttributeName:(NSString*)attribute
 {
-	NSSet *customAttributes = [ self valueForKey:kCustomAccessibilityAttributeNamesKey ];
+	NSSet *customAttributes = [self mm_customAccessibilityAttributes];
 
 	if ( !customAttributes ) {
 		customAttributes = [NSSet setWithObject:attribute];
@@ -231,18 +248,24 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 		[mutableAttributeNames addObject:attribute];
 		customAttributes = [mutableAttributeNames copy];
 	}
-	[self setValue:customAttributes
-			forKey:kCustomAccessibilityAttributeNamesKey];
+	[self mm_setCustomAccessibilityAttributes:customAttributes];
+	NSMutableArray *cachedAttributes = [self mm_cachedAttributeNames];
+	if (![cachedAttributes containsObject:attribute]) {
+		[cachedAttributes addObject:attribute];
+	}
 }
 
 - (void)mm_removeAXCustomAttributeName:(NSString*)attribute
 {
-	NSSet *customAttributes = [self valueForKey:kCustomAccessibilityAttributeNamesKey];
+	NSSet *customAttributes = [self mm_customAccessibilityAttributes];
 	if ( [customAttributes containsObject:attribute] ) {
 		NSMutableSet *mutableAttributeNames = [customAttributes mutableCopy];
 		[ mutableAttributeNames removeObject:attribute];
-		[self setValue:mutableAttributeNames
-				forKey:kCustomAccessibilityAttributeNamesKey];
+		[self mm_setCustomAccessibilityAttributes:[mutableAttributeNames copy]];
+	}
+	NSMutableArray *cachedAttributes = [self mm_cachedAttributeNames];
+	if ([cachedAttributes containsObject:attribute] && ![[[self class] defaultAccessibilityAttributes] containsObject:attribute]) {
+		[cachedAttributes removeObject:attribute];
 	}
 }
 
@@ -312,17 +335,40 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 
 - (BOOL)mm_hasCustomAttributes
 {
-	return [[self valueForKey:kCustomAccessibilityAttributeNamesKey] count];
+	return [[self mm_customAccessibilityAttributes] count] > 0;
 }
 
 - (BOOL)mm_hasActions
 {
-	return [[self valueForKey:kCustomAccessibilityActionNamesKey] count];
+	return [[self valueForKey:kCustomAccessibilityActionNamesKey] count] > 0;
 }
 
 - (BOOL)mm_hasParameterizedAttributes
 {
-	return [[self valueForKey:kCustomAccessibilityParameterizedAttributeNamesKey] count];
+	return [[self valueForKey:kCustomAccessibilityParameterizedAttributeNamesKey] count] > 0;
+}
+
+- (NSMutableArray*)mm_cachedAttributeNames
+{
+	NSMutableArray *cachedAttributeNames = [self valueForKey:kAccessibilityCachedAttributeNamesKey];
+	if ( !cachedAttributeNames ) {
+		cachedAttributeNames = [NSMutableArray arrayWithArray:[[[self class] defaultAccessibilityAttributes] allObjects]];
+		[self setValue:cachedAttributeNames forKey:kAccessibilityCachedAttributeNamesKey];
+	}
+	return cachedAttributeNames;
+}
+
+- (NSSet*)mm_customAccessibilityAttributes
+{
+	//return objc_getAssociatedObject(self, kCustomAccessibilityAttributeNamesKey);
+	return [self valueForKey:kCustomAccessibilityAttributeNamesKey];
+}
+
+
+- (void)mm_setCustomAccessibilityAttributes:(NSSet*)attributes
+{
+	//objc_setAssociatedObject(self, kCustomAccessibilityAttributeNamesKey, attributes, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	[self setValue:attributes forKey:kCustomAccessibilityAttributeNamesKey];
 }
 
 #pragma mark - public API
@@ -331,11 +377,9 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"m
 {
 	NSAssert( handler, @"Handler must not be nil");
 
-	if ( ![[ [ self class ] defaultAccessibilityAttributes ] containsObject:attribute ] ) {
-		[self mm_addAXCustomAttributeName:attribute];
-		[self setValue:handler
-				forKey:[self mm_getterKeyForAttribute:attribute]];
-	}
+	[self mm_addAXCustomAttributeName:attribute];
+	[self setValue:handler
+			forKey:[self mm_getterKeyForAttribute:attribute]];
 }
 
 - (void)setParameterizedAccessibilityAttribute:(NSString*)parameterizedAttribute withBlock:(id(^)(id))handler

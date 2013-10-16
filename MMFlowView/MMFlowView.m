@@ -877,9 +877,9 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (NSUInteger)indexOfItemAtPoint:(NSPoint)aPoint
 {
-	CALayer *hitLayer = [ self hitLayerAtPoint:NSPointToCGPoint( aPoint ) ];
+	CALayer *hitLayer = [self hitLayerAtPoint:NSPointToCGPoint( aPoint )];
 	if ( [ hitLayer.name hasPrefix:kMMFlowViewItemContentLayerPrefix ] ) {
-		return [ [ hitLayer valueForKey:kMMFlowViewItemIndexKey ] unsignedIntegerValue ];
+		return [[hitLayer valueForKey:kMMFlowViewItemIndexKey] unsignedIntegerValue];
 	}
 	return NSNotFound;
 }
@@ -1394,34 +1394,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	layer.locations = [ [ self class ] backgroundGradientLocations ];
 	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	layer.layoutManager = [ CAConstraintLayoutManager layoutManager ];
-	
-	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
-	
-	[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute
-									withBlock:^id{
-										return NSAccessibilityListRole;
-									}];
-	[layer setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute
-								   withBlock:^id{
-									   return NSAccessibilityHorizontalOrientationValue;
-								   }];
-	[layer setReadableAccessibilityAttribute:NSAccessibilityVisibleChildrenAttribute
-								   withBlock:^id{
-									   NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
-									   return [children objectsAtIndexes:weakSelf.visibleItemIndexes];
-								   }];
-	[layer setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
-									readBlock:^id{
-										NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
-										return @[children[weakSelf.selectedIndex]];
-									}
-								   writeBlock:^(id value) {
-									   if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
-										   NSNumber *index = value[0];
-										   weakSelf.selectedIndex = [index unsignedIntegerValue];
-									   }
-								   }];
-
 	return layer;
 }
 
@@ -1471,6 +1443,35 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	layer.sublayerTransform = self.perspective;
 	layer.masksToBounds = NO;
 	layer.delegate = self;
+	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
+	
+	[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
+									   return NSAccessibilityListRole;
+								   }];
+	[layer setReadableAccessibilityAttribute:NSAccessibilitySubroleAttribute withBlock:^id{
+		return NSAccessibilityContentListSubrole;
+	}];
+	[layer setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute withBlock:^id{
+									   return NSAccessibilityHorizontalOrientationValue;
+								   }];
+	[layer setReadableAccessibilityAttribute:NSAccessibilityVisibleChildrenAttribute withBlock:^id{
+									   NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
+									   return [children objectsAtIndexes:weakSelf.visibleItemIndexes];
+								   }];
+	[layer setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
+								   readBlock:^id{
+									   NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
+									   return @[children[weakSelf.selectedIndex]];
+								   }
+								  writeBlock:^(id value) {
+									  if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
+										  CALayer *layer = value[0];
+										  if ( [layer isKindOfClass:[CALayer class]] ) {
+											  NSNumber *index = [layer valueForKey:kMMFlowViewItemIndexKey];
+											  weakSelf.selectedIndex = [index unsignedIntegerValue];
+										  }
+									  }
+								  }];
 	return layer;
 }
 
@@ -1537,7 +1538,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		return [ weakSelf titleAtIndex:anIndex ];
 	}];
 	[imageLayer setWritableAccessibilityAttribute:NSAccessibilitySelectedAttribute readBlock:^id{
-		return @( weakSelf.selectedIndex == anIndex );
+		return ( weakSelf.selectedIndex == anIndex ) ? @YES : @NO;
 	} writeBlock:^(id value) {
 		if ( [ value boolValue ] ) {
 			weakSelf.selectedIndex = anIndex;
@@ -1610,12 +1611,26 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	// set theLayer actions to the updated dictionary
 	layer.actions = customActions;
 
+	__weak MMFlowView *weakSelf = self;
+
 	[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
 									   return NSAccessibilityScrollBarRole;
 	}];
 	[layer setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute withBlock:^id{
 		return NSAccessibilityHorizontalOrientationValue;
 	}];
+	[layer setReadableAccessibilityAttribute:NSAccessibilityEnabledAttribute withBlock:^id{
+		return @YES;
+	}];
+	[layer setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
+								   readBlock:^id{
+									   return @(((double)( weakSelf.selectedIndex ) ) / ( weakSelf.numberOfItems - 1 ));
+								   }
+								  writeBlock:^(id value) {
+									  NSInteger index = [value doubleValue] * ( MAX( 0, weakSelf.numberOfItems - 1 ) );
+									  weakSelf.selectedIndex = index;
+								  }];
+
 	CAGradientLayer *knobLayer = [ CAGradientLayer layer ];
 	knobLayer.name = kMMFlowViewScrollKnobLayerName;
 	knobLayer.frame = CGRectMake( 10, 2, kScrollBarHeight*2 , kScrollBarHeight - 4 );
@@ -1649,8 +1664,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	
 	[ layer addSublayer:knobLayer ];
 
-
-	__weak MMFlowView *weakSelf = self;
 	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
 		return NSAccessibilityValueIndicatorRole;
 	}];
@@ -1829,7 +1842,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 	// visibility test
 	for ( CAReplicatorLayer *itemLayer in self.scrollLayer.sublayers )	{
-		NSUInteger itemIndex = [ [ itemLayer valueForKey:kMMFlowViewItemIndexKey ] unsignedIntegerValue ];
+		NSUInteger itemIndex = [[itemLayer valueForKey:kMMFlowViewItemIndexKey] unsignedIntegerValue];
 		
 		if ( !CGRectIsEmpty( itemLayer.visibleRect ) ) {
 			if ( firstVisibleItem == NSNotFound ) {

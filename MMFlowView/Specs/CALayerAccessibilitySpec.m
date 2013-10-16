@@ -44,10 +44,13 @@ context(@"CALayer NSAccessibility", ^{
 		context(@"default attributes", ^{
 			__block NSArray *expectedDefaultAttributes = nil;
 			beforeAll(^{
-				expectedDefaultAttributes = @[NSAccessibilityParentAttribute, NSAccessibilitySizeAttribute, NSAccessibilityPositionAttribute, NSAccessibilityWindowAttribute];
+				expectedDefaultAttributes = @[NSAccessibilityParentAttribute, NSAccessibilitySizeAttribute, NSAccessibilityPositionAttribute, NSAccessibilityWindowAttribute, NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityRoleAttribute, NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute, NSAccessibilityFocusedAttribute];
 			});
 			afterAll(^{
 				expectedDefaultAttributes = nil;
+			});
+			it(@"should have the correct default attributes count", ^{
+				[[[sut should] have:[expectedDefaultAttributes count] ] accessibilityAttributeNames];
 			});
 			it(@"should handle default attributes", ^{
 				[[[sut accessibilityAttributeNames] should] containObjectsInArray:expectedDefaultAttributes];
@@ -60,17 +63,23 @@ context(@"CALayer NSAccessibility", ^{
 			it(@"should respond to accessibilitySetValue:forAttribute:", ^{
 				[[ sut should ] respondToSelector:@selector(accessibilitySetValue:forAttribute:)];
 			});
-			it(@"should respont to accessibilityAttributeNames", ^{
+			it(@"should respond to accessibilityAttributeNames", ^{
 				[[sut should] respondToSelector:@selector(accessibilityAttributeNames)];
 			});
 			it(@"should respond to accessibilityIsAttributeSettable", ^{
 				[[sut should] respondToSelector:@selector(accessibilityIsAttributeSettable:)];
 			});
-			it(@"should return nil for accessibilityAttributeValue", ^{
-				[[[sut accessibilityAttributeValue:NSAccessibilityRoleAttribute] should] beNil];
+			it(@"should return NSAccessibilityUnknownRole for role attribute", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityRoleAttribute] should] equal:NSAccessibilityUnknownRole];
 			});
 			it(@"should return nil for accessibilityAttributeValue with nil attribute name", ^{
 				[[[sut accessibilityAttributeValue:nil] should] beNil];
+			});
+			it(@"should return NO for the default NSAccessibilityFocusedAttribute", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityFocusedAttribute] should] beNo];
+			});
+			it(@"should return YES for the default NSAccessibilityEnabledAttribute", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityEnabledAttribute] should] beYes];
 			});
 		});
 		context(@"parameterized attributes", ^{
@@ -239,12 +248,15 @@ context(@"CALayer NSAccessibility", ^{
 		it(@"should contain the custom attribue in accessibilityActionNames", ^{
 			[[ [ sut accessibilityAttributeNames ] should ] contain:NSAccessibilityRoleAttribute ];
 		});
-		context(@"remove attribute", ^{
+		context(@"remove role attribute", ^{
 			beforeEach(^{
 				[sut removeAccessibilityAttribute:NSAccessibilityRoleAttribute];
 			});
-			it(@"should not have the removed attribute", ^{
-				[[[sut accessibilityAttributeNames] shouldNot] contain:NSAccessibilityRoleAttribute];
+			it(@"should still contain role attribute", ^{
+				[[[sut accessibilityAttributeNames] should] contain:NSAccessibilityRoleAttribute];
+			});
+			it(@"should return unknown role", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityRoleAttribute] should] equal:NSAccessibilityUnknownRole];
 			});
 		});
 	});
@@ -252,7 +264,7 @@ context(@"CALayer NSAccessibility", ^{
 		__block NSNumber *value = nil;
 		
 		beforeEach(^{
-			[sut setWritableAccessibilityAttribute:NSAccessibilityEnabledAttribute
+			[sut setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
 										 readBlock:^id{
 											 return value;
 										 }
@@ -262,7 +274,7 @@ context(@"CALayer NSAccessibility", ^{
 		});
 		afterEach(^{
 			value = nil;
-			[sut setWritableAccessibilityAttribute:NSAccessibilityEnabledAttribute
+			[sut setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
 										 readBlock:^id{
 											 return value;
 										 }
@@ -271,7 +283,7 @@ context(@"CALayer NSAccessibility", ^{
 										}];
 		});
 		it(@"should return YES for provided writable attribute", ^{
-			[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityEnabledAttribute]) should] beYes];
+			[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityValueAttribute]) should] beYes];
 		});
 		it(@"should return NO for unprovided attribute", ^{
 			[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityFilenameAttribute]) should] beNo];
@@ -279,7 +291,7 @@ context(@"CALayer NSAccessibility", ^{
 		context(@"setting the attribute", ^{
 			beforeEach(^{
 				[sut accessibilitySetValue:@YES
-							  forAttribute:NSAccessibilityEnabledAttribute];
+							  forAttribute:NSAccessibilityValueAttribute];
 			});
 			afterEach(^{
 				value = nil;
@@ -289,7 +301,7 @@ context(@"CALayer NSAccessibility", ^{
 				[[value should] beYes];
 			});
 			it(@"should read the previously written value", ^{
-				[[[sut accessibilityAttributeValue:NSAccessibilityEnabledAttribute] should] beYes];
+				[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] beYes];
 			});
 			/*
 			context(@"notifications", ^{
@@ -321,13 +333,13 @@ context(@"CALayer NSAccessibility", ^{
 		});
 		context(@"removing custom handlers", ^{
 			beforeEach(^{
-				[sut removeAccessibilityAttribute:NSAccessibilityEnabledAttribute];
+				[sut removeAccessibilityAttribute:NSAccessibilityValueAttribute];
 			});
 			it(@"should not have the removed attribute", ^{
-				[[[sut accessibilityAttributeNames] shouldNot] contain:NSAccessibilityEnabledAttribute];
+				[[[sut accessibilityAttributeNames] shouldNot] contain:NSAccessibilityValueAttribute];
 			});
 			it(@"should return NO for accessibilityIsAttributeSettable with the removed attribute", ^{
-				[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityEnabledAttribute]) should] beNo];
+				[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityValueAttribute]) should] beNo];
 			});
 		});
 	});
