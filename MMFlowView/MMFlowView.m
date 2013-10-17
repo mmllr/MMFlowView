@@ -1742,8 +1742,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	else {	// center
 		imageLayer.anchorPoint = CGPointMake( 0.5, 0);
 		imageLayer.transform = CATransform3DIdentity;
-		imageLayer.zPosition = self.selectedScale;
-		itemLayer.zPosition = self.stackedScale;
+		imageLayer.zPosition = 0;//self.selectedScale;
+		itemLayer.zPosition = 0;//self.stackedScale;
 	}
 	CGFloat aspectRatio = [ [ imageLayer valueForKey:kMMFlowViewItemAspectRatioKey ] doubleValue ];
 	aspectRatio = ( aspectRatio > 0. ) ? aspectRatio : 1.;
