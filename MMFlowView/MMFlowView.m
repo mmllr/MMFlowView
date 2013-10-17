@@ -483,10 +483,10 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
     if (self) {
         // Initialization code here.
 		self.bindingInfo = [ NSMutableDictionary dictionary ];
-		self.operationQueue = [[ NSOperationQueue alloc ] init ];
-		self.imageCache = [[ NSCache alloc ] init ];
-		self.layerQueue = [ NSMutableArray array ];
-		[ self setDefaults ];
+		_operationQueue = [[ NSOperationQueue alloc ] init ];
+		_imageCache = [[ NSCache alloc ] init ];
+		_layerQueue = [ NSMutableArray array ];
+		[ self setInitialDefaults ];
 		[ self setupLayers ];
 		self.title = @"Title";
 		[ self setTitleSize:kDefaultTitleSize ];
@@ -499,13 +499,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	self = [ super initWithCoder:aDecoder ];
 	if ( self ) {
+		[ self setInitialDefaults ];
 		self.bindingInfo = [ NSMutableDictionary dictionary ];
 		self.layerQueue = [ NSMutableArray array ];
 		self.operationQueue = [[ NSOperationQueue alloc ] init ];
 		self.imageCache = [[ NSCache alloc ] init ];
 		[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 		[ self setAcceptsTouchEvents:YES ];
-		self.selectedIndex = NSNotFound;
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
 			self.spacing = [ aDecoder decodeDoubleForKey:kMMFlowViewSpacingKey ];
@@ -517,10 +517,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			self.scrollDuration = [ aDecoder decodeDoubleForKey:kMMFlowViewScrollDurationKey ];
 			self.itemScale = [ aDecoder decodeDoubleForKey:kMMFlowViewItemScaleKey ];
 			self.previewScale = [ aDecoder decodeDoubleForKey:kMMFlowViewPreviewScaleKey ];
-		}
-		else {
-			[ self setDefaults ];
-			
 		}
 		[ self setupLayers ];
 		self.title = @"";
@@ -554,24 +550,24 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ self.operationQueue cancelAllOperations ];
 }
 
-- (void)setDefaults
+- (void)setInitialDefaults
 {
 	[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 	[ self setAcceptsTouchEvents:YES ];
-	self.stackedAngle = kDefaultStackedAngle;
-	self.spacing = kDefaultItemSpacing;
-	self.selectedScale = kDefaultSelectedScale;
-	self.stackedScale = kDefaultStackedScale;
-	self.reflectionOffset = kDefaultReflectionOffset;
-	self.selectedIndex = NSNotFound;
-	self.showsReflection = YES;
+	_stackedAngle = kDefaultStackedAngle;
+	_spacing = kDefaultItemSpacing;
+	_selectedScale = kDefaultSelectedScale;
+	_stackedScale = kDefaultStackedScale;
+	_reflectionOffset = kDefaultReflectionOffset;
+	_selectedIndex = NSNotFound;
+	_showsReflection = YES;
 	CATransform3D perspTransform = CATransform3DIdentity;
 	perspTransform.m34 = 1. / -kDefaultEyeDistance;
-	self.perspective = perspTransform;
+	_perspective = perspTransform;
 	
-	self.scrollDuration = kDefaultScrollDuration;
-	self.itemScale = kDefaultItemScale;
-	self.previewScale = kDefaultPreviewScale;
+	_scrollDuration = kDefaultScrollDuration;
+	_itemScale = kDefaultItemScale;
+	_previewScale = kDefaultPreviewScale;
 }
 
 
