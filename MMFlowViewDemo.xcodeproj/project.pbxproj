@@ -33,6 +33,7 @@
 		28DEFC0E15AEEE9B0096FBA4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0C15AEEE9B0096FBA4 /* MainMenu.xib */; };
 		28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC1D15AEEF010096FBA4 /* Item.m */; };
 		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
+		28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +88,7 @@
 		28DEFC1D15AEEF010096FBA4 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
 		28DEFC2015AEEF300096FBA4 /* MMFlowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowView.h; path = MMFlowView/MMFlowView.h; sourceTree = "<group>"; };
 		28DEFC2115AEEF300096FBA4 /* MMFlowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowView.m; path = MMFlowView/MMFlowView.m; sourceTree = "<group>"; };
+		28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewSpec.m; sourceTree = "<group>"; };
 		BA2D2796A66E4CB9A899D451 /* Pods-MMFlowViewTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewTests.xcconfig"; path = "Pods/Pods-MMFlowViewTests.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -142,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */,
+				28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */,
 			);
 			name = Specs;
 			path = MMFlowView/Specs;
@@ -373,6 +376,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */,
+				28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
