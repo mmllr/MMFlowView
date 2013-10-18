@@ -34,14 +34,30 @@ context(@"MMFlowView", ^{
 		it(@"should exists", ^{
 			[[sut shouldNot] beNil];
 		});
-		it(@"should not be flipped", ^{
-			[[theValue([sut isFlipped]) should] beNo];
+		context(@"NSView overrides", ^{
+			it(@"should not be flipped", ^{
+				[[theValue([sut isFlipped]) should] beNo];
+			});
+			it(@"should be opaque", ^{
+				[[theValue([sut isOpaque]) should] beYes];
+			});
+			it(@"should need panel to become to key", ^{
+				[[theValue([sut needsPanelToBecomeKey]) should] beYes];
+			});
+		});
+		context(@"NSResponder overrides", ^{
+			it(@"should accept being first responder", ^{
+				[[theValue([sut acceptsFirstResponder]) should] beYes];
+			});
 		});
 		it(@"should have no items", ^{
 			[[theValue(sut.numberOfItems) should] equal:theValue(0)];
 		});
 		it(@"shoud have no item selected", ^{
 			[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
+		});
+		it(@"should have no visibile items", ^{
+			[[sut.visibleItemIndexes should] beNil];
 		});
 		it(@"should initially show reflections", ^{
 			[[theValue(sut.showsReflection) should] beYes];
@@ -84,6 +100,17 @@ context(@"MMFlowView", ^{
 		});
 		it(@"should have an empty datasource", ^{
 			[[(id)sut.dataSource should] beNil];
+		});
+		context(@"changing the selection", ^{
+			beforeEach(^{
+				sut.selectedIndex = 0;
+			});
+			it(@"should do nothing", ^{
+				[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
+			});
+			it(@"should have an empty title", ^{
+				sut.title = @"";
+			});
 		});
 		context(@"bindings", ^{
 			__block NSArray *exposedBindings = nil;
@@ -180,6 +207,9 @@ context(@"MMFlowView", ^{
 				it(@"should have the image item title", ^{
 					[[sut.title should] equal:expectedTitle];
 				});
+				it(@"should have one visibile item", ^{
+					[[sut.visibleItemIndexes should] haveCountOf:1];
+				});
 			});
 			context(@"many items", ^{
 				beforeEach(^{
@@ -189,6 +219,91 @@ context(@"MMFlowView", ^{
 				});
 				it(@"should have 10 items", ^{
 					[[theValue(sut.numberOfItems) should] equal:theValue(numberOfItems)];
+				});
+				it(@"should have the first image item title", ^{
+					[[sut.title should] equal:@"0"];
+				});
+				it(@"should have the first item selected", ^{
+					[[theValue(sut.selectedIndex) should] equal:theValue(0)];
+				});
+				context(@"moving left", ^{
+					beforeEach(^{
+						[sut moveLeft:self];
+					});
+					it(@"should still have the first item selected", ^{
+						[[theValue(sut.selectedIndex) should] equal:theValue(0)];
+					});
+					it(@"should show the first item title", ^{
+						[[sut.title should] equal:@"0"];
+					});
+				});
+				context(@"moving right", ^{
+					beforeEach(^{
+						[sut moveRight:self];
+					});
+					it(@"should have the second item selected", ^{
+						[[theValue(sut.selectedIndex) should] equal:theValue(1)];
+					});
+					it(@"should show the second item title", ^{
+						[[sut.title should] equal:@"1"];
+					});
+					context(@"moving back left", ^{
+						beforeEach(^{
+							[sut moveLeft:self];
+						});
+						it(@"should have the first item selected", ^{
+							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
+						});
+						it(@"should show the first item title", ^{
+							[[sut.title should] equal:@"0"];
+						});
+					});
+				});
+				context(@"changing the selection", ^{
+					afterEach(^{
+						sut.selectedIndex = 0;
+					});
+					context(@"select the third item", ^{
+						beforeEach(^{
+							sut.selectedIndex = 2;
+						});
+						it(@"should have the third item selected", ^{
+							[[theValue(sut.selectedIndex) should] equal:theValue(2)];
+						});
+						it(@"should show the third item title", ^{
+							[[sut.title should] equal:@"2"];
+						});
+					});
+					context(@"select the last item", ^{
+						beforeEach(^{
+							sut.selectedIndex = sut.numberOfItems - 1;
+						});
+						it(@"should have selected the last item", ^{
+							[[theValue(sut.selectedIndex) should] equal:theValue(numberOfItems - 1)];
+						});
+					});
+					context(@"select beyound the item count", ^{
+						beforeEach(^{
+							sut.selectedIndex = sut.numberOfItems * 2;
+						});
+						it(@"should do nothing", ^{
+							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
+						});
+						it(@"should show the first item title", ^{
+							[[sut.title should] equal:@"0"];
+						});
+					});
+					context(@"selecting a negative item index", ^{
+						beforeEach(^{
+							sut.selectedIndex = -1;
+						});
+						it(@"should do nothing", ^{
+							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
+						});
+						it(@"should show the first item title", ^{
+							[[sut.title should] equal:@"0"];
+						});
+					});
 				});
 			});
 		});
