@@ -482,13 +482,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code here.
-		self.bindingInfo = [ NSMutableDictionary dictionary ];
-		_operationQueue = [[ NSOperationQueue alloc ] init ];
-		_imageCache = [[ NSCache alloc ] init ];
-		_layerQueue = [ NSMutableArray array ];
+		_bindingInfo = [NSMutableDictionary dictionary];
+		_operationQueue = [[NSOperationQueue alloc] init];
+		_imageCache = [[NSCache alloc] init];
+		_layerQueue = [NSMutableArray array];
+		_selectedIndex = NSNotFound;
 		[ self setInitialDefaults ];
 		[ self setupLayers ];
-		self.title = @"Title";
+		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
 		[ self registerForDraggedTypes:@[NSURLPboardType] ];
     }
@@ -499,11 +500,12 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	self = [ super initWithCoder:aDecoder ];
 	if ( self ) {
-		[ self setInitialDefaults ];
-		self.bindingInfo = [ NSMutableDictionary dictionary ];
-		self.layerQueue = [ NSMutableArray array ];
-		self.operationQueue = [[ NSOperationQueue alloc ] init ];
-		self.imageCache = [[ NSCache alloc ] init ];
+		_bindingInfo = [ NSMutableDictionary dictionary ];
+		_layerQueue = [ NSMutableArray array ];
+		_operationQueue = [[ NSOperationQueue alloc ] init ];
+		_imageCache = [[ NSCache alloc ] init ];
+		_selectedIndex = NSNotFound;
+	
 		[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 		[ self setAcceptsTouchEvents:YES ];
 		if ( [ aDecoder allowsKeyedCoding ] ) {
@@ -517,6 +519,9 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			self.scrollDuration = [ aDecoder decodeDoubleForKey:kMMFlowViewScrollDurationKey ];
 			self.itemScale = [ aDecoder decodeDoubleForKey:kMMFlowViewItemScaleKey ];
 			self.previewScale = [ aDecoder decodeDoubleForKey:kMMFlowViewPreviewScaleKey ];
+		}
+		else {
+			[ self setInitialDefaults ];
 		}
 		[ self setupLayers ];
 		self.title = @"";
@@ -554,20 +559,20 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 	[ self setAcceptsTouchEvents:YES ];
-	_stackedAngle = kDefaultStackedAngle;
-	_spacing = kDefaultItemSpacing;
-	_selectedScale = kDefaultSelectedScale;
-	_stackedScale = kDefaultStackedScale;
-	_reflectionOffset = kDefaultReflectionOffset;
-	_selectedIndex = NSNotFound;
-	_showsReflection = YES;
+	self.stackedAngle = kDefaultStackedAngle;
+	self.spacing = kDefaultItemSpacing;
+	self.selectedScale = kDefaultSelectedScale;
+	self.stackedScale = kDefaultStackedScale;
+	self.reflectionOffset = kDefaultReflectionOffset;
+	self.selectedIndex = NSNotFound;
+	self.showsReflection = YES;
 	CATransform3D perspTransform = CATransform3DIdentity;
 	perspTransform.m34 = 1. / -kDefaultEyeDistance;
-	_perspective = perspTransform;
+	self.perspective = perspTransform;
 	
-	_scrollDuration = kDefaultScrollDuration;
-	_itemScale = kDefaultItemScale;
-	_previewScale = kDefaultPreviewScale;
+	self.scrollDuration = kDefaultScrollDuration;
+	self.itemScale = kDefaultItemScale;
+	self.previewScale = kDefaultPreviewScale;
 }
 
 
