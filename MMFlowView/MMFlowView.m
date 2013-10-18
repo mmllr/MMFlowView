@@ -589,6 +589,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	self.titleLayer.font = (__bridge CFTypeRef)(aFont);
 }
 
+- (CGFloat)titleSize
+{
+	return self.titleLayer.fontSize;
+}
+
 - (void)setTitleSize:(CGFloat)aSize
 {
 	self.titleLayer.fontSize = aSize;
