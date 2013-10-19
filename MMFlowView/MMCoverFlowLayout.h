@@ -10,8 +10,12 @@
 
 @interface MMCoverFlowLayout : NSObject
 
-@property CGSize contentSize;
-@property CGSize itemSize;
-@property CGFloat interItemSpacing;
+@property (nonatomic, readonly) CGSize contentSize;
+@property (nonatomic)  CGSize itemSize;
+@property (nonatomic) CGFloat interItemSpacing;
+@property (nonatomic) CGFloat stackedAngle;
+@property NSUInteger selectedItemIndex;
+@property NSUInteger numberOfItems;
+@property CGFloat verticalMargin;
 
 @end

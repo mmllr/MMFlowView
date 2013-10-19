@@ -8,7 +8,7 @@
 
 #import "MMCoverFlowLayoutAttributes.h"
 
-const CGPoint kDefaultAnchorPoint = {.5, .5};
+static const CGPoint kDefaultAnchorPoint = {.5, .5};
 
 @implementation MMCoverFlowLayoutAttributes
 
