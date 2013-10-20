@@ -125,6 +125,76 @@ context(@"MMCoverFlowLayout", ^{
 				[[theValue(sut.stackedAngle) should] equal:theValue(90)];
 			});
 		});
+		context(@"selectedIndex", ^{
+			it(@"should not set the seletion with no items", ^{
+				sut.selectedItemIndex = 0;
+				[[theValue(sut.selectedItemIndex) should] equal:theValue(NSNotFound)];
+			});
+		});
+		context(@"many items", ^{
+			beforeEach(^{
+				sut.numberOfItems = 10;
+			});
+			afterEach(^{
+				sut.numberOfItems = 0;
+			});
+			context(@"no previously selected item", ^{
+				it(@"should select the first item", ^{
+					[[theValue(sut.selectedItemIndex) should] equal:theValue(0)];
+				});
+			});
+			it(@"should set the number of items", ^{
+				[[theValue(sut.numberOfItems) should] equal:theValue(10)];
+			});
+			context(@"selecting items", ^{
+				context(@"any item in bounds", ^{
+					__block NSUInteger expectedIndex;
+	
+					beforeEach(^{
+						sranddev();
+						expectedIndex = rand() % (sut.numberOfItems - 1);
+						sut.selectedItemIndex = expectedIndex;
+					});
+					it(@"should set the item", ^{
+						[[theValue(sut.selectedItemIndex) should] equal:theValue(expectedIndex)];
+					});
+				});
+				context(@"last item", ^{
+					beforeEach(^{
+						sut.selectedItemIndex = sut.numberOfItems - 1;
+					});
+					it(@"should select the last item", ^{
+						[[theValue(sut.selectedItemIndex) should] equal:theValue(9)];
+					});
+					it(@"should select the first item", ^{
+						sut.selectedItemIndex = 0;
+						[[theValue(sut.selectedItemIndex) should] equal:theValue(0)];
+					});
+				});
+				context(@"selecting beyound bounds", ^{
+					beforeEach(^{
+						sut.selectedItemIndex = sut.numberOfItems + 10;
+					});
+					it(@"should select the last index if asked to select beyound item count", ^{
+						[[theValue(sut.selectedItemIndex) should] equal:theValue(9)];
+					});
+				});
+				context(@"selecting NSNotFound", ^{
+					__block NSUInteger previousSelection;
+					
+					beforeEach(^{
+						previousSelection = sut.selectedItemIndex;
+						sut.selectedItemIndex = NSNotFound;
+					});
+					it(@"should not select NSNotFound", ^{
+						[[theValue(sut.selectedItemIndex) shouldNot] equal:theValue(NSNotFound)];
+					});
+					it(@"should keep the previously selected index", ^{
+						[[theValue(sut.selectedItemIndex) should] equal:theValue(previousSelection)];
+					});
+				});
+			});
+		});
 	});
 });
 

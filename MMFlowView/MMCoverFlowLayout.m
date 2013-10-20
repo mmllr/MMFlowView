@@ -57,5 +57,19 @@ static const CGFloat kDefaultVerticalMargin = 50.;
 	_stackedAngle = MIN( MAX(0, stackedAngle), kMaximumStackedAngle );
 }
 
+- (void)setSelectedItemIndex:(NSUInteger)selectedItemIndex
+{
+	if (_numberOfItems > 0 && (selectedItemIndex != NSNotFound) ) {
+		_selectedItemIndex = MIN( self.numberOfItems - 1, selectedItemIndex );
+	}
+}
+
+- (void)setNumberOfItems:(NSUInteger)numberOfItems
+{
+	_numberOfItems = numberOfItems;
+	if ( self.selectedItemIndex == NSNotFound ) {
+		self.selectedItemIndex = 0;
+	}
+}
 
 @end

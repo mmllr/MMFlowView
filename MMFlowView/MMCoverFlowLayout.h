@@ -14,8 +14,8 @@
 @property (nonatomic)  CGSize itemSize;
 @property (nonatomic) CGFloat interItemSpacing;
 @property (nonatomic) CGFloat stackedAngle;
-@property NSUInteger selectedItemIndex;
-@property NSUInteger numberOfItems;
+@property (nonatomic) NSUInteger selectedItemIndex;
+@property (nonatomic) NSUInteger numberOfItems;
 @property CGFloat verticalMargin;
 
 @end
