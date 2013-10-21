@@ -102,8 +102,12 @@ static const CGFloat kMMButtonLayerHighlightedDarkenAlphaValue = 1;
 
 - (void)performClick:(id)sender
 {
-	[ self.target performSelector:self.action
-					   withObject:self ];
+	if ( [self.target respondsToSelector:self.action] ) {
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[[self.target class] instanceMethodSignatureForSelector:self.action]];
+		[invocation setTarget:self.target];
+		[invocation setSelector:self.action];
+		[invocation invokeWithTarget:self.target];
+	}
 	self.highlighted = NO;
 }
 
