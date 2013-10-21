@@ -8,14 +8,20 @@
 
 #import <Foundation/Foundation.h>
 
+@class MMCoverFlowLayoutAttributes;
+
 @interface MMCoverFlowLayout : NSObject
 
-@property (nonatomic, readonly) CGSize contentSize;
-@property (nonatomic)  CGSize itemSize;
+@property (nonatomic, readonly) CGFloat contentWidth;
+@property (nonatomic) CGFloat contentHeight;
 @property (nonatomic) CGFloat interItemSpacing;
 @property (nonatomic) CGFloat stackedAngle;
 @property (nonatomic) NSUInteger selectedItemIndex;
 @property (nonatomic) NSUInteger numberOfItems;
-@property CGFloat verticalMargin;
+@property (nonatomic) CGFloat stackedDistance;
+@property (nonatomic) CGFloat verticalMargin;
+
+- (id)initWithContentHeight:(CGFloat)contentHeight;
+- (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex;
 
 @end

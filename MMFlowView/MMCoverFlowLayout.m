@@ -7,11 +7,18 @@
 //
 
 #import "MMCoverFlowLayout.h"
+#import "MMCoverFlowLayoutAttributes.h"
 
-static const CGSize kDefaultItemSize = { 50, 50 };
+static const CGFloat kDefaultContentHeight = 100;
 static const CGFloat kDefaultInterItemSpacing = 10.;
 static const CGFloat kDefaultStackedAngle = 70.;
-static const CGFloat kDefaultVerticalMargin = 50.;
+static const CGFloat kDefaultStackedDistance = 100;
+static const CGFloat kDefaultVerticalMargin = 10.;
+static const CGFloat kMinimumContentHeight = 1;
+
+@interface MMCoverFlowLayout ()
+
+@end
 
 @implementation MMCoverFlowLayout
 
@@ -19,28 +26,24 @@ static const CGFloat kDefaultVerticalMargin = 50.;
 
 - (id)init
 {
+	return [self initWithContentHeight:kDefaultContentHeight];
+}
+
+- (id)initWithContentHeight:(CGFloat)contentHeight
+{
     self = [super init];
     if (self) {
+		_contentHeight = contentHeight < kMinimumContentHeight ? kMinimumContentHeight : contentHeight;
 		_interItemSpacing = kDefaultInterItemSpacing;
-		_itemSize = kDefaultItemSize;
 		_stackedAngle = kDefaultStackedAngle;
 		_selectedItemIndex = NSNotFound;
 		_verticalMargin = kDefaultVerticalMargin;
+		_stackedDistance = kDefaultStackedDistance;
     }
     return self;
 }
 
 #pragma mark - accessors
-
-- (void)setItemSize:(CGSize)itemSize
-{
-	static const CGSize kMinimumItemSize = { 1, 1 };
-
-	if ( ( itemSize.width >= kMinimumItemSize.width ) &&
-		(itemSize.height >= kMinimumItemSize.height ) ) {
-		_itemSize = itemSize;
-	}
-}
 
 - (void)setInterItemSpacing:(CGFloat)interItemSpacing
 {
@@ -59,17 +62,87 @@ static const CGFloat kDefaultVerticalMargin = 50.;
 
 - (void)setSelectedItemIndex:(NSUInteger)selectedItemIndex
 {
-	if (_numberOfItems > 0 && (selectedItemIndex != NSNotFound) ) {
-		_selectedItemIndex = MIN( self.numberOfItems - 1, selectedItemIndex );
+	if (_numberOfItems > 0 ) {
+		if ( selectedItemIndex != NSNotFound) {
+			_selectedItemIndex = MIN( self.numberOfItems - 1, selectedItemIndex );
+		}
 	}
+	else {
+		_selectedItemIndex = NSNotFound;
+	}
+}
+
+- (void)updateSelection
+{
+	if ( _numberOfItems > 0 ) {
+		if ( self.selectedItemIndex == NSNotFound ) {
+			self.selectedItemIndex = 0;
+		}
+	}
+	else {
+		self.selectedItemIndex = NSNotFound;
+	}
+	
 }
 
 - (void)setNumberOfItems:(NSUInteger)numberOfItems
 {
-	_numberOfItems = numberOfItems;
-	if ( self.selectedItemIndex == NSNotFound ) {
-		self.selectedItemIndex = 0;
+	if ( (numberOfItems != NSNotFound ) &&
+		(_numberOfItems != numberOfItems ) ) {
+		_numberOfItems = numberOfItems;
+	}
+	[self updateSelection];
+}
+
+- (void)setStackedDistance:(CGFloat)stackedDistance
+{
+	if ( stackedDistance >= 0 ) {
+		_stackedDistance = stackedDistance;
 	}
 }
+
+- (void)setVerticalMargin:(CGFloat)verticalMargin
+{
+	_verticalMargin = MAX( 0, MIN( verticalMargin, self.contentHeight) );
+}
+
+- (void)setContentHeight:(CGFloat)contentHeight
+{
+	if ( contentHeight >= kMinimumContentHeight ) {
+		_contentHeight = contentHeight;
+	}
+}
+
+#pragma mark - public interface
+
+- (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex
+{
+	if ( itemIndex < self.numberOfItems ) {
+		MMCoverFlowLayoutAttributes *attributes = [[MMCoverFlowLayoutAttributes alloc] init];
+		attributes.index = itemIndex;
+		CGFloat height = self.contentHeight - (self.verticalMargin * 2);
+		attributes.size = CGSizeMake(height, height);
+
+		if ( itemIndex < self.selectedItemIndex ) {
+			// left stack
+			attributes.transform = CATransform3DMakeRotation( self.stackedAngle * M_PI / 180., 0, 1, 0 );
+			attributes.anchorPoint = CGPointMake(0, .5);
+			attributes.zPosition = -self.stackedDistance;
+		}
+		else if ( itemIndex > self.selectedItemIndex ) {
+			// right stack
+			attributes.transform = CATransform3DMakeRotation( -(self.stackedAngle * M_PI / 180.), 0, 1, 0 );
+			attributes.anchorPoint = CGPointMake(1, .5);
+			attributes.zPosition = -self.stackedDistance;
+		}
+		else if ( itemIndex == self.selectedItemIndex ) {
+			attributes.anchorPoint = CGPointMake(.5, .5);
+		}
+		return attributes;
+	}
+	return nil;
+}
+
+#pragma mark - layout logic
 
 @end

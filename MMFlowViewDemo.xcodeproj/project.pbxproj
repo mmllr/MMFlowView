@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1290F5C6EDAD4187B55E9B75 /* libPods-MMFlowViewTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */; };
 		282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */; };
+		28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		2876FF3F180B269C00318C7B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF3E180B269C00318C7B /* SenTestingKit.framework */; };
 		2876FF45180B269C00318C7B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF43180B269C00318C7B /* InfoPlist.strings */; };
 		2876FF4F180B28B800318C7B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF4E180B28B800318C7B /* Podfile */; };
@@ -34,7 +35,6 @@
 		28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC1D15AEEF010096FBA4 /* Item.m */; };
 		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
 		28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */; };
-		28E085361811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */; };
 		28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */; };
 		28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */; };
@@ -391,7 +391,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28E085361811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m in Sources */,
 				2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */,
 				28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */,
 				28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
@@ -409,6 +408,7 @@
 				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
 				288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */,
 				282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */,
+				28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */,
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
 				28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */,
 				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
