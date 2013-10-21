@@ -762,7 +762,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex withItemWidth:(CGFloat)itemWidth stackedAngle:(CGFloat)aStackedAngle itemSpacing:(CGFloat)itemSpacing selectedIndex:(NSUInteger)theSelection
 {
-	CGFloat stackedWidth = itemWidth * [ self angleScaleForAngle:aStackedAngle ] + itemSpacing;
+	CGFloat stackedWidth = itemWidth * cos(DegreesToRadians(self.stackedAngle)) + cos(DegreesToRadians(self.stackedAngle))*itemSpacing;
 	CGFloat offset = stackedWidth * anIndex;
 
 	BOOL firstItemSelected = ( theSelection == 0 );
