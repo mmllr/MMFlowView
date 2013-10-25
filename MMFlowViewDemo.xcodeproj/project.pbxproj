@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1290F5C6EDAD4187B55E9B75 /* libPods-MMFlowViewTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */; };
 		282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */; };
+		28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		2876FF3F180B269C00318C7B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF3E180B269C00318C7B /* SenTestingKit.framework */; };
 		2876FF45180B269C00318C7B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF43180B269C00318C7B /* InfoPlist.strings */; };
 		2876FF4F180B28B800318C7B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF4E180B28B800318C7B /* Podfile */; };
@@ -33,6 +34,10 @@
 		28DEFC0E15AEEE9B0096FBA4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0C15AEEE9B0096FBA4 /* MainMenu.xib */; };
 		28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC1D15AEEF010096FBA4 /* Item.m */; };
 		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
+		28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */; };
+		28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */; };
+		28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */; };
+		28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +92,13 @@
 		28DEFC1D15AEEF010096FBA4 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
 		28DEFC2015AEEF300096FBA4 /* MMFlowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowView.h; path = MMFlowView/MMFlowView.h; sourceTree = "<group>"; };
 		28DEFC2115AEEF300096FBA4 /* MMFlowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowView.m; path = MMFlowView/MMFlowView.m; sourceTree = "<group>"; };
+		28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowLayoutAttributeSpec.m; sourceTree = "<group>"; };
+		28E085341811C2FA003CC49E /* MMCoverFlowLayoutAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayoutAttributes.h; path = MMFlowView/MMCoverFlowLayoutAttributes.h; sourceTree = "<group>"; };
+		28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayoutAttributes.m; path = MMFlowView/MMCoverFlowLayoutAttributes.m; sourceTree = "<group>"; };
+		28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFLowLayoutSpec.m; sourceTree = "<group>"; };
+		28EE5F801811BBDF006D0540 /* MMCoverFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayout.h; path = MMFlowView/MMCoverFlowLayout.h; sourceTree = "<group>"; };
+		28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayout.m; path = MMFlowView/MMCoverFlowLayout.m; sourceTree = "<group>"; };
+		28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewSpec.m; sourceTree = "<group>"; };
 		BA2D2796A66E4CB9A899D451 /* Pods-MMFlowViewTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewTests.xcconfig"; path = "Pods/Pods-MMFlowViewTests.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -142,6 +154,9 @@
 			isa = PBXGroup;
 			children = (
 				2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */,
+				28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */,
+				28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */,
+				28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */,
 			);
 			name = Specs;
 			path = MMFlowView/Specs;
@@ -163,6 +178,10 @@
 				28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */,
 				28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */,
 				28BD85EF1802FAB00095224B /* MMFlowView_Private.h */,
+				28EE5F801811BBDF006D0540 /* MMCoverFlowLayout.h */,
+				28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */,
+				28E085341811C2FA003CC49E /* MMCoverFlowLayoutAttributes.h */,
+				28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -373,6 +392,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */,
+				28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */,
+				28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
+				28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -386,7 +408,9 @@
 				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
 				288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */,
 				282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */,
+				28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */,
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
+				28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */,
 				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
 				28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */,
 			);

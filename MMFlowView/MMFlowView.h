@@ -133,11 +133,11 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 @interface MMFlowView : NSControl<QLPreviewPanelDataSource, QLPreviewPanelDelegate>
 
 /* title for currently selected index */
-@property (copy,nonatomic) id title;
+@property (copy,nonatomic) NSString *title;
 /* weak reference to the datasource, see MMFlowViewDataSource protocol */ 
-@property (unsafe_unretained) IBOutlet id<MMFlowViewDataSource> dataSource;
+@property (weak) IBOutlet id<MMFlowViewDataSource> dataSource;
 /* weak reference to the delegate, see MMFlowViewDelegate protocol */
-@property (unsafe_unretained) IBOutlet id<MMFlowViewDelegate> delegate;
+@property (weak) IBOutlet id<MMFlowViewDelegate> delegate;
 /* the angle in degrees around which the unselected images are rotated around the y-axis (counter clockwise for the left-stack, clockwise for the right-stack) */
 @property (assign, nonatomic) CGFloat stackedAngle;
 /* spacing between images in stack */
@@ -175,6 +175,8 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 
 /* sets the font of the title */
 - (void)setTitleFont:(NSFont*)aFont;
+/* gets the title size */
+- (CGFloat)titleSize;
 /* sets the font size of the title */
 - (void)setTitleSize:(CGFloat)aSize;
 /* sets the color for the title */

@@ -17,7 +17,7 @@ static void valueChangeNotification(AXObserverRef observer, AXUIElementRef eleme
 
 SPEC_BEGIN(CALayerAccessibilitySpec)
 
-context(@"CALayer NSAccessibility", ^{
+context(@"CALayer+NSAccessibility", ^{
 	__block CALayer *sut = nil;
 	beforeEach(^{
 		sut = [ CALayer layer ];

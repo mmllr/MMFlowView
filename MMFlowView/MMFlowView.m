@@ -482,13 +482,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code here.
-		self.bindingInfo = [ NSMutableDictionary dictionary ];
-		self.operationQueue = [[ NSOperationQueue alloc ] init ];
-		self.imageCache = [[ NSCache alloc ] init ];
-		self.layerQueue = [ NSMutableArray array ];
-		[ self setDefaults ];
+		_bindingInfo = [NSMutableDictionary dictionary];
+		_operationQueue = [[NSOperationQueue alloc] init];
+		_imageCache = [[NSCache alloc] init];
+		_layerQueue = [NSMutableArray array];
+		_selectedIndex = NSNotFound;
+		[ self setInitialDefaults ];
 		[ self setupLayers ];
-		self.title = @"Title";
+		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
 		[ self registerForDraggedTypes:@[NSURLPboardType] ];
     }
@@ -499,13 +500,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	self = [ super initWithCoder:aDecoder ];
 	if ( self ) {
-		self.bindingInfo = [ NSMutableDictionary dictionary ];
-		self.layerQueue = [ NSMutableArray array ];
-		self.operationQueue = [[ NSOperationQueue alloc ] init ];
-		self.imageCache = [[ NSCache alloc ] init ];
+		_bindingInfo = [ NSMutableDictionary dictionary ];
+		_layerQueue = [ NSMutableArray array ];
+		_operationQueue = [[ NSOperationQueue alloc ] init ];
+		_imageCache = [[ NSCache alloc ] init ];
+		_selectedIndex = NSNotFound;
+	
 		[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 		[ self setAcceptsTouchEvents:YES ];
-		self.selectedIndex = NSNotFound;
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
 			self.spacing = [ aDecoder decodeDoubleForKey:kMMFlowViewSpacingKey ];
@@ -519,8 +521,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			self.previewScale = [ aDecoder decodeDoubleForKey:kMMFlowViewPreviewScaleKey ];
 		}
 		else {
-			[ self setDefaults ];
-			
+			[ self setInitialDefaults ];
 		}
 		[ self setupLayers ];
 		self.title = @"";
@@ -554,7 +555,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ self.operationQueue cancelAllOperations ];
 }
 
-- (void)setDefaults
+- (void)setInitialDefaults
 {
 	[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 	[ self setAcceptsTouchEvents:YES ];
@@ -591,6 +592,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 - (void)setTitleFont:(NSFont*)aFont
 {
 	self.titleLayer.font = (__bridge CFTypeRef)(aFont);
+}
+
+- (CGFloat)titleSize
+{
+	return self.titleLayer.fontSize;
 }
 
 - (void)setTitleSize:(CGFloat)aSize
@@ -756,7 +762,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex withItemWidth:(CGFloat)itemWidth stackedAngle:(CGFloat)aStackedAngle itemSpacing:(CGFloat)itemSpacing selectedIndex:(NSUInteger)theSelection
 {
-	CGFloat stackedWidth = itemWidth * [ self angleScaleForAngle:aStackedAngle ] + itemSpacing;
+	CGFloat stackedWidth = itemWidth * cos(DegreesToRadians(self.stackedAngle)) + cos(DegreesToRadians(self.stackedAngle))*itemSpacing;
 	CGFloat offset = stackedWidth * anIndex;
 
 	BOOL firstItemSelected = ( theSelection == 0 );
@@ -1742,8 +1748,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	else {	// center
 		imageLayer.anchorPoint = CGPointMake( 0.5, 0);
 		imageLayer.transform = CATransform3DIdentity;
-		imageLayer.zPosition = self.selectedScale;
-		itemLayer.zPosition = self.stackedScale;
+		imageLayer.zPosition = 0;//self.selectedScale;
+		itemLayer.zPosition = 0;//self.stackedScale;
 	}
 	CGFloat aspectRatio = [ [ imageLayer valueForKey:kMMFlowViewItemAspectRatioKey ] doubleValue ];
 	aspectRatio = ( aspectRatio > 0. ) ? aspectRatio : 1.;
