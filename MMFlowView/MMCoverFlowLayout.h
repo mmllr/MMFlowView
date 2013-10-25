@@ -13,6 +13,7 @@
 @interface MMCoverFlowLayout : NSObject
 
 @property (nonatomic, readonly) CGFloat contentWidth;
+@property (nonatomic, readonly) CGSize itemSize;
 @property (nonatomic) CGFloat contentHeight;
 @property (nonatomic) CGFloat interItemSpacing;
 @property (nonatomic) CGFloat stackedAngle;

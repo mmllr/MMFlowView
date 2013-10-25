@@ -113,6 +113,12 @@ static const CGFloat kMinimumContentHeight = 1;
 	}
 }
 
+- (CGSize)itemSize
+{
+	CGFloat height = self.contentHeight - self.verticalMargin * 2;
+	return CGSizeMake(height, height);
+}
+
 #pragma mark - public interface
 
 - (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex
@@ -122,6 +128,7 @@ static const CGFloat kMinimumContentHeight = 1;
 		attributes.index = itemIndex;
 		CGFloat height = self.contentHeight - (self.verticalMargin * 2);
 		attributes.size = CGSizeMake(height, height);
+		attributes.position = [self originForItem:itemIndex];
 
 		if ( itemIndex < self.selectedItemIndex ) {
 			// left stack
@@ -144,5 +151,20 @@ static const CGFloat kMinimumContentHeight = 1;
 }
 
 #pragma mark - layout logic
+
+- (CGPoint)originForItem:(NSUInteger)itemIndex
+{
+	CGPoint origin = CGPointMake( [self horizontalOffsetForItem:itemIndex], self.contentHeight/2 - self.itemSize.height / 2 );
+	return origin;
+}
+
+- (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex
+{
+	CGFloat cosStackedAngle = self.stackedAngle * M_PI / 180.;
+	CGFloat stackedWidth = self.itemSize.width * cosStackedAngle + cosStackedAngle * self.interItemSpacing;
+	CGFloat offset = stackedWidth * anIndex;
+	
+	return offset;
+}
 
 @end

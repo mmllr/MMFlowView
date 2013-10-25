@@ -68,6 +68,19 @@ context(@"MMCoverFlowLayout", ^{
 		it(@"should return nil for layoutAttributesForItemAtIndex", ^{
 			[[[sut layoutAttributesForItemAtIndex:0] should] beNil];
 		});
+		context(@"itemSize", ^{
+			__block CGFloat expectedHeight;
+			beforeEach(^{
+				expectedHeight = sut.contentHeight - sut.verticalMargin * 2;
+			});
+			it(@"should have an itemHeight of contentHeight minus two times verticalMargin", ^{
+				
+				[[theValue(sut.itemSize.height) should] equal:theValue(expectedHeight)];
+			});
+			it(@"should have a square item size", ^{
+				[[theValue(sut.itemSize.width) should] equal:theValue(sut.itemSize.height)];
+			});
+		});
 		context(@"contentHeight", ^{
 			it(@"should not be smaller than 1", ^{
 				sut.contentHeight = 0;
@@ -220,7 +233,10 @@ context(@"MMCoverFlowLayout", ^{
 				afterEach(^{
 					attributes = nil;
 				});
-
+				it(@"should have the items vertically centered", ^{
+					CGFloat expectecY = sut.contentHeight / 2 - sut.itemSize.height / 2;
+					[[theValue(attributes.position.y) should] equal:theValue(expectecY)];
+				});
 				context(@"index bound checking", ^{
 					it(@"should return attributes for first item", ^{
 						[[[sut layoutAttributesForItemAtIndex:0] shouldNot] beNil];
@@ -263,6 +279,11 @@ context(@"MMCoverFlowLayout", ^{
 					it(@"should have an anchorPoint of {0, 0.5}", ^{
 						NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0, 0.5)];
 						[[[NSValue valueWithPoint:attributes.anchorPoint] should] equal:expectedPoint];
+					});
+					it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing)", ^{
+						CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+						CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.selectedItemIndex - 1);
+						[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
 					});
 					it(@"should have zPosition of negative stackedDistance", ^{
 						[[theValue(attributes.zPosition) should] equal:theValue(-sut.stackedDistance)];
