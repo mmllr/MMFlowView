@@ -12,7 +12,7 @@
 
 SPEC_BEGIN(MMCoverFLowLayoutSpec)
 
-context(@"MMCoverFlowLayout", ^{
+describe(@"MMCoverFlowLayout", ^{
 	__block MMCoverFlowLayout *sut = nil;
 
 	context(@"designated initalizer", ^{
@@ -40,6 +40,12 @@ context(@"MMCoverFlowLayout", ^{
 		});
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
+		});
+		it(@"should respond to initWithCoder:", ^{
+			[[sut should] respondToSelector:@selector(initWithCoder:)];
+		});
+		it(@"should respond to encodeWithCoder:", ^{
+			[[sut should] respondToSelector:@selector(encodeWithCoder:)];
 		});
 		it(@"should have the default inter item spacing of 10", ^{
 			[[theValue(sut.interItemSpacing) should] equal:theValue(10)];
@@ -237,6 +243,39 @@ context(@"MMCoverFlowLayout", ^{
 					CGFloat expectecY = sut.contentHeight / 2 - sut.itemSize.height / 2;
 					[[theValue(attributes.position.y) should] equal:theValue(expectecY)];
 				});
+				context(@"contentWidth", ^{
+					__block CGFloat expectedContentWidth;
+					
+					context(@"selection on both ends of stack", ^{
+						beforeEach(^{
+							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							expectedContentWidth = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.numberOfItems - 1 ) + sut.itemSize.width + sut.interItemSpacing;
+						});
+						context(@"first item selected", ^{
+							beforeEach(^{
+								sut.selectedItemIndex = 0;
+							});
+							it(@"should habe a contentWidth of stackedWidth * number of stacked items plus item width plus one interItemSpacing", ^{
+								[[theValue(sut.contentWidth) should] equal:theValue(expectedContentWidth)];
+							});
+						});
+						context(@"last item selected", ^{
+							beforeEach(^{
+								sut.selectedItemIndex = sut.numberOfItems - 1;
+							});
+							it(@"should habe a contentWidth of stackedWidth * number of stacked items plus item width plus one interItemSpacing", ^{
+								[[theValue(sut.contentWidth) should] equal:theValue(expectedContentWidth)];
+							});
+						});
+					});
+					context(@"selection in stack", ^{
+						it(@", should habe a contentWidth of stackedWidth * number of stacked items plus item width plus two interItemSpacing", ^{
+							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							expectedContentWidth = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.numberOfItems - 1 ) + sut.itemSize.width + sut.interItemSpacing * 2;
+							[[theValue(sut.contentWidth) should] equal:theValue(expectedContentWidth)];
+						});
+					});
+				});
 				context(@"index bound checking", ^{
 					it(@"should return attributes for first item", ^{
 						[[[sut layoutAttributesForItemAtIndex:0] shouldNot] beNil];
@@ -310,6 +349,20 @@ context(@"MMCoverFlowLayout", ^{
 					it(@"should have a 0 zPosition", ^{
 						[[theValue(attributes.zPosition) should] equal:theValue(0)];
 					});
+					it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing) plus a half item width if the first item is not selected", ^{
+						CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+						CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * sut.selectedItemIndex + sut.itemSize.width / 2;
+						[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
+					});
+					context(@"first item selected", ^{
+						beforeEach(^{
+							sut.selectedItemIndex = 0;
+							attributes = [sut layoutAttributesForItemAtIndex:sut.selectedItemIndex];
+						});
+						it(@"should have the x position of zero", ^{
+							[[theValue(attributes.position.x) should] equal:theValue(0)];
+						});
+					});
 				});
 				context(@"right stack", ^{
 					beforeEach(^{
@@ -333,6 +386,77 @@ context(@"MMCoverFlowLayout", ^{
 					it(@"should have zPosition of negative stackedDistance", ^{
 						[[theValue(attributes.zPosition) should] equal:theValue(-sut.stackedDistance)];
 					});
+					it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing) plus an item width if the first item is not selected", ^{
+						CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+						CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.selectedItemIndex + 1) + sut.itemSize.width;
+						[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
+					});
+					context(@"first item selected", ^{
+						beforeEach(^{
+							sut.selectedItemIndex = 0;
+							attributes = [sut layoutAttributesForItemAtIndex:sut.selectedItemIndex + 1];
+						});
+						it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing) plus half an item width if the first item is not selected", ^{
+							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.selectedItemIndex + 1) + sut.itemSize.width / 2;
+							[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
+						});
+					});
+				});
+			});
+		});
+		context(@"NSCoder", ^{
+			beforeEach(^{
+				sut.numberOfItems = 10;
+			});
+			context(@"non keyed archives", ^{
+				it(@"should raise with non keyed archivers", ^{
+					[[theBlock(^{
+						[NSArchiver archivedDataWithRootObject:sut];
+					}) should] raiseWithName:NSInvalidArchiveOperationException];
+				});
+			});
+			context(@"keyed archvies", ^{
+				__block NSData *archivedData = nil;
+				__block MMCoverFlowLayout *unarchivedLayout = nil;
+
+				beforeEach(^{
+					archivedData = [NSKeyedArchiver archivedDataWithRootObject:sut];
+					unarchivedLayout = [NSKeyedUnarchiver unarchiveObjectWithData:archivedData];
+				});
+				afterEach(^{
+					archivedData = nil;
+					unarchivedLayout = nil;
+				});
+				it(@"should encode", ^{
+					[[archivedData shouldNot] beNil];
+				});
+				it(@"should decode", ^{
+					[[unarchivedLayout shouldNot] beNil];
+				});
+				it(@"should decode the correct class", ^{
+					[[unarchivedLayout should] beKindOfClass:[sut class]];
+				});
+				it(@"should encode contentHeight", ^{
+					[[theValue(unarchivedLayout.contentHeight) should] equal:theValue(sut.contentHeight)];
+				});
+				it(@"should encode interItemSpacing", ^{
+					[[theValue(unarchivedLayout.interItemSpacing) should] equal:theValue(sut.interItemSpacing)];
+				});
+				it(@"should encode stackedAngle", ^{
+					[[theValue(unarchivedLayout.stackedAngle) should] equal:theValue(sut.stackedAngle)];
+				});
+				it(@"should encode selectedItemIndex", ^{
+					[[theValue(unarchivedLayout.selectedItemIndex) should] equal:theValue(sut.selectedItemIndex)];
+				});
+				it(@"should encode numberOfItems", ^{
+					[[theValue(unarchivedLayout.numberOfItems) should] equal:theValue(sut.numberOfItems)];
+				});
+				it(@"should encode stackedDistance", ^{
+					[[theValue(unarchivedLayout.stackedDistance) should] equal:theValue(sut.stackedDistance)];
+				});
+				it(@"should encode verticalMargin", ^{
+					[[theValue(unarchivedLayout.verticalMargin) should] equal:theValue(sut.verticalMargin)];
 				});
 			});
 		});

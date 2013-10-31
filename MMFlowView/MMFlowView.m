@@ -26,6 +26,7 @@
 #import "MMFlowView+NSAccessibility.h"
 #import "NSColor+MMAdditions.h"
 #import "CALayer+NSAccessibility.h"
+#import "MMCoverFlowLayoutAttributes.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -122,6 +123,7 @@ static NSString * const kPositionKey = @"position";
 static NSString * const kBoundsKey = @"bounds";
 static NSString * const kStringKey = @"string";
 static NSString * const kContentsKey = @"contents";
+static NSString * const kLayoutKey = @"layout";
 
 /* observation context */
 static void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
@@ -150,6 +152,9 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 #endif
 
 @implementation MMFlowView
+
+@dynamic numberOfItems;
+@dynamic selectedIndex;
 
 #pragma mark -
 #pragma mark Class methods
@@ -486,7 +491,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		_operationQueue = [[NSOperationQueue alloc] init];
 		_imageCache = [[NSCache alloc] init];
 		_layerQueue = [NSMutableArray array];
-		_selectedIndex = NSNotFound;
+		_layout = [[MMCoverFlowLayout alloc] init];
 		[ self setInitialDefaults ];
 		[ self setupLayers ];
 		self.title = @"";
@@ -504,14 +509,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		_layerQueue = [ NSMutableArray array ];
 		_operationQueue = [[ NSOperationQueue alloc ] init ];
 		_imageCache = [[ NSCache alloc ] init ];
-		_selectedIndex = NSNotFound;
-	
 		[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 		[ self setAcceptsTouchEvents:YES ];
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
 			self.spacing = [ aDecoder decodeDoubleForKey:kMMFlowViewSpacingKey ];
-			self.selectedScale = [ aDecoder decodeDoubleForKey:kMMFlowViewSelectedScaleKey ];
 			self.stackedScale = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedScaleKey ];
 			self.reflectionOffset = [ aDecoder decodeDoubleForKey:kMMFlowViewReflectionOffsetKey ];
 			self.showsReflection = [ aDecoder decodeBoolForKey:kMMFlowViewShowsReflectionKey ];
@@ -519,6 +521,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			self.scrollDuration = [ aDecoder decodeDoubleForKey:kMMFlowViewScrollDurationKey ];
 			self.itemScale = [ aDecoder decodeDoubleForKey:kMMFlowViewItemScaleKey ];
 			self.previewScale = [ aDecoder decodeDoubleForKey:kMMFlowViewPreviewScaleKey ];
+			_layout = [aDecoder decodeObjectForKey:kLayoutKey];
 		}
 		else {
 			[ self setInitialDefaults ];
@@ -536,14 +539,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	if ( [ aCoder allowsKeyedCoding ] ) {
 		[ aCoder encodeDouble:self.stackedAngle forKey:kMMFlowViewStackedAngleKey ];
 		[ aCoder encodeDouble:self.spacing forKey:kMMFlowViewSpacingKey ];
-		[ aCoder encodeDouble:self.selectedScale forKey:kMMFlowViewSelectedScaleKey ];
 		[ aCoder encodeDouble:self.stackedScale forKey:kMMFlowViewStackedScaleKey ];
 		[ aCoder encodeDouble:self.reflectionOffset forKey:kMMFlowViewReflectionOffsetKey ];
 		[ aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey ];
 		[ aCoder encodeObject:[ NSValue valueWithCATransform3D:self.perspective ] forKey:kMMFlowViewPerspectiveKey ];
 		[ aCoder encodeDouble:self.scrollDuration forKey:kMMFlowViewScrollDurationKey ];
 		[ aCoder encodeDouble:self.itemScale forKey:kMMFlowViewItemScaleKey ];
-		[ aCoder encodeDouble:self.previewScale forKey:kMMFlowViewPreviewScaleKey ]; 
+		[ aCoder encodeDouble:self.previewScale forKey:kMMFlowViewPreviewScaleKey ];
+		[aCoder encodeObject:self.layout forKey:kLayoutKey];
 	}
 	else {
 		[ NSException raise:NSInvalidArchiveOperationException format:@"Only supports NSKeyedArchiver coders" ];
@@ -561,7 +564,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ self setAcceptsTouchEvents:YES ];
 	self.stackedAngle = kDefaultStackedAngle;
 	self.spacing = kDefaultItemSpacing;
-	self.selectedScale = kDefaultSelectedScale;
 	self.stackedScale = kDefaultStackedScale;
 	self.reflectionOffset = kDefaultReflectionOffset;
 	self.selectedIndex = NSNotFound;
@@ -629,18 +631,23 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setSelectedIndex:(NSUInteger)index
 {
-	if ( ( _selectedIndex != index ) && ( index < self.numberOfItems ) ) {
-		[ self deselectLayerAtIndex:_selectedIndex ];
-		_selectedIndex = index;
-		[ self updateSelectionInRange:NSMakeRange( MIN( index, _selectedIndex ), ABS( _selectedIndex - index ) ) ];
+	if ( ( self.layout.selectedItemIndex != index ) && ( index < self.numberOfItems ) ) {
+		[self deselectLayerAtIndex:self.layout.selectedItemIndex];
+		self.layout.selectedItemIndex = index;
+		[self updateSelectionInRange:NSMakeRange(index, 1)];
 		[ self selectLayerAtIndex:index ];
-		if ( [ self.delegate respondsToSelector:@selector(flowViewSelectionDidChange:) ] ) {
-			[ self.delegate flowViewSelectionDidChange:self ];
+		if ( [self.delegate respondsToSelector:@selector(flowViewSelectionDidChange:)] ) {
+			[self.delegate flowViewSelectionDidChange:self];
 		}
 		if ( self.bindingsEnabled ) {
-			[ self.contentArrayController setSelectionIndex:index ];
+			[self.contentArrayController setSelectionIndex:index];
 		}
 	}
+}
+
+- (NSUInteger)selectedIndex
+{
+	return self.layout.selectedItemIndex;
 }
 
 - (void)setShowsReflection:(BOOL)shouldShowReflection
@@ -730,6 +737,16 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 				 cornerRadius:0
 			highlightingColor:[ [ NSColor selectedControlColor ] CGColor ] ];
 	}
+}
+
+- (void)setNumberOfItems:(NSUInteger)numberOfItems
+{
+	self.layout.numberOfItems = numberOfItems;
+}
+
+- (NSUInteger)numberOfItems
+{
+	return self.layout.numberOfItems;
 }
 
 #pragma mark -
@@ -1255,7 +1272,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	}
 	else if ( [ self.dataSource respondsToSelector:@selector(numberOfItemsInFlowView:) ] &&
 		[ self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:) ] ) {
-		self.numberOfItems = [ self.dataSource numberOfItemsInFlowView:self ];
+		self.numberOfItems = [self.dataSource numberOfItemsInFlowView:self];
 	}
 	else {
 		self.numberOfItems = 0;
@@ -1724,33 +1741,17 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setFrameForLayer:(CAReplicatorLayer*)itemLayer atIndex:(NSUInteger)anIndex withItemSize:(CGSize)itemSize
 {
-	NSUInteger selection = self.selectedIndex;
-	
 	CALayer *imageLayer = [ itemLayer sublayers ][kImageLayerIndex];
 
-	CGRect itemFrame = [ self rectForItem:anIndex withItemSize:itemSize ];
 	NSUInteger distanceFromSelection = abs( (int)(anIndex - self.selectedIndex) );
 
-	// left stack
-	if ( anIndex < selection ) {
-		imageLayer.anchorPoint = CGPointMake( 0, 0);
-		imageLayer.transform = self.leftTransform;
-		imageLayer.zPosition = self.stackedScale;
-		itemLayer.zPosition = self.stackedScale - ( distanceFromSelection ) * .5f;
-	}
-	// right stack
-	else if ( anIndex > selection ) {
-		imageLayer.anchorPoint = CGPointMake( 1, 0);
-		imageLayer.transform = self.rightTransform;
-		imageLayer.zPosition = self.stackedScale;
-		itemLayer.zPosition = self.stackedScale - ( distanceFromSelection ) * .5f;
-	}
-	else {	// center
-		imageLayer.anchorPoint = CGPointMake( 0.5, 0);
-		imageLayer.transform = CATransform3DIdentity;
-		imageLayer.zPosition = 0;//self.selectedScale;
-		itemLayer.zPosition = 0;//self.stackedScale;
-	}
+	MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:anIndex];
+	CGRect itemFrame = CGRectMake(attributes.position.x, attributes.position.y, attributes.size.width, attributes.size.height);
+	
+	imageLayer.anchorPoint = attributes.anchorPoint;
+	imageLayer.transform = attributes.transform;
+	imageLayer.zPosition = attributes.zPosition;
+
 	CGFloat aspectRatio = [ [ imageLayer valueForKey:kMMFlowViewItemAspectRatioKey ] doubleValue ];
 	aspectRatio = ( aspectRatio > 0. ) ? aspectRatio : 1.;
 	imageLayer.frame = [ self boundsFromContentWithAspectRatio:aspectRatio
@@ -1811,7 +1812,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		( self.selectedIndex == NSNotFound ) ) {
 		return;
 	}
-
+	self.layout.contentHeight = CGRectGetHeight(flowViewLayer.bounds);
 	[ CATransaction begin ];
 	[ CATransaction setDisableActions:[ self inLiveResize ] ];
 	[ CATransaction setAnimationDuration:self.scrollDuration ];

@@ -8,11 +8,12 @@
 
 #import "Kiwi.h"
 #import "MMFlowView.h"
+#import "MMFlowView_Private.h"
 
 SPEC_BEGIN(MMFlowViewSpec)
 
-context(@"MMFlowView", ^{
-	context(@"a newly created instance", ^{
+describe(@"MMFlowView", ^{
+	context(@"a new instance", ^{
 		__block MMFlowView *sut = nil;
 		NSRect initialFrame = NSMakeRect(0, 0, 400, 300);
 		beforeEach(^{
@@ -30,8 +31,7 @@ context(@"MMFlowView", ^{
 				[[[[sut class] cellClass] should] equal:[NSActionCell class]];
 			});
 		});
-		
-		it(@"should exists", ^{
+		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
 		});
 		context(@"NSView overrides", ^{
@@ -70,9 +70,6 @@ context(@"MMFlowView", ^{
 		});
 		it(@"should have a spacing of 50", ^{
 			[[theValue(sut.spacing) should] equal:@50];
-		});
-		it(@"should have a selectedScale of 200", ^{
-			[[theValue(sut.selectedScale) should] equal:@200];
 		});
 		it(@"should have a stackedScale of -200", ^{
 			[[theValue(sut.stackedScale) should] equal:@(-200)];
@@ -147,9 +144,13 @@ context(@"MMFlowView", ^{
 			});
 		});
 		context(@"layout", ^{
-			NSPoint pointInView = NSMakePoint(NSMidX([sut bounds]), NSMidY([sut bounds]));
-			NSPoint pointNotInView = NSMakePoint(NSWidth([sut bounds])*2, NSHeight([sut bounds])*2);
+			__block NSPoint pointInView;
+			__block NSPoint pointNotInView;
 
+			beforeEach(^{
+				pointInView = NSMakePoint(NSMidX([sut bounds]), NSMidY([sut bounds]));
+				pointNotInView = NSMakePoint(NSWidth([sut bounds])*2, NSHeight([sut bounds])*2);
+			});
 			context(@"indexForItemAtPoint:", ^{
 				it(@"should return NSNotFound with empty contents for point in view", ^{
 					[[theValue([sut indexOfItemAtPoint:pointInView]) should] equal:theValue(NSNotFound)];
@@ -225,6 +226,16 @@ context(@"MMFlowView", ^{
 				});
 				it(@"should have the first item selected", ^{
 					[[theValue(sut.selectedIndex) should] equal:theValue(0)];
+				});
+				context(@"layers", ^{
+					context(@"item layers", ^{
+						it(@"should have numberOfItems (10) sublayers", ^{
+							[[[sut.scrollLayer should] have:numberOfItems] sublayers];
+						});
+						it(@"should have item layers of kind MMCoverFlowItemLayer", ^{
+							
+						});
+					});
 				});
 				context(@"moving left", ^{
 					beforeEach(^{

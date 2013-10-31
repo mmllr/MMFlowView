@@ -16,11 +16,22 @@ static const CGFloat kDefaultStackedDistance = 100;
 static const CGFloat kDefaultVerticalMargin = 10.;
 static const CGFloat kMinimumContentHeight = 1;
 
+static NSString * const kContentHeightKey = @"contentHeight";
+static NSString * const kInterItemSpacingKey = @"interItemSpacing";
+static NSString * const kStackedAngleKey = @"stackedAngle";
+static NSString * const kSelectedItemIndexKey = @"selectedItemIndex";
+static NSString * const kNumberOfItemsKey = @"numberOfItems";
+static NSString * const kStackedDistanceKey = @"stackedDistance";
+static NSString * const kVerticalMarginKey = @"verticalMargin";
+
 @interface MMCoverFlowLayout ()
 
 @end
 
 @implementation MMCoverFlowLayout
+
+@dynamic contentWidth;
+@dynamic itemSize;
 
 #pragma mark - init/cleanup
 
@@ -41,6 +52,37 @@ static const CGFloat kMinimumContentHeight = 1;
 		_stackedDistance = kDefaultStackedDistance;
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    self = [super init];
+    if (self) {
+		_contentHeight = [coder decodeDoubleForKey:kContentHeightKey];
+		_interItemSpacing = [coder decodeDoubleForKey:kInterItemSpacingKey];
+		_stackedAngle = [coder decodeDoubleForKey:kStackedAngleKey];
+		_selectedItemIndex = [coder decodeIntegerForKey:kSelectedItemIndexKey];
+		_numberOfItems = [coder decodeIntegerForKey:kNumberOfItemsKey];
+		_stackedDistance = [coder decodeDoubleForKey:kStackedDistanceKey];
+		_verticalMargin = [coder decodeDoubleForKey:kVerticalMarginKey];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+	if ( [aCoder isKindOfClass:[NSKeyedArchiver class]] ) {
+		[aCoder encodeDouble:self.contentHeight forKey:kContentHeightKey];
+		[aCoder encodeDouble:self.interItemSpacing forKey:kInterItemSpacingKey];
+		[aCoder encodeDouble:self.stackedAngle forKey:kStackedAngleKey];
+		[aCoder encodeInteger:self.selectedItemIndex forKey:kSelectedItemIndexKey];
+		[aCoder encodeInteger:self.numberOfItems forKey:kNumberOfItemsKey];
+		[aCoder encodeDouble:self.stackedDistance forKey:kStackedDistanceKey];
+		[aCoder encodeDouble:self.verticalMargin forKey:kVerticalMarginKey];
+	}
+	else {
+        [NSException raise:NSInvalidArchiveOperationException format:@"Only supports NSKeyedArchiver coders"];
+    }
 }
 
 #pragma mark - accessors
@@ -119,6 +161,25 @@ static const CGFloat kMinimumContentHeight = 1;
 	return CGSizeMake(height, height);
 }
 
+- (CGFloat)contentWidth
+{
+	if ( !self.numberOfItems ) {
+		return 0;
+	}
+	CGFloat itemWidth = self.itemSize.width;
+	CGFloat cosStackedAngle = self.stackedAngle * M_PI / 180.;
+	CGFloat width = itemWidth + (cosStackedAngle*self.interItemSpacing + cosStackedAngle*itemWidth) * MAX( 0, (self.numberOfItems - 1 ));
+
+	if ( self.selectedItemIndex == 0 ||
+		self.selectedItemIndex == ( self.numberOfItems - 1 )) {
+		width += self.interItemSpacing;
+	}
+	else {
+		width += self.interItemSpacing * 2;
+	}
+	return width;
+}
+
 #pragma mark - public interface
 
 - (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex
@@ -160,10 +221,19 @@ static const CGFloat kMinimumContentHeight = 1;
 
 - (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex
 {
+	CGFloat itemWidth = self.itemSize.width;
+
 	CGFloat cosStackedAngle = self.stackedAngle * M_PI / 180.;
-	CGFloat stackedWidth = self.itemSize.width * cosStackedAngle + cosStackedAngle * self.interItemSpacing;
+	CGFloat stackedWidth = itemWidth * cosStackedAngle + cosStackedAngle * self.interItemSpacing;
 	CGFloat offset = stackedWidth * anIndex;
-	
+
+	BOOL firstItemSelected = ( self.selectedItemIndex == 0 );
+	if ( ( anIndex == self.selectedItemIndex ) && !firstItemSelected ) {
+		offset += itemWidth / 2.;
+	}
+	if ( anIndex > self.selectedItemIndex ) {
+		offset += firstItemSelected ? itemWidth / 2. : itemWidth;
+	}
 	return offset;
 }
 

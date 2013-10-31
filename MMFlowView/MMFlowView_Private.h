@@ -12,8 +12,11 @@
 #import "MMFlowView.h"
 #import "MMButtonLayer.h"
 #import "MMVideoOverlayLayer.h"
+#import "MMCoverFlowLayout.h"
 
 @interface MMFlowView ()
+
+@property (strong) MMCoverFlowLayout *layout;
 
 /* layers */
 @property (strong,readwrite) CALayer *backgroundLayer;
@@ -28,16 +31,13 @@
 @property (assign,nonatomic) BOOL draggingKnob;
 @property (assign) CGFloat mouseDownInKnob;
 
-/* number of items in view */
-@property (assign,nonatomic) NSUInteger numberOfItems;
+@property (readwrite,nonatomic) NSUInteger numberOfItems;
 
-/* indexes of all visible items */
 @property (strong, readwrite) NSIndexSet *visibleItemIndexes;
 
 /* number of potentialy visible items, taking in account selection scrolled to left- and rightmost index */
 @property (readonly,nonatomic) NSUInteger maximumNumberOfStackedVisibleItems;
 
-/* operation queue for asynchronous operations such as image and movie loading */
 @property (strong) NSOperationQueue *operationQueue;
 
 /* image cache which holds key-value pairs of image-uids (key) and CGImageRefs (value) */

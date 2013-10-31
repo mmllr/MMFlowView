@@ -11,7 +11,7 @@
 
 SPEC_BEGIN(MMCoverFlowLayoutAttributesSpec)
 
-context(@"MMCoverFlowLayoutAttributes", ^{
+describe(@"MMCoverFlowLayoutAttributes", ^{
 	context(@"a new instance", ^{
 		__block MMCoverFlowLayoutAttributes *sut = nil;
 

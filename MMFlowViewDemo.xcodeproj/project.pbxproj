@@ -16,6 +16,10 @@
 		2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */; };
 		2876FF54180B2CA300318C7B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF53180B2CA300318C7B /* Cocoa.framework */; };
 		2876FF56180B2CBA00318C7B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF55180B2CBA00318C7B /* QuartzCore.framework */; };
+		2877D87F181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D87E181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m */; };
+		2877D882181FE1DF00FD5E07 /* MMFlowViewItemLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D881181FE1DF00FD5E07 /* MMFlowViewItemLayer.m */; };
+		2877D884181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */; };
+		2877D887181FF08D00FD5E07 /* MMFlowViewImageLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */; };
 		287F73C216308E2D0004BA0F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C116308E2D0004BA0F /* Quartz.framework */; };
 		287F73C416308E320004BA0F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C316308E320004BA0F /* Cocoa.framework */; };
 		287F73C616308E360004BA0F /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C516308E360004BA0F /* QTKit.framework */; };
@@ -63,6 +67,12 @@
 		2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerAccessibilitySpec.m; sourceTree = "<group>"; };
 		2876FF53180B2CA300318C7B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2876FF55180B2CBA00318C7B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		2877D87E181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewItemLayerSpec.m; sourceTree = "<group>"; };
+		2877D880181FE1DF00FD5E07 /* MMFlowViewItemLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewItemLayer.h; path = MMFlowView/MMFlowViewItemLayer.h; sourceTree = "<group>"; };
+		2877D881181FE1DF00FD5E07 /* MMFlowViewItemLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewItemLayer.m; path = MMFlowView/MMFlowViewItemLayer.m; sourceTree = "<group>"; };
+		2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowImageLayerSpec.m; sourceTree = "<group>"; };
+		2877D885181FF08D00FD5E07 /* MMFlowViewImageLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewImageLayer.h; path = MMFlowView/MMFlowViewImageLayer.h; sourceTree = "<group>"; };
+		2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewImageLayer.m; path = MMFlowView/MMFlowViewImageLayer.m; sourceTree = "<group>"; };
 		287F73C116308E2D0004BA0F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C316308E320004BA0F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C516308E360004BA0F /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -157,6 +167,8 @@
 				28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */,
 				28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */,
 				28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */,
+				2877D87E181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m */,
+				2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */,
 			);
 			name = Specs;
 			path = MMFlowView/Specs;
@@ -182,6 +194,10 @@
 				28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */,
 				28E085341811C2FA003CC49E /* MMCoverFlowLayoutAttributes.h */,
 				28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */,
+				2877D880181FE1DF00FD5E07 /* MMFlowViewItemLayer.h */,
+				2877D881181FE1DF00FD5E07 /* MMFlowViewItemLayer.m */,
+				2877D885181FF08D00FD5E07 /* MMFlowViewImageLayer.h */,
+				2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -391,10 +407,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2877D884181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m in Sources */,
 				2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */,
 				28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */,
 				28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
 				28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */,
+				2877D87F181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -403,10 +421,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */,
+				2877D882181FE1DF00FD5E07 /* MMFlowViewItemLayer.m in Sources */,
 				28DEFC0B15AEEE9A0096FBA4 /* AppDelegate.m in Sources */,
 				28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */,
 				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
 				288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */,
+				2877D887181FF08D00FD5E07 /* MMFlowViewImageLayer.m in Sources */,
 				282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */,
 				28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */,
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
