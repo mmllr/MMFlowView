@@ -11,12 +11,13 @@
 @class MMCoverFlowLayout;
 @class MMCoverFlowLayer;
 
-@protocol MMCoverFlowLayerDatasource <NSObject>
+@protocol MMCoverFlowLayerDataSource <NSObject>
 
-- (CGImageRef)coverFlowLayer:(MMCoverFlowLayer*)layer imageAtIndex:(NSUInteger)index;
+- (NSUInteger)numberOfItemsInCoverFlowLayer:(MMCoverFlowLayer*)coverFlowLayer;
+- (CALayer*)coverFlowLayer:(MMCoverFlowLayer*)layer contentLayerForIndex:(NSUInteger)index;
 @optional
-- (void)coverFlowLayerWillRelayout:(MMCoverFlowLayer*)layer;
-- (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)layer;
+- (void)coverFlowLayerWillRelayout:(MMCoverFlowLayer*)coverFlowLayer;
+- (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer;
 
 @end
 
@@ -24,9 +25,12 @@
 
 @property (nonatomic) CGFloat eyeDistance;
 @property (nonatomic) BOOL inLiveResize;
-@property (nonatomic) NSUInteger numberOfItems;
+@property (nonatomic, readonly) NSUInteger numberOfItems;
+@property (nonatomic) NSUInteger selectedItemIndex;
+@property (nonatomic, weak) id<MMCoverFlowLayerDataSource> dataSource;
 
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout;
 - (id)initWithLayout:(MMCoverFlowLayout*)layout;
+- (void)reloadContent;
 
 @end

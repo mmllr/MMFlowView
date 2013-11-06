@@ -8,18 +8,24 @@
 
 #import "MMCoverFlowLayer.h"
 #import "MMCoverFlowLayout.h"
+#import "MMCoverFlowLayoutAttributes.h"
 
+static const CGFloat kDefaultWidth = 50.;
+static const CGFloat kDefaultHeight = 50.;
 static const CGFloat kDefaultEyeDistance = 1500.;
 
 @interface MMCoverFlowLayer ()
 
 @property (strong) MMCoverFlowLayout *layout;
+@property (nonatomic, readonly) CGPoint selectedScrollPoint;
 
 @end
 
 @implementation MMCoverFlowLayer
 
 @dynamic numberOfItems;
+@dynamic selectedItemIndex;
+@dynamic selectedScrollPoint;
 
 #pragma mark - class methods
 
@@ -40,6 +46,7 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 {
     self = [super init];
     if (self) {
+		self.frame = CGRectMake(0, 0, kDefaultWidth, kDefaultHeight);
 		self.layout = layout;
         self.scrollMode = kCAScrollHorizontally;
 		self.masksToBounds = NO;
@@ -57,10 +64,15 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 	return self.layout.numberOfItems;
 }
 
-- (void)setNumberOfItems:(NSUInteger)numberOfItems
+- (NSUInteger)selectedItemIndex
 {
-	self.layout.numberOfItems = numberOfItems;
-	[self setNeedsLayout];
+	return self.layout.selectedItemIndex;
+}
+
+- (void)setSelectedItemIndex:(NSUInteger)selectedItemIndex
+{
+	self.layout.selectedItemIndex = selectedItemIndex;
+	[self layoutSublayers];
 }
 
 - (void)setEyeDistance:(CGFloat)eyeDistance
@@ -69,6 +81,32 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 	CATransform3D transform = CATransform3DIdentity;
 	transform.m34 = 1. / - eyeDistance;
 	self.sublayerTransform = transform;
+}
+
+- (CGPoint)selectedScrollPoint
+{
+	MMCoverFlowLayoutAttributes *attr = [self.layout layoutAttributesForItemAtIndex:self.layout.selectedItemIndex];
+	CGPoint point = CGPointMake( attr.position.x - (CGRectGetWidth(self.bounds) / 2.) + self.layout.itemSize.width / 2, 0 );
+	return point;
+}
+
+#pragma mark - class logic
+
+- (void)reloadContent
+{
+	NSUInteger numberOfItems = 0;
+	if ( [self.dataSource respondsToSelector:@selector(numberOfItemsInCoverFlowLayer:)] ) {
+		numberOfItems = [self.dataSource numberOfItemsInCoverFlowLayer:self];
+	}
+	for ( NSInteger i = 0; i < numberOfItems; ++i ) {
+		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayer:contentLayerForIndex:)] ) {
+			CALayer *contentLayer = [self.dataSource coverFlowLayer:self contentLayerForIndex:i];
+			[self addSublayer:contentLayer];
+		}
+	}
+	self.layout.numberOfItems = numberOfItems;
+	//[self applyLayout];
+	[self layoutSublayers];
 }
 
 #pragma mark - CALayerDelegate
@@ -87,8 +125,33 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 - (void)layoutSublayersOfLayer:(CALayer *)layer
 {
 	if ( layer == self ) {
-		
+		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerWillRelayout:)] ) {
+			[self.dataSource coverFlowLayerWillRelayout:self];
+		}
+		[self applyLayout];
+		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerDidRelayout:)] ) {
+			[self.dataSource coverFlowLayerDidRelayout:self];
+		}
 	}
+}
+
+- (void)applyLayout
+{
+	self.layout.contentHeight = CGRectGetHeight(self.bounds);
+	[self.sublayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+		MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:idx];
+		[self applyAttributes:attributes toContentLayer:contentLayer];
+	}];
+	[self scrollToPoint:self.selectedScrollPoint];
+}
+
+- (void)applyAttributes:(MMCoverFlowLayoutAttributes*)attributes toContentLayer:(CALayer*)contentLayer
+{
+	contentLayer.anchorPoint = attributes.anchorPoint;
+	contentLayer.transform = attributes.transform;
+	contentLayer.position = attributes.position;
+	contentLayer.bounds = attributes.bounds;
+	contentLayer.zPosition = attributes.zPosition;
 }
 
 @end
