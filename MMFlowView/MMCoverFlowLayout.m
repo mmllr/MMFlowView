@@ -188,7 +188,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		MMCoverFlowLayoutAttributes *attributes = [[MMCoverFlowLayoutAttributes alloc] init];
 		attributes.index = itemIndex;
 		CGFloat height = self.contentHeight - (self.verticalMargin * 2);
-		attributes.size = CGSizeMake(height, height);
+		attributes.bounds = CGRectMake(0, 0, height, height);
 		attributes.position = [self originForItem:itemIndex];
 
 		if ( itemIndex < self.selectedItemIndex ) {

@@ -36,9 +36,9 @@ describe(@"MMCoverFlowLayoutAttributes", ^{
 			BOOL isZero = CGPointEqualToPoint(sut.position, CGPointZero);
 			[[theValue(isZero) should] beYes];
 		});
-		it(@"should have a zero size", ^{
-			BOOL isZeroSize = CGSizeEqualToSize(sut.size, CGSizeZero);
-			[[theValue(isZeroSize) should] beYes];
+		it(@"should have zero bounds", ^{
+			BOOL isZeroRect = CGRectEqualToRect(CGRectZero, sut.bounds);
+			[[theValue(isZeroRect) should] beYes];
 		});
 		it(@"should have a {0.5,0.5} anchorpoint", ^{
 			NSValue *expectedPoint = [NSValue valueWithPoint:NSPointFromCGPoint(CGPointMake(.5, .5))];

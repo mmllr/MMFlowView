@@ -293,10 +293,10 @@ describe(@"MMCoverFlowLayout", ^{
 						expectedHeight = sut.contentHeight - sut.verticalMargin*2;
 					});
 					it(@"should have a height of contentHeight - verticalMargin", ^{
-						[[theValue(attributes.size.height) should] equal:theValue(expectedHeight)];
+						[[theValue(CGRectGetHeight(attributes.bounds)) should] equal:theValue(expectedHeight)];
 					});
 					it(@"should have same width as height", ^{
-						[[theValue(attributes.size.width) should] equal:theValue(attributes.size.height)];
+						[[theValue(CGRectGetWidth(attributes.bounds)) should] equal:theValue(CGRectGetHeight(attributes.bounds))];
 					});
 				});
 				context(@"left stack", ^{

@@ -1746,7 +1746,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	NSUInteger distanceFromSelection = abs( (int)(anIndex - self.selectedIndex) );
 
 	MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:anIndex];
-	CGRect itemFrame = CGRectMake(attributes.position.x, attributes.position.y, attributes.size.width, attributes.size.height);
+	CGRect itemFrame = CGRectMake(attributes.position.x, attributes.position.y, attributes.bounds.size.width, attributes.bounds.size.height);
 	
 	imageLayer.anchorPoint = attributes.anchorPoint;
 	imageLayer.transform = attributes.transform;
