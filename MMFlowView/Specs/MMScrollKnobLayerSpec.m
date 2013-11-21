@@ -1,0 +1,103 @@
+//
+//  MMScrollKnobLayerSpec.m
+//  MMFlowViewDemo
+//
+//  Created by Markus Müller on 18.11.13.
+//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//
+
+#import "Kiwi.h"
+#import "MMScrollKnobLayer.h"
+
+SPEC_BEGIN(MMScrollKnobLayerSpec)
+
+describe(@"MMScrollKnobLayer", ^{
+	context(@"a new instance", ^{
+		__block MMScrollKnobLayer *sut = nil;
+
+		beforeEach(^{
+			sut = [MMScrollKnobLayer layer];
+		});
+		afterEach(^{
+			sut = nil;
+		});
+		it(@"should be a CAGradientLayer class", ^{
+			[[sut should] beKindOfClass:[CAGradientLayer class]];
+		});
+		it(@"should have a name of MMScrollKnobLayer", ^{
+			[[sut.name should] equal:@"MMScrollKnobLayer"];
+		});
+		it(@"should have a height of 16", ^{
+			[[theValue(CGRectGetHeight(sut.frame)) should] equal:theValue(16.)];
+		});
+		it(@"should have a width of 10", ^{
+			[[theValue(CGRectGetWidth(sut.frame)) should] equal:theValue(10.)];
+		});
+		it(@"should display on bounds change", ^{
+			[[theValue(sut.needsDisplayOnBoundsChange) should] beYes];
+		});
+		it(@"should have a gray border color", ^{
+			[[[NSColor colorWithCGColor:sut.borderColor] should] equal:[NSColor grayColor]];
+		});
+		it(@"should have a border width of 1", ^{
+			[[theValue(sut.borderWidth) should] equal:theValue(1.)];
+		});
+		it(@"should have corner radius of 9", ^{
+			[[theValue(sut.cornerRadius) should] equal:theValue(9.)];
+		});
+		it(@"should have an anchorPoint of (0.5, 0.5)", ^{
+			NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(.5, .5)];
+			[[[NSValue valueWithPoint:sut.anchorPoint] should] equal:expectedPoint];
+		});
+		it(@"should have a startPoint of (0.5, 1)", ^{
+			NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0.5, 1.)];
+			[[[NSValue valueWithPoint:sut.startPoint] should] equal:expectedPoint];
+		});
+		it(@"should have a startPoint of (0.5, 0)", ^{
+			NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0.5, 0)];
+			[[[NSValue valueWithPoint:sut.endPoint] should] equal:expectedPoint];
+		});
+		it(@"should have the gradient colors", ^{
+			NSArray *expectedColors = @[(__bridge id)[ [ NSColor colorWithCalibratedRed:64.f / 255.f green:64.f / 255.f blue:74.f / 255.f alpha:1 ] CGColor ],
+			  (__bridge id)[[ NSColor colorWithCalibratedRed:46.f / 255.f green:46.f / 255.f blue:58.f / 255.f alpha:1.f ] CGColor ],
+			  (__bridge id)[[ NSColor colorWithCalibratedRed:37.f / 255.f green:37.f / 255.f blue:50.f / 255.f alpha:1.f ] CGColor ],
+			  (__bridge id)[[ NSColor colorWithCalibratedRed:51.f / 255.f green:52.f / 255.f blue:66.f / 255.f alpha:1.f ] CGColor ]];
+			[[sut.colors should] equal:expectedColors];
+		});
+		it(@"should have the gradient locations", ^{
+			NSArray * expectedLocations = @[@0., @.5, @.51, @1.];
+			[[sut.locations should] equal:expectedLocations];
+		});
+		it(@"should have an axial gradient type", ^{
+			[[sut.type should] equal:kCAGradientLayerAxial];
+		});
+		context(@"CoreAnimation actions", ^{
+			__block NSDictionary *actions = nil;
+			beforeEach(^{
+				actions = sut.actions;
+			});
+			afterEach(^{
+				actions = nil;
+			});
+			it(@"should have disabled the implicit position action", ^{
+				[[actions[@"position"] should] equal:[NSNull null]];
+			});
+			it(@"should have disabled the implicit bounds action", ^{
+				[[actions[@"bounds"] should] equal:[NSNull null]];
+			});
+		});
+		context(@"NSAccessibility", ^{
+			it(@"should not be ignored", ^{
+				[[theValue([sut accessibilityIsIgnored]) should] beNo];
+			});
+			it(@"should have a value indicator role", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityRoleAttribute] should] equal:NSAccessibilityValueIndicatorRole];
+			});
+			it(@"should be enabled", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityEnabledAttribute] should] beYes];
+			});
+		});
+	});
+});
+
+SPEC_END

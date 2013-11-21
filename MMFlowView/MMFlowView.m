@@ -497,6 +497,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
 		[ self registerForDraggedTypes:@[NSURLPboardType] ];
+		[self setUpBindings];
     }
     return self;
 }
@@ -527,6 +528,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			[ self setInitialDefaults ];
 		}
 		[ self setupLayers ];
+		[self setUpBindings];
 		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
 	}
@@ -555,6 +557,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)dealloc
 {
+	[self tearDownBindings];
 	[ self.operationQueue cancelAllOperations ];
 }
 
@@ -577,6 +580,20 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	self.previewScale = kDefaultPreviewScale;
 }
 
+
+- (void)setUpBindings
+{
+	[self.layout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
+	[self.layout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
+	[self bind:@"visibleItemIndexes" toObject:self.coverFlowLayer withKeyPath:@"visibleItemIndexes" options:nil];
+}
+
+- (void)tearDownBindings
+{
+	[self unbind:@"visibleItemIndexes"];
+	[self.layout unbind:@"stackedAngle"];
+	[self.layout unbind:@"interItemSpacing"];
+}
 
 #pragma mark -
 #pragma mark Accesors
@@ -609,24 +626,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 - (void)setTitleColor:(NSColor*)aColor
 {
 	self.titleLayer.foregroundColor = [ aColor CGColor ];
-}
-
-- (void)setStackedAngle:(CGFloat)anAngle
-{
-	if ( anAngle != _stackedAngle ) {
-		_stackedAngle = CLAMP( anAngle, 0., kMaximumStackedAngle );
-		self.leftTransform = CATransform3DMakeRotation( DegreesToRadians(anAngle), 0, 1, 0 );
-		self.rightTransform = CATransform3DMakeRotation( -DegreesToRadians(anAngle), 0, 1, 0 );
-		[ self.scrollLayer setNeedsLayout ];
-	}
-}
-
-- (void)setSpacing:(CGFloat)aSpacing
-{
-	if ( aSpacing != _spacing ) {
-		_spacing = aSpacing;
-		[ self.scrollLayer setNeedsLayout ];
-	}
 }
 
 - (void)setSelectedIndex:(NSUInteger)index
@@ -670,7 +669,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	if ( _itemScale != newItemScale ) {
 		_itemScale = CLAMP( newItemScale, kMinimumItemScale, kMaximumItemScale );
-		[ self.scrollLayer setNeedsLayout ];
 	}
 }
 
@@ -792,42 +790,12 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	return offset;
 }
 
-- (CGRect)rectForItem:(NSUInteger)index withItemSize:(CGSize)itemSize
-{
-	CGPoint origin = [ self originForItem:index
-								 itemSize:itemSize
-							 stackedAngle:self.stackedAngle
-							  itemSpacing:self.spacing
-						 selectedIndex:self.selectedIndex ];
-	return CGRectMake( origin.x, origin.y, itemSize.width, itemSize.height );
-}
-
-- (CGPoint)originForItem:(NSUInteger)itemIndex itemSize:(CGSize)itemSize stackedAngle:(CGFloat)aStackedAngle itemSpacing:(CGFloat)itemSpacing selectedIndex:(NSUInteger)theSelection
-{
-	CGPoint origin = CGPointMake( 0, CGRectGetMidY(self.scrollLayer.bounds) - itemSize.height / 2 );
-	origin.x += [ self horizontalOffsetForItem:itemIndex
-								 withItemWidth:itemSize.width
-								  stackedAngle:aStackedAngle
-								   itemSpacing:itemSpacing
-								 selectedIndex:theSelection ];
-	return origin;
-}
-
-- (CGPoint)selectedScrollPoint
-{
-	CGRect scrollRect = self.scrollLayer.bounds;
-	CGSize itemSize = [ self itemSizeForRect:scrollRect ];
-
-	CGRect selectedItemRect = [ self rectForItem:self.selectedIndex withItemSize:itemSize ];
-	return CGPointMake( selectedItemRect.origin.x - scrollRect.size.width / 2 + itemSize.width / 2, 0 );
-}
-
 #pragma mark -
 #pragma mark Layer getter
 
 - (CAReplicatorLayer*)itemLayerAtIndex:(NSUInteger)anIndex
 {
-	return ( [ self.scrollLayer.sublayers count ] > anIndex ) ? (self.scrollLayer.sublayers)[anIndex] : nil;
+	return nil;
 }
 
 - (CALayer*)imageLayerAtIndex:(NSUInteger)anIndex
@@ -909,10 +877,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (NSRect)itemFrameAtIndex:(NSUInteger)anIndex
 {
-	CGRect layerFrame = [ self.layer convertRect:[ self rectForItem:anIndex
-													   withItemSize:[ self itemSizeForRect:self.scrollLayer.bounds ] ]
-									   fromLayer:self.scrollLayer ];
-	return NSRectFromCGRect( layerFrame );
+	return NSZeroRect;
 }
 
 #pragma mark -
@@ -1279,10 +1244,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	}
 	[ CATransaction begin ];
 	[ CATransaction setDisableActions:YES ];
-	for ( CALayer *itemLayer in self.scrollLayer.sublayers ) {
-		[ self enqeueItemLayer:itemLayer ];
-	}
-	self.scrollLayer.sublayers = @[];
 
 	for ( NSUInteger itemIndex = 0; itemIndex < self.numberOfItems; ++itemIndex ) {
 		CALayer *itemLayer = [ self deqeueItemLayer ];
@@ -1296,13 +1257,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		else {
 			itemLayer = [ self createItemLayerWithIndex:itemIndex ];
 		}
-		[ self.scrollLayer addSublayer:itemLayer ];
 	}
 	[ CATransaction commit ];
 	if ( self.selectedIndex > self.numberOfItems ) {
 		self.selectedIndex = 0;
 	};
-	[ self.scrollLayer setNeedsLayout ];
 	[ self updateSelectionInRange:NSMakeRange( 0, self.numberOfItems ) ];
 	[ self updateScrollKnob ];
 }
@@ -1398,12 +1357,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	self.containerLayer = [ self createContainerLayer ];
 	[ self.backgroundLayer addSublayer:self.containerLayer ];
 	[ self.backgroundLayer insertSublayer:self.titleLayer above:self.containerLayer ];
-	self.scrollLayer = [self createScrollLayer];
+	self.coverFlowLayer = [MMCoverFlowLayer layerWithLayout:self.layout];
+	self.coverFlowLayer.dataSource = self;
 	self.scrollBarLayer = [self createScrollBarLayer];
-	[self.containerLayer addSublayer:self.scrollLayer];
+	[self.containerLayer addSublayer:self.coverFlowLayer];
 	[self.backgroundLayer insertSublayer:self.scrollBarLayer above:self.containerLayer ];
 	[self setAccessiblityEnabledLayer:self.backgroundLayer];
-	[self.scrollLayer setNeedsLayout ];
+	[self.coverFlowLayer setNeedsLayout ];
 	[self.layer setNeedsDisplay ];
 }
 
@@ -1411,7 +1371,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	CAGradientLayer *layer = [ CAGradientLayer layer ];
 	layer.position = CGPointMake( 0, 0 );
-	layer.bounds = CGRectMake( 0, 0, NSWidth( [ self bounds ] ), NSHeight( [ self bounds ] ) );
+	layer.bounds = CGRectMake( 0, 0, NSWidth([self bounds]), NSHeight([self bounds]) );
 
 	layer.colors = [[ self class ] backgroundGradientColors ];
 	layer.locations = [ [ self class ] backgroundGradientLocations ];
@@ -1454,47 +1414,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	customActions[kBoundsKey] = [NSNull null];
 	// set theLayer actions to the updated dictionary
 	layer.actions = customActions;
-	return layer;
-}
-
-- (CAScrollLayer*)createScrollLayer
-{
-	CAScrollLayer *layer = [ CAScrollLayer layer ];
-	layer.scrollMode = kCAScrollHorizontally;
-	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
-	layer.layoutManager = self;
-	layer.sublayerTransform = self.perspective;
-	layer.masksToBounds = NO;
-	layer.delegate = self;
-	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
-	
-	[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
-									   return NSAccessibilityListRole;
-								   }];
-	[layer setReadableAccessibilityAttribute:NSAccessibilitySubroleAttribute withBlock:^id{
-		return NSAccessibilityContentListSubrole;
-	}];
-	[layer setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute withBlock:^id{
-									   return NSAccessibilityHorizontalOrientationValue;
-								   }];
-	[layer setReadableAccessibilityAttribute:NSAccessibilityVisibleChildrenAttribute withBlock:^id{
-									   NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
-									   return [children objectsAtIndexes:weakSelf.visibleItemIndexes];
-								   }];
-	[layer setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
-								   readBlock:^id{
-									   NSArray *children = NSAccessibilityUnignoredChildren(weakSelf.scrollLayer.sublayers);
-									   return @[children[weakSelf.selectedIndex]];
-								   }
-								  writeBlock:^(id value) {
-									  if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
-										  CALayer *layer = value[0];
-										  if ( [layer isKindOfClass:[CALayer class]] ) {
-											  NSNumber *index = [layer valueForKey:kMMFlowViewItemIndexKey];
-											  weakSelf.selectedIndex = [index unsignedIntegerValue];
-										  }
-									  }
-								  }];
 	return layer;
 }
 
@@ -1684,7 +1603,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	customActions[kBoundsKey] = [ NSNull null ];
 	// set theLayer actions to the updated dictionary
 	knobLayer.actions = customActions;
-	
+
 	[ layer addSublayer:knobLayer ];
 
 	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
@@ -1792,83 +1711,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 }
 
 #pragma mark -
-#pragma mark CALayerDelegate protocol
-
-- (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
-{
-	if ( layer == self.scrollLayer && [ self inLiveResize ] ) {
-		// disable implicit animations for scrolllayer in live resize
-		return (id<CAAction>)[ NSNull null ];
-	}
-	return nil;
-}
-
-#pragma mark -
-#pragma mark CALayoutManager protocol
-
-- (void)layoutSublayersOfLayer:(CALayer *)flowViewLayer
-{
-	if ( ( flowViewLayer != self.scrollLayer ) ||
-		( self.selectedIndex == NSNotFound ) ) {
-		return;
-	}
-	self.layout.contentHeight = CGRectGetHeight(flowViewLayer.bounds);
-	[ CATransaction begin ];
-	[ CATransaction setDisableActions:[ self inLiveResize ] ];
-	[ CATransaction setAnimationDuration:self.scrollDuration ];
-	[ CATransaction setAnimationTimingFunction:[ CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut ] ];
-	[ CATransaction setCompletionBlock:^{
-		[ self updateImages ];
-		[ self setupTrackingAreas ];
-	} ];
-	// layout
-	[ self layoutItemLayersInRange:NSMakeRange( 0, self.numberOfItems ) ];
-	[ self.scrollLayer scrollToPoint:[ self selectedScrollPoint ] ];
-	[ CATransaction commit ];
-	[ self calculateVisibleItems ];
-	[ self updateScrollKnob ];
-}
-
-- (void)layoutItemLayersInRange:(NSRange)layoutRange
-{
-	CGSize itemSize = [ self itemSizeForRect:self.scrollLayer.bounds ];
-
-	NSIndexSet *updatedIndexes = [ NSIndexSet indexSetWithIndexesInRange:NSIntersectionRange( layoutRange, NSMakeRange( 0, self.numberOfItems ) ) ];
-
-	[ updatedIndexes enumerateIndexesUsingBlock:^(NSUInteger itemIndex, BOOL *stop) {
-		[ self setFrameForLayer:(CAReplicatorLayer*)[ self itemLayerAtIndex:itemIndex ]
-						atIndex:itemIndex
-				   withItemSize:itemSize ];
-	} ];
-}
-
-- (void)calculateVisibleItems
-{
-	NSInteger firstVisibleItem = NSNotFound;
-	NSUInteger numberOfVisibleItems = 0;
-
-	// visibility test
-	for ( CAReplicatorLayer *itemLayer in self.scrollLayer.sublayers )	{
-		NSUInteger itemIndex = [[itemLayer valueForKey:kMMFlowViewItemIndexKey] unsignedIntegerValue];
-		
-		if ( !CGRectIsEmpty( itemLayer.visibleRect ) ) {
-			if ( firstVisibleItem == NSNotFound ) {
-				firstVisibleItem = itemIndex;
-			}
-			numberOfVisibleItems++;
-		}
-	}
-	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [ NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems ) ] : [ NSIndexSet indexSet ];
-}
-
-#pragma mark -
 #pragma mark Layer updating
 
 - (void)updateImages
 {
 	[ self.operationQueue cancelAllOperations ];
 	NSIndexSet *allIndexes = [ NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, self.numberOfItems ) ];
-	CGRect visibleFrame = self.scrollLayer.visibleRect;
+	CGRect visibleFrame = self.coverFlowLayer.visibleRect;
 
 	[ allIndexes enumerateIndexesUsingBlock:^(NSUInteger anIndex, BOOL *stop) {
 		if ( [ self.visibleItemIndexes containsIndex:anIndex ] ||
@@ -1892,7 +1741,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)updateImageLayerAtIndex:(NSUInteger)anIndex
 {
-	CGSize imageSize = [ self itemSizeForRect:[ self.scrollLayer frame ] ];
+	CGSize imageSize = [ self itemSizeForRect:[ self.coverFlowLayer frame ] ];
 	imageSize = ( anIndex == self.selectedIndex ) ? imageSize : CGSizeApplyAffineTransform(imageSize, CGAffineTransformMakeScale( self.previewScale, self.previewScale ) );
 	id item = [ self imageItemForIndex:anIndex ];
 	NSString *imageUID = [ self imageUIDForItem:item ];
@@ -1992,10 +1841,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		[ self updateImages ];
 		[ self setupTrackingAreas ];
 	} ];
-	[ self layoutItemLayersInRange:invalidatedRange ];
-	[ self.scrollLayer scrollToPoint:[ self selectedScrollPoint ] ];
 	[ CATransaction commit ];
-	[ self calculateVisibleItems ];
 	[ self updateScrollKnob ];
 	self.title = [ self titleAtIndex:self.selectedIndex ];
 	// ax
@@ -2003,13 +1849,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 }
 
 - (void)updateReflection
-{
+{/*
 	for ( CAReplicatorLayer *layer in self.scrollLayer.sublayers ) {
 		layer.instanceCount = self.showsReflection ? 2 : 1;
 		layer.instanceRedOffset = self.reflectionOffset;
 		layer.instanceGreenOffset = self.reflectionOffset;
 		layer.instanceBlueOffset = self.reflectionOffset;
-	}
+	}*/
 }
 
 - (void)updateScrollKnob
@@ -2386,7 +2232,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			[ keyPath isEqualToString:self.imageRepresentationKeyPath ] ||
 			[ keyPath isEqualToString:self.imageRepresentationTypeKeyPath ] ) {
 			[ self.imageCache removeObjectForKey:[ observedObject valueForKeyPath:self.imageUIDKeyPath ] ];
-			[ self.scrollLayer setNeedsLayout ];
+			[ self.coverFlowLayer setNeedsLayout ];
 		}
 		else if ( [ keyPath isEqualToString:self.imageTitleKeyPath ] ) {
 			self.title = [ observedObject valueForKeyPath:keyPath ];

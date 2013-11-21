@@ -10,6 +10,7 @@
 #import "MMCoverFlowLayer.h"
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayoutAttributes.h"
+#import "CALayer+NSAccessibility.h"
 
 SPEC_BEGIN(MMCoverFlowLayerSpec)
 
@@ -66,6 +67,9 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should have a default width of 50", ^{
 			[[theValue(CGRectGetWidth(sut.bounds)) should] equal:theValue(50)];
 		});
+		it(@"should have empty visible item indexes", ^{
+			[[sut.visibleItemIndexes should] equal:[NSIndexSet indexSet]];
+		});
 		it(@"should have no sublayers", ^{
 			[[[sut should] have:0] sublayers];
 		});
@@ -79,6 +83,9 @@ describe(@"MMCoverFlowLayer", ^{
 		});
 		it(@"should not initiallly be in resizing", ^{
 			[[theValue(sut.inLiveResize) should] beNo];
+		});
+		it(@"should have set its layout", ^{
+			[[sut.layout should] equal:layout];
 		});
 		it(@"should be its own delegate", ^{
 			[[sut.delegate should] equal:sut];
@@ -95,6 +102,32 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should have a selectedItemIndex of NSNotFound", ^{
 			[[theValue(sut.selectedItemIndex) should] equal:theValue(NSNotFound)];
 		});
+		context(@"observing layout changes", ^{
+			it(@"should trigger a relayout if stackedAngle of layout changed", ^{
+				[[sut should] receive:@selector(setNeedsLayout)];
+				sut.layout.stackedAngle = 20;
+			});
+			it(@"should trigger a relayout if layout´s interItemSpacing changes", ^{
+				[[sut should] receive:@selector(setNeedsLayout)];
+				sut.layout.interItemSpacing = 100;
+			});
+			it(@"should trigger relayout if layout´s selectedItemIndex changes", ^{
+				[[sut should] receive:@selector(setNeedsLayout)];
+				sut.layout.selectedItemIndex = 0;
+			});
+			it(@"should trigger relayout if layout´s stackedDistance changes", ^{
+				[[sut should] receive:@selector(setNeedsLayout)];
+				sut.layout.stackedDistance = 50;
+			});
+			it(@"should trigger relayout if layout´s verticalMargin changes", ^{
+				[[sut should] receive:@selector(setNeedsLayout)];
+				sut.layout.verticalMargin = 5;
+			});
+			it(@"should trigger relayout if layout´s numberOfItems changes", ^{
+				[[sut should] receive:@selector(setNeedsLayout)];
+				sut.layout.numberOfItems = 5;
+			});
+		});
 		context(@"eyeDistance", ^{
 			beforeEach(^{
 				sut.eyeDistance = 1000;
@@ -108,6 +141,34 @@ describe(@"MMCoverFlowLayer", ^{
 				[[[NSValue valueWithCATransform3D:sut.sublayerTransform] should] equal:[NSValue valueWithCATransform3D:expectedTransform]];
 			});
 
+		});
+		context(@"NSAccessibility", ^{
+			NSArray *expectedDefaultAttributes = @[NSAccessibilityParentAttribute, NSAccessibilitySizeAttribute, NSAccessibilityPositionAttribute, NSAccessibilityWindowAttribute, NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityRoleAttribute, NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute, NSAccessibilityFocusedAttribute];
+
+			it(@"should not be ax ignored", ^{
+				[[theValue([sut accessibilityIsIgnored]) should] beNo];
+			});
+			it(@"should have the expected default accessibility attributes", ^{
+				[[[sut accessibilityAttributeNames] should] containObjectsInArray:expectedDefaultAttributes];
+			});
+			it(@"should have a list role", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityRoleAttribute] should] equal:NSAccessibilityListRole];
+			});
+			it(@"should habe a content list subrole", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilitySubroleAttribute] should] equal:NSAccessibilityContentListSubrole];
+			});
+			it(@"should have a horizontal orentation", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityOrientationAttribute] should] equal:NSAccessibilityHorizontalOrientationValue];
+			});
+			it(@"should have visible children attribute", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilityVisibleChildrenAttribute] shouldNot] beNil];
+			});
+			it(@"should have a selected children attribute", ^{
+				[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] shouldNot] beNil];
+			});
+			it(@"should have a writable selected children attribute", ^{
+				[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilitySelectedChildrenAttribute]) should] beYes];
+			});
 		});
 		context(@"CoreAnimation actions", ^{
 			context(@"while live resizing", ^{
@@ -132,8 +193,12 @@ describe(@"MMCoverFlowLayer", ^{
 				[datasourceMock stub:@selector(coverFlowLayerWillRelayout:)];
 				[datasourceMock stub:@selector(coverFlowLayerDidRelayout:)];
 				sublayers = @[[CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer]];
-				[sublayers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-					[[datasourceMock stubAndReturn:sublayers[idx]] coverFlowLayer:sut contentLayerForIndex:idx];
+				[sublayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
+					// make layers accessibility aware
+					[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
+						return NSAccessibilityImageRole;
+					}];
+					[[datasourceMock stubAndReturn:layer] coverFlowLayer:sut contentLayerForIndex:idx];
 				}];
 				[datasourceMock stub:@selector(numberOfItemsInCoverFlowLayer:) andReturn:theValue([sublayers count])];
 				sut.dataSource = datasourceMock;
@@ -142,8 +207,19 @@ describe(@"MMCoverFlowLayer", ^{
 				datasourceMock =  nil;
 				sublayers = nil;
 			});
+			context(@"visible items", ^{
+				beforeEach(^{
+					[sut reloadContent];
+				});
+				it(@"should have nonzero visible items", ^{
+					[[theValue([sut.visibleItemIndexes count]) should] beGreaterThan:theValue(0)];
+				});
+				it(@"should contain the selected index", ^{
+					[[theValue([sut.visibleItemIndexes containsIndex:sut.selectedItemIndex]) should] beYes];
+				});
+			});
 			context(@"loading", ^{
-				it(@"should ask the datasource for the item count", ^{
+				it(@"should ask the datasource for the item count when reloading", ^{
 					[[datasourceMock should] receive:@selector(numberOfItemsInCoverFlowLayer:)];
 					[sut reloadContent];
 				});
@@ -176,7 +252,6 @@ describe(@"MMCoverFlowLayer", ^{
 				beforeEach(^{
 					[sut reloadContent];
 					sut.selectedItemIndex = sut.numberOfItems / 2;
-					[CATransaction flush];
 				});
 				it(@"should change the selection", ^{
 					NSUInteger expectedSelection = sut.numberOfItems / 2;
@@ -191,11 +266,11 @@ describe(@"MMCoverFlowLayer", ^{
 			context(@"layout", ^{
 				it(@"should invoke coverFlowLayerWillRelayout when triggering relayout", ^{
 					[[datasourceMock should] receive:@selector(coverFlowLayerWillRelayout:)];
-					[sut layoutSublayersOfLayer:sut];
+					[sut layoutSublayers];
 				});
 				it(@"should invoke coverFlowLayerDidRelayout when triggering relayout", ^{
 					[[datasourceMock should] receive:@selector(coverFlowLayerDidRelayout:)];
-					[sut layoutSublayersOfLayer:sut];
+					[sut layoutSublayers];
 				});
 				context(@"attributes", ^{
 					__block NSDictionary *expectedAttributes = nil;
@@ -205,7 +280,7 @@ describe(@"MMCoverFlowLayer", ^{
 					beforeEach(^{
 						[sut reloadContent];
 						sut.selectedItemIndex = sut.numberOfItems / 2;
-						[sut layoutSublayersOfLayer:sut];
+						[sut layoutSublayers];
 					});
 					afterEach(^{
 						expectedAttributes = nil;
@@ -238,6 +313,37 @@ describe(@"MMCoverFlowLayer", ^{
 						it(@"should have the attributes", ^{
 							[[layerAttributes should] equal:expectedAttributes];
 						});
+					});
+				});
+			});
+			context(@"NSAccessibility", ^{
+				beforeEach(^{
+					[sut reloadContent];
+					[sut layoutSublayers];
+				});
+				it(@"should return only one selected layer", ^{
+					[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] haveCountOf:1];
+				});
+				it(@"should return the selected layer", ^{
+					[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] containObjectsInArray:@[sublayers[sut.selectedItemIndex]]];
+				});
+				context(@"visible children", ^{
+					__block NSArray *visibleChildren = nil;
+					beforeEach(^{
+						visibleChildren = [sut accessibilityAttributeValue:NSAccessibilityVisibleChildrenAttribute];
+					});
+					afterEach(^{
+						visibleChildren = nil;
+					});
+					it(@"should have visible children", ^{
+						[[visibleChildren should] haveCountOfAtLeast:1];
+					});
+					it(@"should have the selected layer in visible children", ^{
+						[[visibleChildren should] contain:sublayers[sut.selectedItemIndex]];
+					});
+					it(@"should return all layers at visibleItemIndexes for visible children", ^{
+						NSArray *expectedChildren = [sublayers subarrayWithRange:NSMakeRange([sut.visibleItemIndexes firstIndex], [sut.visibleItemIndexes count])];
+						[[visibleChildren should] containObjectsInArray:expectedChildren];
 					});
 				});
 			});

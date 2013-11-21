@@ -9,14 +9,18 @@
 #import "MMCoverFlowLayer.h"
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayoutAttributes.h"
+#import "CALayer+NSAccessibility.h"
 
 static const CGFloat kDefaultWidth = 50.;
 static const CGFloat kDefaultHeight = 50.;
 static const CGFloat kDefaultEyeDistance = 1500.;
 
+static void* kLayoutObservationContext = @"layoutContext";
+
 @interface MMCoverFlowLayer ()
 
-@property (strong) MMCoverFlowLayout *layout;
+@property (nonatomic, strong, readwrite) MMCoverFlowLayout *layout;
+@property (nonatomic, readwrite) NSIndexSet *visibleItemIndexes;
 @property (nonatomic, readonly) CGPoint selectedScrollPoint;
 
 @end
@@ -32,6 +36,11 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout
 {
 	return [[self alloc] initWithLayout:layout];
+}
+
++ (NSSet*)layoutObsrvationKeyPaths
+{
+	return [NSSet setWithObjects:@"stackedAngle", @"interItemSpacing", @"selectedItemIndex", @"stackedDistance", @"verticalMargin", nil];
 }
 
 #pragma mark - init/cleanup
@@ -55,9 +64,19 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 		self.delegate = self;
 		self.layoutManager = self;
 		self.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+		_visibleItemIndexes = [NSIndexSet indexSet];
+		[self setupObservations];
+		[self setupAccessibility];
     }
     return self;
 }
+
+- (void)dealloc
+{
+    [self tearDownObservations];
+}
+
+#pragma mark - accessors
 
 - (NSUInteger)numberOfItems
 {
@@ -143,6 +162,7 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 		[self applyAttributes:attributes toContentLayer:contentLayer];
 	}];
 	[self scrollToPoint:self.selectedScrollPoint];
+	[self updateVisibleItems];
 }
 
 - (void)applyAttributes:(MMCoverFlowLayoutAttributes*)attributes toContentLayer:(CALayer*)contentLayer
@@ -152,6 +172,93 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 	contentLayer.position = attributes.position;
 	contentLayer.bounds = attributes.bounds;
 	contentLayer.zPosition = attributes.zPosition;
+}
+
+- (void)setupObservations
+{
+	for ( NSString *keyPath in [[self class] layoutObsrvationKeyPaths] ) {
+		[self.layout addObserver:self
+					  forKeyPath:keyPath
+						 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial
+						 context:kLayoutObservationContext];
+	}
+}
+
+- (void)tearDownObservations
+{
+	for ( NSString *keyPath in [[self class] layoutObsrvationKeyPaths] ) {
+		[self.layout removeObserver:self
+						 forKeyPath:keyPath
+							context:kLayoutObservationContext];
+	}
+}
+
+- (void)setupAccessibility
+{
+	__weak typeof(self) weakSelf = self;
+
+	[self setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
+		return NSAccessibilityListRole;
+	}];
+	[self setReadableAccessibilityAttribute:NSAccessibilitySubroleAttribute withBlock:^id{
+		return NSAccessibilityContentListSubrole;
+	}];
+	[self setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute withBlock:^id{
+		return NSAccessibilityHorizontalOrientationValue;
+	}];
+	[self setReadableAccessibilityAttribute:NSAccessibilityVisibleChildrenAttribute withBlock:^id{
+		MMCoverFlowLayer *strongSelf = weakSelf;
+
+		NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.sublayers);
+		return children ? [children objectsAtIndexes:strongSelf.visibleItemIndexes] : [NSArray array];
+	}];
+	[self setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
+								   readBlock:^id{
+									   MMCoverFlowLayer *strongSelf = weakSelf;
+									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.sublayers);
+									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.selectedItemIndex, 1)] : [NSArray array];
+								   }
+								  writeBlock:^(id value) {
+									  MMCoverFlowLayer *strongSelf = weakSelf;
+
+									  if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
+										  CALayer *layer = [value firstItem];
+										  if ( [layer isKindOfClass:[CALayer class]] ) {
+											  NSUInteger index = [strongSelf.sublayers indexOfObject:layer];
+											  strongSelf.selectedItemIndex = index;
+										  }
+									  }
+								  }];
+}
+
+- (void)updateVisibleItems
+{
+	__block NSUInteger firstVisibleItem = NSNotFound;
+	__block NSUInteger numberOfVisibleItems = 0;
+
+	[ self.sublayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+		if ( !CGRectIsEmpty( contentLayer.visibleRect ) ) {
+			if ( firstVisibleItem == NSNotFound ) {
+				firstVisibleItem = idx;
+			}
+			numberOfVisibleItems++;
+		}
+		if ( firstVisibleItem + numberOfVisibleItems < idx ) {
+			*stop = YES;
+		}
+	}];
+	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [ NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems ) ] : [ NSIndexSet indexSet ];
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == kLayoutObservationContext) {
+        [self setNeedsLayout];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 @end

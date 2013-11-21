@@ -13,15 +13,16 @@
 #import "MMButtonLayer.h"
 #import "MMVideoOverlayLayer.h"
 #import "MMCoverFlowLayout.h"
+#import "MMCoverFlowLayer.h"
 
-@interface MMFlowView ()
+@interface MMFlowView () <MMCoverFlowLayerDataSource>
 
 @property (strong) MMCoverFlowLayout *layout;
 
 /* layers */
 @property (strong,readwrite) CALayer *backgroundLayer;
 @property (strong,readwrite) CATextLayer *titleLayer;
-@property (strong,readwrite) CAScrollLayer *scrollLayer;
+@property (strong, nonatomic) MMCoverFlowLayer *coverFlowLayer;
 @property (strong,readwrite) CALayer *containerLayer;
 @property (strong,nonatomic) CALayer *selectedLayer;
 @property (strong,nonatomic) CALayer *highlightedLayer;
@@ -107,7 +108,6 @@
 - (void)setupLayers;
 - (CALayer*)createBackgroundLayer;
 - (CATextLayer*)createTitleLayer;
-- (CAScrollLayer*)createScrollLayer;
 - (CALayer*)createContainerLayer;
 - (CAReplicatorLayer*)createItemLayerWithIndex:(NSUInteger)anIndex;
 - (CALayer*)createImageLayer;
@@ -141,9 +141,6 @@
 
 /* invoked after changing the selection, adjust scroll knob, visible images etc */
 - (void)updateSelectionInRange:(NSRange)invalidatedRange;
-
-/* recalculates the visible items */
-- (void)calculateVisibleItems;
 
 /* updates the reflection layers for all image items, invoked after chaning the reflection related properties */
 - (void)updateReflection;

@@ -49,7 +49,7 @@
 		return NSAccessibilityUnignoredChildren( @[self.backgroundLayer] );
     }
 	else if ( [ anAttribute isEqualToString:NSAccessibilityContentsAttribute ] ) {
-		return @[self.scrollLayer];
+		return @[self.coverFlowLayer];
 	}
 	else if ( [anAttribute isEqualToString:NSAccessibilityHorizontalScrollBarAttribute] ) {
 		return self.scrollBarLayer;
