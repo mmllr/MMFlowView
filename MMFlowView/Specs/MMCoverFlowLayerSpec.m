@@ -84,25 +84,20 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should not initiallly be in resizing", ^{
 			[[theValue(sut.inLiveResize) should] beNo];
 		});
-		it(@"should have set its layout", ^{
-			[[sut.layout should] equal:layout];
-		});
 		it(@"should be its own delegate", ^{
 			[[sut.delegate should] equal:sut];
 		});
-		it(@"should be its own layout manager", ^{
-			[[sut.layoutManager should] equal:sut];
-		});
 		it(@"should not have a datasource set", ^{
 			[[(id)sut.dataSource should] beNil];
-		});
-		it(@"should respond to layoutSublayersOfLayer:", ^{
-			[[sut should] respondToSelector:@selector(layoutSublayersOfLayer:)];
 		});
 		it(@"should have a selectedItemIndex of NSNotFound", ^{
 			[[theValue(sut.selectedItemIndex) should] equal:theValue(NSNotFound)];
 		});
 		context(@"observing layout changes", ^{
+			it(@"should trigger a reload if layouts numberOfItems changes", ^{
+				[[sut should] receive:@selector(reloadContent)];
+				sut.layout.numberOfItems = 10;
+			});
 			it(@"should trigger a relayout if stackedAngle of layout changed", ^{
 				[[sut should] receive:@selector(setNeedsLayout)];
 				sut.layout.stackedAngle = 20;
@@ -140,7 +135,12 @@ describe(@"MMCoverFlowLayer", ^{
 				expectedTransform.m34 = 1. / -sut.eyeDistance;
 				[[[NSValue valueWithCATransform3D:sut.sublayerTransform] should] equal:[NSValue valueWithCATransform3D:expectedTransform]];
 			});
-
+		});
+		context(@"reloadContent", ^{
+			it(@"should trigger a relayout", ^{
+				[[sut should] receive:@selector(layoutSublayers)];
+				[sut reloadContent];
+			});
 		});
 		context(@"NSAccessibility", ^{
 			NSArray *expectedDefaultAttributes = @[NSAccessibilityParentAttribute, NSAccessibilitySizeAttribute, NSAccessibilityPositionAttribute, NSAccessibilityWindowAttribute, NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityRoleAttribute, NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute, NSAccessibilityFocusedAttribute];
@@ -200,17 +200,14 @@ describe(@"MMCoverFlowLayer", ^{
 					}];
 					[[datasourceMock stubAndReturn:layer] coverFlowLayer:sut contentLayerForIndex:idx];
 				}];
-				[datasourceMock stub:@selector(numberOfItemsInCoverFlowLayer:) andReturn:theValue([sublayers count])];
 				sut.dataSource = datasourceMock;
+				sut.layout.numberOfItems = [sublayers count];
 			});
 			afterEach(^{
 				datasourceMock =  nil;
 				sublayers = nil;
 			});
 			context(@"visible items", ^{
-				beforeEach(^{
-					[sut reloadContent];
-				});
 				it(@"should have nonzero visible items", ^{
 					[[theValue([sut.visibleItemIndexes count]) should] beGreaterThan:theValue(0)];
 				});
@@ -219,28 +216,16 @@ describe(@"MMCoverFlowLayer", ^{
 				});
 			});
 			context(@"loading", ^{
-				it(@"should ask the datasource for the item count when reloading", ^{
-					[[datasourceMock should] receive:@selector(numberOfItemsInCoverFlowLayer:)];
-					[sut reloadContent];
-				});
 				it(@"should load the content", ^{
-					[sut reloadContent];
 					[[theValue(sut.numberOfItems) should] equal:theValue([sublayers count])];
 				});
-				it(@"should trigger a relayout when setting", ^{
-					[[sut should] receive:@selector(layoutSublayers)];
-					[sut reloadContent];
-				});
 				it(@"should change the selectedItemIndex", ^{
-					[sut reloadContent];
 					[[theValue(sut.selectedItemIndex) shouldNot] equal:theValue(NSNotFound)];
 				});
 				it(@"should have the correct count of sublayers", ^{
-					[sut reloadContent];
 					[[[sut should] have:[sublayers count]] sublayers];
 				});
 				it(@"should load the layers", ^{
-					[sut reloadContent];
 					[[sut.sublayers should] equal:sublayers];
 				});
 				it(@"should ask its datasource for the layers", ^{
@@ -250,8 +235,8 @@ describe(@"MMCoverFlowLayer", ^{
 			});
 			context(@"selection", ^{
 				beforeEach(^{
-					[sut reloadContent];
 					sut.selectedItemIndex = sut.numberOfItems / 2;
+					[sut layoutSublayers];
 				});
 				it(@"should change the selection", ^{
 					NSUInteger expectedSelection = sut.numberOfItems / 2;
@@ -278,7 +263,6 @@ describe(@"MMCoverFlowLayer", ^{
 					NSArray *attributeKeys = @[@"position", @"bounds", @"transform", @"zPosition", @"anchorPoint"];
 
 					beforeEach(^{
-						[sut reloadContent];
 						sut.selectedItemIndex = sut.numberOfItems / 2;
 						[sut layoutSublayers];
 					});

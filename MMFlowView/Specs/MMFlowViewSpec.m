@@ -146,9 +146,15 @@ describe(@"MMFlowView", ^{
 				sut.title = @"";
 			});
 		});
-		context(@"MMCoverFlowLayer interaction", ^{
+		context(@"MMCoverFlowLayerDataSource", ^{
 			it(@"should conform to the MMCoverFlowLayerDataSource protocol", ^{
 				[[sut should] conformToProtocol:@protocol(MMCoverFlowLayerDataSource)];
+			});
+			it(@"should respond to coverFlowLayer:contentLayerForIndex:", ^{
+				[[sut should] respondToSelector:@selector(coverFlowLayer:contentLayerForIndex:)];
+			});
+			it(@"should not return nil when asked for a content layer", ^{
+				[[[sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0] shouldNot] beNil];
 			});
 			it(@"should be the datasource for the coverflow layer", ^{
 				[[sut should] equal:sut.coverFlowLayer.dataSource];
@@ -191,9 +197,12 @@ describe(@"MMFlowView", ^{
 			it(@"should have a layer attached", ^{
 				[[[sut layer] shouldNot] beNil];
 			});
-			context(@"background layer", ^{
+			context(@"backgroundLayer property", ^{
 				it(@"should have a background layer", ^{
 					[[sut.backgroundLayer shouldNot] beNil];
+				});
+				it(@"should have the background layer as its view layer", ^{
+					[[[sut layer] should] equal:sut.backgroundLayer];
 				});
 				it(@"should be a gradient layer", ^{
 					[[sut.backgroundLayer should] beKindOfClass:[CAGradientLayer class]];
@@ -231,15 +240,23 @@ describe(@"MMFlowView", ^{
 					[[actualBounds should] equal:viewBounds];
 				});
 			});
-			it(@"should have the background layer as its view layer", ^{
-				[[[sut layer] should] equal:sut.backgroundLayer];
+			context(@"coverFlowLayer property", ^{
+				it(@"should be set", ^{
+					[[sut.coverFlowLayer shouldNot] beNil];
+				});
+				it(@"should have type MMCoverFlowLayer", ^{
+					[[sut.coverFlowLayer should] beKindOfClass:[MMCoverFlowLayer class]];
+				});
 			});
-			it(@"should have a coverFlowLayer property", ^{
-				[[sut.coverFlowLayer shouldNot] beNil];
+			context(@"scrollBarLayer property", ^{
+				it(@"should not be nil", ^{
+					[[sut.scrollBarLayer shouldNot] beNil];
+				});
+				it(@"should be from type MMScrollBarLayer", ^{
+					[[sut.scrollBarLayer should] beKindOfClass:[MMScrollBarLayer class]];
+				});
 			});
-			it(@"should habe a coverFlowLayer property with type MMCoverFlowLayer", ^{
-				[[sut.coverFlowLayer should] beKindOfClass:[MMCoverFlowLayer class]];
-			});
+			
 		});
 		context(@"layout", ^{
 			__block NSPoint pointInView;

@@ -14,21 +14,20 @@
 #import "MMVideoOverlayLayer.h"
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
+#import "MMScrollBarLayer.h"
 
 @interface MMFlowView () <MMCoverFlowLayerDataSource>
 
 @property (strong) MMCoverFlowLayout *layout;
 
-/* layers */
 @property (strong,readwrite) CALayer *backgroundLayer;
 @property (strong,readwrite) CATextLayer *titleLayer;
 @property (strong, nonatomic) MMCoverFlowLayer *coverFlowLayer;
 @property (strong,readwrite) CALayer *containerLayer;
 @property (strong,nonatomic) CALayer *selectedLayer;
 @property (strong,nonatomic) CALayer *highlightedLayer;
-@property (strong,readwrite) CALayer *scrollBarLayer;
+@property (strong,readwrite) MMScrollBarLayer *scrollBarLayer;
 
-/* scroll knob */
 @property (assign,nonatomic) BOOL draggingKnob;
 @property (assign) CGFloat mouseDownInKnob;
 
@@ -43,15 +42,6 @@
 
 /* image cache which holds key-value pairs of image-uids (key) and CGImageRefs (value) */
 @property (readwrite,strong) NSCache *imageCache;
-
-/* CATransform3D for all items left to the selection */
-@property (assign) CATransform3D leftTransform;
-
-/* CATransform3D for all items right to the selection */
-@property (assign) CATransform3D rightTransform;
-
-/* perspective transform for all item layers */
-@property (assign) CATransform3D perspective;
 
 /* the bound content array if bindings are used */
 @property (weak, nonatomic, readonly) NSArray *contentArray;
@@ -113,7 +103,6 @@
 - (CALayer*)createImageLayer;
 - (QTMovieLayer*)createMovieLayerWithMovie:(QTMovie*)aMovie atIndex:(NSUInteger)anIndex;
 - (MMVideoOverlayLayer*)createMovieOverlayLayerWithIndex:(NSUInteger)anIndex;
-- (CALayer*)createScrollBarLayer;
 
 /* returns the item-rootlayer */
 - (CAReplicatorLayer*)itemLayerAtIndex:(NSUInteger)anIndex;
@@ -145,20 +134,8 @@
 /* updates the reflection layers for all image items, invoked after chaning the reflection related properties */
 - (void)updateReflection;
 
-/* helper method for updating the position and size of the scroll knob */
-- (void)updateScrollKnob;
-
-/* returns the scale for the angle width clamped to the following range: angle 0°: 1, angle 90° : 0, see stackedAngle */
-- (CGFloat)angleScaleForAngle:(CGFloat)anAngle;
-
-/* returns the rect for an image-item */
-- (CGRect)rectForItem:(NSUInteger)index withItemSize:(CGSize)itemSize;
-
 /* returns the layers frane in view-coordinate space */
 - (NSRect)rectInViewForLayer:(CALayer*)aLayer;
-
-/* returns the point which the enclosing CAScrollLayer needs to be scrolled to to show the selected layer centered */
-- (CGPoint)selectedScrollPoint;
 
 /* returns the correct items size for a specific rect, respecting layout properties */
 - (CGSize)itemSizeForRect:(CGRect)visibleRect;

@@ -19,7 +19,7 @@ static const CGFloat kHeight = 20.;
 static const CGFloat kYOffset = 10.;
 static const CGFloat kWidthScale = .75;
 static const CGFloat kKnobMargin = 5.;
-static const CGFloat kMinimumKnobWidth = 10.;
+static const CGFloat kMinimumKnobWidth = 40.;
 
 @implementation MMScrollBarLayer
 
@@ -146,19 +146,27 @@ static const CGFloat kMinimumKnobWidth = 10.;
 	__block CGFloat maxX = FLT_MIN;
 	
 	[self.scrollLayer.sublayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
-		minX = MIN( CGRectGetMinX(layer.frame), minX);
-		maxX = MAX( CGRectGetMaxX(layer.frame), maxX);
+		minX = MIN(CGRectGetMinX(layer.frame), minX);
+		maxX = MAX(CGRectGetMaxX(layer.frame), maxX);
 	}];
-	CGFloat scrollAreaWidth = maxX - minX;
-	CGFloat visibleWidth = CGRectGetWidth(self.scrollLayer.visibleRect);
-	CGFloat aspectRatio = visibleWidth / scrollAreaWidth;
-
-	CGFloat effectiveScrollerWidth = CGRectGetWidth(self.bounds) - 2*kKnobMargin;
-	CGFloat knobWidth = MAX(kMinimumKnobWidth, effectiveScrollerWidth * aspectRatio);
-	CGFloat scale = CGRectGetMinX(self.scrollLayer.bounds) / scrollAreaWidth;
-	CGFloat knobPositionX = kKnobMargin + effectiveScrollerWidth * scale;
 	CALayer *knobLayer = [self.sublayers firstObject];
-	knobLayer.frame = CGRectMake(knobPositionX, CGRectGetMinY(knobLayer.frame), knobWidth, CGRectGetHeight(knobLayer.bounds));
+	CGFloat scrollAreaWidth = maxX - minX;
+	if ( !CGRectIsEmpty(self.scrollLayer.visibleRect) ) {
+		CGFloat visibleWidth = CGRectGetWidth(self.scrollLayer.visibleRect);
+		CGFloat aspectRatio = visibleWidth / scrollAreaWidth;
+		
+		CGFloat effectiveScrollerWidth = CGRectGetWidth(self.bounds) - 2*kKnobMargin;
+		CGFloat knobWidth = MAX(kMinimumKnobWidth, effectiveScrollerWidth * aspectRatio);
+		CGFloat scale = MAX(0., CGRectGetMinX(self.scrollLayer.bounds)) / scrollAreaWidth;
+		CGFloat knobPositionX = MIN(kKnobMargin + (effectiveScrollerWidth - knobWidth) * scale, CGRectGetMaxX(self.bounds) - knobWidth - kKnobMargin);
+		
+		knobLayer.frame = CGRectMake(knobPositionX, CGRectGetMinY(knobLayer.frame), knobWidth, CGRectGetHeight(knobLayer.bounds));
+		self.hidden = aspectRatio >= 1;
+	}
+	else {
+		self.hidden = YES;
+		knobLayer.frame = CGRectMake(kKnobMargin, CGRectGetMinY(knobLayer.frame), kMinimumKnobWidth, CGRectGetHeight(knobLayer.bounds));
+	}
 }
 
 @end

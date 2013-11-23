@@ -67,6 +67,9 @@ describe(@"MMFlowViewItemLayerSpec", ^{
 		it(@"should have an imageLayer of class MMFlowViewImageLayer", ^{
 			[[sut.imageLayer should] beKindOfClass:[MMFlowViewImageLayer class]];
 		});
+		it(@"shoud have an instanceTransform for mirroring", ^{
+			
+		});
 		context(@"reflectionOffset", ^{
 			it(@"should have a reflectionOffset of -.4", ^{
 				const CGFloat expectedOffset = -.4;

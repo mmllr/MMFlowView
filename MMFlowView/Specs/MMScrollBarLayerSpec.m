@@ -28,14 +28,17 @@ describe(@"MMScrollBarLayer", ^{
 	});
 	context(@"new instance created by its designated initalizer", ^{
 		__block CAScrollLayer *scrollLayer = nil;
+		const NSUInteger kNumberOfContentLayers = 10;
+		const CGFloat kContentLayerOffset = 40.;
+		const CGFloat kContentLayerSize = 30.;
 
 		beforeEach(^{
 			scrollLayer = [CAScrollLayer layer];
 			scrollLayer.bounds = CGRectMake(0, 0, 50, 50);
 			
-			for ( int i = 0; i < 10; ++i ) {
+			for ( int i = 0; i < kNumberOfContentLayers; ++i ) {
 				CALayer *layer = [CALayer layer];
-				layer.frame = CGRectMake(i * 40, 0, 30, 30);
+				layer.frame = CGRectMake(i * kContentLayerOffset, 0, kContentLayerSize, kContentLayerSize);
 				[scrollLayer addSublayer:layer];
 			}
 			sut = [[MMScrollBarLayer alloc] initWithScrollLayer:scrollLayer];
@@ -225,24 +228,92 @@ describe(@"MMScrollBarLayer", ^{
 					}];
 					scrollAreaWidth = maxX - minX;
 				});
-				it(@"should have the correct knob width", ^{
-					CGFloat visibleWidth = CGRectGetWidth(sut.scrollLayer.visibleRect);
-					CGFloat aspectRatio = scrollAreaWidth / visibleWidth;
-					CGFloat expectedWidth = CGRectGetWidth(knobLayer.bounds) * aspectRatio + 10.;	// + 10. -> 2*knobmargins
-					[[theValue(CGRectGetWidth(sut.bounds)) should] equal:expectedWidth withDelta:0.000001];
+				context(@"content rect bigger than visible rect", ^{
+					__block CGFloat knobWidth = 0;
+					__block CGFloat effectiveScrollerWidth = 0;
+					__block CGFloat expectedKnobPosition = 0;
+					__block CGFloat visibleWidth = 0;
+					__block CGFloat aspectRatio = 0;
+					__block CGFloat expectedKnobWidth = 0;
+
+					beforeEach(^{
+						knobWidth = CGRectGetWidth(knobLayer.bounds);
+						effectiveScrollerWidth = CGRectGetWidth(sut.bounds) - 10.;	// - 10. -> 2*knobmargins
+						visibleWidth = CGRectGetWidth(sut.scrollLayer.visibleRect);
+						aspectRatio = scrollAreaWidth / visibleWidth;
+						expectedKnobWidth = MAX( 40, effectiveScrollerWidth / aspectRatio );
+					});
+					context(@"knob at leftmost position", ^{
+						beforeEach(^{
+							[sut.scrollLayer scrollToPoint:CGPointMake(0, 0)];
+							expectedKnobPosition = 5.;
+						});
+						it(@"should have the correct knob width", ^{
+							[[theValue(knobWidth) should] equal:expectedKnobWidth withDelta:0.000001];
+						});
+						it(@"should have the correct knob position", ^{
+							CGFloat scale = CGRectGetMinX(sut.scrollLayer.bounds) / scrollAreaWidth;
+							CGFloat expectedX = 5. + scale * effectiveScrollerWidth;	// 5. -> left knobmargin
+							[[theValue(CGRectGetMinX(knobLayer.frame)) should] equal:expectedX withDelta:0.0000001];
+						});
+					});
+					context(@"knob at middle position", ^{
+						beforeEach(^{
+							[sut.scrollLayer scrollToPoint:CGPointMake(5*kContentLayerOffset, 0)];
+						});
+						it(@"should have the correct knob width", ^{
+							[[theValue(knobWidth) should] equal:expectedKnobWidth withDelta:0.000001];
+						});
+						it(@"should have the correct knob position", ^{
+							CGFloat scale = CGRectGetMinX(sut.scrollLayer.bounds) / scrollAreaWidth;
+							CGFloat expectedX = 5. + scale * (effectiveScrollerWidth - knobWidth);	// 5. -> left knobmargin
+							[[theValue(CGRectGetMinX(knobLayer.frame)) should] equal:expectedX withDelta:0.0000001];
+						});
+					});
+					context(@"knob at rightmost position", ^{
+						beforeEach(^{
+							[sut.scrollLayer scrollToPoint:CGPointMake((kNumberOfContentLayers-1)*kContentLayerOffset, 0)];
+						});
+						it(@"should have the correct knob width", ^{
+							[[theValue(knobWidth) should] equal:expectedKnobWidth withDelta:0.000001];
+						});
+						it(@"should have the correct knob position", ^{
+							CGFloat scale = CGRectGetMinX(sut.scrollLayer.bounds) / scrollAreaWidth;
+							CGFloat expectedX = 5. + scale * (effectiveScrollerWidth - knobWidth);	// 5. -> left knobmargin
+							[[theValue(CGRectGetMinX(knobLayer.frame)) should] equal:expectedX withDelta:0.0000001];
+						});
+					});
+					context(@"scrolling far beyond content", ^{
+						it(@"should not exceed the leftmost scrollbar bounds", ^{
+							[sut.scrollLayer scrollToPoint:CGPointMake(-kNumberOfContentLayers*2*kContentLayerOffset, 0)];
+							CGFloat minXPosition = 5;
+							[[theValue(CGRectGetMinX(knobLayer.frame)) should] equal:minXPosition withDelta:0.00001];
+						});
+						it(@"should not exceed the rightmost scrollbar bounds", ^{
+							[sut.scrollLayer scrollToPoint:CGPointMake(kNumberOfContentLayers*2*kContentLayerOffset, 0)];
+							CGFloat maxXPosition = CGRectGetMaxX(sut.bounds) - 5 - knobWidth;
+							[[theValue(CGRectGetMinX(knobLayer.frame)) should] beLessThanOrEqualTo:theValue(maxXPosition)];
+						});
+					});
+					it(@"should never have a smaller knob width than 40", ^{
+						CALayer *bigLayer = [CALayer layer];
+						bigLayer.bounds = CGRectMake(0, 0, 3000, 30);
+						[scrollLayer addSublayer:bigLayer];
+						[[theValue(CGRectGetWidth(knobLayer.bounds)) should] equal:theValue(40.)];
+					});
+					it(@"should be visible", ^{
+						[[theValue(sut.hidden) should] beNo];
+					});
 				});
-				it(@"should have the correct knob position", ^{
-					CGFloat scale = CGRectGetMinX(sut.scrollLayer.bounds) / scrollAreaWidth;
-					CGFloat effectiveWidth = CGRectGetWidth(sut.bounds) - 10;	// -10. -> 2*knobmargins
-					CGFloat expectedX = 5. + scale * effectiveWidth;	// 5. -> left knobmargin
-					[[theValue(CGRectGetMinX(knobLayer.frame)) should] equal:expectedX withDelta:0.0000001];
+				context(@"content rect smaller or equal to visible rect", ^{
+					beforeEach(^{
+						sut.scrollLayer.bounds = CGRectMake(0, 0, 10000, 100);
+					});
+					it(@"should be invisible", ^{
+						[[theValue(sut.hidden) should] beYes];
+					});
 				});
-				it(@"should never have a smaller knob width than 10", ^{
-					CALayer *bigLayer = [CALayer layer];
-					bigLayer.bounds = CGRectMake(0, 0, 3000, 30);
-					[scrollLayer addSublayer:bigLayer];
-					[[theValue(CGRectGetWidth(knobLayer.bounds)) should] equal:theValue(10)];
-				});
+				
 			});
 		});
 	});

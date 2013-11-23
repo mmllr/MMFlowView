@@ -16,6 +16,7 @@ static const CGFloat kDefaultHeight = 50.;
 static const CGFloat kDefaultEyeDistance = 1500.;
 
 static void* kLayoutObservationContext = @"layoutContext";
+static void* kReloadContentObservationContext = @"reloadContent";
 
 @interface MMCoverFlowLayer ()
 
@@ -38,9 +39,14 @@ static void* kLayoutObservationContext = @"layoutContext";
 	return [[self alloc] initWithLayout:layout];
 }
 
-+ (NSSet*)layoutObsrvationKeyPaths
++ (NSSet*)layoutObservationKeyPaths
 {
 	return [NSSet setWithObjects:@"stackedAngle", @"interItemSpacing", @"selectedItemIndex", @"stackedDistance", @"verticalMargin", nil];
+}
+
++ (NSSet*)reloadContentObservationKeyPaths
+{
+	return [NSSet setWithObjects:@"numberOfItems", nil];
 }
 
 #pragma mark - init/cleanup
@@ -91,7 +97,6 @@ static void* kLayoutObservationContext = @"layoutContext";
 - (void)setSelectedItemIndex:(NSUInteger)selectedItemIndex
 {
 	self.layout.selectedItemIndex = selectedItemIndex;
-	[self layoutSublayers];
 }
 
 - (void)setEyeDistance:(CGFloat)eyeDistance
@@ -113,18 +118,13 @@ static void* kLayoutObservationContext = @"layoutContext";
 
 - (void)reloadContent
 {
-	NSUInteger numberOfItems = 0;
-	if ( [self.dataSource respondsToSelector:@selector(numberOfItemsInCoverFlowLayer:)] ) {
-		numberOfItems = [self.dataSource numberOfItemsInCoverFlowLayer:self];
-	}
-	for ( NSInteger i = 0; i < numberOfItems; ++i ) {
+	self.sublayers = nil;
+	for ( NSInteger i = 0; i < self.layout.numberOfItems; ++i ) {
 		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayer:contentLayerForIndex:)] ) {
 			CALayer *contentLayer = [self.dataSource coverFlowLayer:self contentLayerForIndex:i];
 			[self addSublayer:contentLayer];
 		}
 	}
-	self.layout.numberOfItems = numberOfItems;
-	//[self applyLayout];
 	[self layoutSublayers];
 }
 
@@ -139,18 +139,16 @@ static void* kLayoutObservationContext = @"layoutContext";
 	return nil;
 }
 
-#pragma mark - CALayoutManager
+#pragma mark - CALayer overrides
 
-- (void)layoutSublayersOfLayer:(CALayer *)layer
+- (void)layoutSublayers
 {
-	if ( layer == self ) {
-		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerWillRelayout:)] ) {
-			[self.dataSource coverFlowLayerWillRelayout:self];
-		}
-		[self applyLayout];
-		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerDidRelayout:)] ) {
-			[self.dataSource coverFlowLayerDidRelayout:self];
-		}
+	if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerWillRelayout:)] ) {
+		[self.dataSource coverFlowLayerWillRelayout:self];
+	}
+	[self applyLayout];
+	if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerDidRelayout:)] ) {
+		[self.dataSource coverFlowLayerDidRelayout:self];
 	}
 }
 
@@ -176,20 +174,31 @@ static void* kLayoutObservationContext = @"layoutContext";
 
 - (void)setupObservations
 {
-	for ( NSString *keyPath in [[self class] layoutObsrvationKeyPaths] ) {
+	for ( NSString *keyPath in [[self class] layoutObservationKeyPaths] ) {
 		[self.layout addObserver:self
 					  forKeyPath:keyPath
 						 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial
 						 context:kLayoutObservationContext];
 	}
+	for (NSString *keyPath in [[self class] reloadContentObservationKeyPaths] ) {
+		[self.layout addObserver:self
+					  forKeyPath:keyPath
+						 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial
+						 context:kReloadContentObservationContext];
+	}
 }
 
 - (void)tearDownObservations
 {
-	for ( NSString *keyPath in [[self class] layoutObsrvationKeyPaths] ) {
+	for ( NSString *keyPath in [[self class] layoutObservationKeyPaths] ) {
 		[self.layout removeObserver:self
 						 forKeyPath:keyPath
 							context:kLayoutObservationContext];
+	}
+	for (NSString *keyPath in [[self class] reloadContentObservationKeyPaths] ) {
+		[self.layout removeObserver:self
+						 forKeyPath:keyPath
+							context:kReloadContentObservationContext];
 	}
 }
 
@@ -256,7 +265,11 @@ static void* kLayoutObservationContext = @"layoutContext";
 {
     if (context == kLayoutObservationContext) {
         [self setNeedsLayout];
-    } else {
+    }
+	else if (context == kReloadContentObservationContext) {
+		[self reloadContent];
+	}
+	else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }

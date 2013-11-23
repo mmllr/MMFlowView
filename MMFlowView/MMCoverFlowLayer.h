@@ -13,7 +13,6 @@
 
 @protocol MMCoverFlowLayerDataSource <NSObject>
 
-- (NSUInteger)numberOfItemsInCoverFlowLayer:(MMCoverFlowLayer*)coverFlowLayer;
 - (CALayer*)coverFlowLayer:(MMCoverFlowLayer*)layer contentLayerForIndex:(NSUInteger)index;
 @optional
 - (void)coverFlowLayerWillRelayout:(MMCoverFlowLayer*)coverFlowLayer;

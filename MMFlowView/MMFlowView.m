@@ -27,6 +27,7 @@
 #import "NSColor+MMAdditions.h"
 #import "CALayer+NSAccessibility.h"
 #import "MMCoverFlowLayoutAttributes.h"
+#import "MMScrollBarLayer.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -83,11 +84,8 @@ static const CGFloat kScrollBarOpacity = 0.5;
 static const CGFloat kScrollBarBorderWidth = 1.;
 static const CGFloat kScrollBarCornerRadius = 10.;
 static const CGFloat kScrollBarHeight = 20.;
-static const CGFloat kScrollKnobMargin = 5.;
-static const CGFloat kMinimumKnobWidth = 40.;
 static const CGFloat kMinimumItemScale = 0.1;
 static const CGFloat kMaximumItemScale = 1.;
-static const CGFloat kMaximumStackedAngle = 90.;
 static const NSUInteger kImageLayerIndex = 0;
 
 static NSString * const kMMFlowViewItemContentLayerPrefix = @"MMFlowViewContentLayer";
@@ -518,7 +516,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			self.stackedScale = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedScaleKey ];
 			self.reflectionOffset = [ aDecoder decodeDoubleForKey:kMMFlowViewReflectionOffsetKey ];
 			self.showsReflection = [ aDecoder decodeBoolForKey:kMMFlowViewShowsReflectionKey ];
-			self.perspective = [ [ aDecoder decodeObjectForKey:kMMFlowViewPerspectiveKey ] CATransform3DValue ];			
 			self.scrollDuration = [ aDecoder decodeDoubleForKey:kMMFlowViewScrollDurationKey ];
 			self.itemScale = [ aDecoder decodeDoubleForKey:kMMFlowViewItemScaleKey ];
 			self.previewScale = [ aDecoder decodeDoubleForKey:kMMFlowViewPreviewScaleKey ];
@@ -544,7 +541,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		[ aCoder encodeDouble:self.stackedScale forKey:kMMFlowViewStackedScaleKey ];
 		[ aCoder encodeDouble:self.reflectionOffset forKey:kMMFlowViewReflectionOffsetKey ];
 		[ aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey ];
-		[ aCoder encodeObject:[ NSValue valueWithCATransform3D:self.perspective ] forKey:kMMFlowViewPerspectiveKey ];
 		[ aCoder encodeDouble:self.scrollDuration forKey:kMMFlowViewScrollDurationKey ];
 		[ aCoder encodeDouble:self.itemScale forKey:kMMFlowViewItemScaleKey ];
 		[ aCoder encodeDouble:self.previewScale forKey:kMMFlowViewPreviewScaleKey ];
@@ -571,10 +567,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	self.reflectionOffset = kDefaultReflectionOffset;
 	self.selectedIndex = NSNotFound;
 	self.showsReflection = YES;
-	CATransform3D perspTransform = CATransform3DIdentity;
-	perspTransform.m34 = 1. / -kDefaultEyeDistance;
-	self.perspective = perspTransform;
-	
 	self.scrollDuration = kDefaultScrollDuration;
 	self.itemScale = kDefaultItemScale;
 	self.previewScale = kDefaultPreviewScale;
@@ -770,11 +762,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	return CGRectMake( 0, 0, newWidth, newHeight );
 }
 
-- (CGFloat)angleScaleForAngle:(CGFloat)anAngle
-{
-	return 1. - ( anAngle / kMaximumStackedAngle );
-}
-
 - (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex withItemWidth:(CGFloat)itemWidth stackedAngle:(CGFloat)aStackedAngle itemSpacing:(CGFloat)itemSpacing selectedIndex:(NSUInteger)theSelection
 {
 	CGFloat stackedWidth = itemWidth * cos(DegreesToRadians(self.stackedAngle)) + cos(DegreesToRadians(self.stackedAngle))*itemSpacing;
@@ -788,6 +775,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		offset += firstItemSelected ? itemWidth / 2. : itemWidth;
 	}
 	return offset;
+}
+
+#pragma mark - MMCoverFlowLayerDataSource
+
+- (CALayer*)coverFlowLayer:(MMCoverFlowLayer *)layer contentLayerForIndex:(NSUInteger)index
+{
+	return [CALayer layer];
 }
 
 #pragma mark -
@@ -1095,7 +1089,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		}
 		else {
 			// dragging
-			if ( [ self.dataSource respondsToSelector:@selector(flowView:writeDataAtIndex:toPasteboard:) ] ) {
+			if ( [ self.dataSource respondsToSelector:@selector(flowView:writeItemAtIndex:toPasteboard:) ] ) {
 				[ self.dataSource flowView:self
 						  writeItemAtIndex:clickedIndex
 							  toPasteboard:dragPBoard ];
@@ -1244,26 +1238,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	}
 	[ CATransaction begin ];
 	[ CATransaction setDisableActions:YES ];
-
-	for ( NSUInteger itemIndex = 0; itemIndex < self.numberOfItems; ++itemIndex ) {
-		CALayer *itemLayer = [ self deqeueItemLayer ];
-		if ( itemLayer ) {
-			[ itemLayer setValue:@(itemIndex) forKey:kMMFlowViewItemIndexKey ];
-			[ itemLayer setValue:[ self imageUIDForItem:[ self imageItemForIndex:itemIndex ] ] forKey:kMMFlowViewItemImageUIDKey ];
-			CALayer *imageLayer = (itemLayer.sublayers)[kImageLayerIndex];
-			[ self setAttributesForItemContentLayer:imageLayer
-											atIndex:itemIndex ];
-		}
-		else {
-			itemLayer = [ self createItemLayerWithIndex:itemIndex ];
-		}
-	}
 	[ CATransaction commit ];
 	if ( self.selectedIndex > self.numberOfItems ) {
 		self.selectedIndex = 0;
 	};
 	[ self updateSelectionInRange:NSMakeRange( 0, self.numberOfItems ) ];
-	[ self updateScrollKnob ];
 }
 
 - (id)imageItemForIndex:(NSUInteger)anIndex
@@ -1532,85 +1511,25 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	return compositionLayer;
 }
 
-- (CALayer*)createScrollBarLayer
+- (MMScrollBarLayer*)createScrollBarLayer
 {
-	CALayer *layer = [ CALayer layer ];
-	layer.name = kMMFlowViewScrollBarLayerName;
-	layer.backgroundColor = [ [ NSColor blackColor ] CGColor ];
-	layer.borderColor = [ [ NSColor grayColor ] CGColor ];
-	layer.opaque = YES;
-	layer.borderWidth = kScrollBarBorderWidth;
-	layer.cornerRadius = kScrollBarCornerRadius;
-	layer.frame = CGRectMake( 0, 0, kScrollBarHeight, kScrollBarHeight );
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMidX relativeTo:kSuperlayerKey attribute:kCAConstraintMidX ] ];
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:kSuperlayerKey attribute:kCAConstraintMinY offset:kScrollBarYOffset ] ];
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintWidth relativeTo:kSuperlayerKey attribute:kCAConstraintWidth scale:kScrollBarScale offset:0 ] ];
-	// disable animation for position
-	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ layer actions ] ];
-	// add the new action for sublayers
-	customActions[kPositionKey] = [NSNull null];
-	customActions[kBoundsKey] = [ NSNull null ];
-	// set theLayer actions to the updated dictionary
-	layer.actions = customActions;
-
+	MMScrollBarLayer *layer = [[MMScrollBarLayer alloc] initWithScrollLayer:self.coverFlowLayer];
 	__weak MMFlowView *weakSelf = self;
-
-	[layer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
-									   return NSAccessibilityScrollBarRole;
-	}];
-	[layer setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute withBlock:^id{
-		return NSAccessibilityHorizontalOrientationValue;
-	}];
-	[layer setReadableAccessibilityAttribute:NSAccessibilityEnabledAttribute withBlock:^id{
-		return @YES;
-	}];
 	[layer setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
 								   readBlock:^id{
-									   return @(((double)( weakSelf.selectedIndex ) ) / ( weakSelf.numberOfItems - 1 ));
+									   MMFlowView *strongSelf = weakSelf;
+									   return @(((double)( strongSelf.selectedIndex ) ) / ( strongSelf.numberOfItems - 1 ));
 								   }
 								  writeBlock:^(id value) {
-									  NSInteger index = [value doubleValue] * ( MAX( 0, weakSelf.numberOfItems - 1 ) );
-									  weakSelf.selectedIndex = index;
+									  MMFlowView *strongSelf = weakSelf;
+									  NSInteger index = [value doubleValue] * ( MAX( 0, strongSelf.numberOfItems - 1 ) );
+									  strongSelf.selectedIndex = index;
 								  }];
 
-	CAGradientLayer *knobLayer = [ CAGradientLayer layer ];
-	knobLayer.name = kMMFlowViewScrollKnobLayerName;
-	knobLayer.frame = CGRectMake( 10, 2, kScrollBarHeight*2 , kScrollBarHeight - 4 );
-	//knobLayer.opaque = YES;
-	//knobLayer.opacity = 1.f;
-	//knobLayer.anchorPoint = CGPointMake(0.5, 0.5);
-	knobLayer.needsDisplayOnBoundsChange = YES;
-	knobLayer.borderColor = [ [ NSColor grayColor ] CGColor ];
-	knobLayer.borderWidth = 1.f;
-	knobLayer.cornerRadius = kScrollBarCornerRadius - 1;
-	knobLayer.startPoint = CGPointMake( 0.5, 1. );
-	knobLayer.anchorPoint = CGPointMake( 0.5, 0.5 );
-	knobLayer.endPoint = CGPointMake( 0.5, 0. );
-	knobLayer.colors = @[(__bridge id)[ [ NSColor colorWithCalibratedRed:64.f / 255.f green:64.f / 255.f blue:74.f / 255.f alpha:1 ] CGColor ],
-						(__bridge id)[[ NSColor colorWithCalibratedRed:46.f / 255.f green:46.f / 255.f blue:58.f / 255.f alpha:1.f ] CGColor ],
-						(__bridge id)[[ NSColor colorWithCalibratedRed:37.f / 255.f green:37.f / 255.f blue:50.f / 255.f alpha:1.f ] CGColor ],
-						(__bridge id)[[ NSColor colorWithCalibratedRed:51.f / 255.f green:52.f / 255.f blue:66.f / 255.f alpha:1.f ] CGColor ]];
-	knobLayer.locations = @[@0.,
-						   @0.5,
-						   @0.51,
-						   @1.];
-	knobLayer.type = kCAGradientLayerAxial;
-	[ knobLayer setNeedsDisplay ];
-	// disable animation for position
-	customActions = [ NSMutableDictionary dictionaryWithDictionary:[ knobLayer actions ] ];
-	// add the new action for sublayers
-	customActions[kPositionKey] = [NSNull null];
-	customActions[kBoundsKey] = [ NSNull null ];
-	// set theLayer actions to the updated dictionary
-	knobLayer.actions = customActions;
-
-	[ layer addSublayer:knobLayer ];
-
-	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
-		return NSAccessibilityValueIndicatorRole;
-	}];
+	CALayer *knobLayer = [layer.sublayers firstObject];
 	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityValueAttribute withBlock:^id{
-		return @(((double)( weakSelf.selectedIndex ) ) / ( weakSelf.numberOfItems - 1 ));
+		MMFlowView *strongSelf = weakSelf;
+		return @(((double)( strongSelf.selectedIndex ) ) / ( strongSelf.numberOfItems - 1 ));
 	}];
 	return layer;
 }
@@ -1842,7 +1761,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		[ self setupTrackingAreas ];
 	} ];
 	[ CATransaction commit ];
-	[ self updateScrollKnob ];
 	self.title = [ self titleAtIndex:self.selectedIndex ];
 	// ax
 	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
@@ -1856,23 +1774,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		layer.instanceGreenOffset = self.reflectionOffset;
 		layer.instanceBlueOffset = self.reflectionOffset;
 	}*/
-}
-
-- (void)updateScrollKnob
-{
-	BOOL shouldHideScrollbar = ( self.numberOfItems < 2 );
-	self.scrollBarLayer.hidden = shouldHideScrollbar;
-	if ( self.numberOfItems && !shouldHideScrollbar ) {
-		CALayer *knob = (self.scrollBarLayer.sublayers)[0];
-		CGRect knobBounds = knob.frame;
-		NSUInteger numberOfVisibleItems = self.maximumNumberOfStackedVisibleItems;
-		CGFloat knobWidthProportion = ((CGFloat)numberOfVisibleItems) / (CGFloat)self.numberOfItems;
-		CGFloat knobWidth = MAX( kMinimumKnobWidth, knobWidthProportion * ( self.scrollBarLayer.bounds.size.width - kScrollKnobMargin * 2 ) );
-		CGFloat scrollBarSize = self.scrollBarLayer.bounds.size.width - kScrollKnobMargin * 2 - knobWidth;
-		CGFloat knobIndexProportion = ( (CGFloat) self.selectedIndex ) / ( self.numberOfItems - 1 );
-		knob.frame = CGRectMake( kScrollKnobMargin + knobIndexProportion * scrollBarSize, knobBounds.origin.y, knobWidth , knobBounds.size.height );
-		[ knob setNeedsDisplay ];
-	}
 }
 
 #pragma mark -

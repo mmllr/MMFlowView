@@ -11,7 +11,7 @@
 
 static NSString * const kLayerName = @"MMScrollKnobLayer";
 static const CGFloat kKnobHeight = 16.;
-static const CGFloat kMinimumWidth = 10.;
+static const CGFloat kMinimumWidth = 40.;
 static const CGFloat kCornerRadius = 9.;
 
 @implementation MMScrollKnobLayer

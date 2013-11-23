@@ -30,8 +30,8 @@ describe(@"MMScrollKnobLayer", ^{
 		it(@"should have a height of 16", ^{
 			[[theValue(CGRectGetHeight(sut.frame)) should] equal:theValue(16.)];
 		});
-		it(@"should have a width of 10", ^{
-			[[theValue(CGRectGetWidth(sut.frame)) should] equal:theValue(10.)];
+		it(@"should have a width of 40", ^{
+			[[theValue(CGRectGetWidth(sut.frame)) should] equal:theValue(40.)];
 		});
 		it(@"should display on bounds change", ^{
 			[[theValue(sut.needsDisplayOnBoundsChange) should] beYes];
