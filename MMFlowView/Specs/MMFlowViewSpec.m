@@ -153,15 +153,28 @@ describe(@"MMFlowView", ^{
 			it(@"should respond to coverFlowLayer:contentLayerForIndex:", ^{
 				[[sut should] respondToSelector:@selector(coverFlowLayer:contentLayerForIndex:)];
 			});
-			it(@"should not return nil when asked for a content layer", ^{
-				[[[sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0] shouldNot] beNil];
-			});
 			it(@"should be the datasource for the coverflow layer", ^{
 				[[sut should] equal:sut.coverFlowLayer.dataSource];
 			});
 			it(@"should reload the cover flow layer when invoking reloadContent", ^{
 				[[sut.coverFlowLayer should] receive:@selector(reloadContent)];
 				[sut reloadContent];
+			});
+			context(@"content layers", ^{
+				__block CALayer *contentLayer = nil;
+
+				beforeEach(^{
+					contentLayer = [sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0];
+				});
+				afterEach(^{
+					contentLayer = nil;
+				});
+				it(@"should not return nil when asked for a content layer", ^{
+					[[contentLayer shouldNot] beNil];
+				});
+				it(@"should have set an image", ^{
+					[[contentLayer.contents shouldNot] beNil];
+				});
 			});
 		});
 		context(@"bindings", ^{
@@ -191,6 +204,9 @@ describe(@"MMFlowView", ^{
 			});
 		});
 		context(@"layers", ^{
+			beforeEach(^{
+				[sut.layer layoutSublayers];
+			});
 			it(@"should be layer backed", ^{
 				[[theValue([sut wantsLayer]) should] beYes];
 			});
@@ -239,6 +255,10 @@ describe(@"MMFlowView", ^{
 					NSValue *viewBounds = [NSValue valueWithRect:[sut bounds]];
 					[[actualBounds should] equal:viewBounds];
 				});
+				it(@"should be have a frame origin of 0,0", ^{
+					NSValue *expectedPoint = [NSValue valueWithPoint:NSMakePoint(0, 0)];
+					[[[NSValue valueWithPoint:sut.backgroundLayer.frame.origin] should] equal:expectedPoint];
+				});
 			});
 			context(@"coverFlowLayer property", ^{
 				it(@"should be set", ^{
@@ -247,6 +267,142 @@ describe(@"MMFlowView", ^{
 				it(@"should have type MMCoverFlowLayer", ^{
 					[[sut.coverFlowLayer should] beKindOfClass:[MMCoverFlowLayer class]];
 				});
+				it(@"should be a sublayer of the container layer", ^{
+					[[sut.containerLayer.sublayers should] contain:sut.coverFlowLayer];
+				});
+				it(@"should have the same width as the view", ^{
+					[[theValue(CGRectGetWidth(sut.coverFlowLayer.bounds)) should] equal:theValue(CGRectGetWidth(sut.bounds))];
+				});
+			});
+			context(@"containerLayer", ^{
+				it(@"should exist", ^{
+					[[sut.containerLayer shouldNot] beNil];
+				});
+				it(@"should be a CALayer", ^{
+					[[sut.containerLayer should] beKindOfClass:[CALayer class]];
+				});
+				it(@"should be a sublayer of the background layer", ^{
+					[[sut.backgroundLayer.sublayers should] contain:sut.containerLayer];
+				});
+				it(@"should have the name MMFlowViewContainerLayer", ^{
+					[[sut.containerLayer.name should] equal:@"MMFlowViewContainerLayer"];
+				});
+				it(@"should have the same width as the view", ^{
+					[[theValue(CGRectGetWidth(sut.containerLayer.bounds)) should] equal:theValue(CGRectGetWidth(sut.bounds))];
+				});
+				context(@"constraints", ^{
+					__block CAConstraint *constraint =  nil;
+					it(@"should have three constraints", ^{
+						[[sut.containerLayer.constraints should] haveCountOf:4];
+					});
+					context(@"super layer equal midx", ^{
+						beforeEach(^{
+							constraint = [sut.containerLayer.constraints firstObject];
+						});
+						afterEach(^{
+							constraint = nil;
+						});
+						it(@"should be relative to its superlayer", ^{
+							[[ constraint.sourceName should] equal:@"superlayer"];
+						});
+						it(@"should have a mid-x sourceAttribute", ^{
+							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMidX)];
+						});
+						it(@"should have a mid-x attribute", ^{
+							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMidX)];
+						});
+						it(@"should have a scale of 1", ^{
+							[[theValue(constraint.scale) should] equal:theValue(1)];
+						});
+						it(@"should have an offset of zero", ^{
+							[[theValue(constraint.offset) should] beZero];
+						});
+					});
+					context(@"super layer max-y", ^{
+						beforeEach(^{
+							constraint = sut.containerLayer.constraints[1];
+						});
+						afterEach(^{
+							constraint = nil;
+						});
+						it(@"should be relative to its superlayer", ^{
+							[[ constraint.sourceName should] equal:@"superlayer"];
+						});
+						it(@"should have a max-y sourceAttribute", ^{
+							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMaxY)];
+						});
+						it(@"should have a max-Y attribute", ^{
+							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMaxY)];
+						});
+						it(@"should have a scale of 1", ^{
+							[[theValue(constraint.scale) should] equal:theValue(1)];
+						});
+						it(@"should have an offset of zero", ^{
+							[[theValue(constraint.offset) should] beZero];
+						});
+					});
+					context(@"super layer equal width", ^{
+						beforeEach(^{
+							constraint = sut.containerLayer.constraints[2];
+						});
+						afterEach(^{
+							constraint = nil;
+						});
+						it(@"should be relative to its superlayer", ^{
+							[[ constraint.sourceName should] equal:@"superlayer"];
+						});
+						it(@"should have a width sourceAttribute", ^{
+							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintWidth)];
+						});
+						it(@"should have a width attribute", ^{
+							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintWidth)];
+						});
+						it(@"should have an offset of 0.", ^{
+							[[theValue(constraint.offset) should] beZero];
+						});
+						it(@"should have a scale of 1", ^{
+							[[theValue(constraint.scale) should] equal:theValue(1)];
+						});
+					});
+					context(@"super layer equal width", ^{
+						beforeEach(^{
+							constraint = sut.containerLayer.constraints[3];
+						});
+						afterEach(^{
+							constraint = nil;
+						});
+						it(@"should be relative to the MMFlowViewTitleLayer", ^{
+							[[ constraint.sourceName should] equal:@"MMFlowViewTitleLayer"];
+						});
+						it(@"should have a width sourceAttribute", ^{
+							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMaxY)];
+						});
+						it(@"should have a width attribute", ^{
+							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMinY)];
+						});
+						it(@"should have an offset of 0.", ^{
+							[[theValue(constraint.offset) should] beZero];
+						});
+						it(@"should have a scale of 1", ^{
+							[[theValue(constraint.scale) should] equal:theValue(1)];
+						});
+					});
+				});
+				context(@"core animation actions", ^{
+					__block NSDictionary *actions = nil;
+					beforeEach(^{
+						actions = sut.containerLayer.actions;
+					});
+					afterEach(^{
+						actions = nil;
+					});
+					it(@"should have disabled the bounds action", ^{
+						[[actions[@"bounds"] should] equal:[NSNull null]];
+					});
+					it(@"should have disabled the position action", ^{
+						[[actions[@"position"] should] equal:[NSNull null]];
+					});
+				});
 			});
 			context(@"scrollBarLayer property", ^{
 				it(@"should not be nil", ^{
@@ -254,6 +410,9 @@ describe(@"MMFlowView", ^{
 				});
 				it(@"should be from type MMScrollBarLayer", ^{
 					[[sut.scrollBarLayer should] beKindOfClass:[MMScrollBarLayer class]];
+				});
+				it(@"should be a sublayer of the container layer", ^{
+					[[sut.backgroundLayer.sublayers should] contain:sut.scrollBarLayer];
 				});
 			});
 			
@@ -282,6 +441,7 @@ describe(@"MMFlowView", ^{
 			const NSInteger numberOfItems = 10;
 
 			beforeEach(^{
+				[sut.layer layoutSublayers];
 				datasourceMock = [KWMock mockForProtocol:@protocol(MMFlowViewDataSource)];
 				sut.dataSource = datasourceMock;
 

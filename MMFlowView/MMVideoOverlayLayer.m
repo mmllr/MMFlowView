@@ -61,7 +61,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 		CGRect imageRect = CGRectMake( 0, 0, kMovieOverlayPausedRadius * 2, kMovieOverlayPausedRadius * 2 );
 		CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 		if ( colorSpace ) {
-			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, kCGImageAlphaPremultipliedFirst );
+			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst );
 			CGColorSpaceRelease(colorSpace);
 			CGContextSetGrayFillColor( context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha );
 			CGContextSetLineWidth( context, kMovieOverlayButtonBorderWidth );
@@ -88,7 +88,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 		CGRect imageRect = CGRectMake( 0, 0, kMovieOverlayPausedRadius * 2, kMovieOverlayPausedRadius * 2 );
 		CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 		if ( colorSpace ) {
-			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, kCGImageAlphaPremultipliedFirst );
+			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst );
 			CGColorSpaceRelease(colorSpace);
 			CGContextSetGrayFillColor( context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha );
 			CGContextSetLineWidth( context, kMovieOverlayButtonBorderWidth );

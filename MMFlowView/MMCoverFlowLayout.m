@@ -190,21 +190,18 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		CGFloat height = self.contentHeight - (self.verticalMargin * 2);
 		attributes.bounds = CGRectMake(0, 0, height, height);
 		attributes.position = [self originForItem:itemIndex];
-
+		attributes.anchorPoint = CGPointMake(0, 0);
 		if ( itemIndex < self.selectedItemIndex ) {
 			// left stack
 			attributes.transform = CATransform3DMakeRotation( self.stackedAngle * M_PI / 180., 0, 1, 0 );
-			attributes.anchorPoint = CGPointMake(0, .5);
 			attributes.zPosition = -self.stackedDistance;
 		}
 		else if ( itemIndex > self.selectedItemIndex ) {
 			// right stack
 			attributes.transform = CATransform3DMakeRotation( -(self.stackedAngle * M_PI / 180.), 0, 1, 0 );
-			attributes.anchorPoint = CGPointMake(1, .5);
 			attributes.zPosition = -self.stackedDistance;
 		}
 		else if ( itemIndex == self.selectedItemIndex ) {
-			attributes.anchorPoint = CGPointMake(.5, .5);
 		}
 		return attributes;
 	}

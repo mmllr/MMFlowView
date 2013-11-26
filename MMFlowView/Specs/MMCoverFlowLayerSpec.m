@@ -59,19 +59,27 @@ describe(@"MMCoverFlowLayer", ^{
 			[[theValue(sut.numberOfItems) should] equal:theValue(0)];
 		});
 		it(@"should not mask to bounds", ^{
-			[[theValue(sut.masksToBounds) shouldNot] beYes];
+			[[theValue(sut.masksToBounds) should] beNo];
 		});
-		it(@"should have a default height of 50", ^{
-			[[theValue(CGRectGetHeight(sut.bounds)) should] equal:theValue(50)];
+		it(@"should have a default height of 0", ^{
+			[[theValue(CGRectGetHeight(sut.bounds)) should] beZero];
 		});
-		it(@"should have a default width of 50", ^{
-			[[theValue(CGRectGetWidth(sut.bounds)) should] equal:theValue(50)];
+		it(@"should have a default width of 0", ^{
+			[[theValue(CGRectGetWidth(sut.bounds)) should] beZero];
 		});
 		it(@"should have empty visible item indexes", ^{
 			[[sut.visibleItemIndexes should] equal:[NSIndexSet indexSet]];
 		});
 		it(@"should have no sublayers", ^{
 			[[[sut should] have:0] sublayers];
+		});
+		it(@"should have an anchorPoint of 0.5, 0.5", ^{
+			NSValue *expectedPoint = [NSValue valueWithPoint:NSMakePoint(.5, .5)];
+			[[[NSValue valueWithPoint:sut.anchorPoint] should] equal:expectedPoint];
+		});
+		it(@"should have a frame position of 0,0", ^{
+			NSValue *expectedPoint = [NSValue valueWithPoint:NSMakePoint(0, 0)];
+			[[[NSValue valueWithPoint:sut.frame.origin] should] equal:expectedPoint];
 		});
 		it(@"should have a default eye distance of 1500", ^{
 			[[theValue(sut.eyeDistance) should] equal:theValue(1500.)];
@@ -178,10 +186,16 @@ describe(@"MMCoverFlowLayer", ^{
 				afterEach(^{
 					sut.inLiveResize = NO;
 				});
-				it(@"should have disabled all actions", ^{
-					id action = [sut actionForKey:@"bounds"];
-					[[action should] beNil];
+				it(@"should have disabled the bounds action", ^{
+					[[(id)[sut.delegate actionForLayer:sut forKey:@"bounds"] should] equal:[NSNull null]];
 				});
+			});
+			context(@"not in resizing", ^{
+				it(@"should have disabled the bounds action", ^{
+					sut.inLiveResize = NO;
+					[[(id)[sut.delegate actionForLayer:sut forKey:@"bounds"] should] beNil];
+				});
+
 			});
 		});
 		context(@"datasource", ^{
@@ -200,6 +214,7 @@ describe(@"MMCoverFlowLayer", ^{
 					}];
 					[[datasourceMock stubAndReturn:layer] coverFlowLayer:sut contentLayerForIndex:idx];
 				}];
+				sut.bounds = CGRectMake(0, 0, 200, 100);
 				sut.dataSource = datasourceMock;
 				sut.layout.numberOfItems = [sublayers count];
 			});
@@ -258,9 +273,8 @@ describe(@"MMCoverFlowLayer", ^{
 					[sut layoutSublayers];
 				});
 				context(@"attributes", ^{
-					__block NSDictionary *expectedAttributes = nil;
-					__block NSDictionary *layerAttributes = nil;
-					NSArray *attributeKeys = @[@"position", @"bounds", @"transform", @"zPosition", @"anchorPoint"];
+					__block MMCoverFlowLayoutAttributes *expectedAttributes = nil;
+					__block CALayer *layer = nil;
 
 					beforeEach(^{
 						sut.selectedItemIndex = sut.numberOfItems / 2;
@@ -268,42 +282,92 @@ describe(@"MMCoverFlowLayer", ^{
 					});
 					afterEach(^{
 						expectedAttributes = nil;
-						layerAttributes = nil;
+						layer = nil;
 					});
 					context(@"first item of left stack", ^{
 						beforeEach(^{
-							expectedAttributes = [[layout layoutAttributesForItemAtIndex:0] dictionaryWithValuesForKeys:attributeKeys];
-							layerAttributes = [sublayers[0] dictionaryWithValuesForKeys:attributeKeys];
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:0];
+							layer = sublayers[0];
 						});
-						it(@"should have the attributes", ^{
-							[[layerAttributes should] equal:expectedAttributes];
+						it(@"should have the correct bounds", ^{
+							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
+							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
+						});
+						it(@"should have the correct position", ^{
+							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
+							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+						});
+						it(@"should have the correct anchorPoint", ^{
+							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
+							[[[NSValue valueWithPoint:layer.anchorPoint] should] equal:expectedAnchorPoint];
+						});
+						it(@"should have the correct zPosition", ^{
+							[[theValue(expectedAttributes.zPosition) should] equal:theValue(layer.zPosition)];
+						});
+						it(@"should have the correct transform", ^{
+							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
+							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
 						});
 					});
 					context(@"selected item", ^{
 						beforeEach(^{
-							expectedAttributes = [[layout layoutAttributesForItemAtIndex:sut.selectedItemIndex] dictionaryWithValuesForKeys:attributeKeys];
-							layerAttributes = [sublayers[sut.selectedItemIndex] dictionaryWithValuesForKeys:attributeKeys];
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex];
+							layer = sublayers[sut.selectedItemIndex];
 						});
-						it(@"should have the attributes", ^{
-							[[layerAttributes should] equal:expectedAttributes];
+						it(@"should have the correct bounds", ^{
+							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
+							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
+						});
+						it(@"should have the correct position", ^{
+							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
+							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+						});
+						it(@"should have the correct anchorPoint", ^{
+							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
+							[[[NSValue valueWithPoint:layer.anchorPoint] should] equal:expectedAnchorPoint];
+						});
+						it(@"should have the correct zPosition", ^{
+							[[theValue(expectedAttributes.zPosition) should] equal:theValue(layer.zPosition)];
+						});
+						it(@"should have the correct transform", ^{
+							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
+							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
+						});
+						it(@"should be horizontally centered", ^{
+							[[theValue(CGRectGetMidX(layer.frame)) should] equal:theValue(CGRectGetMidX(sut.bounds))];
 						});
 					});
 					context(@"last item of right stack", ^{
 						beforeEach(^{
-							NSUInteger lastIndex = sut.numberOfItems - 1;
-							expectedAttributes = [[layout layoutAttributesForItemAtIndex:lastIndex] dictionaryWithValuesForKeys:attributeKeys];
-							layerAttributes = [sublayers[lastIndex] dictionaryWithValuesForKeys:attributeKeys];
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.numberOfItems-1];
+							layer = [sublayers lastObject];
 						});
-						it(@"should have the attributes", ^{
-							[[layerAttributes should] equal:expectedAttributes];
+						it(@"should have the correct bounds", ^{
+							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
+							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
+						});
+						it(@"should have the correct position", ^{
+							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
+							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+						});
+						it(@"should have the correct anchorPoint", ^{
+							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
+							[[[NSValue valueWithPoint:layer.anchorPoint] should] equal:expectedAnchorPoint];
+						});
+						it(@"should have the correct zPosition", ^{
+							[[theValue(expectedAttributes.zPosition) should] equal:theValue(layer.zPosition)];
+						});
+						it(@"should have the correct transform", ^{
+							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
+							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
 						});
 					});
 				});
 			});
 			context(@"NSAccessibility", ^{
 				beforeEach(^{
+					sut.bounds = CGRectMake(0, 0, 100, 50);
 					[sut reloadContent];
-					[sut layoutSublayers];
 				});
 				it(@"should return only one selected layer", ^{
 					[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] haveCountOf:1];

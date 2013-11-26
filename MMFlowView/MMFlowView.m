@@ -177,7 +177,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		CGRect imageRect = CGRectMake( 0, 0, kDefaultItemSize, kDefaultItemSize );
 		CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 		if ( colorSpace ) {
-			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, kCGImageAlphaPremultipliedFirst );
+			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst );
 			CGColorSpaceRelease(colorSpace);
 			NSGradient *gradient = [ [ NSGradient alloc ] initWithStartingColor:[NSColor colorWithDeviceWhite:0.8 alpha:0.7] endingColor:[NSColor colorWithDeviceWhite:0.6 alpha:0.7]];
 			NSGraphicsContext *nsContext = [ NSGraphicsContext graphicsContextWithGraphicsPort:context
@@ -291,7 +291,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(&kCGColorSpaceSRGB ? kCGColorSpaceSRGB : kCGColorSpaceGenericRGB);
 
-	CGContextRef context = CGBitmapContextCreate(bitmapData, width, height, 8, bytesPerLine, colorSpace, kCGImageAlphaPremultipliedFirst);
+	CGContextRef context = CGBitmapContextCreate(bitmapData, width, height, 8, bytesPerLine, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst);
 	CGColorSpaceRelease(colorSpace);
 
 	if ( transparentBackground ) {
@@ -781,7 +781,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (CALayer*)coverFlowLayer:(MMCoverFlowLayer *)layer contentLayerForIndex:(NSUInteger)index
 {
-	return [CALayer layer];
+	CALayer *contentLayer = [CALayer layer];
+	contentLayer.contents = [NSImage imageNamed:NSImageNameComputer];
+	contentLayer.borderColor = [NSColor redColor].CGColor;
+	contentLayer.borderWidth = 4;
+	return contentLayer;
 }
 
 #pragma mark -
@@ -1331,19 +1335,20 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setupLayers
 {
-	self.backgroundLayer = [ self createBackgroundLayer ];
+	self.backgroundLayer = [self createBackgroundLayer];
 	self.titleLayer = [ self createTitleLayer ];
-	self.containerLayer = [ self createContainerLayer ];
-	[ self.backgroundLayer addSublayer:self.containerLayer ];
-	[ self.backgroundLayer insertSublayer:self.titleLayer above:self.containerLayer ];
+	self.containerLayer = [self createContainerLayer];
+	[self.backgroundLayer addSublayer:self.containerLayer];
+	[self.backgroundLayer insertSublayer:self.titleLayer above:self.containerLayer];
 	self.coverFlowLayer = [MMCoverFlowLayer layerWithLayout:self.layout];
 	self.coverFlowLayer.dataSource = self;
 	self.scrollBarLayer = [self createScrollBarLayer];
+	
 	[self.containerLayer addSublayer:self.coverFlowLayer];
 	[self.backgroundLayer insertSublayer:self.scrollBarLayer above:self.containerLayer ];
 	[self setAccessiblityEnabledLayer:self.backgroundLayer];
-	[self.coverFlowLayer setNeedsLayout ];
-	[self.layer setNeedsDisplay ];
+	[self.coverFlowLayer setNeedsLayout];
+	[self.layer setNeedsDisplay];
 }
 
 - (CALayer*)createBackgroundLayer
@@ -1356,6 +1361,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	layer.locations = [ [ self class ] backgroundGradientLocations ];
 	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	layer.layoutManager = [ CAConstraintLayoutManager layoutManager ];
+	//layer.borderColor = [NSColor redColor].CGColor;
+	//layer.borderWidth = 5;
 	return layer;
 }
 
@@ -1580,8 +1587,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 - (void)setFrameForLayer:(CAReplicatorLayer*)itemLayer atIndex:(NSUInteger)anIndex withItemSize:(CGSize)itemSize
 {
 	CALayer *imageLayer = [ itemLayer sublayers ][kImageLayerIndex];
-
-	NSUInteger distanceFromSelection = abs( (int)(anIndex - self.selectedIndex) );
 
 	MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:anIndex];
 	CGRect itemFrame = CGRectMake(attributes.position.x, attributes.position.y, attributes.bounds.size.width, attributes.bounds.size.height);

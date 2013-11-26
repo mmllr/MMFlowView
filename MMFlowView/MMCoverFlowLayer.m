@@ -61,7 +61,6 @@ static void* kReloadContentObservationContext = @"reloadContent";
 {
     self = [super init];
     if (self) {
-		self.frame = CGRectMake(0, 0, kDefaultWidth, kDefaultHeight);
 		self.layout = layout;
         self.scrollMode = kCAScrollHorizontally;
 		self.masksToBounds = NO;
@@ -132,11 +131,13 @@ static void* kReloadContentObservationContext = @"reloadContent";
 
 - (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
 {
-	if ( layer == self && self.inLiveResize ) {
+	if ( self.inLiveResize ) {
 		// disable implicit animations for scrolllayer in live resize
-		return (id<CAAction>)[ NSNull null ];
+		return (id<CAAction>)[NSNull null];
 	}
-	return nil;
+	else {
+		return nil;
+	}
 }
 
 #pragma mark - CALayer overrides
@@ -165,11 +166,11 @@ static void* kReloadContentObservationContext = @"reloadContent";
 
 - (void)applyAttributes:(MMCoverFlowLayoutAttributes*)attributes toContentLayer:(CALayer*)contentLayer
 {
+	contentLayer.bounds = attributes.bounds;
 	contentLayer.anchorPoint = attributes.anchorPoint;
 	contentLayer.transform = attributes.transform;
-	contentLayer.position = attributes.position;
-	contentLayer.bounds = attributes.bounds;
 	contentLayer.zPosition = attributes.zPosition;
+	contentLayer.frame = CGRectMake(attributes.position.x, attributes.position.y, CGRectGetWidth(attributes.bounds), CGRectGetHeight(attributes.bounds));
 }
 
 - (void)setupObservations
