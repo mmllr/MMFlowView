@@ -14,6 +14,7 @@
 static const CGFloat kDefaultWidth = 50.;
 static const CGFloat kDefaultHeight = 50.;
 static const CGFloat kDefaultEyeDistance = 1500.;
+static const CFTimeInterval kDefaultScrollDuration = .4;
 
 static void* kLayoutObservationContext = @"layoutContext";
 static void* kReloadContentObservationContext = @"reloadContent";
@@ -70,6 +71,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		self.layoutManager = self;
 		self.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 		_visibleItemIndexes = [NSIndexSet indexSet];
+		_scrollDuration = kDefaultScrollDuration;
 		[self setupObservations];
 		[self setupAccessibility];
     }
@@ -147,10 +149,17 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerWillRelayout:)] ) {
 		[self.dataSource coverFlowLayerWillRelayout:self];
 	}
+	[CATransaction begin];
+	[CATransaction setDisableActions:self.inLiveResize];
+	[CATransaction setAnimationDuration:self.scrollDuration];
+	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
 	[self applyLayout];
-	if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerDidRelayout:)] ) {
-		[self.dataSource coverFlowLayerDidRelayout:self];
-	}
+	[ CATransaction setCompletionBlock:^{
+		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerDidRelayout:)] ) {
+			[self.dataSource coverFlowLayerDidRelayout:self];
+		}
+	} ];
+	[CATransaction commit];
 }
 
 - (void)applyLayout

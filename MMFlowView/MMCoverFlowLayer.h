@@ -29,6 +29,7 @@
 @property (nonatomic, weak) id<MMCoverFlowLayerDataSource> dataSource;
 @property (nonatomic, strong, readonly) NSIndexSet *visibleItemIndexes;
 @property (nonatomic, strong, readonly) MMCoverFlowLayout *layout;
+@property (nonatomic) CFTimeInterval scrollDuration;
 
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout;
 - (id)initWithLayout:(MMCoverFlowLayout*)layout;

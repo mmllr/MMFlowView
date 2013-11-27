@@ -73,6 +73,9 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should have no sublayers", ^{
 			[[[sut should] have:0] sublayers];
 		});
+		it(@"should have a scroll duration of .4 seconds", ^{
+			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];
+		});
 		it(@"should have an anchorPoint of 0.5, 0.5", ^{
 			NSValue *expectedPoint = [NSValue valueWithPoint:NSMakePoint(.5, .5)];
 			[[[NSValue valueWithPoint:sut.anchorPoint] should] equal:expectedPoint];
@@ -268,8 +271,16 @@ describe(@"MMCoverFlowLayer", ^{
 					[[datasourceMock should] receive:@selector(coverFlowLayerWillRelayout:)];
 					[sut layoutSublayers];
 				});
-				it(@"should invoke coverFlowLayerDidRelayout when triggering relayout", ^{
-					[[datasourceMock should] receive:@selector(coverFlowLayerDidRelayout:)];
+				it(@"should invoke coverFlowLayerDidRelayout after finishing relayout", ^{
+					[[datasourceMock shouldEventually] receive:@selector(coverFlowLayerDidRelayout:) withCountAtLeast:1];
+					[sut layoutSublayers];
+				});
+				it(@"should set the CoreAnimation transactions", ^{
+					[[[CATransaction class] should] receive:@selector(begin)];
+					[[[CATransaction class] should] receive:@selector(commit)];
+					[[[CATransaction class] should] receive:@selector(setDisableActions:) withArguments:theValue(sut.inLiveResize)];
+					[[[CATransaction class] should] receive:@selector(setAnimationDuration:) withArguments:theValue(sut.scrollDuration)];
+					[[[CATransaction class] should] receive:@selector(setAnimationTimingFunction:) withArguments:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
 					[sut layoutSublayers];
 				});
 				context(@"attributes", ^{
