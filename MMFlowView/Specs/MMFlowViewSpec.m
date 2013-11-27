@@ -130,6 +130,18 @@ describe(@"MMFlowView", ^{
 		it(@"should have an empty datasource", ^{
 			[[(id)sut.dataSource should] beNil];
 		});
+		context(@"live resizing", ^{
+			beforeEach(^{
+				[sut viewWillStartLiveResize];
+			});
+			it(@"should set the live resizing status to the MMCoverFLowLayer", ^{
+				[[theValue(sut.coverFlowLayer.inLiveResize) should] beYes];
+			});
+			it(@"should end the live resizing to the MMCoverFlowLayer", ^{
+				[sut viewDidEndLiveResize];
+				[[theValue(sut.coverFlowLayer.inLiveResize) should] beNo];
+			});
+		});
 		context(@"delegate", ^{
 			it(@"should have an empty delegate", ^{
 				[[(id)sut.delegate should] beNil];

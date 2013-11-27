@@ -1034,8 +1034,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ super viewWillMoveToSuperview:newSuperview ];
 }
 
+- (void)viewWillStartLiveResize
+{
+	self.coverFlowLayer.inLiveResize = YES;
+}
+
 - (void)viewDidEndLiveResize
 {
+	self.coverFlowLayer.inLiveResize = NO;
 	//[ self.scrollLayer setNeedsLayout ];
 	[ self updateImages ];
 }
