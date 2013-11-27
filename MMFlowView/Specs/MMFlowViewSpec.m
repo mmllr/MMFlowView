@@ -106,10 +106,10 @@ describe(@"MMFlowView", ^{
 		it(@"should have a stackedScale of -200", ^{
 			[[theValue(sut.stackedScale) should] equal:theValue(-200)];
 		});
-		it(@"should have a reflectionOffset of -0.4", ^{
+		it(@"should have a reflectionOffset of -.4", ^{
 			[[theValue(sut.reflectionOffset) should] equal:theValue(-.4)];
 		});
-		it(@"should have a scroll duration of 0.4 seconds", ^{
+		it(@"should have a scroll duration of .4 seconds", ^{
 			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];
 		});
 		it(@"should have a item scale of 1", ^{
