@@ -320,6 +320,31 @@ describe(@"MMCoverFlowLayer", ^{
 							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
 						});
 					});
+					context(@"last item of left stack", ^{
+						beforeEach(^{
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex-1];
+							layer = sublayers[sut.selectedItemIndex-1];
+						});
+						it(@"should have the correct bounds", ^{
+							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
+							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
+						});
+						it(@"should have the correct position", ^{
+							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
+							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+						});
+						it(@"should have the correct anchorPoint", ^{
+							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
+							[[[NSValue valueWithPoint:layer.anchorPoint] should] equal:expectedAnchorPoint];
+						});
+						it(@"should have the correct zPosition", ^{
+							[[theValue(expectedAttributes.zPosition) should] equal:theValue(layer.zPosition)];
+						});
+						it(@"should have the correct transform", ^{
+							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
+							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
+						});
+					});
 					context(@"selected item", ^{
 						beforeEach(^{
 							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex];
@@ -346,6 +371,30 @@ describe(@"MMCoverFlowLayer", ^{
 						});
 						it(@"should be horizontally centered", ^{
 							[[theValue(CGRectGetMidX(layer.frame)) should] equal:theValue(CGRectGetMidX(sut.bounds))];
+						});
+					context(@"first item of right stack", ^{
+						beforeEach(^{
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex+1];
+							layer = sublayers[sut.selectedItemIndex+1];
+						});
+						it(@"should have the correct bounds", ^{
+							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
+							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
+						});
+						it(@"should have the correct position", ^{
+							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
+							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+						});
+						it(@"should have the correct anchorPoint", ^{
+							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
+							[[[NSValue valueWithPoint:layer.anchorPoint] should] equal:expectedAnchorPoint];
+						});
+						it(@"should have the correct zPosition", ^{
+							[[theValue(expectedAttributes.zPosition) should] equal:theValue(layer.zPosition)];
+						});
+						it(@"should have the correct transform", ^{
+							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
+							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
 						});
 					});
 					context(@"last item of right stack", ^{
