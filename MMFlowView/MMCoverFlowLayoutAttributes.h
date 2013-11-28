@@ -12,7 +12,7 @@
 
 @property NSUInteger index;
 @property CATransform3D transform;
-@property CGSize size;
+@property CGRect bounds;
 @property CGPoint position;
 @property CGPoint anchorPoint;
 @property CGFloat zPosition;

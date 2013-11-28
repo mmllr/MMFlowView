@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1290F5C6EDAD4187B55E9B75 /* libPods-MMFlowViewTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */; };
+		2807B3FA1822D7F1005E3D0E /* MMCoverFlowLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2807B3F91822D7F1005E3D0E /* MMCoverFlowLayerSpec.m */; };
+		2807B3FD1822D860005E3D0E /* MMCoverFlowLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2807B3FC1822D860005E3D0E /* MMCoverFlowLayer.m */; };
 		282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */; };
 		28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		2876FF3F180B269C00318C7B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF3E180B269C00318C7B /* SenTestingKit.framework */; };
@@ -16,6 +18,10 @@
 		2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */; };
 		2876FF54180B2CA300318C7B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF53180B2CA300318C7B /* Cocoa.framework */; };
 		2876FF56180B2CBA00318C7B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF55180B2CBA00318C7B /* QuartzCore.framework */; };
+		2877D87F181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D87E181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m */; };
+		2877D882181FE1DF00FD5E07 /* MMFlowViewItemLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D881181FE1DF00FD5E07 /* MMFlowViewItemLayer.m */; };
+		2877D884181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */; };
+		2877D887181FF08D00FD5E07 /* MMFlowViewImageLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */; };
 		287F73C216308E2D0004BA0F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C116308E2D0004BA0F /* Quartz.framework */; };
 		287F73C416308E320004BA0F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C316308E320004BA0F /* Cocoa.framework */; };
 		287F73C616308E360004BA0F /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C516308E360004BA0F /* QTKit.framework */; };
@@ -26,6 +32,9 @@
 		288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591B4173967BE000E04EF /* MMButtonLayer.m */; };
 		288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */; };
 		288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BD17398F88000E04EF /* NSColor+MMAdditions.m */; };
+		28862395183560D0008D6246 /* MMScrollBarLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28862394183560D0008D6246 /* MMScrollBarLayerSpec.m */; };
+		2886239818356132008D6246 /* MMScrollBarLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2886239718356132008D6246 /* MMScrollBarLayer.m */; };
+		288CAB6A183AA04700420CC7 /* MMScrollKnobLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 288CAB69183AA04700420CC7 /* MMScrollKnobLayerSpec.m */; };
 		28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */; };
 		28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */; };
 		28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC0315AEEE9A0096FBA4 /* main.m */; };
@@ -35,6 +44,7 @@
 		28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC1D15AEEF010096FBA4 /* Item.m */; };
 		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
 		28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */; };
+		28E6979A183AA0B400210AE1 /* MMScrollKnobLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E69799183AA0B400210AE1 /* MMScrollKnobLayer.m */; };
 		28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */; };
 		28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */; };
 		28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */; };
@@ -52,6 +62,9 @@
 
 /* Begin PBXFileReference section */
 		125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2807B3F91822D7F1005E3D0E /* MMCoverFlowLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowLayerSpec.m; sourceTree = "<group>"; };
+		2807B3FB1822D860005E3D0E /* MMCoverFlowLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayer.h; path = MMFlowView/MMCoverFlowLayer.h; sourceTree = "<group>"; };
+		2807B3FC1822D860005E3D0E /* MMCoverFlowLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayer.m; path = MMFlowView/MMCoverFlowLayer.m; sourceTree = "<group>"; };
 		282FEE8618095A5200A306F5 /* CALayer+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+NSAccessibility.h"; path = "MMFlowView/CALayer+NSAccessibility.h"; sourceTree = "<group>"; };
 		282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+NSAccessibility.m"; path = "MMFlowView/CALayer+NSAccessibility.m"; sourceTree = "<group>"; };
 		2876FF3D180B269C00318C7B /* MMFlowViewTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MMFlowViewTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +76,12 @@
 		2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerAccessibilitySpec.m; sourceTree = "<group>"; };
 		2876FF53180B2CA300318C7B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2876FF55180B2CBA00318C7B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		2877D87E181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewItemLayerSpec.m; sourceTree = "<group>"; };
+		2877D880181FE1DF00FD5E07 /* MMFlowViewItemLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewItemLayer.h; path = MMFlowView/MMFlowViewItemLayer.h; sourceTree = "<group>"; };
+		2877D881181FE1DF00FD5E07 /* MMFlowViewItemLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewItemLayer.m; path = MMFlowView/MMFlowViewItemLayer.m; sourceTree = "<group>"; };
+		2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowImageLayerSpec.m; sourceTree = "<group>"; };
+		2877D885181FF08D00FD5E07 /* MMFlowViewImageLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewImageLayer.h; path = MMFlowView/MMFlowViewImageLayer.h; sourceTree = "<group>"; };
+		2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewImageLayer.m; path = MMFlowView/MMFlowViewImageLayer.m; sourceTree = "<group>"; };
 		287F73C116308E2D0004BA0F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C316308E320004BA0F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C516308E360004BA0F /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -76,6 +95,10 @@
 		288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMVideoOverlayLayer.m; path = MMFlowView/MMVideoOverlayLayer.m; sourceTree = "<group>"; };
 		288591BC17398F88000E04EF /* NSColor+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSColor+MMAdditions.h"; path = "MMFlowView/NSColor+MMAdditions.h"; sourceTree = "<group>"; };
 		288591BD17398F88000E04EF /* NSColor+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSColor+MMAdditions.m"; path = "MMFlowView/NSColor+MMAdditions.m"; sourceTree = "<group>"; };
+		28862394183560D0008D6246 /* MMScrollBarLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMScrollBarLayerSpec.m; sourceTree = "<group>"; };
+		2886239618356132008D6246 /* MMScrollBarLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMScrollBarLayer.h; path = MMFlowView/MMScrollBarLayer.h; sourceTree = "<group>"; };
+		2886239718356132008D6246 /* MMScrollBarLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMScrollBarLayer.m; path = MMFlowView/MMScrollBarLayer.m; sourceTree = "<group>"; };
+		288CAB69183AA04700420CC7 /* MMScrollKnobLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMScrollKnobLayerSpec.m; sourceTree = "<group>"; };
 		28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSAccessibility.h"; path = "MMFlowView/MMFlowView+NSAccessibility.h"; sourceTree = "<group>"; };
 		28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+NSAccessibility.m"; path = "MMFlowView/MMFlowView+NSAccessibility.m"; sourceTree = "<group>"; };
 		28BD85EF1802FAB00095224B /* MMFlowView_Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MMFlowView_Private.h; path = MMFlowView/MMFlowView_Private.h; sourceTree = "<group>"; };
@@ -95,6 +118,8 @@
 		28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowLayoutAttributeSpec.m; sourceTree = "<group>"; };
 		28E085341811C2FA003CC49E /* MMCoverFlowLayoutAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayoutAttributes.h; path = MMFlowView/MMCoverFlowLayoutAttributes.h; sourceTree = "<group>"; };
 		28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayoutAttributes.m; path = MMFlowView/MMCoverFlowLayoutAttributes.m; sourceTree = "<group>"; };
+		28E69798183AA0B400210AE1 /* MMScrollKnobLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMScrollKnobLayer.h; path = MMFlowView/MMScrollKnobLayer.h; sourceTree = "<group>"; };
+		28E69799183AA0B400210AE1 /* MMScrollKnobLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMScrollKnobLayer.m; path = MMFlowView/MMScrollKnobLayer.m; sourceTree = "<group>"; };
 		28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFLowLayoutSpec.m; sourceTree = "<group>"; };
 		28EE5F801811BBDF006D0540 /* MMCoverFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayout.h; path = MMFlowView/MMCoverFlowLayout.h; sourceTree = "<group>"; };
 		28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayout.m; path = MMFlowView/MMCoverFlowLayout.m; sourceTree = "<group>"; };
@@ -157,6 +182,11 @@
 				28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */,
 				28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */,
 				28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */,
+				2877D87E181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m */,
+				2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */,
+				2807B3F91822D7F1005E3D0E /* MMCoverFlowLayerSpec.m */,
+				28862394183560D0008D6246 /* MMScrollBarLayerSpec.m */,
+				288CAB69183AA04700420CC7 /* MMScrollKnobLayerSpec.m */,
 			);
 			name = Specs;
 			path = MMFlowView/Specs;
@@ -182,6 +212,16 @@
 				28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */,
 				28E085341811C2FA003CC49E /* MMCoverFlowLayoutAttributes.h */,
 				28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */,
+				2877D880181FE1DF00FD5E07 /* MMFlowViewItemLayer.h */,
+				2877D881181FE1DF00FD5E07 /* MMFlowViewItemLayer.m */,
+				2877D885181FF08D00FD5E07 /* MMFlowViewImageLayer.h */,
+				2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */,
+				2807B3FB1822D860005E3D0E /* MMCoverFlowLayer.h */,
+				2807B3FC1822D860005E3D0E /* MMCoverFlowLayer.m */,
+				2886239618356132008D6246 /* MMScrollBarLayer.h */,
+				2886239718356132008D6246 /* MMScrollBarLayer.m */,
+				28E69798183AA0B400210AE1 /* MMScrollKnobLayer.h */,
+				28E69799183AA0B400210AE1 /* MMScrollKnobLayer.m */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -305,7 +345,7 @@
 		28DEFBEA15AEEE9A0096FBA4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = www.isnotnil.com;
 				TargetAttributes = {
 					2876FF3C180B269C00318C7B = {
@@ -391,10 +431,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2877D884181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m in Sources */,
 				2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */,
 				28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */,
 				28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
+				288CAB6A183AA04700420CC7 /* MMScrollKnobLayerSpec.m in Sources */,
 				28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */,
+				2807B3FA1822D7F1005E3D0E /* MMCoverFlowLayerSpec.m in Sources */,
+				2877D87F181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m in Sources */,
+				28862395183560D0008D6246 /* MMScrollBarLayerSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -403,15 +448,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */,
+				2877D882181FE1DF00FD5E07 /* MMFlowViewItemLayer.m in Sources */,
 				28DEFC0B15AEEE9A0096FBA4 /* AppDelegate.m in Sources */,
+				2807B3FD1822D860005E3D0E /* MMCoverFlowLayer.m in Sources */,
 				28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */,
 				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
 				288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */,
+				2877D887181FF08D00FD5E07 /* MMFlowViewImageLayer.m in Sources */,
 				282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */,
 				28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */,
+				2886239818356132008D6246 /* MMScrollBarLayer.m in Sources */,
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
 				28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */,
 				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
+				28E6979A183AA0B400210AE1 /* MMScrollKnobLayer.m in Sources */,
 				28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -538,6 +588,12 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -551,7 +607,9 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
@@ -564,6 +622,12 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -571,7 +635,9 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx;

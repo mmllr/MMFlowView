@@ -139,27 +139,25 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 /* weak reference to the delegate, see MMFlowViewDelegate protocol */
 @property (weak) IBOutlet id<MMFlowViewDelegate> delegate;
 /* the angle in degrees around which the unselected images are rotated around the y-axis (counter clockwise for the left-stack, clockwise for the right-stack) */
-@property (assign, nonatomic) CGFloat stackedAngle;
+@property (nonatomic) CGFloat stackedAngle;
 /* spacing between images in stack */
-@property (assign, nonatomic) CGFloat spacing;
+@property (nonatomic) CGFloat spacing;
 /* scaling used for stacked (aka non-selected images */
-@property (assign, nonatomic) CGFloat stackedScale;
-/* scaling for selected image */
-@property (assign, nonatomic) CGFloat selectedScale;
+@property (nonatomic) CGFloat stackedScale;
 /* CGFloat value for darkening the reflection in the range of 0-1. 0 means no darkening, 1 is completly black, meaning no reflection at all */
-@property (assign, nonatomic) CGFloat reflectionOffset;
+@property (nonatomic) CGFloat reflectionOffset;
 /* scaling factor for image-items */
-@property (assign, nonatomic) CGFloat itemScale;
+@property (nonatomic) CGFloat itemScale;
 /* scale value for cached image resolution in the range of 0-1, 0 means smaller cached images, 1 is images in the size of the actual image-tile */
-@property (assign, nonatomic) CGFloat previewScale;
+@property (nonatomic) CGFloat previewScale;
 /* duration of a scroll in changing the selection */
-@property (assign, nonatomic) CFTimeInterval scrollDuration;
+@property (nonatomic) CFTimeInterval scrollDuration;
 /* flag to indicate wheter reflections are shown or not */
-@property (assign, nonatomic) BOOL showsReflection;
+@property (nonatomic) BOOL showsReflection;
 /* if set to YES, MMFlowView can act as a datasource for QLQuickLookPanel for all path-representation types (all NSURL or filepath-NSStrings), hitting space invokes the panel */
-@property (assign, nonatomic) BOOL canControlQuickLookPanel;
+@property (nonatomic) BOOL canControlQuickLookPanel;
 /* the selected index */
-@property (assign, nonatomic) NSUInteger selectedIndex;
+@property (nonatomic) NSUInteger selectedIndex;
 /* number of items in view */
 @property (readonly, nonatomic) NSUInteger numberOfItems;
 /* indexes of all visible items */

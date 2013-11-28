@@ -10,7 +10,7 @@
 
 @class MMCoverFlowLayoutAttributes;
 
-@interface MMCoverFlowLayout : NSObject
+@interface MMCoverFlowLayout : NSObject<NSCoding>
 
 @property (nonatomic, readonly) CGFloat contentWidth;
 @property (nonatomic, readonly) CGSize itemSize;
