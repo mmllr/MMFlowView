@@ -975,11 +975,13 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)viewWillStartLiveResize
 {
+	[super viewWillStartLiveResize];
 	self.coverFlowLayer.inLiveResize = YES;
 }
 
 - (void)viewDidEndLiveResize
 {
+	[super viewDidEndLiveResize];
 	self.coverFlowLayer.inLiveResize = NO;
 	//[ self.scrollLayer setNeedsLayout ];
 	[ self updateImages ];
