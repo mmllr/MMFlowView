@@ -1770,15 +1770,16 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 - (void)setupTrackingAreas
 {
-	for ( NSTrackingArea *trackingArea in [ self trackingAreas ] ) {
-		[ self removeTrackingArea:trackingArea ];
+	for ( NSTrackingArea *trackingArea in [self trackingAreas] ) {
+		[self removeTrackingArea:trackingArea];
 	}
 	if ( self.selectedIndex != NSNotFound ) {
-		NSTrackingArea *trackingArea = [ [ NSTrackingArea alloc ] initWithRect:[ self rectInViewForLayer:[ self imageLayerAtIndex:self.selectedIndex ] ]
+		NSRect rect = NSRectFromCGRect([self.layer convertRect:self.coverFlowLayer.selectedItemFrame fromLayer:self.coverFlowLayer]);
+		NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:rect
 																		 options:NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside
 																		   owner:self
-																		userInfo:nil ];
-		[ self addTrackingArea:trackingArea ];
+																		userInfo:nil];
+		[self addTrackingArea:trackingArea];
 	}
 }
 

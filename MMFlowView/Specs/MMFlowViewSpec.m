@@ -623,6 +623,40 @@ describe(@"MMFlowView", ^{
 						});
 					});
 				});
+				context(@"tracking areas", ^{
+					__block NSTrackingArea *trackingArea = nil;
+					
+					beforeEach(^{
+						[sut updateTrackingAreas];
+						trackingArea = [[sut trackingAreas] firstObject];
+					});
+					afterEach(^{
+						trackingArea = nil;
+					});
+					it(@"should have one tracking area", ^{
+						[[[sut trackingAreas] should] haveCountOf:1];
+					});
+					it(@"should have the selected item rect", ^{
+						CGRect rectInHostingLayer = [sut.layer convertRect:sut.coverFlowLayer.selectedItemFrame fromLayer:sut.coverFlowLayer];
+						NSValue *expectedRect = [NSValue valueWithRect:NSRectFromCGRect(rectInHostingLayer)];
+						[[[NSValue valueWithRect:[trackingArea rect]] should] equal:expectedRect];
+					});
+					it(@"should have the NSTrackingActiveInActiveApp option", ^{
+						[[theValue([trackingArea options] & NSTrackingActiveInActiveApp) should] beTrue];
+					});
+					it(@"should have the NSTrackingActiveWhenFirstResponder option", ^{
+						[[theValue([trackingArea options] & NSTrackingActiveWhenFirstResponder) should] beTrue];
+					});
+					it(@"should have the NSTrackingMouseEnteredAndExited option", ^{
+						[[theValue([trackingArea options] & NSTrackingMouseEnteredAndExited) should] beTrue];
+					});
+					it(@"should have the NSTrackingAssumeInside option", ^{
+						[[theValue([trackingArea options] & NSTrackingAssumeInside) should] beTrue];
+					});
+					it(@"should be the owner of the tracking area", ^{
+						[[[trackingArea owner] should] equal:sut];
+					});
+				});
 			});
 		});
 	});
