@@ -94,28 +94,6 @@
 /* returns an autoreleased QTMovie object */
 + (QTMovie*)movieFromRepresentation:(id)representation withType:(NSString*)representationType;
 
-/* creates the layer tree */
-- (void)setupLayers;
-- (CALayer*)createBackgroundLayer;
-- (CATextLayer*)createTitleLayer;
-- (CALayer*)createContainerLayer;
-- (CAReplicatorLayer*)createItemLayerWithIndex:(NSUInteger)anIndex;
-- (CALayer*)createImageLayer;
-- (QTMovieLayer*)createMovieLayerWithMovie:(QTMovie*)aMovie atIndex:(NSUInteger)anIndex;
-- (MMVideoOverlayLayer*)createMovieOverlayLayerWithIndex:(NSUInteger)anIndex;
-
-/* returns the item-rootlayer */
-- (CAReplicatorLayer*)itemLayerAtIndex:(NSUInteger)anIndex;
-
-/* returns the image layer */
-- (CALayer*)imageLayerAtIndex:(NSUInteger)anIndex;
-
-/* returns the movie layer if present, may return nil */
-- (QTMovieLayer*)movieLayerAtIndex:(NSUInteger)anIndex;
-
-/* returns overlay layer if present, may return nil */
-- (CALayer*)overlayLayerAtIndex:(NSUInteger)anIndex;
-
 /* updates the image layer: asynchronously loads the image from the datasource or provides a default image */
 - (void)updateImageLayerAtIndex:(NSUInteger)index;
 
@@ -179,20 +157,8 @@
 /* returns the size-difference in percent for an image */
 - (CGFloat)differenceForImage:(CGImageRef)anImage forDesiredSize:(CGSize)desiredSize;
 
-/* sets the frame and all related attributes on a itemlayer */
-- (void)setFrameForLayer:(CAReplicatorLayer*)itemLayer atIndex:(NSUInteger)anIndex withItemSize:(CGSize)itemSize;
-
 /* sets the image for an itemlayer */
 - (void)setImage:(CGImageRef)anImage atIndex:(NSUInteger)anIndex;
-
-/* invoked after selecting a layer at index and performs all necessary checking for type (such as movie, quartz composer composition etc) */
-- (void)selectLayerAtIndex:(NSUInteger)anIndex;
-
-/* invoked before deselecting a layer, performs cleanup work, such as removing content-sublayers */
-- (void)deselectLayerAtIndex:(NSUInteger)anIndex;
-
-/* creates the NSTrackingAreas for selected layer */
-- (void)setupTrackingAreas;
 
 /* checks image cache for an image with an specific uid, may return NULL */
 - (CGImageRef)lookupForImageUID:(NSString*)anUID;

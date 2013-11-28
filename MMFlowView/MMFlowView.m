@@ -143,12 +143,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 
 #endif
 
-#if __has_feature(objc_arc)
-#define __MM_WEAK_REFERENCE __weak
-#else
-#define __MM_WEAK_REFERENCE __block
-#endif
-
 @implementation MMFlowView
 
 @dynamic numberOfItems;
@@ -714,21 +708,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	}
 }
 
-- (void)setHighlightedLayer:(CALayer *)aLayer
-{
-	if ( aLayer != _highlightedLayer ) {
-		[ self highlightLayer:_highlightedLayer
-				  highlighted:NO
-				 cornerRadius:0
-			highlightingColor:nil ];
-		_highlightedLayer = aLayer;
-		[ self highlightLayer:aLayer
-				  highlighted:YES
-				 cornerRadius:0
-			highlightingColor:[ [ NSColor selectedControlColor ] CGColor ] ];
-	}
-}
-
 - (void)setNumberOfItems:(NSUInteger)numberOfItems
 {
 	self.layout.numberOfItems = numberOfItems;
@@ -787,46 +766,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	contentLayer.borderWidth = 4;
 	return contentLayer;
 }
-
-#pragma mark -
-#pragma mark Layer getter
-
-- (CAReplicatorLayer*)itemLayerAtIndex:(NSUInteger)anIndex
-{
-	return nil;
-}
-
-- (CALayer*)imageLayerAtIndex:(NSUInteger)anIndex
-{
-	CALayer *layer = [ self itemLayerAtIndex:anIndex ];
-	return (layer.sublayers)[kImageLayerIndex];
-}
-
-- (QTMovieLayer*)movieLayerAtIndex:(NSUInteger)anIndex
-{
-	QTMovieLayer *movieLayer = nil;
-
-	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
-	if ( [ imageLayer.sublayers count ] && [ (imageLayer.sublayers)[0] isKindOfClass:[ QTMovieLayer class ] ]  ) {
-		movieLayer = (imageLayer.sublayers)[0];
-	}
-	return movieLayer;
-}
-
-- (CALayer*)overlayLayerAtIndex:(NSUInteger)anIndex
-{
-	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
-	CALayer *overlay = [ imageLayer valueForKey:kMMFlowViewOverlayLayerKey ];
-	if ( overlay == nil && imageLayer.sublayers ) {
-		NSArray *overlays = [ imageLayer.sublayers valueForKey:kMMFlowViewOverlayLayerKey ];
-		if ( [ overlays count ] ) {
-			overlay = overlays[0];
-			overlay = [ overlay isKindOfClass:[ CALayer class ] ] ? overlay : nil;
-		}
-	}
-	return overlay;
-}
-
 
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex
 {
@@ -1467,7 +1406,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		return NSAccessibilityImageRole;
 	}];
 
-	MMFlowView * __MM_WEAK_REFERENCE weakSelf = self;
+	MMFlowView * __weak weakSelf = self;
 	[imageLayer setReadableAccessibilityAttribute:NSAccessibilityTitleAttribute withBlock:^id{
 		return [ weakSelf titleAtIndex:anIndex ];
 	}];
@@ -1575,7 +1514,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 }
 
 - (void)setImage:(CGImageRef)anImage atIndex:(NSUInteger)anIndex
-{
+{/*
 	if ( anImage ) {
 		CAReplicatorLayer *itemLayer = [ self itemLayerAtIndex:anIndex ];
 		CALayer *contentLayer = (itemLayer.sublayers)[kImageLayerIndex];
@@ -1587,7 +1526,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		if ( ![ contentLayer isKindOfClass:[ QTMovieLayer class ] ] ) {
 			contentLayer.contents = (__bridge id)anImage;
 		}
-	}
+	}*/
 }
 
 - (void)setFrameForLayer:(CAReplicatorLayer*)itemLayer atIndex:(NSUInteger)anIndex withItemSize:(CGSize)itemSize
@@ -1720,7 +1659,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 }
 
 - (void)updateMovieLayerAtIndex:(NSUInteger)anIndex
-{
+{/*
 	id item = [ self imageItemForIndex:anIndex ];
 	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
 	QTMovie *movie = [ [ self class ] movieFromRepresentation:[ self imageRepresentationForItem:item ]
@@ -1730,11 +1669,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ self setAttributesForItemContentLayer:movieLayer atIndex:anIndex ];
 	[ movieLayer setValue:[ imageLayer valueForKey:kMMFlowViewItemAspectRatioKey ]
 				   forKey:kMMFlowViewItemAspectRatioKey ];
-	[ imageLayer addSublayer:movieLayer ];
+	[ imageLayer addSublayer:movieLayer ];*/
 }
 
 - (void)updateQCCompositionLayerAtIndex:(NSUInteger)anIndex
-{
+{/*
 	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
 
 	id item = [ self imageItemForIndex:anIndex ];
@@ -1756,7 +1695,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 				}
 			} ];
 		}
-	} ];
+	} ];*/
 }
 
 
@@ -1794,7 +1733,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 {
 	if ( anIndex == NSNotFound ) {
 		return;
-	}
+	}/*
 	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
 	if ( [ imageLayer.name hasSuffix:kMMFlowViewMovieLayerSuffix ] ) {
 		QTMovieLayer *movieLayer = [ self movieLayerAtIndex:anIndex ];
@@ -1803,14 +1742,14 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	[ CATransaction begin ];
 	[ CATransaction setDisableActions:YES ];
 	imageLayer.sublayers = nil;
-	[ CATransaction commit ];
+	[ CATransaction commit ];*/
 }
 
 - (void)selectLayerAtIndex:(NSUInteger)anIndex
 {
 	if ( self.draggingKnob ) {
 		return;
-	}
+	}/*
 	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
 
 	if ( [ imageLayer.sublayers count ] == 0 ) {
@@ -1821,7 +1760,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		else if ( [ imageLayer.name hasSuffix:kMMFlowViewQCCompositionLayerSuffix ] ) {
 			[ self updateQCCompositionLayerAtIndex:anIndex ];
 		}
-	}
+	}*/
 }
 
 #pragma mark -
@@ -1845,16 +1784,16 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 #pragma mark Overlay code
 
 - (void)mouseEnteredLayerAtIndex:(NSUInteger)anIndex
-{
+{/*
 	CALayer *overlayLayer = [ self overlayLayerAtIndex:anIndex ];
 	overlayLayer.hidden = NO;
-	[ overlayLayer setNeedsDisplay ];
+	[ overlayLayer setNeedsDisplay ];*/
 }
 
 - (void)mouseExitedLayerAtIndex:(NSUInteger)anIndex
-{
+{/*
 	CALayer *overlayLayer = [ self overlayLayerAtIndex:anIndex ];
-	overlayLayer.hidden = YES;
+	overlayLayer.hidden = YES;*/
 }
 
 #pragma mark -
@@ -1950,10 +1889,11 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 }
 
 - (NSRect)previewPanel:(QLPreviewPanel *)panel sourceFrameOnScreenForPreviewItem:(id <QLPreviewItem>)item
-{
+{/*
 	NSRect selectedItemRectInWindow = [ self convertRect:[ self rectInViewForLayer:[ self imageLayerAtIndex:self.selectedIndex ] ] toView:nil ];
 	selectedItemRectInWindow.origin = [ [ self window ] convertBaseToScreen:selectedItemRectInWindow.origin ];
-	return selectedItemRectInWindow;
+	return selectedItemRectInWindow;*/
+	return NSZeroRect;
 }
 
 #pragma mark -
@@ -2037,7 +1977,7 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		if ( dragFromSelf && draggedIndex == self.selectedIndex ) {
 			return NSDragOperationNone;
 		}
-		self.highlightedLayer = [ self imageLayerAtIndex:draggedIndex ];
+		//self.highlightedLayer = [ self imageLayerAtIndex:draggedIndex ];
 		if ( [ self.dataSource respondsToSelector:@selector(flowView:validateDrop:proposedIndex:) ] ) {
 			return [ self.dataSource flowView:self
 								 validateDrop:dragInfo
