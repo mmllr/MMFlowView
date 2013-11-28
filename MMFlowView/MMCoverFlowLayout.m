@@ -167,7 +167,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		return 0;
 	}
 	CGFloat itemWidth = self.itemSize.width;
-	CGFloat cosStackedAngle = self.stackedAngle * M_PI / 180.;
+	CGFloat cosStackedAngle = cos(self.stackedAngle * M_PI / 180.);
 	CGFloat width = itemWidth + (cosStackedAngle*self.interItemSpacing + cosStackedAngle*itemWidth) * MAX( 0, (self.numberOfItems - 1 ));
 
 	if ( self.selectedItemIndex == 0 ||
@@ -220,7 +220,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 {
 	CGFloat itemWidth = self.itemSize.width;
 
-	CGFloat cosStackedAngle = self.stackedAngle * M_PI / 180.;
+	CGFloat cosStackedAngle = cos(self.stackedAngle * M_PI / 180.);
 	CGFloat stackedWidth = itemWidth * cosStackedAngle + cosStackedAngle * self.interItemSpacing;
 	CGFloat offset = stackedWidth * anIndex;
 

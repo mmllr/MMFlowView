@@ -248,8 +248,8 @@ describe(@"MMCoverFlowLayout", ^{
 					
 					context(@"selection on both ends of stack", ^{
 						beforeEach(^{
-							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
-							expectedContentWidth = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.numberOfItems - 1 ) + sut.itemSize.width + sut.interItemSpacing;
+							CGFloat cosStackedAngle = cos(sut.stackedAngle * M_PI / 180.);
+							expectedContentWidth = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.numberOfItems - 1) + sut.itemSize.width + sut.interItemSpacing;
 						});
 						context(@"first item selected", ^{
 							beforeEach(^{
@@ -270,7 +270,7 @@ describe(@"MMCoverFlowLayout", ^{
 					});
 					context(@"selection in stack", ^{
 						it(@", should habe a contentWidth of stackedWidth * number of stacked items plus item width plus two interItemSpacing", ^{
-							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							CGFloat cosStackedAngle = cos(sut.stackedAngle * M_PI / 180.);
 							expectedContentWidth = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.numberOfItems - 1 ) + sut.itemSize.width + sut.interItemSpacing * 2;
 							[[theValue(sut.contentWidth) should] equal:theValue(expectedContentWidth)];
 						});
@@ -349,7 +349,7 @@ describe(@"MMCoverFlowLayout", ^{
 							[[[NSValue valueWithPoint:attributes.anchorPoint] should] equal:expectedPoint];
 						});
 						it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing)", ^{
-							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							CGFloat cosStackedAngle = cos(sut.stackedAngle * M_PI / 180.);
 							CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.selectedItemIndex - 1);
 							[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
 						});
@@ -384,7 +384,7 @@ describe(@"MMCoverFlowLayout", ^{
 						[[theValue(attributes.zPosition) should] equal:theValue(0)];
 					});
 					it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing) plus a half item width if the first item is not selected", ^{
-						CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+						CGFloat cosStackedAngle = cos(sut.stackedAngle * M_PI / 180.);
 						CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * sut.selectedItemIndex + sut.itemSize.width / 2;
 						[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
 					});
@@ -439,7 +439,7 @@ describe(@"MMCoverFlowLayout", ^{
 							[[theValue(attributes.zPosition) should] equal:theValue(-sut.stackedDistance)];
 						});
 						it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing) plus an item width if the first item is not selected", ^{
-							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							CGFloat cosStackedAngle = cos(sut.stackedAngle * M_PI / 180.);
 							CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.selectedItemIndex + 1) + sut.itemSize.width;
 							[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
 						});
@@ -468,7 +468,7 @@ describe(@"MMCoverFlowLayout", ^{
 							[[theValue(attributes.zPosition) should] equal:theValue(-sut.stackedDistance)];
 						});
 						it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing) plus an item width if the first item is not selected", ^{
-							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							CGFloat cosStackedAngle = cos(sut.stackedAngle * M_PI / 180.);
 							CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.numberOfItems-1) + sut.itemSize.width;
 							[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
 						});
@@ -483,7 +483,7 @@ describe(@"MMCoverFlowLayout", ^{
 							attributes = [sut layoutAttributesForItemAtIndex:sut.selectedItemIndex + 1];
 						});
 						it(@"should have the x position of itemIndex times cos(stackedAngle)*itemWith + cos(stackedAngle)*interItemSpacing) plus half an item width", ^{
-							CGFloat cosStackedAngle = sut.stackedAngle * M_PI / 180.;
+							CGFloat cosStackedAngle = cos(sut.stackedAngle * M_PI / 180.);
 							CGFloat expectedX = (cosStackedAngle*sut.interItemSpacing + cosStackedAngle*sut.itemSize.width) * (sut.selectedItemIndex + 1) + sut.itemSize.width / 2;
 							[[theValue(attributes.position.x) should] equal:theValue(expectedX)];
 						});
