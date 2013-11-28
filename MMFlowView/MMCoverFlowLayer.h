@@ -30,6 +30,7 @@
 @property (nonatomic, strong, readonly) NSIndexSet *visibleItemIndexes;
 @property (nonatomic, strong, readonly) MMCoverFlowLayout *layout;
 @property (nonatomic) CFTimeInterval scrollDuration;
+@property (nonatomic, readonly) CGRect selectedItemFrame;
 
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout;
 - (id)initWithLayout:(MMCoverFlowLayout*)layout;

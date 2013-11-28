@@ -100,6 +100,18 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	self.layout.selectedItemIndex = selectedItemIndex;
 }
 
+- (CGRect)selectedItemFrame
+{
+	if ( self.selectedItemIndex != NSNotFound ) {
+		CALayer *selectedLayer = self.sublayers[self.selectedItemIndex];
+		CGRect selectedBounds = selectedLayer.bounds;
+		return CGRectMake(CGRectGetMidX(self.bounds) - CGRectGetMidX(selectedBounds), CGRectGetMidY(self.bounds) - CGRectGetMidY(selectedBounds), CGRectGetWidth(selectedBounds), CGRectGetHeight(selectedBounds));
+	}
+	else {
+		return CGRectZero;
+	}
+}
+
 - (void)setEyeDistance:(CGFloat)eyeDistance
 {
 	_eyeDistance = eyeDistance;

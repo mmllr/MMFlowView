@@ -104,6 +104,9 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should have a selectedItemIndex of NSNotFound", ^{
 			[[theValue(sut.selectedItemIndex) should] equal:theValue(NSNotFound)];
 		});
+		it(@"should have a selectedItemFrame property", ^{
+			[[theValue(CGRectEqualToRect(CGRectZero, sut.selectedItemFrame) == true) should] beTrue];
+		});
 		context(@"observing layout changes", ^{
 			it(@"should trigger a reload if layouts numberOfItems changes", ^{
 				[[sut should] receive:@selector(reloadContent)];
@@ -372,6 +375,11 @@ describe(@"MMCoverFlowLayer", ^{
 						it(@"should be horizontally centered", ^{
 							[[theValue(CGRectGetMidX(layer.frame)) should] equal:theValue(CGRectGetMidX(sut.bounds))];
 						});
+						it(@"should have a selectedItemFrame of the selected layer in the flow view coordinates", ^{
+							NSValue *expectedRect = [NSValue valueWithRect:[sut convertRect:layer.visibleRect fromLayer:layer]];
+							[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedRect];
+						});
+					});
 					context(@"first item of right stack", ^{
 						beforeEach(^{
 							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex+1];
