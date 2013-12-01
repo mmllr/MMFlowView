@@ -320,8 +320,8 @@ describe(@"MMCoverFlowLayout", ^{
 						it(@"should have the correct index", ^{
 							[[theValue(attributes.index) should] beZero];
 						});
-						it(@"should have an anchorPoint of {0, 0}", ^{
-							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0, 0)];
+						it(@"should have an anchorPoint of {0.5, 0}", ^{
+							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(.5, 0)];
 							[[[NSValue valueWithPoint:attributes.anchorPoint] should] equal:expectedPoint];
 						});
 						it(@"should have a x position of zero", ^{
@@ -353,8 +353,8 @@ describe(@"MMCoverFlowLayout", ^{
 						it(@"should have the correct index", ^{
 							[[theValue(attributes.index) should] equal:theValue(sut.selectedItemIndex - 1)];
 						});
-						it(@"should have an anchorPoint of {0, 0}", ^{
-							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0, 0)];
+						it(@"should have an anchorPoint of {0.5, 0}", ^{
+							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(.5, 0)];
 							[[[NSValue valueWithPoint:attributes.anchorPoint] should] equal:expectedPoint];
 						});
 						it(@"should have the x position of itemIndex * expectedStackedItemWidth", ^{
@@ -403,23 +403,6 @@ describe(@"MMCoverFlowLayout", ^{
 						it(@"should have the x position of zero", ^{
 							[[theValue(attributes.position.x) should] beZero];
 						});
-						it(@"should have the left stack transform", ^{
-							NSValue *expectedTransfrom = [NSValue valueWithCATransform3D:CATransform3DIdentity];
-							NSValue *actualTransform = [NSValue valueWithCATransform3D:attributes.transform];
-							
-							[[actualTransform should] equal:expectedTransfrom];
-						});
-						it(@"should have the correct index", ^{
-							[[theValue(attributes.index) should] beZero];
-						});
-						it(@"should have an anchorPoint of {0, 0}", ^{
-							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0, 0)];
-							[[[NSValue valueWithPoint:attributes.anchorPoint] should] equal:expectedPoint];
-						});
-						it(@"should have the items vertically centered", ^{
-							CGFloat expectedY = sut.contentHeight / 2 - sut.itemSize.height / 2;
-							[[theValue(attributes.position.y) should] equal:theValue(expectedY)];
-						});
 					});
 				});
 				context(@"right stack", ^{
@@ -438,8 +421,8 @@ describe(@"MMCoverFlowLayout", ^{
 						it(@"should have the correct index", ^{
 							[[theValue(attributes.index) should] equal:theValue(sut.selectedItemIndex + 1)];
 						});
-						it(@"should have an anchorPoint of {0, 0}", ^{
-							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0, 0)];
+						it(@"should have an anchorPoint of {0.5, 0}", ^{
+							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(.5, 0)];
 							[[[NSValue valueWithPoint:attributes.anchorPoint] should] equal:expectedPoint];
 						});
 						it(@"should have zPosition of negative stackedDistance", ^{
@@ -466,8 +449,8 @@ describe(@"MMCoverFlowLayout", ^{
 						it(@"should have the correct index", ^{
 							[[theValue(attributes.index) should] equal:theValue(sut.numberOfItems-1)];
 						});
-						it(@"should have an anchorPoint of {0, 0}", ^{
-							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(0, 0)];
+						it(@"should have an anchorPoint of {0.5, 0}", ^{
+							NSValue *expectedPoint = [NSValue valueWithPoint:CGPointMake(.5, 0)];
 							[[[NSValue valueWithPoint:attributes.anchorPoint] should] equal:expectedPoint];
 						});
 						it(@"should have zPosition of negative stackedDistance", ^{

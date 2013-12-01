@@ -189,10 +189,10 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 	if ( itemIndex < self.numberOfItems ) {
 		MMCoverFlowLayoutAttributes *attributes = [[MMCoverFlowLayoutAttributes alloc] init];
 		attributes.index = itemIndex;
-		CGFloat height = self.contentHeight - (self.verticalMargin * 2);
-		attributes.bounds = CGRectMake(0, 0, height, height);
+		CGSize size = self.itemSize;
+		attributes.bounds = CGRectMake(0, 0, size.width, size.height);
 		attributes.position = [self originForItem:itemIndex];
-		attributes.anchorPoint = CGPointMake(0, 0);
+		attributes.anchorPoint = CGPointMake(0.5, 0);
 		if ( itemIndex < self.selectedItemIndex ) {
 			// left stack
 			attributes.transform = CATransform3DMakeRotation( DEGREES2RADIANS(self.stackedAngle), 0, 1, 0 );
@@ -204,6 +204,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 			attributes.zPosition = -self.stackedDistance;
 		}
 		else if ( itemIndex == self.selectedItemIndex ) {
+			attributes.zPosition = 0;
 		}
 		return attributes;
 	}

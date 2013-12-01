@@ -187,11 +187,12 @@ static void* kReloadContentObservationContext = @"reloadContent";
 
 - (void)applyAttributes:(MMCoverFlowLayoutAttributes*)attributes toContentLayer:(CALayer*)contentLayer
 {
-	contentLayer.bounds = attributes.bounds;
 	contentLayer.anchorPoint = attributes.anchorPoint;
-	contentLayer.transform = attributes.transform;
 	contentLayer.zPosition = attributes.zPosition;
-	contentLayer.frame = CGRectMake(attributes.position.x, attributes.position.y, CGRectGetWidth(attributes.bounds), CGRectGetHeight(attributes.bounds));
+	contentLayer.transform = attributes.transform;
+	contentLayer.bounds = attributes.bounds;
+	CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(attributes.anchorPoint.x*CGRectGetWidth(attributes.bounds), attributes.anchorPoint.y*CGRectGetHeight(attributes.bounds));
+	contentLayer.position = CGPointApplyAffineTransform(attributes.position, anchorTransform);
 }
 
 - (void)setupObservations
