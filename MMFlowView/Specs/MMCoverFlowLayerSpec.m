@@ -288,6 +288,7 @@ describe(@"MMCoverFlowLayer", ^{
 				});
 				context(@"attributes", ^{
 					__block MMCoverFlowLayoutAttributes *expectedAttributes = nil;
+					__block NSValue *expectedPosition = nil;
 					__block CALayer *layer = nil;
 
 					beforeEach(^{
@@ -301,15 +302,18 @@ describe(@"MMCoverFlowLayer", ^{
 					context(@"first item of left stack", ^{
 						beforeEach(^{
 							expectedAttributes = [layout layoutAttributesForItemAtIndex:0];
+							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
+							
+							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
 							layer = sublayers[0];
+							
 						});
 						it(@"should have the correct bounds", ^{
 							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
 							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
 						});
 						it(@"should have the correct position", ^{
-							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
-							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+							[[[NSValue valueWithPoint:layer.position] should] equal:expectedPosition];
 						});
 						it(@"should have the correct anchorPoint", ^{
 							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
@@ -327,14 +331,16 @@ describe(@"MMCoverFlowLayer", ^{
 						beforeEach(^{
 							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex-1];
 							layer = sublayers[sut.selectedItemIndex-1];
+							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
+							
+							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
 						});
 						it(@"should have the correct bounds", ^{
 							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
 							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
 						});
 						it(@"should have the correct position", ^{
-							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
-							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+							[[[NSValue valueWithPoint:layer.position] should] equal:expectedPosition];
 						});
 						it(@"should have the correct anchorPoint", ^{
 							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
@@ -352,6 +358,9 @@ describe(@"MMCoverFlowLayer", ^{
 						beforeEach(^{
 							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex];
 							layer = sublayers[sut.selectedItemIndex];
+							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
+							
+							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
 						});
 						it(@"should have the correct bounds", ^{
 							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
@@ -384,14 +393,16 @@ describe(@"MMCoverFlowLayer", ^{
 						beforeEach(^{
 							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex+1];
 							layer = sublayers[sut.selectedItemIndex+1];
+							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
+							
+							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
 						});
 						it(@"should have the correct bounds", ^{
 							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
 							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
 						});
 						it(@"should have the correct position", ^{
-							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
-							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+							[[[NSValue valueWithPoint:layer.position] should] equal:expectedPosition];
 						});
 						it(@"should have the correct anchorPoint", ^{
 							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
@@ -409,14 +420,16 @@ describe(@"MMCoverFlowLayer", ^{
 						beforeEach(^{
 							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.numberOfItems-1];
 							layer = [sublayers lastObject];
+							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
+							
+							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
 						});
 						it(@"should have the correct bounds", ^{
 							NSValue *expectedBounds = [NSValue valueWithRect:expectedAttributes.bounds];
 							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
 						});
 						it(@"should have the correct position", ^{
-							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
-							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
+							[[[NSValue valueWithPoint:layer.position] should] equal:expectedPosition];
 						});
 						it(@"should have the correct anchorPoint", ^{
 							NSValue *expectedAnchorPoint = [NSValue valueWithPoint:expectedAttributes.anchorPoint];
