@@ -24,6 +24,8 @@ static NSString * const kNumberOfItemsKey = @"numberOfItems";
 static NSString * const kStackedDistanceKey = @"stackedDistance";
 static NSString * const kVerticalMarginKey = @"verticalMargin";
 
+#define DEGREES2RADIANS(angle) ((angle) * M_PI / 180.)
+
 @interface MMCoverFlowLayout ()
 
 @end
@@ -167,8 +169,8 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		return 0;
 	}
 	CGFloat itemWidth = self.itemSize.width;
-	CGFloat cosStackedAngle = cos(self.stackedAngle * M_PI / 180.);
-	CGFloat width = itemWidth + (cosStackedAngle*self.interItemSpacing + cosStackedAngle*itemWidth) * MAX( 0, (self.numberOfItems - 1 ));
+	CGFloat stackedWidth = (itemWidth * cos(DEGREES2RADIANS(self.stackedAngle))) + self.interItemSpacing;
+	CGFloat width = itemWidth + stackedWidth * MAX( 0, (self.numberOfItems - 1 ));
 
 	if ( self.selectedItemIndex == 0 ||
 		self.selectedItemIndex == ( self.numberOfItems - 1 )) {
@@ -193,12 +195,12 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		attributes.anchorPoint = CGPointMake(0, 0);
 		if ( itemIndex < self.selectedItemIndex ) {
 			// left stack
-			attributes.transform = CATransform3DMakeRotation( self.stackedAngle * M_PI / 180., 0, 1, 0 );
+			attributes.transform = CATransform3DMakeRotation( DEGREES2RADIANS(self.stackedAngle), 0, 1, 0 );
 			attributes.zPosition = -self.stackedDistance;
 		}
 		else if ( itemIndex > self.selectedItemIndex ) {
 			// right stack
-			attributes.transform = CATransform3DMakeRotation( -(self.stackedAngle * M_PI / 180.), 0, 1, 0 );
+			attributes.transform = CATransform3DMakeRotation( -DEGREES2RADIANS(self.stackedAngle), 0, 1, 0 );
 			attributes.zPosition = -self.stackedDistance;
 		}
 		else if ( itemIndex == self.selectedItemIndex ) {
@@ -220,9 +222,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 {
 	CGFloat itemWidth = self.itemSize.width;
 
-	CGFloat cosStackedAngle = cos(self.stackedAngle * M_PI / 180.);
-	CGFloat stackedWidth = itemWidth * cosStackedAngle + cosStackedAngle * self.interItemSpacing;
-	CGFloat offset = stackedWidth * anIndex;
+	CGFloat stackedWidth = (itemWidth * cos(DEGREES2RADIANS(self.stackedAngle))) + self.interItemSpacing;
 
 	BOOL firstItemSelected = ( self.selectedItemIndex == 0 );
 	if ( ( anIndex == self.selectedItemIndex ) && !firstItemSelected ) {
