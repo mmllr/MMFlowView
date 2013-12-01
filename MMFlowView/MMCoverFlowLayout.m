@@ -225,14 +225,20 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 
 	CGFloat stackedWidth = (itemWidth * cos(DEGREES2RADIANS(self.stackedAngle))) + self.interItemSpacing;
 
-	BOOL firstItemSelected = ( self.selectedItemIndex == 0 );
-	if ( ( anIndex == self.selectedItemIndex ) && !firstItemSelected ) {
-		offset += itemWidth / 2.;
+	if ( anIndex < self.selectedItemIndex || anIndex == 0 ) {
+		return stackedWidth*anIndex;
 	}
-	if ( anIndex > self.selectedItemIndex ) {
-		offset += firstItemSelected ? itemWidth / 2. : itemWidth;
+	else if ( anIndex == self.selectedItemIndex ) {
+		return stackedWidth*anIndex + itemWidth;
 	}
-	return offset;
+	else {
+		if ( self.selectedItemIndex == 0 ) {
+			return stackedWidth*anIndex + itemWidth;
+		}
+		else {
+			return stackedWidth*anIndex + itemWidth*2;
+		}
+	}
 }
 
 @end
