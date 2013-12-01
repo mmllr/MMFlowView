@@ -12,7 +12,7 @@
 static const CGFloat kDefaultContentHeight = 100;
 static const CGFloat kDefaultInterItemSpacing = 10.;
 static const CGFloat kDefaultStackedAngle = 70.;
-static const CGFloat kDefaultStackedDistance = 100;
+static const CGFloat kDefaultStackedDistance = 300;
 static const CGFloat kDefaultVerticalMargin = 10.;
 static const CGFloat kMinimumContentHeight = 1;
 

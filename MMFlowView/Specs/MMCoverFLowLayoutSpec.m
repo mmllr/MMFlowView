@@ -68,8 +68,8 @@ describe(@"MMCoverFlowLayout", ^{
 		it(@"should have a default contentHeight of 100", ^{
 			[[theValue(sut.contentHeight) should] equal:theValue(100)];
 		});
-		it(@"should have a default stackedDistance of 100", ^{
-			[[theValue(sut.stackedDistance) should] equal:theValue(100)];
+		it(@"should have a default stackedDistance of 300", ^{
+			[[theValue(sut.stackedDistance) should] equal:theValue(300)];
 		});
 		it(@"should return nil for layoutAttributesForItemAtIndex", ^{
 			[[[sut layoutAttributesForItemAtIndex:0] should] beNil];
