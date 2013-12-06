@@ -181,7 +181,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:idx];
 		[self applyAttributes:attributes toContentLayer:contentLayer];
 	}];
-	[self scrollToPoint:self.selectedScrollPoint];
+	[self scrollPoint:self.selectedScrollPoint];
 	[self updateVisibleItems];
 }
 
