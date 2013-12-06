@@ -64,9 +64,6 @@ describe(@"MMFlowView", ^{
 				[[sut.visibleItemIndexes should] haveCountOf:0];
 			});
 		});
-		it(@"should initially show reflections", ^{
-			[[theValue(sut.showsReflection) should] beYes];
-		});
 		it(@"should accept touch events", ^{
 			[[theValue([sut acceptsTouchEvents]) should] beYes];
 		});
@@ -102,11 +99,51 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
+		context(@"showsReflection", ^{
+			it(@"should not initially show reflections", ^{
+				[[theValue(sut.showsReflection) should] beNo];
+			});
+			context(@"setting", ^{
+				beforeEach(^{
+					sut.showsReflection = YES;
+				});
+				it(@"should be enabled", ^{
+					[[theValue(sut.showsReflection) should] beYes];
+				});
+				it(@"should enable it on the coverFlowLayer", ^{
+					[[theValue(sut.coverFlowLayer.showsReflection) should] beYes];
+				});
+				context(@"disabling", ^{
+					beforeEach(^{
+						sut.showsReflection = NO;
+					});
+					it(@"should be disabled", ^{
+						[[theValue(sut.showsReflection) should] beNo];
+					});
+					it(@"should enable it on the coverFlowLayer", ^{
+						[[theValue(sut.coverFlowLayer.showsReflection) should] beNo];
+					});
+				});
+			});
+		});
+		context(@"reflectionOffset", ^{
+			it(@"should have a reflectionOffset of -.4", ^{
+				[[theValue(sut.reflectionOffset) should] equal:-.4 withDelta:.0000001];
+			});
+			context(@"setting", ^{
+				beforeEach(^{
+					sut.reflectionOffset = -.7;
+				});
+				it(@"should be -.7", ^{
+					[[theValue(sut.reflectionOffset) should] equal:-.7 withDelta:0.000001];
+				});
+				it(@"should set the coverFlowLayers reflectionOffset", ^{
+					[[theValue(sut.coverFlowLayer.reflectionOffset) should] equal:-.7 withDelta:0.0000001];
+				});
+			});
+		});
 		it(@"should have a stackedScale of -200", ^{
 			[[theValue(sut.stackedScale) should] equal:theValue(-200)];
-		});
-		it(@"should have a reflectionOffset of -.4", ^{
-			[[theValue(sut.reflectionOffset) should] equal:theValue(-.4)];
 		});
 		it(@"should have a scroll duration of .4 seconds", ^{
 			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];
@@ -528,10 +565,7 @@ describe(@"MMFlowView", ^{
 				context(@"layers", ^{
 					context(@"item layers", ^{
 						it(@"should have numberOfItems (10) sublayers", ^{
-							[[[sut.coverFlowLayer should] have:numberOfItems] sublayers];
-						});
-						it(@"should have item layers of kind MMCoverFlowItemLayer", ^{
-							
+							[[theValue(sut.numberOfItems) should] equal:theValue(numberOfItems)];
 						});
 					});
 				});

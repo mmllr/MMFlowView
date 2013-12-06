@@ -30,6 +30,9 @@
 @property (nonatomic, strong, readonly) MMCoverFlowLayout *layout;
 @property (nonatomic) CFTimeInterval scrollDuration;
 @property (nonatomic, readonly) CGRect selectedItemFrame;
+@property (nonatomic, readonly) NSArray *contentLayers;
+@property (nonatomic) BOOL showsReflection;
+@property (nonatomic) CGFloat reflectionOffset;
 
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout;
 - (id)initWithLayout:(MMCoverFlowLayout*)layout;

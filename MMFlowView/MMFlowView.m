@@ -134,6 +134,8 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 @dynamic numberOfItems;
 @dynamic selectedIndex;
+@dynamic showsReflection;
+@dynamic reflectionOffset;
 
 #pragma mark -
 #pragma mark Class methods
@@ -547,7 +549,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	self.stackedScale = kDefaultStackedScale;
 	self.reflectionOffset = kDefaultReflectionOffset;
 	self.selectedIndex = NSNotFound;
-	self.showsReflection = YES;
+	self.showsReflection = NO;
 	self.scrollDuration = kDefaultScrollDuration;
 	self.itemScale = kDefaultItemScale;
 	self.previewScale = kDefaultPreviewScale;
@@ -622,22 +624,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	return self.layout.selectedItemIndex;
 }
 
-- (void)setShowsReflection:(BOOL)shouldShowReflection
-{
-	if ( _showsReflection != shouldShowReflection ) {
-		_showsReflection = shouldShowReflection;
-		[ self updateReflection ];
-	}
-}
-
-- (void)setReflectionOffset:(CGFloat)newReflectionOpacity
-{
-	if ( _reflectionOffset != newReflectionOpacity ) {
-		_reflectionOffset = CLAMP( newReflectionOpacity, -1., 0 );
-		[ self updateReflection ];
-	}
-}
-
 - (void)setItemScale:(CGFloat)newItemScale
 {
 	if ( _itemScale != newItemScale ) {
@@ -703,6 +689,26 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 - (NSUInteger)numberOfItems
 {
 	return self.layout.numberOfItems;
+}
+
+- (BOOL)showsReflection
+{
+	return self.coverFlowLayer.showsReflection;
+}
+
+- (void)setShowsReflection:(BOOL)showsReflection
+{
+	self.coverFlowLayer.showsReflection= showsReflection;
+}
+
+- (CGFloat)reflectionOffset
+{
+	return self.coverFlowLayer.reflectionOffset;
+}
+
+- (void)setReflectionOffset:(CGFloat)reflectionOffset
+{
+	self.coverFlowLayer.reflectionOffset = reflectionOffset;
 }
 
 #pragma mark -
@@ -1690,15 +1696,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
 }
 
-- (void)updateReflection
-{/*
-	for ( CAReplicatorLayer *layer in self.scrollLayer.sublayers ) {
-		layer.instanceCount = self.showsReflection ? 2 : 1;
-		layer.instanceRedOffset = self.reflectionOffset;
-		layer.instanceGreenOffset = self.reflectionOffset;
-		layer.instanceBlueOffset = self.reflectionOffset;
-	}*/
-}
 
 #pragma mark -
 #pragma mark Selection

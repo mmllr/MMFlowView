@@ -109,9 +109,6 @@
 /* invoked after changing the selection, adjust scroll knob, visible images etc */
 - (void)updateSelectionInRange:(NSRange)invalidatedRange;
 
-/* updates the reflection layers for all image items, invoked after chaning the reflection related properties */
-- (void)updateReflection;
-
 /* returns the layers frane in view-coordinate space */
 - (NSRect)rectInViewForLayer:(CALayer*)aLayer;
 

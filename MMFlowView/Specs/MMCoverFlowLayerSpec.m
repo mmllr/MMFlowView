@@ -70,8 +70,8 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should have empty visible item indexes", ^{
 			[[sut.visibleItemIndexes should] equal:[NSIndexSet indexSet]];
 		});
-		it(@"should have no sublayers", ^{
-			[[[sut should] have:0] sublayers];
+		it(@"should have one sublayer", ^{
+			[[[sut should] have:1] sublayers];
 		});
 		it(@"should have a scroll duration of .4 seconds", ^{
 			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];
@@ -103,6 +103,113 @@ describe(@"MMCoverFlowLayer", ^{
 		});
 		it(@"should have a selectedItemFrame property", ^{
 			[[theValue(CGRectEqualToRect(CGRectZero, sut.selectedItemFrame) == true) should] beTrue];
+		});
+		it(@"should not initially show reflections", ^{
+			[[theValue(sut.showsReflection) should] beNo];
+		});
+		context(@"replicatorLayer", ^{
+			__block CAReplicatorLayer *replicatorLayer = nil;
+			beforeEach(^{
+				replicatorLayer = [sut.sublayers firstObject];
+			});
+			afterEach(^{
+				replicatorLayer = nil;
+			});
+			it(@"should exist", ^{
+				[[replicatorLayer shouldNot] beNil];
+			});
+			it(@"should be from kind CAReplicatorLayer", ^{
+				[[replicatorLayer should] beKindOfClass:[CAReplicatorLayer class]];
+			});
+			it(@"should preserve depth", ^{
+				[[theValue(replicatorLayer.preservesDepth) should] beYes];
+			});
+			it(@"should have an instanceCount of 1", ^{
+				[[theValue(replicatorLayer.instanceCount) should] equal:theValue(1)];
+			});
+			it(@"should have an instanceRedOffset equal to reflectionOffset", ^{
+				[[theValue(replicatorLayer.instanceRedOffset) should] equal:sut.reflectionOffset withDelta:.000001];
+			});
+			it(@"should have an instanceGreenOffset equal to reflectionOffset", ^{
+				[[theValue(replicatorLayer.instanceGreenOffset) should] equal:sut.reflectionOffset withDelta:.000001];
+			});
+			it(@"should have an instanceBlueOffset equal to reflectionOffset", ^{
+				[[theValue(replicatorLayer.instanceBlueOffset) should] equal:sut.reflectionOffset withDelta:.000001];
+			});
+			context(@"instanceTransform", ^{
+				__block NSValue *expectedTransform = nil;
+				beforeEach(^{
+					[sut layoutSublayers];
+					expectedTransform = [NSValue valueWithCATransform3D:CATransform3DConcat( CATransform3DMakeScale(1, -1, 1), CATransform3DMakeTranslation(0, -sut.layout.itemSize.height, 0))];
+				});
+				afterEach(^{
+					expectedTransform = nil;
+				});
+				it(@"should have the expected transform", ^{
+					[[[NSValue valueWithCATransform3D:replicatorLayer.instanceTransform] should] equal:expectedTransform];
+				});
+			});
+			context(@"reflectionOffset", ^{
+				it(@"should have a reflectionOffset of -.4", ^{
+					const CGFloat expectedOffset = -.4;
+
+					[[theValue(sut.reflectionOffset) should] equal:expectedOffset withDelta:.0000001];
+				});
+				context(@"setting values", ^{
+					beforeEach(^{
+						sut.reflectionOffset = -.2;
+					});
+					it(@"should be set", ^{
+						[[theValue(sut.reflectionOffset) should] equal:-.2 withDelta:.0000001];
+					});
+					context(@"replicatorLayer", ^{
+						it(@"should have an instanceRedOffset equal to reflectionOffset", ^{
+							[[theValue(replicatorLayer.instanceRedOffset) should] equal:-.2 withDelta:.000001];
+						});
+						it(@"should have an instanceGreenOffset equal to reflectionOffset", ^{
+							[[theValue(replicatorLayer.instanceGreenOffset) should] equal:-.2 withDelta:.000001];
+						});
+						it(@"should have an instanceBlueOffset equal to reflectionOffset", ^{
+							[[theValue(replicatorLayer.instanceBlueOffset) should] equal:-.2 withDelta:.000001];
+						});
+					});
+					context(@"setting illegal values", ^{
+						it(@"should not be greater than zero", ^{
+							sut.reflectionOffset = 0.5;
+							[[theValue(sut.reflectionOffset) should] beZero];
+						});
+						it(@"should not be smaller than -1", ^{
+							sut.reflectionOffset = -2;
+							[[theValue(sut.reflectionOffset) should] equal:-1 withDelta:0.0000001];
+						});
+					});
+				});
+				
+			});
+			context(@"showsReflection", ^{
+				context(@"enabling reflections", ^{
+					beforeEach(^{
+						sut.showsReflection = YES;
+					});
+					it(@"should be YES", ^{
+						[[theValue(sut.showsReflection) should] beYes];
+					});
+					it(@"should have change the replicatorLayers instanceCount to 2", ^{
+						[[theValue(replicatorLayer.instanceCount) should] equal:theValue(2)];
+					});
+					context(@"disabling reflections", ^{
+						beforeEach(^{
+							sut.showsReflection = NO;
+						});
+						it(@"should be NO", ^{
+							[[theValue(sut.showsReflection) should] beNo];
+						});
+						it(@"should set the replicator layers instanceCount to 1", ^{
+							[[theValue(replicatorLayer.instanceCount) should] equal:theValue(1)];
+						});
+					});
+				});
+			});
 		});
 		context(@"observing layout changes", ^{
 			it(@"should trigger a reload if layouts numberOfItems changes", ^{
@@ -237,14 +344,19 @@ describe(@"MMCoverFlowLayer", ^{
 				it(@"should load the content", ^{
 					[[theValue(sut.numberOfItems) should] equal:theValue([sublayers count])];
 				});
-				it(@"should change the selectedItemIndex", ^{
-					[[theValue(sut.selectedItemIndex) shouldNot] equal:theValue(NSNotFound)];
-				});
-				it(@"should have the correct count of sublayers", ^{
-					[[[sut should] have:[sublayers count]] sublayers];
-				});
-				it(@"should load the layers", ^{
-					[[sut.sublayers should] equal:sublayers];
+				context(@"contentLayers", ^{
+					it(@"should not be nil", ^{
+						[[sut.contentLayers shouldNot] beNil];
+					});
+					it(@"should return a NSArray", ^{
+						[[sut.contentLayers should] beKindOfClass:[NSArray class]];
+					});
+					it(@"should have the correct count of sublayers", ^{
+						[[sut.contentLayers should] haveCountOf:[sublayers count]];
+					});
+					it(@"should load the layers", ^{
+						[[sut.contentLayers should] equal:sublayers];
+					});
 				});
 				it(@"should ask its datasource for the layers", ^{
 					[[datasourceMock should] receive:@selector(coverFlowLayer:contentLayerForIndex:) withCount:[sublayers count]];
