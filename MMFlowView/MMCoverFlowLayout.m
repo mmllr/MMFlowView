@@ -170,14 +170,14 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 	}
 	CGFloat itemWidth = self.itemSize.width;
 	CGFloat stackedWidth = (itemWidth * cos(DEGREES2RADIANS(self.stackedAngle))) + self.interItemSpacing;
-	CGFloat width = itemWidth + stackedWidth * MAX( 0, (self.numberOfItems - 1 ));
+	CGFloat width = itemWidth + stackedWidth * MAX( 0, (self.numberOfItems-1));
 
 	if ( self.selectedItemIndex == 0 ||
-		self.selectedItemIndex == ( self.numberOfItems - 1 )) {
-		width += self.interItemSpacing;
+		self.selectedItemIndex == (self.numberOfItems-1)) {
+		width += itemWidth;
 	}
 	else {
-		width += self.interItemSpacing * 2;
+		width += itemWidth*2;
 	}
 	return width;
 }

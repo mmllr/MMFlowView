@@ -253,7 +253,7 @@ describe(@"MMCoverFlowLayout", ^{
 					context(@"selection on both ends of stack", ^{
 						beforeEach(^{
 							CGFloat stackedWidth = cos(DEGREES2RADIANS(sut.stackedAngle))*sut.itemSize.width + sut.interItemSpacing;
-							expectedContentWidth = stackedWidth * (sut.numberOfItems - 1) + sut.itemSize.width + sut.interItemSpacing;
+							expectedContentWidth = sut.itemSize.width + stackedWidth * (sut.numberOfItems-1) + sut.itemSize.width;
 						});
 						context(@"first item selected", ^{
 							beforeEach(^{
@@ -267,7 +267,7 @@ describe(@"MMCoverFlowLayout", ^{
 							beforeEach(^{
 								sut.selectedItemIndex = sut.numberOfItems - 1;
 							});
-							it(@"should habe a contentWidth of stackedWidth * number of stacked items plus item width plus one interItemSpacing", ^{
+							it(@"should have a contentWidth of stackedWidth * number of stacked items plus item width plus one interItemSpacing", ^{
 								[[theValue(sut.contentWidth) should] equal:theValue(expectedContentWidth)];
 							});
 						});
@@ -275,7 +275,7 @@ describe(@"MMCoverFlowLayout", ^{
 					context(@"selection in stack", ^{
 						it(@", should habe a contentWidth of stackedWidth * number of stacked items plus item width plus two interItemSpacing", ^{
 							CGFloat stackedWidth = cos(DEGREES2RADIANS(sut.stackedAngle))*sut.itemSize.width + sut.interItemSpacing;
-							expectedContentWidth = stackedWidth * (sut.numberOfItems - 1) + sut.itemSize.width + sut.interItemSpacing * 2;
+							expectedContentWidth = sut.itemSize.width + stackedWidth * (sut.numberOfItems - 1) + sut.itemSize.width * 2;
 							[[theValue(sut.contentWidth) should] equal:theValue(expectedContentWidth)];
 						});
 					});
