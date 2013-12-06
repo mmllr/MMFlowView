@@ -15,6 +15,7 @@ static const CGFloat kDefaultWidth = 50.;
 static const CGFloat kDefaultHeight = 50.;
 static const CGFloat kDefaultEyeDistance = 1500.;
 static const CFTimeInterval kDefaultScrollDuration = .4;
+static const CGFloat kDefaultReflectionOffset = -.4;
 
 static void* kLayoutObservationContext = @"layoutContext";
 static void* kReloadContentObservationContext = @"reloadContent";
@@ -24,14 +25,21 @@ static void* kReloadContentObservationContext = @"reloadContent";
 @property (nonatomic, strong, readwrite) MMCoverFlowLayout *layout;
 @property (nonatomic, readwrite) NSIndexSet *visibleItemIndexes;
 @property (nonatomic, readonly) CGPoint selectedScrollPoint;
+@property (nonatomic, strong) CAReplicatorLayer *replicatorLayer;
 
 @end
+
+#ifndef CLAMP
+#define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
+#endif
 
 @implementation MMCoverFlowLayer
 
 @dynamic numberOfItems;
-@dynamic selectedItemIndex;
 @dynamic selectedScrollPoint;
+@dynamic contentLayers;
+@dynamic showsReflection;
+@dynamic reflectionOffset;
 
 #pragma mark - class methods
 
@@ -50,6 +58,15 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	return [NSSet setWithObjects:@"numberOfItems", nil];
 }
 
++ (CAReplicatorLayer*)createReplicatorLayer
+{
+	CAReplicatorLayer *layer = [CAReplicatorLayer layer];
+	layer.preservesDepth = YES;
+//	layer.instanceCount = 2;
+	layer.instanceBlueOffset = layer.instanceGreenOffset = layer.instanceRedOffset = kDefaultReflectionOffset;
+	return layer;
+}
+
 #pragma mark - init/cleanup
 
 - (id)init
@@ -62,16 +79,17 @@ static void* kReloadContentObservationContext = @"reloadContent";
 {
     self = [super init];
     if (self) {
-		self.layout = layout;
-        self.scrollMode = kCAScrollHorizontally;
-		self.masksToBounds = NO;
-		self.inLiveResize = NO;
-		self.eyeDistance = kDefaultEyeDistance;
-		self.delegate = self;
-		self.layoutManager = self;
-		self.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+		_layout = layout;
+		_inLiveResize = NO;
 		_visibleItemIndexes = [NSIndexSet indexSet];
 		_scrollDuration = kDefaultScrollDuration;
+		_replicatorLayer = [[self class] createReplicatorLayer];
+		[self addSublayer:_replicatorLayer];
+        self.scrollMode = kCAScrollHorizontally;
+		self.masksToBounds = NO;
+		self.eyeDistance = kDefaultEyeDistance;
+		self.delegate = self;
+		self.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 		[self setupObservations];
 		[self setupAccessibility];
     }
@@ -90,20 +108,10 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	return self.layout.numberOfItems;
 }
 
-- (NSUInteger)selectedItemIndex
-{
-	return self.layout.selectedItemIndex;
-}
-
-- (void)setSelectedItemIndex:(NSUInteger)selectedItemIndex
-{
-	self.layout.selectedItemIndex = selectedItemIndex;
-}
-
 - (CGRect)selectedItemFrame
 {
-	if ( self.selectedItemIndex != NSNotFound ) {
-		CALayer *selectedLayer = self.sublayers[self.selectedItemIndex];
+	if ( self.layout.selectedItemIndex != NSNotFound ) {
+		CALayer *selectedLayer = self.contentLayers[self.layout.selectedItemIndex];
 		CGRect selectedBounds = selectedLayer.bounds;
 		return CGRectMake(CGRectGetMidX(self.bounds) - CGRectGetMidX(selectedBounds), CGRectGetMidY(self.bounds) - CGRectGetMidY(selectedBounds), CGRectGetWidth(selectedBounds), CGRectGetHeight(selectedBounds));
 	}
@@ -127,15 +135,46 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	return point;
 }
 
+- (NSArray*)contentLayers
+{
+	return self.replicatorLayer.sublayers;
+}
+
+- (BOOL)showsReflection
+{
+	return (self.replicatorLayer.instanceCount == 2);
+}
+
+- (void)setShowsReflection:(BOOL)showsReflection
+{
+	self.replicatorLayer.instanceCount = showsReflection ? 2 : 1;
+}
+
+- (CGFloat)reflectionOffset
+{
+	return self.replicatorLayer.instanceBlueOffset;
+}
+
+- (void)setReflectionOffset:(CGFloat)reflectionOffset
+{
+	CGFloat validOffset = CLAMP(reflectionOffset, -1, 0);
+
+	self.replicatorLayer.instanceBlueOffset = validOffset;
+	self.replicatorLayer.instanceGreenOffset = validOffset;
+	self.replicatorLayer.instanceRedOffset = validOffset;
+}
+
+
 #pragma mark - class logic
 
 - (void)reloadContent
 {
-	self.sublayers = nil;
+	self.replicatorLayer.sublayers = nil;
+
 	for ( NSInteger i = 0; i < self.layout.numberOfItems; ++i ) {
 		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayer:contentLayerForIndex:)] ) {
 			CALayer *contentLayer = [self.dataSource coverFlowLayer:self contentLayerForIndex:i];
-			[self addSublayer:contentLayer];
+			[self.replicatorLayer addSublayer:contentLayer];
 		}
 	}
 	[self layoutSublayers];
@@ -161,6 +200,9 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerWillRelayout:)] ) {
 		[self.dataSource coverFlowLayerWillRelayout:self];
 	}
+	self.layout.contentHeight = CGRectGetHeight(self.bounds);
+	self.replicatorLayer.frame = CGRectMake(0, 0, self.layout.contentWidth, self.layout.contentHeight);
+	self.replicatorLayer.instanceTransform = CATransform3DConcat( CATransform3DMakeScale(1, -1, 1), CATransform3DMakeTranslation(0, -self.layout.itemSize.height, 0));
 	[CATransaction begin];
 	[CATransaction setDisableActions:self.inLiveResize];
 	[CATransaction setAnimationDuration:self.scrollDuration];
@@ -174,14 +216,16 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	[CATransaction commit];
 }
 
+#pragma mark - layout
+
 - (void)applyLayout
 {
 	self.layout.contentHeight = CGRectGetHeight(self.bounds);
-	[self.sublayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+	[self.contentLayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
 		MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:idx];
 		[self applyAttributes:attributes toContentLayer:contentLayer];
 	}];
-	[self scrollToPoint:self.selectedScrollPoint];
+	[self scrollPoint:self.selectedScrollPoint];
 	[self updateVisibleItems];
 }
 
@@ -241,23 +285,23 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	[self setReadableAccessibilityAttribute:NSAccessibilityVisibleChildrenAttribute withBlock:^id{
 		MMCoverFlowLayer *strongSelf = weakSelf;
 
-		NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.sublayers);
+		NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
 		return children ? [children objectsAtIndexes:strongSelf.visibleItemIndexes] : [NSArray array];
 	}];
 	[self setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
 								   readBlock:^id{
 									   MMCoverFlowLayer *strongSelf = weakSelf;
-									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.sublayers);
-									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.selectedItemIndex, 1)] : [NSArray array];
+									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
+									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : [NSArray array];
 								   }
 								  writeBlock:^(id value) {
 									  MMCoverFlowLayer *strongSelf = weakSelf;
 
 									  if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
-										  CALayer *layer = [value firstItem];
+										  CALayer *layer = [value firstObject];
 										  if ( [layer isKindOfClass:[CALayer class]] ) {
-											  NSUInteger index = [strongSelf.sublayers indexOfObject:layer];
-											  strongSelf.selectedItemIndex = index;
+											  NSUInteger index = [strongSelf.contentLayers indexOfObject:layer];
+											  strongSelf.layout.selectedItemIndex = index;
 										  }
 									  }
 								  }];

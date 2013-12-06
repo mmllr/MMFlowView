@@ -70,8 +70,8 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should have empty visible item indexes", ^{
 			[[sut.visibleItemIndexes should] equal:[NSIndexSet indexSet]];
 		});
-		it(@"should have no sublayers", ^{
-			[[[sut should] have:0] sublayers];
+		it(@"should have one sublayer", ^{
+			[[[sut should] have:1] sublayers];
 		});
 		it(@"should have a scroll duration of .4 seconds", ^{
 			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];
@@ -101,11 +101,115 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should not have a datasource set", ^{
 			[[(id)sut.dataSource should] beNil];
 		});
-		it(@"should have a selectedItemIndex of NSNotFound", ^{
-			[[theValue(sut.selectedItemIndex) should] equal:theValue(NSNotFound)];
-		});
 		it(@"should have a selectedItemFrame property", ^{
 			[[theValue(CGRectEqualToRect(CGRectZero, sut.selectedItemFrame) == true) should] beTrue];
+		});
+		it(@"should not initially show reflections", ^{
+			[[theValue(sut.showsReflection) should] beNo];
+		});
+		context(@"replicatorLayer", ^{
+			__block CAReplicatorLayer *replicatorLayer = nil;
+			beforeEach(^{
+				replicatorLayer = [sut.sublayers firstObject];
+			});
+			afterEach(^{
+				replicatorLayer = nil;
+			});
+			it(@"should exist", ^{
+				[[replicatorLayer shouldNot] beNil];
+			});
+			it(@"should be from kind CAReplicatorLayer", ^{
+				[[replicatorLayer should] beKindOfClass:[CAReplicatorLayer class]];
+			});
+			it(@"should preserve depth", ^{
+				[[theValue(replicatorLayer.preservesDepth) should] beYes];
+			});
+			it(@"should have an instanceCount of 1", ^{
+				[[theValue(replicatorLayer.instanceCount) should] equal:theValue(1)];
+			});
+			it(@"should have an instanceRedOffset equal to reflectionOffset", ^{
+				[[theValue(replicatorLayer.instanceRedOffset) should] equal:sut.reflectionOffset withDelta:.000001];
+			});
+			it(@"should have an instanceGreenOffset equal to reflectionOffset", ^{
+				[[theValue(replicatorLayer.instanceGreenOffset) should] equal:sut.reflectionOffset withDelta:.000001];
+			});
+			it(@"should have an instanceBlueOffset equal to reflectionOffset", ^{
+				[[theValue(replicatorLayer.instanceBlueOffset) should] equal:sut.reflectionOffset withDelta:.000001];
+			});
+			context(@"instanceTransform", ^{
+				__block NSValue *expectedTransform = nil;
+				beforeEach(^{
+					[sut layoutSublayers];
+					expectedTransform = [NSValue valueWithCATransform3D:CATransform3DConcat( CATransform3DMakeScale(1, -1, 1), CATransform3DMakeTranslation(0, -sut.layout.itemSize.height, 0))];
+				});
+				afterEach(^{
+					expectedTransform = nil;
+				});
+				it(@"should have the expected transform", ^{
+					[[[NSValue valueWithCATransform3D:replicatorLayer.instanceTransform] should] equal:expectedTransform];
+				});
+			});
+			context(@"reflectionOffset", ^{
+				it(@"should have a reflectionOffset of -.4", ^{
+					const CGFloat expectedOffset = -.4;
+
+					[[theValue(sut.reflectionOffset) should] equal:expectedOffset withDelta:.0000001];
+				});
+				context(@"setting values", ^{
+					beforeEach(^{
+						sut.reflectionOffset = -.2;
+					});
+					it(@"should be set", ^{
+						[[theValue(sut.reflectionOffset) should] equal:-.2 withDelta:.0000001];
+					});
+					context(@"replicatorLayer", ^{
+						it(@"should have an instanceRedOffset equal to reflectionOffset", ^{
+							[[theValue(replicatorLayer.instanceRedOffset) should] equal:-.2 withDelta:.000001];
+						});
+						it(@"should have an instanceGreenOffset equal to reflectionOffset", ^{
+							[[theValue(replicatorLayer.instanceGreenOffset) should] equal:-.2 withDelta:.000001];
+						});
+						it(@"should have an instanceBlueOffset equal to reflectionOffset", ^{
+							[[theValue(replicatorLayer.instanceBlueOffset) should] equal:-.2 withDelta:.000001];
+						});
+					});
+					context(@"setting illegal values", ^{
+						it(@"should not be greater than zero", ^{
+							sut.reflectionOffset = 0.5;
+							[[theValue(sut.reflectionOffset) should] beZero];
+						});
+						it(@"should not be smaller than -1", ^{
+							sut.reflectionOffset = -2;
+							[[theValue(sut.reflectionOffset) should] equal:-1 withDelta:0.0000001];
+						});
+					});
+				});
+				
+			});
+			context(@"showsReflection", ^{
+				context(@"enabling reflections", ^{
+					beforeEach(^{
+						sut.showsReflection = YES;
+					});
+					it(@"should be YES", ^{
+						[[theValue(sut.showsReflection) should] beYes];
+					});
+					it(@"should have change the replicatorLayers instanceCount to 2", ^{
+						[[theValue(replicatorLayer.instanceCount) should] equal:theValue(2)];
+					});
+					context(@"disabling reflections", ^{
+						beforeEach(^{
+							sut.showsReflection = NO;
+						});
+						it(@"should be NO", ^{
+							[[theValue(sut.showsReflection) should] beNo];
+						});
+						it(@"should set the replicator layers instanceCount to 1", ^{
+							[[theValue(replicatorLayer.instanceCount) should] equal:theValue(1)];
+						});
+					});
+				});
+			});
 		});
 		context(@"observing layout changes", ^{
 			it(@"should trigger a reload if layouts numberOfItems changes", ^{
@@ -233,21 +337,26 @@ describe(@"MMCoverFlowLayer", ^{
 					[[theValue([sut.visibleItemIndexes count]) should] beGreaterThan:theValue(0)];
 				});
 				it(@"should contain the selected index", ^{
-					[[theValue([sut.visibleItemIndexes containsIndex:sut.selectedItemIndex]) should] beYes];
+					[[theValue([sut.visibleItemIndexes containsIndex:layout.selectedItemIndex]) should] beYes];
 				});
 			});
 			context(@"loading", ^{
 				it(@"should load the content", ^{
 					[[theValue(sut.numberOfItems) should] equal:theValue([sublayers count])];
 				});
-				it(@"should change the selectedItemIndex", ^{
-					[[theValue(sut.selectedItemIndex) shouldNot] equal:theValue(NSNotFound)];
-				});
-				it(@"should have the correct count of sublayers", ^{
-					[[[sut should] have:[sublayers count]] sublayers];
-				});
-				it(@"should load the layers", ^{
-					[[sut.sublayers should] equal:sublayers];
+				context(@"contentLayers", ^{
+					it(@"should not be nil", ^{
+						[[sut.contentLayers shouldNot] beNil];
+					});
+					it(@"should return a NSArray", ^{
+						[[sut.contentLayers should] beKindOfClass:[NSArray class]];
+					});
+					it(@"should have the correct count of sublayers", ^{
+						[[sut.contentLayers should] haveCountOf:[sublayers count]];
+					});
+					it(@"should load the layers", ^{
+						[[sut.contentLayers should] equal:sublayers];
+					});
 				});
 				it(@"should ask its datasource for the layers", ^{
 					[[datasourceMock should] receive:@selector(coverFlowLayer:contentLayerForIndex:) withCount:[sublayers count]];
@@ -256,15 +365,15 @@ describe(@"MMCoverFlowLayer", ^{
 			});
 			context(@"selection", ^{
 				beforeEach(^{
-					sut.selectedItemIndex = sut.numberOfItems / 2;
+					sut.layout.selectedItemIndex = sut.numberOfItems / 2;
 					[sut layoutSublayers];
 				});
 				it(@"should change the selection", ^{
 					NSUInteger expectedSelection = sut.numberOfItems / 2;
-					[[theValue(sut.selectedItemIndex) should] equal:theValue(expectedSelection)];
+					[[theValue(sut.layout.selectedItemIndex) should] equal:theValue(expectedSelection)];
 				});
 				it(@"should scroll to selected item", ^{
-					MMCoverFlowLayoutAttributes *attr = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex];
+					MMCoverFlowLayoutAttributes *attr = [layout layoutAttributesForItemAtIndex:sut.layout.selectedItemIndex];
 					CGPoint expectedPoint = CGPointMake( attr.position.x - (CGRectGetWidth(sut.bounds) / 2.)  + layout.itemSize.width / 2., 0 );
 					[[[NSValue valueWithPoint:sut.bounds.origin] should] equal:[NSValue valueWithPoint:expectedPoint]];
 				});
@@ -292,7 +401,7 @@ describe(@"MMCoverFlowLayer", ^{
 					__block CALayer *layer = nil;
 
 					beforeEach(^{
-						sut.selectedItemIndex = sut.numberOfItems / 2;
+						sut.layout.selectedItemIndex = sut.numberOfItems / 2;
 						[sut layoutSublayers];
 					});
 					afterEach(^{
@@ -329,8 +438,8 @@ describe(@"MMCoverFlowLayer", ^{
 					});
 					context(@"last item of left stack", ^{
 						beforeEach(^{
-							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex-1];
-							layer = sublayers[sut.selectedItemIndex-1];
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.layout.selectedItemIndex-1];
+							layer = sublayers[sut.layout.selectedItemIndex-1];
 							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
 							
 							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
@@ -356,8 +465,8 @@ describe(@"MMCoverFlowLayer", ^{
 					});
 					context(@"selected item", ^{
 						beforeEach(^{
-							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex];
-							layer = sublayers[sut.selectedItemIndex];
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:layout.selectedItemIndex];
+							layer = sublayers[layout.selectedItemIndex];
 							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
 							
 							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
@@ -391,8 +500,8 @@ describe(@"MMCoverFlowLayer", ^{
 					});
 					context(@"first item of right stack", ^{
 						beforeEach(^{
-							expectedAttributes = [layout layoutAttributesForItemAtIndex:sut.selectedItemIndex+1];
-							layer = sublayers[sut.selectedItemIndex+1];
+							expectedAttributes = [layout layoutAttributesForItemAtIndex:layout.selectedItemIndex+1];
+							layer = sublayers[layout.selectedItemIndex+1];
 							CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(expectedAttributes.anchorPoint.x*CGRectGetWidth(expectedAttributes.bounds), expectedAttributes.anchorPoint.y*CGRectGetHeight(expectedAttributes.bounds));
 							
 							expectedPosition = [NSValue valueWithPoint:CGPointApplyAffineTransform(expectedAttributes.position, anchorTransform)];
@@ -450,13 +559,24 @@ describe(@"MMCoverFlowLayer", ^{
 					sut.bounds = CGRectMake(0, 0, 100, 50);
 					[sut reloadContent];
 				});
-				it(@"should return only one selected layer", ^{
-					[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] haveCountOf:1];
+				context(@"NSAccessibilitySelectedChildrenAttribute", ^{
+					it(@"should return only one selected layer", ^{
+						[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] haveCountOf:1];
+					});
+					it(@"should return the selected layer", ^{
+						[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] containObjectsInArray:@[sublayers[layout.selectedItemIndex]]];
+					});
+					it(@"should have a writable selected children attribute", ^{
+						[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilitySelectedChildrenAttribute]) should] beYes];
+					});
+					it(@"should set the selected children", ^{
+						NSArray *nextLayer = [sublayers objectsAtIndexes:[NSIndexSet indexSetWithIndex:layout.selectedItemIndex+1]];
+						[sut accessibilitySetValue:nextLayer forAttribute:NSAccessibilitySelectedChildrenAttribute];
+						
+						[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] containObjectsInArray:nextLayer];
+					});
 				});
-				it(@"should return the selected layer", ^{
-					[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] containObjectsInArray:@[sublayers[sut.selectedItemIndex]]];
-				});
-				context(@"visible children", ^{
+				context(@"NSAccessibilityVisibleChildrenAttribute", ^{
 					__block NSArray *visibleChildren = nil;
 					beforeEach(^{
 						visibleChildren = [sut accessibilityAttributeValue:NSAccessibilityVisibleChildrenAttribute];
@@ -468,7 +588,7 @@ describe(@"MMCoverFlowLayer", ^{
 						[[visibleChildren should] haveCountOfAtLeast:1];
 					});
 					it(@"should have the selected layer in visible children", ^{
-						[[visibleChildren should] contain:sublayers[sut.selectedItemIndex]];
+						[[visibleChildren should] contain:sublayers[layout.selectedItemIndex]];
 					});
 					it(@"should return all layers at visibleItemIndexes for visible children", ^{
 						NSArray *expectedChildren = [sublayers subarrayWithRange:NSMakeRange([sut.visibleItemIndexes firstIndex], [sut.visibleItemIndexes count])];

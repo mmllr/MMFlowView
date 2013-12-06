@@ -109,9 +109,6 @@
 /* invoked after changing the selection, adjust scroll knob, visible images etc */
 - (void)updateSelectionInRange:(NSRange)invalidatedRange;
 
-/* updates the reflection layers for all image items, invoked after chaning the reflection related properties */
-- (void)updateReflection;
-
 /* returns the layers frane in view-coordinate space */
 - (NSRect)rectInViewForLayer:(CALayer*)aLayer;
 
@@ -120,9 +117,6 @@
 
 /* returns a bottom centered rect with a specific aspectratio for a equal-sized itemRect */
 - (CGRect)boundsFromContentWithAspectRatio:(CGFloat)aspectRatio inItemRect:(CGRect)itemRect;
-
-/* returns the horizontal offset for a specified item index, returns zero for selected index, a negative value for items in the left stack, a positive value for items in the right stack */
-- (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex withItemWidth:(CGFloat)itemWidth stackedAngle:(CGFloat)aStackedAngle itemSpacing:(CGFloat)itemSpacing selectedIndex:(NSUInteger)theSelection;
 
 /* performs hittesting and returns the modellayer at the hitpoint */
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPoint;

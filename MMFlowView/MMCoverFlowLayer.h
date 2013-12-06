@@ -25,12 +25,14 @@
 @property (nonatomic) CGFloat eyeDistance;
 @property (nonatomic) BOOL inLiveResize;
 @property (nonatomic, readonly) NSUInteger numberOfItems;
-@property (nonatomic) NSUInteger selectedItemIndex;
 @property (nonatomic, weak) id<MMCoverFlowLayerDataSource> dataSource;
 @property (nonatomic, strong, readonly) NSIndexSet *visibleItemIndexes;
 @property (nonatomic, strong, readonly) MMCoverFlowLayout *layout;
 @property (nonatomic) CFTimeInterval scrollDuration;
 @property (nonatomic, readonly) CGRect selectedItemFrame;
+@property (nonatomic, readonly) NSArray *contentLayers;
+@property (nonatomic) BOOL showsReflection;
+@property (nonatomic) CGFloat reflectionOffset;
 
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout;
 - (id)initWithLayout:(MMCoverFlowLayout*)layout;
