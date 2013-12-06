@@ -25,7 +25,6 @@
 @property (nonatomic) CGFloat eyeDistance;
 @property (nonatomic) BOOL inLiveResize;
 @property (nonatomic, readonly) NSUInteger numberOfItems;
-@property (nonatomic) NSUInteger selectedItemIndex;
 @property (nonatomic, weak) id<MMCoverFlowLayerDataSource> dataSource;
 @property (nonatomic, strong, readonly) NSIndexSet *visibleItemIndexes;
 @property (nonatomic, strong, readonly) MMCoverFlowLayout *layout;

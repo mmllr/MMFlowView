@@ -30,7 +30,6 @@ static void* kReloadContentObservationContext = @"reloadContent";
 @implementation MMCoverFlowLayer
 
 @dynamic numberOfItems;
-@dynamic selectedItemIndex;
 @dynamic selectedScrollPoint;
 
 #pragma mark - class methods
@@ -90,20 +89,10 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	return self.layout.numberOfItems;
 }
 
-- (NSUInteger)selectedItemIndex
-{
-	return self.layout.selectedItemIndex;
-}
-
-- (void)setSelectedItemIndex:(NSUInteger)selectedItemIndex
-{
-	self.layout.selectedItemIndex = selectedItemIndex;
-}
-
 - (CGRect)selectedItemFrame
 {
-	if ( self.selectedItemIndex != NSNotFound ) {
-		CALayer *selectedLayer = self.sublayers[self.selectedItemIndex];
+	if ( self.layout.selectedItemIndex != NSNotFound ) {
+		CALayer *selectedLayer = self.contentLayers[self.layout.selectedItemIndex];
 		CGRect selectedBounds = selectedLayer.bounds;
 		return CGRectMake(CGRectGetMidX(self.bounds) - CGRectGetMidX(selectedBounds), CGRectGetMidY(self.bounds) - CGRectGetMidY(selectedBounds), CGRectGetWidth(selectedBounds), CGRectGetHeight(selectedBounds));
 	}
@@ -247,8 +236,8 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	[self setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
 								   readBlock:^id{
 									   MMCoverFlowLayer *strongSelf = weakSelf;
-									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.sublayers);
-									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.selectedItemIndex, 1)] : [NSArray array];
+									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
+									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : [NSArray array];
 								   }
 								  writeBlock:^(id value) {
 									  MMCoverFlowLayer *strongSelf = weakSelf;
@@ -256,8 +245,8 @@ static void* kReloadContentObservationContext = @"reloadContent";
 									  if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
 										  CALayer *layer = [value firstItem];
 										  if ( [layer isKindOfClass:[CALayer class]] ) {
-											  NSUInteger index = [strongSelf.sublayers indexOfObject:layer];
-											  strongSelf.selectedItemIndex = index;
+											  NSUInteger index = [strongSelf.contentLayers indexOfObject:layer];
+											  strongSelf.layout.selectedItemIndex = index;
 										  }
 									  }
 								  }];
