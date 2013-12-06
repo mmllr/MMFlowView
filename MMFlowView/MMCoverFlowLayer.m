@@ -298,7 +298,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 									  MMCoverFlowLayer *strongSelf = weakSelf;
 
 									  if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
-										  CALayer *layer = [value firstItem];
+										  CALayer *layer = [value firstObject];
 										  if ( [layer isKindOfClass:[CALayer class]] ) {
 											  NSUInteger index = [strongSelf.contentLayers indexOfObject:layer];
 											  strongSelf.layout.selectedItemIndex = index;
