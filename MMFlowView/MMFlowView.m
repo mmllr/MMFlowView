@@ -78,12 +78,6 @@ static const CGFloat kDefaultItemScale = 1.;
 static const CGFloat kHighlightedBorderWidth = 2;
 
 static const CGFloat kItemYMargin = 50.;
-static const CGFloat kScrollBarYOffset = 10.;
-static const CGFloat kScrollBarScale = 0.75;
-static const CGFloat kScrollBarOpacity = 0.5;
-static const CGFloat kScrollBarBorderWidth = 1.;
-static const CGFloat kScrollBarCornerRadius = 10.;
-static const CGFloat kScrollBarHeight = 20.;
 static const CGFloat kMinimumItemScale = 0.1;
 static const CGFloat kMaximumItemScale = 1.;
 static const NSUInteger kImageLayerIndex = 0;
@@ -132,15 +126,8 @@ static NSString * const kMMFlowViewItemImageRepresentationTypeKey = @"imageItemR
 static NSString * const kMMFlowViewItemImageUIDKey = @"imageItemUID";
 static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
-static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
-{
-	return angleInDegrees * M_PI / 180.;
-}
-
 #ifndef CLAMP
-
 #define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
-
 #endif
 
 @implementation MMFlowView
@@ -484,8 +471,8 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 		_imageCache = [[NSCache alloc] init];
 		_layerQueue = [NSMutableArray array];
 		_layout = [[MMCoverFlowLayout alloc] init];
-		[ self setInitialDefaults ];
-		[ self setupLayers ];
+		[self setInitialDefaults];
+		[self setupLayers];
 		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
 		[ self registerForDraggedTypes:@[NSURLPboardType] ];
@@ -516,9 +503,9 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 			_layout = [aDecoder decodeObjectForKey:kLayoutKey];
 		}
 		else {
-			[ self setInitialDefaults ];
+			[self setInitialDefaults];
 		}
-		[ self setupLayers ];
+		[self setupLayers];
 		[self setUpBindings];
 		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
@@ -739,21 +726,6 @@ static inline CGFloat DegreesToRadians( CGFloat angleInDegrees )
 	CGFloat newWidth = isLandscape ? itemRect.size.width : itemRect.size.width * aspectRatio;
 	CGFloat newHeight = isLandscape ? ( itemRect.size.height / aspectRatio ) : itemRect.size.height;
 	return CGRectMake( 0, 0, newWidth, newHeight );
-}
-
-- (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex withItemWidth:(CGFloat)itemWidth stackedAngle:(CGFloat)aStackedAngle itemSpacing:(CGFloat)itemSpacing selectedIndex:(NSUInteger)theSelection
-{
-	CGFloat stackedWidth = itemWidth * cos(DegreesToRadians(self.stackedAngle)) + cos(DegreesToRadians(self.stackedAngle))*itemSpacing;
-	CGFloat offset = stackedWidth * anIndex;
-
-	BOOL firstItemSelected = ( theSelection == 0 );
-	if ( ( anIndex == theSelection ) && !firstItemSelected ) {
-		offset += itemWidth / 2.;
-	}
-	if ( anIndex > theSelection ) {
-		offset += firstItemSelected ? itemWidth / 2. : itemWidth;
-	}
-	return offset;
 }
 
 #pragma mark - MMCoverFlowLayerDataSource

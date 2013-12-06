@@ -84,7 +84,6 @@ describe(@"MMFlowView", ^{
 				it(@"should change the cover flow layout", ^{
 					[[theValue(sut.layout.stackedAngle) should] equal:theValue(sut.stackedAngle)];
 				});
-
 			});
 		});
 		context(@"spacing property", ^{
@@ -309,7 +308,7 @@ describe(@"MMFlowView", ^{
 					it(@"should have three constraints", ^{
 						[[sut.containerLayer.constraints should] haveCountOf:4];
 					});
-					context(@"super layer equal midx", ^{
+					context(@"superlayer equal midx", ^{
 						beforeEach(^{
 							constraint = [sut.containerLayer.constraints firstObject];
 						});
@@ -332,7 +331,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(constraint.offset) should] beZero];
 						});
 					});
-					context(@"super layer max-y", ^{
+					context(@"superlayer max-y", ^{
 						beforeEach(^{
 							constraint = sut.containerLayer.constraints[1];
 						});
@@ -355,7 +354,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(constraint.offset) should] beZero];
 						});
 					});
-					context(@"super layer equal width", ^{
+					context(@"superlayer equal width", ^{
 						beforeEach(^{
 							constraint = sut.containerLayer.constraints[2];
 						});
@@ -378,7 +377,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(constraint.scale) should] equal:theValue(1)];
 						});
 					});
-					context(@"super layer equal width", ^{
+					context(@"superlayer equal width", ^{
 						beforeEach(^{
 							constraint = sut.containerLayer.constraints[3];
 						});

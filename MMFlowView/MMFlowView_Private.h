@@ -121,9 +121,6 @@
 /* returns a bottom centered rect with a specific aspectratio for a equal-sized itemRect */
 - (CGRect)boundsFromContentWithAspectRatio:(CGFloat)aspectRatio inItemRect:(CGRect)itemRect;
 
-/* returns the horizontal offset for a specified item index, returns zero for selected index, a negative value for items in the left stack, a positive value for items in the right stack */
-- (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex withItemWidth:(CGFloat)itemWidth stackedAngle:(CGFloat)aStackedAngle itemSpacing:(CGFloat)itemSpacing selectedIndex:(NSUInteger)theSelection;
-
 /* performs hittesting and returns the modellayer at the hitpoint */
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPoint;
 

@@ -24,7 +24,9 @@ static NSString * const kNumberOfItemsKey = @"numberOfItems";
 static NSString * const kStackedDistanceKey = @"stackedDistance";
 static NSString * const kVerticalMarginKey = @"verticalMargin";
 
+#ifndef DEGREES2RADIANS
 #define DEGREES2RADIANS(angle) ((angle) * M_PI / 180.)
+#endif
 
 @interface MMCoverFlowLayout ()
 
