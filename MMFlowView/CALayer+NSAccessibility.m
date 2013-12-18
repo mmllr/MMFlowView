@@ -122,7 +122,7 @@ static NSString * const kCustomAccessibilityParameterizedAttributeNamesKey = @"M
 													   fromLayer:self.superlayer ? self.superlayer : nil ];
 		NSPoint windowPoint = [containingView convertPoint:NSPointFromCGPoint(pointInView)
 													toView:nil ];
-		return [ NSValue valueWithPoint:[[containingView window ] convertBaseToScreen:windowPoint]];
+		return [ NSValue valueWithPoint:[[containingView window ] convertRectToScreen:NSMakeRect(windowPoint.x, windowPoint.y, 1,1)].origin];
 	}
 	else if ( [anAttribute isEqualToString:NSAccessibilityWindowAttribute] ) {
 		return [[self mm_accessibilityParent] accessibilityAttributeValue:NSAccessibilityWindowAttribute];
