@@ -11,7 +11,7 @@
 
 @implementation MMPDFPageDecoder
 
-- (CGImageRef)imageFromPDFPage:(CGPDFPageRef)pdfPage withSize:(CGSize)imageSize andTransparentBackground:(BOOL)transparentBackground
+- (CGImageRef)newImageFromPDFPage:(CGPDFPageRef)pdfPage withSize:(CGSize)imageSize andTransparentBackground:(BOOL)transparentBackground
 {
 	NSParameterAssert(pdfPage != NULL);
 
@@ -77,7 +77,7 @@
 	else if ( CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID() ) {
 		pageRef = (__bridge CGPDFPageRef)(anItem);
 	}
-	return pageRef ? [self imageFromPDFPage:pageRef
+	return pageRef ? [self newImageFromPDFPage:pageRef
 								   withSize:imageSize
 					andTransparentBackground:NO] : NULL;
 }

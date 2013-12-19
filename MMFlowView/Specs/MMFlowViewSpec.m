@@ -15,7 +15,27 @@ SPEC_BEGIN(MMFlowViewSpec)
 describe(@"MMFlowView", ^{
 	context(@"a new instance", ^{
 		__block MMFlowView *sut = nil;
-		NSRect initialFrame = NSMakeRect(0, 0, 400, 300);
+		__block NSArray *mockedItems = nil;
+		const NSInteger numberOfItems = 10;
+		const NSRect initialFrame = NSMakeRect(0, 0, 400, 300);
+
+		beforeAll(^{
+			NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:numberOfItems];
+			for ( NSInteger i = 0; i < numberOfItems; ++i) {
+				NSString *titleString = [NSString stringWithFormat:@"%ld", (long)i];
+				// item
+				id itemMock = [KWMock mockForProtocol:@protocol(MMFlowViewItem)];
+				[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
+				[itemMock stub:@selector(imageItemUID) andReturn:titleString];
+				[itemMock stub:@selector(imageItemTitle) andReturn:titleString];
+				[itemMock stub:@selector(imageItemRepresentation) andReturn:[NSImage imageNamed:NSImageNameUser]];
+				[itemArray addObject:itemMock];
+			}
+			mockedItems = [itemArray copy];
+		});
+		afterAll(^{
+			mockedItems = nil;
+		});
 		beforeEach(^{
 			sut = [[MMFlowView alloc] initWithFrame:initialFrame];
 		});
@@ -31,9 +51,6 @@ describe(@"MMFlowView", ^{
 				[[[[sut class] cellClass] should] equal:[NSActionCell class]];
 			});
 		});
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
 		context(@"NSView overrides", ^{
 			it(@"should not be flipped", ^{
 				[[theValue([sut isFlipped]) should] beNo];
@@ -44,17 +61,14 @@ describe(@"MMFlowView", ^{
 			it(@"should need panel to become to key", ^{
 				[[theValue([sut needsPanelToBecomeKey]) should] beYes];
 			});
+			it(@"should accept touch events", ^{
+				[[theValue([sut acceptsTouchEvents]) should] beYes];
+			});
 		});
 		context(@"NSResponder overrides", ^{
 			it(@"should accept being first responder", ^{
 				[[theValue([sut acceptsFirstResponder]) should] beYes];
 			});
-		});
-		it(@"should have no items", ^{
-			[[theValue(sut.numberOfItems) should] equal:theValue(0)];
-		});
-		it(@"shoud have no item selected", ^{
-			[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
 		});
 		context(@"visibleItemIndexes", ^{
 			it(@"should not be nil", ^{
@@ -63,9 +77,6 @@ describe(@"MMFlowView", ^{
 			it(@"should have count of zero", ^{
 				[[sut.visibleItemIndexes should] haveCountOf:0];
 			});
-		});
-		it(@"should accept touch events", ^{
-			[[theValue([sut acceptsTouchEvents]) should] beYes];
 		});
 		context(@"stackedAngle property", ^{
 			it(@"should have a default stacked angle of 70", ^{
@@ -142,6 +153,15 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
+		it(@"should exist", ^{
+			[[sut shouldNot] beNil];
+		});
+		it(@"should have no items", ^{
+			[[theValue(sut.numberOfItems) should] equal:theValue(0)];
+		});
+		it(@"shoud have no item selected", ^{
+			[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
+		});
 		it(@"should have a stackedScale of -200", ^{
 			[[theValue(sut.stackedScale) should] equal:theValue(-200)];
 		});
@@ -165,6 +185,14 @@ describe(@"MMFlowView", ^{
 		});
 		it(@"should have an empty datasource", ^{
 			[[(id)sut.dataSource should] beNil];
+		});
+		context(@"image factory", ^{
+			it(@"should have an image factory", ^{
+				[[sut.imageFactory shouldNot] beNil];
+			});
+			it(@"should be a MMFlowViewImageFactory class", ^{
+				[[sut.imageFactory should] beKindOfClass:[MMFlowViewImageFactory class]];
+			});
 		});
 		context(@"live resizing", ^{
 			context(@"coverflow layer related", ^{
@@ -196,37 +224,6 @@ describe(@"MMFlowView", ^{
 				sut.title = @"";
 			});
 		});
-		context(@"MMCoverFlowLayerDataSource", ^{
-			it(@"should conform to the MMCoverFlowLayerDataSource protocol", ^{
-				[[sut should] conformToProtocol:@protocol(MMCoverFlowLayerDataSource)];
-			});
-			it(@"should respond to coverFlowLayer:contentLayerForIndex:", ^{
-				[[sut should] respondToSelector:@selector(coverFlowLayer:contentLayerForIndex:)];
-			});
-			it(@"should be the datasource for the coverflow layer", ^{
-				[[sut should] equal:sut.coverFlowLayer.dataSource];
-			});
-			it(@"should reload the cover flow layer when invoking reloadContent", ^{
-				[[sut.coverFlowLayer should] receive:@selector(reloadContent)];
-				[sut reloadContent];
-			});
-			context(@"content layers", ^{
-				__block CALayer *contentLayer = nil;
-
-				beforeEach(^{
-					contentLayer = [sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0];
-				});
-				afterEach(^{
-					contentLayer = nil;
-				});
-				it(@"should not return nil when asked for a content layer", ^{
-					[[contentLayer shouldNot] beNil];
-				});
-				it(@"should have set an image", ^{
-					[[contentLayer.contents shouldNot] beNil];
-				});
-			});
-		});
 		context(@"bindings", ^{
 			__block NSArray *exposedBindings = nil;
 
@@ -251,6 +248,52 @@ describe(@"MMFlowView", ^{
 			});
 			it(@"should expose kMMFlowViewImageTitleBinding", ^{
 				[[exposedBindings should] contain:kMMFlowViewImageTitleBinding];
+			});
+			context(@"NSContentArrayBinding", ^{
+				context(@"binding to an NSArrayController", ^{
+					__block NSArrayController *arrayController = nil;
+					
+					beforeEach(^{
+						arrayController = [[NSArrayController alloc] initWithContent:mockedItems];
+						[arrayController setEditable:NO];
+						[sut bind:NSContentArrayBinding toObject:arrayController withKeyPath:@"arrangedObjects" options:nil];
+					});
+					afterEach(^{
+						arrayController = nil;
+					});
+					it(@"should be bound to the array controller", ^{
+						[[sut.observedItems should] equal:mockedItems];
+					});
+					it(@"should have the same number of items", ^{
+						[[theValue(sut.numberOfItems) should] equal:theValue([mockedItems count])];
+					});
+					it(@"should have a default imageRepresentationKeyPath", ^{
+						[[sut.imageRepresentationKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentation))];
+					});
+					it(@"should have a default imageRepresentationTypeKeyPath ", ^{
+						[[sut.imageRepresentationTypeKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentationType))];
+					});
+					it(@"should have a default imageUIDKeyPath ", ^{
+						[[sut.imageUIDKeyPath should] equal:NSStringFromSelector(@selector(imageItemUID))];
+					});
+					context(@"selection", ^{
+						it(@"should set the NSArrayControllers selection", ^{
+							sut.selectedIndex = 5;
+							[[theValue([arrayController selectionIndex]) should] equal:theValue(5)];
+						});
+					});
+				});
+				context(@"binding to an non-NSArrayController", ^{
+					__block NSDictionary *dict = nil;
+					beforeEach(^{
+						dict = @{@"arrangedObjects": @[@1, @2]};
+					});
+					it(@"should raise when not bound to an NSArrayController", ^{
+						[[theBlock(^{
+							[sut bind:NSContentArrayBinding toObject:dict withKeyPath:@"arrangedObjects" options:nil];
+						}) should] raiseWithName:NSInternalInconsistencyException];
+					});
+				});
 			});
 		});
 		context(@"layers", ^{
@@ -487,32 +530,18 @@ describe(@"MMFlowView", ^{
 		});
 		context(@"datasource", ^{
 			__block id datasourceMock = nil;
-			__block NSArray *mockedItems = nil;
-			const NSInteger numberOfItems = 10;
 
 			beforeEach(^{
-				[sut.layer layoutSublayers];
 				datasourceMock = [KWMock mockForProtocol:@protocol(MMFlowViewDataSource)];
+				[mockedItems enumerateObjectsUsingBlock:^(id itemMock, NSUInteger idx, BOOL *stop) {
+					[[datasourceMock stubAndReturn:itemMock] flowView:sut itemAtIndex:idx];
+				}];
+				[sut.layer layoutSublayers];
 				sut.dataSource = datasourceMock;
-
-				NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:numberOfItems];
-				for ( NSInteger i = 0; i < numberOfItems; ++i) {
-					NSString *titleString = [NSString stringWithFormat:@"%ld", (long)i];
-					// item
-					id itemMock = [KWMock mockForProtocol:@protocol(MMFlowViewItem)];
-					[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
-					[itemMock stub:@selector(imageItemUID) andReturn:titleString];
-					[itemMock stub:@selector(imageItemTitle) andReturn:titleString];
-					[itemMock stub:@selector(imageItemRepresentation) andReturn:[NSImage imageNamed:NSImageNameUser]];
-					[itemArray addObject:itemMock];
-					[[datasourceMock stubAndReturn:itemMock] flowView:sut itemAtIndex:i];
-				}
-				mockedItems = [itemArray copy];
 			});
 			afterEach(^{
 				sut.dataSource = nil;
 				datasourceMock = nil;
-				mockedItems = nil;
 			});
 			it(@"should have the datasource", ^{
 				[[(id)sut.dataSource should] equal:datasourceMock];
@@ -566,6 +595,57 @@ describe(@"MMFlowView", ^{
 					context(@"item layers", ^{
 						it(@"should have numberOfItems (10) sublayers", ^{
 							[[theValue(sut.numberOfItems) should] equal:theValue(numberOfItems)];
+						});
+					});
+					context(@"MMCoverFlowLayerDataSource", ^{
+						it(@"should conform to the MMCoverFlowLayerDataSource protocol", ^{
+							[[sut should] conformToProtocol:@protocol(MMCoverFlowLayerDataSource)];
+						});
+						it(@"should respond to coverFlowLayer:contentLayerForIndex:", ^{
+							[[sut should] respondToSelector:@selector(coverFlowLayer:contentLayerForIndex:)];
+						});
+						it(@"should respond to coverFlowLayerWillRelayout:", ^{
+							[[sut should] respondToSelector:@selector(coverFlowLayerWillRelayout:)];
+						});
+						it(@"should respond to coverFlowLayerDidRelayout:", ^{
+							[[sut should] respondToSelector:@selector(coverFlowLayerDidRelayout:)];
+						});
+						it(@"should be the datasource for the coverflow layer", ^{
+							[[sut should] equal:sut.coverFlowLayer.dataSource];
+						});
+						it(@"should reload the cover flow layer when invoking reloadContent", ^{
+							[[sut.coverFlowLayer should] receive:@selector(reloadContent)];
+							[sut reloadContent];
+						});
+						it(@"should relayout the cover flow layer when changing the selection", ^{
+							[[sut.coverFlowLayer should] receive:@selector(setNeedsLayout)];
+							sut.selectedIndex = sut.selectedIndex + 1;
+						});
+						context(@"coverFlowLayerDidRelayout:", ^{
+							beforeEach(^{
+								[sut coverFlowLayerDidRelayout:sut.coverFlowLayer];
+							});
+							it(@"should set the images in the visible range", ^{
+								[sut.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:sut.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+									id<MMFlowViewItem> item = [mockedItems objectAtIndex:idx];
+								}];
+							});
+						});
+						context(@"content layers", ^{
+							__block CALayer *contentLayer = nil;
+
+							beforeEach(^{
+								contentLayer = [sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0];
+							});
+							afterEach(^{
+								contentLayer = nil;
+							});
+							it(@"should not return nil when asked for a content layer", ^{
+								[[contentLayer shouldNot] beNil];
+							});
+							it(@"should have set an image", ^{
+								[[contentLayer.contents shouldNot] beNil];
+							});
 						});
 					});
 				});

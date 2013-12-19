@@ -332,14 +332,6 @@ describe(@"MMCoverFlowLayer", ^{
 				datasourceMock =  nil;
 				sublayers = nil;
 			});
-			context(@"visible items", ^{
-				it(@"should have nonzero visible items", ^{
-					[[theValue([sut.visibleItemIndexes count]) should] beGreaterThan:theValue(0)];
-				});
-				it(@"should contain the selected index", ^{
-					[[theValue([sut.visibleItemIndexes containsIndex:layout.selectedItemIndex]) should] beYes];
-				});
-			});
 			context(@"loading", ^{
 				it(@"should load the content", ^{
 					[[theValue(sut.numberOfItems) should] equal:theValue([sublayers count])];
@@ -376,6 +368,14 @@ describe(@"MMCoverFlowLayer", ^{
 					MMCoverFlowLayoutAttributes *attr = [layout layoutAttributesForItemAtIndex:sut.layout.selectedItemIndex];
 					CGPoint expectedPoint = CGPointMake( attr.position.x - (CGRectGetWidth(sut.bounds) / 2.)  + layout.itemSize.width / 2., 0 );
 					[[[NSValue valueWithPoint:sut.bounds.origin] should] equal:[NSValue valueWithPoint:expectedPoint]];
+				});
+				context(@"visibleItemIndexes", ^{
+					it(@"should have nonzero visible items", ^{
+						[[theValue([sut.visibleItemIndexes count]) should] beGreaterThan:theValue(0)];
+					});
+					it(@"should contain the selected index", ^{
+						[[theValue([sut.visibleItemIndexes containsIndex:layout.selectedItemIndex]) should] beYes];
+					});
 				});
 			});
 			context(@"layout", ^{

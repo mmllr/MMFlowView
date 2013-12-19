@@ -35,7 +35,7 @@ NSString * const kMMFlowViewCGImageRepresentationType = @"MMFlowViewCGImageRepre
 NSString * const kMMFlowViewPDFPageRepresentationType = @"MMFlowViewPDFPageRepresentationType";
 NSString * const kMMFlowViewPathRepresentationType = @"MMFlowViewPathRepresentationType";
 NSString * const kMMFlowViewNSImageRepresentationType = @"MMFlowViewNSImageRepresentationType";
-NSString * const kMMFlowViewCGImageSourceRepresentationType = @"MMFlowViewPDFPageRepresentationType";
+NSString * const kMMFlowViewCGImageSourceRepresentationType = @"MMFlowViewCGImageSourceRepresentationType";
 NSString * const kMMFlowViewNSDataRepresentationType = @"MMFlowViewNSDataRepresentationType";
 NSString * const kMMFlowViewNSBitmapRepresentationType = @"MMFlowViewNSBitmapRepresentationType";
 NSString * const kMMFlowViewQTMovieRepresentationType = @"MMFlowViewQTMovieRepresentationType";
@@ -136,6 +136,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 @dynamic selectedIndex;
 @dynamic showsReflection;
 @dynamic reflectionOffset;
+@dynamic visibleItemIndexes;
 
 #pragma mark -
 #pragma mark Class methods
@@ -244,223 +245,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 }
 
 #pragma mark -
-#pragma mark Image creation
-
-+ (CGImageRef)newImageFromQuickLookURL:(NSURL*)anURL withSize:(CGSize)imageSize
-{
-	NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
-	CGImageRef image = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)anURL, imageSize, (__bridge CFDictionaryRef)quickLookOptions );
-	return image;
-}
-
-+ (CGImageRef)newImageFromURL:(NSURL*)anURL withSize:(CGSize)imageSize
-{
-	return [ self newImageFromQuickLookURL:anURL withSize:imageSize ];
-}
-
-+ (CGImageRef)newImageFromPDFPage:(CGPDFPageRef)pdfPage withSize:(CGSize)imageSize andTransparentBackground:(BOOL)transparentBackground
-{
-	size_t width = imageSize.width;
-	size_t height = imageSize.height;
-	size_t bytesPerLine = width * 4;
-	uint64_t size = (uint64_t)height * (uint64_t)bytesPerLine;
-
-	if ((size == 0) || (size > SIZE_MAX))
-		return NULL;
-	
-	void *bitmapData = calloc( 1, size );
-	if (!bitmapData)
-		return NULL;
-
-	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(&kCGColorSpaceSRGB ? kCGColorSpaceSRGB : kCGColorSpaceGenericRGB);
-
-	CGContextRef context = CGBitmapContextCreate(bitmapData, width, height, 8, bytesPerLine, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst);
-	CGColorSpaceRelease(colorSpace);
-
-	if ( transparentBackground ) {
-		CGContextClearRect( context, CGRectMake(0, 0, width, height) );
-	}
-	else {
-		CGContextSetRGBFillColor( context, 1, 1, 1, 1 ); // white
-		CGContextFillRect( context, CGRectMake(0, 0, imageSize.width, imageSize.height) );
-	}
-	CGRect imageRect = CGRectMake( 0, 0, imageSize.width, imageSize.height );
-	CGRect boxRect = CGPDFPageGetBoxRect( pdfPage, kCGPDFCropBox );
-	CGAffineTransform drawingTransform;
-	if ( imageSize.width <= boxRect.size.width ) {
-		drawingTransform = CGPDFPageGetDrawingTransform(pdfPage, kCGPDFCropBox, imageRect, 0, kCFBooleanTrue );
-	}
-	else {
-		CGFloat scaleX = imageSize.width / boxRect.size.width;
-		//CGFloat scaleY = imageSize.height / boxRect.size.height;
-
-		drawingTransform = CGAffineTransformMakeTranslation( -boxRect.origin.x, -boxRect.origin.y );
-		drawingTransform = CGAffineTransformScale(drawingTransform, scaleX, scaleX );
-	}
-	CGContextConcatCTM( context, drawingTransform );
-
-	CGContextDrawPDFPage( context, pdfPage );
-	
-	CGImageRef pdfImage = CGBitmapContextCreateImage( context );
-
-	CGContextRelease(context);
-	
-	free(bitmapData);
-	
-	return pdfImage;
-}
-
-+ (CGImageRef)newImageFromPath:(NSString*)aPath withSize:(CGSize)imageSize
-{
-	return [ self newImageFromURL:[ NSURL fileURLWithPath:aPath ] withSize:imageSize ];
-}
-
-+ (CGImageRef)newImageFromNSImage:(NSImage*)anImage withSize:(CGSize)imageSize
-{
-	NSRect proposedRect = NSMakeRect(0, 0, imageSize.width, imageSize.height);
-	return CGImageRetain( [ anImage CGImageForProposedRect:&proposedRect
-									context:nil
-									  hints:nil ] );
-}
-
-+ (CGImageRef)newImageFromCGImageSource:(CGImageSourceRef)imageSource withSize:(CGSize)imageSize
-{
-	CFStringRef imageSourceType = CGImageSourceGetType(imageSource);
-	CGImageRef image = NULL;
-	if ( imageSourceType ) {
-		// Ask ImageIO to create a thumbnail from the file's image data,
-		// if it can't find a suitable existing thumbnail image in the file.
-		// We could comment out the following line if only existing thumbnails were desired for some reason
-		// (maybe to favor performance over being guaranteed a complete set of thumbnails).
-		NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
-								 (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
-		image = CGImageSourceCreateThumbnailAtIndex( imageSource, 0, (__bridge CFDictionaryRef)options );
-	}
-	return image;
-}
-
-+ (CGImageRef)newImageFromNSBitmapImage:(NSBitmapImageRep*)bitmapImage withSize:(CGSize)imageSize
-{
-	NSRect proposedRect = NSMakeRect(0, 0, imageSize.width, imageSize.height);
-	return CGImageRetain( [ bitmapImage CGImageForProposedRect:&proposedRect
-										context:nil
-										  hints:nil ] );
-}
-
-+ (CGImageRef)newImageFromData:(NSData*)data withSize:(CGSize)imageSize
-{
-	NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
-							 (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
-	CGImageRef image = NULL;
-	CGImageSourceRef imageSource = CGImageSourceCreateWithData( (__bridge CFDataRef)data, (__bridge CFDictionaryRef)options );
-	if ( imageSource ) {
-		image = [ self newImageFromCGImageSource:imageSource
-									 withSize:imageSize ];
-		CFRelease(imageSource);
-	}
-	return image;
-}
-
-+ (CGImageRef)newImageFromIcon:(IconRef)anIcon withSize:(CGSize)imageSize
-{
-	NSImage *image = [ [ NSImage alloc ] initWithIconRef:anIcon ];
-	return [ self newImageFromNSImage:image
-						  withSize:imageSize ];
-}
-
-+ (CGImageRef)newImageFromIconRefPath:(NSString*)iconPath withSize:(CGSize)imageSize
-{
-	return [ self newImageFromPath:iconPath
-					   withSize:imageSize ];
-}
-
-+ (CGImageRef)newImageFromRepresentation:(id)imageRepresentation withType:(NSString*)representationType size:(CGSize)imageSize
-{
-	CGImageRef image = NULL;
-	if ( [ [ [ self class ] pathRepresentationTypes ] containsObject:representationType ] ) {
-		NSURL *imageURL = [ imageRepresentation isKindOfClass:[ NSURL class ] ] ? imageRepresentation : [ NSURL fileURLWithPath:imageRepresentation ];
-		image = [ self newImageFromURL:imageURL
-							  withSize:imageSize ];
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewCGImageRepresentationType ] ) {
-		image = (__bridge CGImageRef)imageRepresentation;
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewPDFPageRepresentationType ] ) {
-		CGPDFPageRef pdfPage = [ imageRepresentation isKindOfClass:[ PDFPage class ] ] ? [ imageRepresentation pageRef ] : (__bridge CGPDFPageRef)imageRepresentation;
-		image = [ self newImageFromPDFPage:(CGPDFPageRef)pdfPage
-								  withSize:imageSize
-				  andTransparentBackground:NO ];
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewNSImageRepresentationType ] ) {
-		image = [ self newImageFromNSImage:(NSImage*)imageRepresentation
-								  withSize:imageSize ];
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewCGImageSourceRepresentationType ] ) {
-		image = [ self newImageFromCGImageSource:(CGImageSourceRef)imageRepresentation
-										withSize:imageSize ];
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewNSDataRepresentationType ] ) {
-		image = [ self newImageFromData:(NSData*)imageRepresentation
-							   withSize:imageSize ];
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewNSBitmapRepresentationType ] ) {
-		image = [ self newImageFromNSBitmapImage:(NSBitmapImageRep*)imageRepresentation
-										withSize:imageSize ];
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewIconRefRepresentationType ] ) {
-		image = [ self newImageFromIcon:(IconRef)imageRepresentation
-							   withSize:imageSize ];
-	}
-	else if ( [ representationType isEqualToString:kMMFlowViewQTMovieRepresentationType ] ) {
-		[ QTMovie enterQTKitOnThread ];
-		QTMovie *movie = imageRepresentation;
-		if ( [ movie attachToCurrentThread ] ) {
-			image = [ self newImageFromNSImage:[ movie posterImage ]
-									  withSize:imageSize ];
-			[ movie detachFromCurrentThread ];
-		}
-		[ QTMovie exitQTKitOnThread ];
-	}
-	return image;
-}
-
-+ (QTMovie*)movieFromRepresentation:(id)representation withType:(NSString*)representationType
-{
-	if ( [ representationType isEqualToString:kMMFlowViewQTMovieRepresentationType ] ) {
-		return representation;
-	}
-	else if ( [ [ [ self class ] pathRepresentationTypes ] containsObject:representationType ] ) {
-		NSURL *movieURL = [ representation isKindOfClass:[ NSURL class ] ] ? representation : [ NSURL fileURLWithPath:representation ];
-		
-		if ( [ QTMovie canInitWithURL:movieURL ] ) {
-			NSDictionary *options = @{QTMovieURLAttribute: movieURL,
-									 QTMovieOpenForPlaybackAttribute: @YES};
-			NSError *error = nil;
-			QTMovie *movie = [ QTMovie movieWithAttributes:options
-													 error:&error ];
-			if ( error ) {
-				NSLog( @"Error: %@", error );
-			}
-			return movie;
-		}
-	}
-	return nil;
-}
-
-+ (QCComposition*)compositionFromRepresentation:(id)representation withType:(NSString*)representationType
-{
-	if ( [representationType isEqualToString:kMMFlowViewQCCompositionRepresentationType ] ) {
-		return representation;
-	}
-	else if ( [ [ [ self class ] pathRepresentationTypes ] containsObject:representationType ] ) {
-		NSString *path = [ representation isKindOfClass:[ NSURL class ] ] ? [ representation path ] : representation;
-		
-		return [ QCComposition compositionWithFile:path ];
-	}
-	return nil;
-}
-
-#pragma mark -
 #pragma mark Init/Cleanup
 
 - (id)initWithFrame:(NSRect)frame
@@ -469,7 +253,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
     if (self) {
         // Initialization code here.
 		_bindingInfo = [NSMutableDictionary dictionary];
-		_operationQueue = [[NSOperationQueue alloc] init];
+		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageCache = [[NSCache alloc] init];
 		_layerQueue = [NSMutableArray array];
 		_layout = [[MMCoverFlowLayout alloc] init];
@@ -489,7 +273,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( self ) {
 		_bindingInfo = [ NSMutableDictionary dictionary ];
 		_layerQueue = [ NSMutableArray array ];
-		_operationQueue = [[ NSOperationQueue alloc ] init ];
+		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageCache = [[ NSCache alloc ] init ];
 		[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
 		[ self setAcceptsTouchEvents:YES ];
@@ -537,7 +321,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 - (void)dealloc
 {
 	[self tearDownBindings];
-	[ self.operationQueue cancelAllOperations ];
 }
 
 - (void)setInitialDefaults
@@ -560,12 +343,10 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 {
 	[self.layout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
 	[self.layout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
-	[self bind:@"visibleItemIndexes" toObject:self.coverFlowLayer withKeyPath:@"visibleItemIndexes" options:nil];
 }
 
 - (void)tearDownBindings
 {
-	[self unbind:@"visibleItemIndexes"];
 	[self.layout unbind:@"stackedAngle"];
 	[self.layout unbind:@"interItemSpacing"];
 }
@@ -606,10 +387,8 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 - (void)setSelectedIndex:(NSUInteger)index
 {
 	if ( ( self.layout.selectedItemIndex != index ) && ( index < self.numberOfItems ) ) {
-		[self deselectLayerAtIndex:self.layout.selectedItemIndex];
 		self.layout.selectedItemIndex = index;
 		[self updateSelectionInRange:NSMakeRange(index, 1)];
-		[ self selectLayerAtIndex:index ];
 		if ( [self.delegate respondsToSelector:@selector(flowViewSelectionDidChange:)] ) {
 			[self.delegate flowViewSelectionDidChange:self];
 		}
@@ -636,7 +415,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( _previewScale != aPreviewScale ) {
 		_previewScale = CLAMP( aPreviewScale, 0.01, 1. );
 		[ self.imageCache removeAllObjects ];
-		[ self updateImages ];
+		[self updateImages];
 	}
 }
 
@@ -676,7 +455,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		_draggingKnob = flag;
 		// update at end of dragging
 		if ( !flag ) {
-			[ self selectLayerAtIndex:self.selectedIndex ];
+			//[ self selectLayerAtIndex:self.selectedIndex ];
 		}
 	}
 }
@@ -711,6 +490,12 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	self.coverFlowLayer.reflectionOffset = reflectionOffset;
 }
 
+- (NSIndexSet*)visibleItemIndexes
+{
+	return self.coverFlowLayer.visibleItemIndexes;
+}
+
+
 #pragma mark -
 #pragma mark Layout math
 
@@ -739,11 +524,20 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 - (CALayer*)coverFlowLayer:(MMCoverFlowLayer *)layer contentLayerForIndex:(NSUInteger)index
 {
 	CALayer *contentLayer = [CALayer layer];
-	contentLayer.contents = [NSImage imageNamed:NSImageNameComputer];
-	contentLayer.borderColor = [NSColor redColor].CGColor;
-	contentLayer.borderWidth = 4;
+	contentLayer.contents = (id)[[self class] defaultImage];
 	return contentLayer;
 }
+
+- (void)coverFlowLayerWillRelayout:(MMCoverFlowLayer *)coverFlowLayer
+{
+}
+
+- (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer
+{
+	[self updateImages];
+}
+
+#pragma mark - other helpers
 
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex
 {
@@ -816,38 +610,38 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (NSSet*)observedItemKeyPaths
 {
-	NSMutableSet *observedItemKeyPaths = [ NSMutableSet set ];
+	NSMutableSet *observedItemKeyPaths = [NSMutableSet set];
 	if ( self.imageRepresentationKeyPath ) {
-		[ observedItemKeyPaths addObject:self.imageRepresentationKeyPath ];
+		[observedItemKeyPaths addObject:self.imageRepresentationKeyPath];
 	}
 	if ( self.imageRepresentationTypeKeyPath ) {
-		[ observedItemKeyPaths addObject:self.imageRepresentationTypeKeyPath ];
+		[observedItemKeyPaths addObject:self.imageRepresentationTypeKeyPath];
 	}
 	if ( self.imageUIDKeyPath ) {
-		[ observedItemKeyPaths addObject:self.imageUIDKeyPath ];
+		[observedItemKeyPaths addObject:self.imageUIDKeyPath];
 	}
 	if ( self.imageTitleKeyPath ) {
-		[ observedItemKeyPaths addObject:self.imageTitleKeyPath ];
+		[observedItemKeyPaths addObject:self.imageTitleKeyPath];
 	}
-	return [ NSSet setWithSet:observedItemKeyPaths ];
+	return [NSSet setWithSet:observedItemKeyPaths];
 }
 
 - (BOOL)bindingsEnabled
 {
-	return [ self infoForBinding:NSContentArrayBinding ] != nil;
+	return [self infoForBinding:NSContentArrayBinding] != nil;
 }
 
 - (void)setImageRepresentationKeyPath:(NSString *)aKeyPath
 {
 	if ( aKeyPath != _imageRepresentationKeyPath ) {
 		if ( _imageRepresentationKeyPath ) {
-			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:_imageRepresentationKeyPath ] ];
+			[self stopObservingCollection:self.observedItems
+								atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
 		}
-		_imageRepresentationKeyPath = [ aKeyPath copy ];
+		_imageRepresentationKeyPath = [aKeyPath copy];
 		if ( _imageRepresentationKeyPath ) {
-			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:_imageRepresentationKeyPath ] ];
+			[self startObservingCollection:self.observedItems
+								 atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
 		}
 	}
 }
@@ -871,13 +665,13 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 {
 	if ( aKeyPath != _imageUIDKeyPath ) {
 		if ( _imageUIDKeyPath ) {
-			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:_imageUIDKeyPath ] ];
+			[self stopObservingCollection:self.observedItems
+								atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
 		}
 		_imageUIDKeyPath = [ aKeyPath copy ];
 		if ( _imageUIDKeyPath ) {
-			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:_imageUIDKeyPath ] ];
+			[self startObservingCollection:self.observedItems
+								 atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
 		}
 	}
 }
@@ -886,13 +680,13 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 {
 	if ( aKeyPath != _imageTitleKeyPath ) {
 		if ( _imageTitleKeyPath ) {
-			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:_imageTitleKeyPath ] ];
+			[self stopObservingCollection:self.observedItems
+								atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
 		}
 		_imageTitleKeyPath = [ aKeyPath copy ];
 		if ( _imageTitleKeyPath ) {
-			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:_imageTitleKeyPath ] ];
+			[self startObservingCollection:self.observedItems
+								 atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
 		}
 	}
 }
@@ -926,7 +720,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		[ self setupNotifications ];
 	}
 	else if ( inWindow && !willBeInWindow ) {
-		[ self.operationQueue cancelAllOperations ];
 		[ self teardownNotifications ];
 		self.layer = nil;
 	}
@@ -962,7 +755,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	[super viewDidEndLiveResize];
 	self.coverFlowLayer.inLiveResize = NO;
 	//[ self.scrollLayer setNeedsLayout ];
-	[ self updateImages ];
+	[self updateImages];
 }
 
 - (void)updateTrackingAreas
@@ -1564,28 +1357,16 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)updateImages
 {
-	[ self.operationQueue cancelAllOperations ];
-	NSIndexSet *allIndexes = [ NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, self.numberOfItems ) ];
-	CGRect visibleFrame = self.coverFlowLayer.visibleRect;
+	CGSize itemSize = self.layout.itemSize;
 
-	[ allIndexes enumerateIndexesUsingBlock:^(NSUInteger anIndex, BOOL *stop) {
-		if ( [ self.visibleItemIndexes containsIndex:anIndex ] ||
-			( anIndex + 1 ) == [ self.visibleItemIndexes firstIndex ] ||
-			( anIndex - 1 ) == [ self.visibleItemIndexes lastIndex ] ) {
-			[ self updateImageLayerAtIndex:anIndex ];
-		}
-		else {
-			id item = [ self imageItemForIndex:anIndex ];
-			CGImageRef image = [ self lookupForImageUID:[ self imageUIDForItem:item ] ];
-			if ( image == NULL ) {
-				image = [ self defaultImageForItem:item withSize:[ self itemSizeForRect:visibleFrame ] ];
-				if ( image == NULL ) {
-					image = [ [ self class ] defaultImage ];
-				}
-			}
-			[ self setImage:image atIndex:anIndex ];
-		}
-	} ];
+	[self.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:self.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+		id<MMFlowViewItem> item = [self imageItemForIndex:idx];
+		id imageRepresentation = [self imageRepresentationForItem:item];
+		NSString *imageRepresentationType = [self imageRepresentationTypeForItem:item];
+		[self.imageFactory createImageForItem:imageRepresentation withRepresentationType:imageRepresentationType maximumSize:itemSize completionHandler:^(CGImageRef image) {
+			contentLayer.contents = (__bridge id)image;
+		}];
+	}];
 }
 
 - (void)updateImageLayerAtIndex:(NSUInteger)anIndex
@@ -1617,12 +1398,12 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 			atIndex:anIndex ];
 	if ( shouldUpdateCache ) {
 		// image not in cache or wrong size -> reload
-		NSString *imageRepresentationType = [ self imageRepresentationTypeForItem:item ];
+/*		NSString *imageRepresentationType = [ self imageRepresentationTypeForItem:item ];
 		
 		[ self.operationQueue addOperationWithBlock:^{
-			CGImageRef newImage = [ [ self class ] newImageFromRepresentation:imageRepresentation
-																	 withType:imageRepresentationType
-																		 size:imageSize ];
+			CGImageRef newImage = NULL;//[ [ self class ] newImageFromRepresentation:imageRepresentation
+			//														 withType:imageRepresentationType
+																	//	 size:imageSize ];
 			if (newImage != NULL) {
 				[ self cacheImage:newImage
 						  withUID:imageUID ];
@@ -1634,7 +1415,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 				} ];
 				CGImageRelease(newImage);
 			}
-		} ];
+		} ];*/
 	}
 }
 
@@ -1681,16 +1462,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)updateSelectionInRange:(NSRange)invalidatedRange
 {
-	//[ self.scrollLayer setNeedsLayout ];
-	[ CATransaction begin ];
-	[ CATransaction setDisableActions:[ self inLiveResize ] ];
-	[ CATransaction setAnimationDuration:self.scrollDuration ];
-	[ CATransaction setAnimationTimingFunction:[ CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut ] ];
-	[ CATransaction setCompletionBlock:^{
-		[ self updateImages ];
-		[ self setupTrackingAreas ];
-	} ];
-	[ CATransaction commit ];
 	self.title = [ self titleAtIndex:self.selectedIndex ];
 	// ax
 	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
@@ -1699,40 +1470,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 #pragma mark -
 #pragma mark Selection
-
-- (void)deselectLayerAtIndex:(NSUInteger)anIndex
-{
-	if ( anIndex == NSNotFound ) {
-		return;
-	}/*
-	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
-	if ( [ imageLayer.name hasSuffix:kMMFlowViewMovieLayerSuffix ] ) {
-		QTMovieLayer *movieLayer = [ self movieLayerAtIndex:anIndex ];
-		[ movieLayer.movie stop ];
-	}
-	[ CATransaction begin ];
-	[ CATransaction setDisableActions:YES ];
-	imageLayer.sublayers = nil;
-	[ CATransaction commit ];*/
-}
-
-- (void)selectLayerAtIndex:(NSUInteger)anIndex
-{
-	if ( self.draggingKnob ) {
-		return;
-	}/*
-	CALayer *imageLayer = [ self imageLayerAtIndex:anIndex ];
-
-	if ( [ imageLayer.sublayers count ] == 0 ) {
-		// update only if needed
-		if ( [ imageLayer.name hasSuffix:kMMFlowViewMovieLayerSuffix ] ) {
-			[ self updateMovieLayerAtIndex:anIndex ];
-		}
-		else if ( [ imageLayer.name hasSuffix:kMMFlowViewQCCompositionLayerSuffix ] ) {
-			[ self updateQCCompositionLayerAtIndex:anIndex ];
-		}
-	}*/
-}
 
 #pragma mark -
 #pragma mark Private implementation
@@ -1967,31 +1704,31 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (NSDictionary *)infoForBinding:(NSString *)binding
 {
-	NSDictionary *info = [ self.bindingInfo valueForKey:binding ];
-	return info ? info : [ super infoForBinding:binding ];
+	NSDictionary *info = [self.bindingInfo valueForKey:binding];
+	return info ? info : [super infoForBinding:binding];
 }
 
 - (void)bind:(NSString *)binding toObject:(id)observableController withKeyPath:(NSString *)keyPath options:(NSDictionary *)options
 {
-	if ( [ binding isEqualToString:NSContentArrayBinding ] ) {
-		NSAssert( [ observableController isKindOfClass:[ NSArrayController class ] ], @"NSContentArrayBinding needs to be bound to an NSArrayController!" );
-		
+	if ( [binding isEqualToString:NSContentArrayBinding] ) {
+		NSParameterAssert([observableController isKindOfClass:[NSArrayController class]]);
+
 		// already set?
-		if ( [ self infoForBinding:binding ][NSObservedKeyPathKey] != nil ) {
-			[ self unbind:NSContentArrayBinding ];
+		if ( [self infoForBinding:binding][NSObservedKeyPathKey] != nil ) {
+			[self unbind:NSContentArrayBinding];
 		}
 		// Register what object and what keypath are
 		// associated with this binding
 		NSDictionary *bindingsData = @{NSObservedObjectKey: observableController,
-									  NSObservedKeyPathKey: [ keyPath copy ],
-									  NSOptionsKey: options ? [ options copy ] : [ NSDictionary dictionary ] };
-		[ self setInfo:bindingsData
-			forBinding:binding ];
+									  NSObservedKeyPathKey: [keyPath copy],
+									  NSOptionsKey: options ? [options copy] : [NSDictionary dictionary] };
+		[self setInfo:bindingsData
+		   forBinding:binding];
 
-		[ observableController addObserver:self
-								forKeyPath:keyPath
-								   options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
-								   context:kMMFlowViewContentArrayObservationContext ];
+		[observableController addObserver:self
+							   forKeyPath:keyPath
+								  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
+								  context:kMMFlowViewContentArrayObservationContext];
 		// set keypaths to MMFlowViewItem defaults
 		if ( !self.imageRepresentationKeyPath ) {
 			self.imageRepresentationKeyPath = kMMFlowViewItemImageRepresentationKey;
@@ -2002,26 +1739,25 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		if ( !self.imageUIDKeyPath ) {
 			self.imageUIDKeyPath = kMMFlowViewItemImageUIDKey;
 		}
-		
 	}
 	else {
-		[ super bind:binding
-			toObject:observableController
-		 withKeyPath:keyPath
-			 options:options ];
+		[super bind:binding
+		   toObject:observableController
+		withKeyPath:keyPath
+			options:options];
 	}
 }
 
 - (void)unbind:(NSString*)binding
 {
-	if ( [ binding isEqualToString:NSContentArrayBinding ] && [ self infoForBinding:NSContentArrayBinding ] ) {
-		[ self.contentArrayController removeObserver:self forKeyPath:self.contentArrayKeyPath ];
-		[ self stopObservingCollection:self.contentArray atKeyPaths:self.observedItemKeyPaths ];
-		[ self.layer setNeedsDisplay ];
-		[ self.bindingInfo removeObjectForKey:binding ];
+	if ( [binding isEqualToString:NSContentArrayBinding] && [self infoForBinding:NSContentArrayBinding] ) {
+		[self.contentArrayController removeObserver:self forKeyPath:self.contentArrayKeyPath];
+		[self stopObservingCollection:self.contentArray atKeyPaths:self.observedItemKeyPaths];
+		[self.layer setNeedsDisplay ];
+		[self.bindingInfo removeObjectForKey:binding];
 	}
 	else {
-		[ super unbind:binding ];
+		[super unbind:binding];
 	}
 }
 
@@ -2037,36 +1773,36 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		 NSArray *oldItems = [change objectForKey:NSKeyValueChangeOldKey];
 		 etc. but the dictionary doesn't contain old and new arrays.
 		 */
-		NSArray *newItems = [ observedObject valueForKeyPath:keyPath ];
+		NSArray *newItems = [observedObject valueForKeyPath:keyPath];
 		
-		NSMutableArray *onlyNew = [ NSMutableArray arrayWithArray:newItems ];
-		[ onlyNew removeObjectsInArray:self.observedItems ];
-		[ self startObservingCollection:onlyNew atKeyPaths:self.observedItemKeyPaths ];
+		NSMutableArray *onlyNew = [NSMutableArray arrayWithArray:newItems];
+		[onlyNew removeObjectsInArray:self.observedItems];
+		[self startObservingCollection:onlyNew atKeyPaths:self.observedItemKeyPaths];
 		
-		NSMutableArray *removed = [ self.observedItems mutableCopy ];
-		[ removed removeObjectsInArray:newItems ];
-		[ self stopObservingCollection:removed atKeyPaths:self.observedItemKeyPaths ];
+		NSMutableArray *removed = [self.observedItems mutableCopy];
+		[removed removeObjectsInArray:newItems];
+		[self stopObservingCollection:removed atKeyPaths:self.observedItemKeyPaths];
 		self.observedItems = newItems;
 
-		[ self reloadContent ];
+		[self reloadContent];
 	}
 	else if ( context == kMMFlowViewIndividualItemKeyPathsObservationContext ) {
 		// tracks individual item-properties and resets observations
-		if ( [ keyPath isEqualToString:self.imageUIDKeyPath ] ||
-			[ keyPath isEqualToString:self.imageRepresentationKeyPath ] ||
-			[ keyPath isEqualToString:self.imageRepresentationTypeKeyPath ] ) {
-			[ self.imageCache removeObjectForKey:[ observedObject valueForKeyPath:self.imageUIDKeyPath ] ];
-			[ self.coverFlowLayer setNeedsLayout ];
+		if ( [keyPath isEqualToString:self.imageUIDKeyPath] ||
+			[keyPath isEqualToString:self.imageRepresentationKeyPath] ||
+			[keyPath isEqualToString:self.imageRepresentationTypeKeyPath] ) {
+			[self.imageCache removeObjectForKey:[observedObject valueForKeyPath:self.imageUIDKeyPath]];
+			[self.coverFlowLayer setNeedsLayout];
 		}
-		else if ( [ keyPath isEqualToString:self.imageTitleKeyPath ] ) {
-			self.title = [ observedObject valueForKeyPath:keyPath ];
+		else if ( [keyPath isEqualToString:self.imageTitleKeyPath] ) {
+			self.title = [observedObject valueForKeyPath:keyPath];
 		}
 	}
 	else {
-		[ super observeValueForKeyPath:keyPath
+		[super observeValueForKeyPath:keyPath
 							  ofObject:observedObject
 								change:change
-							   context:context ];
+							   context:context];
 	}
 }
 
@@ -2075,42 +1811,40 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)setInfo:(NSDictionary*)infoDict forBinding:(NSString*)aBinding
 {
-	NSDictionary *info = [ self.bindingInfo valueForKey:aBinding ];
+	NSDictionary *info = [self.bindingInfo valueForKey:aBinding];
 	if ( info ) {
-		[ self.bindingInfo removeObjectForKey:aBinding ];
-		[ self unbind:aBinding ];
+		[self.bindingInfo removeObjectForKey:aBinding];
+		[self unbind:aBinding];
 	}
-	[ self.bindingInfo setValue:infoDict forKey:aBinding ];
+	[self.bindingInfo setValue:infoDict forKey:aBinding];
 }
 
 - (void)startObservingCollection:(NSArray*)items atKeyPaths:(NSArray*)keyPaths
 {
-	if ( [ items isEqual:[ NSNull null ] ] || ![ items count ] ) {
+	if ( [ items isEqual:[NSNull null] ] || ![items count] ) {
 		return;
 	}
-	NSIndexSet *allItemIndexes = [ NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [ items count ] ) ];
+	NSIndexSet *allItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [items count] )];
 	for ( NSString *keyPath in keyPaths ) {
-		[ items addObserver:self
+		[items addObserver:self
 		 toObjectsAtIndexes:allItemIndexes
 				 forKeyPath:keyPath
 					options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial )
-					context:kMMFlowViewIndividualItemKeyPathsObservationContext ];
+					context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 	}
 }
 
 - (void)stopObservingCollection:(NSArray*)items atKeyPaths:(NSArray*)keyPaths
 {
-	if ( !items || [ items isEqual:[ NSNull null ] ] || ![ items count ] ) {
+	if ( !items || [items isEqual:[NSNull null]] || ![items count] ) {
 		return;
 	}
-	NSIndexSet *allItemIndexes = [ NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [ items count ] ) ];
+	NSIndexSet *allItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [items count] )];
 	for ( NSString *keyPath in keyPaths ) {
-		[ items removeObserver:self
+		[items removeObserver:self
 		  fromObjectsAtIndexes:allItemIndexes
-					forKeyPath:keyPath ];
+					forKeyPath:keyPath];
 	}
 }
 
 @end
-
-

@@ -161,7 +161,7 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 /* number of items in view */
 @property (readonly, nonatomic) NSUInteger numberOfItems;
 /* indexes of all visible items */
-@property (strong, readonly) NSIndexSet *visibleItemIndexes;
+@property (nonatomic, readonly) NSIndexSet *visibleItemIndexes;
 /* keypath to image representation on item in observed collection, defaults to imageItemRepresentation, see MMFlowViewItem protocol */
 @property (nonatomic,copy) NSString *imageRepresentationKeyPath;
 /* keypath to image representation type on item in observed collection, defaults to imageItemRepresentationType, see MMFlowViewItem protocol */

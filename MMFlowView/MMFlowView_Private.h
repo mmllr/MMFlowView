@@ -15,6 +15,7 @@
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
 #import "MMScrollBarLayer.h"
+#import "MMFlowViewImageFactory.h"
 
 @interface MMFlowView () <MMCoverFlowLayerDataSource>
 
@@ -27,18 +28,15 @@
 @property (strong,nonatomic) CALayer *selectedLayer;
 @property (strong,nonatomic) CALayer *highlightedLayer;
 @property (strong,readwrite) MMScrollBarLayer *scrollBarLayer;
+@property (strong) MMFlowViewImageFactory *imageFactory;
 
 @property (assign,nonatomic) BOOL draggingKnob;
 @property (assign) CGFloat mouseDownInKnob;
 
 @property (readwrite,nonatomic) NSUInteger numberOfItems;
 
-@property (strong, readwrite) NSIndexSet *visibleItemIndexes;
-
 /* number of potentialy visible items, taking in account selection scrolled to left- and rightmost index */
 @property (readonly,nonatomic) NSUInteger maximumNumberOfStackedVisibleItems;
-
-@property (strong) NSOperationQueue *operationQueue;
 
 /* image cache which holds key-value pairs of image-uids (key) and CGImageRefs (value) */
 @property (readwrite,strong) NSCache *imageCache;
@@ -77,22 +75,6 @@
 + (CGImageRef)defaultImage;
 + (NSArray*)backgroundGradientColors;
 + (NSArray*)backgroundGradientLocations;
-
-/* image creation methods, the returned CGImageRef needs to be explicitly released with CGImageRelease */
-+ (CGImageRef)newImageFromQuickLookURL:(NSURL*)anURL withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromURL:(NSURL*)anURL withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromPDFPage:(CGPDFPageRef)pdfPage withSize:(CGSize)imageSize andTransparentBackground:(BOOL)transparentBackground;
-+ (CGImageRef)newImageFromPath:(NSString*)aPath withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromNSImage:(NSImage*)anImage withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromCGImageSource:(CGImageSourceRef)imageSource withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromNSBitmapImage:(NSBitmapImageRep*)bitmapImage withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromData:(NSData*)data withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromIcon:(IconRef)anIcon withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromIconRefPath:(NSString*)iconPath withSize:(CGSize)imageSize;
-+ (CGImageRef)newImageFromRepresentation:(id)imageRepresentation withType:(NSString*)representationType size:(CGSize)imageSize;
-
-/* returns an autoreleased QTMovie object */
-+ (QTMovie*)movieFromRepresentation:(id)representation withType:(NSString*)representationType;
 
 /* updates the image layer: asynchronously loads the image from the datasource or provides a default image */
 - (void)updateImageLayerAtIndex:(NSUInteger)index;
@@ -159,9 +141,6 @@
 
 /* highlights a layer, invoked in dragging */
 - (void)highlightLayer:(CALayer*)aLayer highlighted:(BOOL)isHighlighted cornerRadius:(CGFloat)cornerRadius highlightingColor:(CGColorRef)highlightingColor;
-
-/* helper method for binding related meta-data */
-- (void)setInfo:(NSDictionary*)infoDict forBinding:(NSString*)aBinding;
 
 /* starts observing items in a collection */
 - (void)startObservingCollection:(NSArray*)aCollection atKeyPaths:(NSSet*)keyPaths;
