@@ -18,8 +18,10 @@
 	if ( CFGetTypeID(pdfPage) != CGPDFPageGetTypeID() ) {
 		return NULL;
 	}
-	size_t width = imageSize.width;
-	size_t height = imageSize.height;
+	CGRect boxRect = CGPDFPageGetBoxRect( pdfPage, kCGPDFCropBox );
+
+	size_t width = imageSize.width > 0 ? imageSize.width : CGRectGetWidth(boxRect);
+	size_t height = imageSize.height > 0 ? imageSize.height : CGRectGetHeight(boxRect);
 	size_t bytesPerLine = width * 4;
 	uint64_t size = (uint64_t)height * (uint64_t)bytesPerLine;
 	
@@ -43,7 +45,6 @@
 		CGContextFillRect( context, CGRectMake(0, 0, imageSize.width, imageSize.height) );
 	}
 	CGRect imageRect = CGRectMake( 0, 0, imageSize.width, imageSize.height );
-	CGRect boxRect = CGPDFPageGetBoxRect( pdfPage, kCGPDFCropBox );
 	CGAffineTransform drawingTransform;
 	if ( imageSize.width <= boxRect.size.width ) {
 		drawingTransform = CGPDFPageGetDrawingTransform(pdfPage, kCGPDFCropBox, imageRect, 0, kCFBooleanTrue );
