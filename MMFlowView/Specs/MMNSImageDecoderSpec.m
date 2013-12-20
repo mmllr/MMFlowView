@@ -14,15 +14,15 @@ SPEC_BEGIN(MMNSImageDecoderSpec)
 describe(@"MMNSImageDecoder", ^{
 	__block MMNSImageDecoder *sut = nil;
 	CGSize desiredSize = {50, 50};
-	__block CGImageRef image = NULL;
+	__block CGImageRef imageRef = NULL;
 
 	beforeEach(^{
 		sut = [[MMNSImageDecoder alloc] init];
 	});
 	afterEach(^{
-		if (image) {
-			CGImageRelease(image);
-			image = NULL;
+		if (imageRef) {
+			CGImageRelease(imageRef);
+			imageRef = NULL;
 		}
 		sut = nil;
 	});
@@ -35,22 +35,48 @@ describe(@"MMNSImageDecoder", ^{
 	it(@"should respond to newImageFromItem:withSize:", ^{
 		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
 	});
-	context(@"when created with an NSImage and non-zero size", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:[NSImage imageNamed:NSImageNameUser] withSize:desiredSize];
+	it(@"should respond to imageFromItem:", ^{
+		[[sut should] respondToSelector:@selector(imageFromItem:)];
+	});
+	context(@"newImageFromItem:withSize:", ^{
+		context(@"when created with an NSImage and non-zero size", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:[NSImage imageNamed:NSImageNameUser] withSize:desiredSize];
+			});
+			it(@"should load an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
 		});
-		it(@"should load an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+		context(@"when not invoked with an NSImage", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:@"Test" withSize:desiredSize];
+			});
+			it(@"should not return an image", ^{
+				[[theValue(imageRef == NULL) should] beTrue];
+			});
 		});
 	});
-	context(@"when not invoked with an NSImage", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:@"Test" withSize:desiredSize];
+	context(@"imageFromItem:", ^{
+		__block NSImage *image = nil;
+
+		context(@"when created with an NSImage", ^{
+			beforeEach(^{
+				image = [sut imageFromItem:[NSImage imageNamed:NSImageNameUser]];
+			});
+			afterEach(^{
+				image = nil;
+			});
+			it(@"should load an image", ^{
+				[[image should] equal:[NSImage imageNamed:NSImageNameUser]];
+			});
 		});
-		it(@"should not return an image", ^{
-			[[theValue(image == NULL) should] beTrue];
+		context(@"when not invoked with an NSImage", ^{
+			it(@"should not return an image", ^{
+				[[[sut imageFromItem:@"Test"] should] beNil];
+			});
 		});
 	});
+	
 });
 
 SPEC_END

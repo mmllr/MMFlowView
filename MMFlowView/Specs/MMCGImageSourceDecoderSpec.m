@@ -15,7 +15,7 @@ describe(@"MMCGImageSourceDecoder", ^{
 	__block MMCGImageSourceDecoder *sut = nil;
 	CGSize desiredSize = {50, 50};
 	__block CGImageSourceRef imageSource = NULL;
-	__block CGImageRef image = NULL;
+	__block CGImageRef imageRef = NULL;
 
 	beforeAll(^{
 		NSString *imageString = @"/Library/Screen Savers/Default Collections/3-Cosmos/Cosmos01.jpg";
@@ -32,9 +32,9 @@ describe(@"MMCGImageSourceDecoder", ^{
 		sut = [[MMCGImageSourceDecoder alloc] init];
 	});
 	afterEach(^{
-		if (image) {
-			CGImageRelease(image);
-			image = NULL;
+		if (imageRef) {
+			CGImageRelease(imageRef);
+			imageRef = NULL;
 		}
 		sut = nil;
 	});
@@ -49,14 +49,14 @@ describe(@"MMCGImageSourceDecoder", ^{
 	});
 	context(@"when created with NSURL and non-zero size", ^{
 		beforeEach(^{
-			image = [sut newImageFromItem:(__bridge id)imageSource withSize:desiredSize];
+			imageRef = [sut newImageFromItem:(__bridge id)imageSource withSize:desiredSize];
 		});
 		it(@"should load an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+			[[theValue(imageRef != NULL) should] beTrue];
 		});
 		it(@"should be in the specified size", ^{
-			CGFloat width = CGImageGetWidth(image);
-			CGFloat height = CGImageGetHeight(image);
+			CGFloat width = CGImageGetWidth(imageRef);
+			CGFloat height = CGImageGetHeight(imageRef);
 			[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
 		});
 	});
@@ -70,10 +70,10 @@ describe(@"MMCGImageSourceDecoder", ^{
 	});
 	context(@"when asking for an image with zero image size", ^{
 		beforeEach(^{
-			image = [sut newImageFromItem:(__bridge id)imageSource withSize:CGSizeZero];
+			imageRef = [sut newImageFromItem:(__bridge id)imageSource withSize:CGSizeZero];
 		});
 		it(@"should return an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+			[[theValue(imageRef != NULL) should] beTrue];
 		});
 	});
 });

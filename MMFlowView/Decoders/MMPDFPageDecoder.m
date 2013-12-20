@@ -82,4 +82,20 @@
 					andTransparentBackground:NO] : NULL;
 }
 
+- (NSImage*)imageFromItem:(id)anItem
+{
+	NSImage *image = nil;
+	if ([anItem isKindOfClass:[PDFPage class]]) {
+		image = [[NSImage alloc] initWithData:[anItem dataRepresentation]];
+	}
+	else if ( CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID()) {
+		CGImageRef imageRef = [self newImageFromPDFPage:(__bridge CGPDFPageRef)(anItem) withSize:CGSizeZero andTransparentBackground:NO];
+		if ( imageRef) {
+			image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
+			CGImageRelease(imageRef);
+		}
+	}
+	return image;
+}
+
 @end

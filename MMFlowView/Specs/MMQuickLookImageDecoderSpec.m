@@ -16,16 +16,18 @@ describe(@"MMQuickLookImageDecoder", ^{
 	NSString *imageString = @"/Library/Screen Savers/Default Collections/3-Cosmos/Cosmos01.jpg";
 	NSURL *imageURL = [NSURL fileURLWithPath:imageString];
 	__block MMQuickLookImageDecoder *sut = nil;
-	__block CGImageRef image = NULL;
+	__block CGImageRef imageRef = NULL;
+	__block NSImage *image = nil;
 
 	beforeEach(^{
 		sut = [[MMQuickLookImageDecoder alloc] init];
 	});
 	afterEach(^{
-		if (image) {
-			CGImageRelease(image);
-			image = NULL;
+		if (imageRef) {
+			CGImageRelease(imageRef);
+			imageRef = NULL;
 		}
+		image = nil;
 		sut = nil;
 	});
 	it(@"should exist", ^{
@@ -37,49 +39,72 @@ describe(@"MMQuickLookImageDecoder", ^{
 	it(@"should respond to newImageFromItem:withSize:", ^{
 		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
 	});
-	context(@"when created with NSURL and non-zero size", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:imageURL withSize:desiredSize];
+	it(@"should respond to imageFromItem:", ^{
+		[[sut should] respondToSelector:@selector(imageFromItem:)];
+	});
+	context(@"newImageFromItem:withSize:", ^{
+		it(@"should raise when invoked with nil item", ^{
+			[[theBlock(^{
+				[sut newImageFromItem:nil withSize:CGSizeZero];
+			}) should] raiseWithName:NSInternalInconsistencyException];
 		});
-		it(@"should load an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+		context(@"when created with NSURL and non-zero size", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:imageURL withSize:desiredSize];
+			});
+			it(@"should load an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
+			it(@"should be in the specified size", ^{
+				CGFloat width = CGImageGetWidth(imageRef);
+				CGFloat height = CGImageGetHeight(imageRef);
+				[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+			});
 		});
-		it(@"should be in the specified size", ^{
-			CGFloat width = CGImageGetWidth(image);
-			CGFloat height = CGImageGetHeight(image);
-			[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+		context(@"when asking for an image with zero image size", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:imageURL withSize:CGSizeZero];
+			});
+			it(@"should return an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
+		});
+		context(@"when asking for an image from a string item", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:imageString withSize:desiredSize];
+			});
+			it(@"should return an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
 		});
 	});
-	context(@"when created with an CFURLRef and non-zero size", ^{
-		__block CFURLRef urlRef = NULL;
-		beforeEach(^{
-			urlRef = CFURLCreateWithFileSystemPath(NULL, (__bridge CFStringRef)(imageString), kCFURLPOSIXPathStyle, false);
-			image = [sut newImageFromItem:(__bridge id)urlRef withSize:desiredSize];
+	context(@"imageFromItem:", ^{
+		context(@"when created with NSURL", ^{
+			beforeEach(^{
+				image = [sut imageFromItem:imageURL];
+			});
+			it(@"should load an image", ^{
+				[[image shouldNot] beNil];
+			});
 		});
-		afterEach(^{
-			if ( urlRef ) {
-				CFRelease(urlRef);
-				urlRef = NULL;
-			}
-		});
-		it(@"should create an image", ^{
-			[[theValue(image != NULL) should] beTrue];
-		});
-	});
-	context(@"when asking for an image with zero image size", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:imageURL withSize:CGSizeZero];
-		});
-		it(@"should return an image", ^{
-			[[theValue(image != NULL) should] beTrue];
-		});
-	});
-	context(@"when asking for an image from a string item", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:imageString withSize:desiredSize];
-		});
-		it(@"should return an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+		context(@"when created with NSString", ^{
+			context(@"filepath", ^{
+				beforeEach(^{
+					image = [sut imageFromItem:imageString];
+				});
+				it(@"should load an image", ^{
+					[[image shouldNot] beNil];
+				});
+			});
+			context(@"http urlstring", ^{
+				beforeEach(^{
+					image = [sut imageFromItem:@"http://images.apple.com/global/elements/flags/22x22/usa.png"];
+				});
+				it(@"should load an image", ^{
+					[[image shouldNot] beNil];
+				});
+			});
+			
 		});
 	});
 });

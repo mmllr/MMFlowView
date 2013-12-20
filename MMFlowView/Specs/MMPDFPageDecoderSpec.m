@@ -14,7 +14,7 @@ SPEC_BEGIN(MMPDFPageDecoderSpec)
 
 describe(@"MMPDFPageDecoder", ^{
 	__block MMPDFPageDecoder *sut = nil;
-	__block CGImageRef image = NULL;
+	__block CGImageRef imageRef = NULL;
 	const CGSize desiredSize = {50, 50};
 	__block PDFDocument *document = nil;
 	__block PDFPage *pdfPage = nil;
@@ -33,9 +33,9 @@ describe(@"MMPDFPageDecoder", ^{
 		
 	});
 	afterEach(^{
-		if (image) {
-			CGImageRelease(image);
-			image = NULL;
+		if (imageRef) {
+			CGImageRelease(imageRef);
+			imageRef = NULL;
 		}
 		sut = nil;
 	});
@@ -48,42 +48,74 @@ describe(@"MMPDFPageDecoder", ^{
 	it(@"should respond to newImageFromItem:withSize:", ^{
 		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
 	});
-	context(@"creating an image from a PDFPage", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:pdfPage withSize:desiredSize];
+	it(@"should respond to imageFromItem:", ^{
+		[[sut should] respondToSelector:@selector(imageFromItem:)];
+	});
+	context(@"newImageFromItem:withSize:", ^{
+		context(@"creating an image from a PDFPage", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:pdfPage withSize:desiredSize];
+			});
+			it(@"should return an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
+			it(@"should be in the specified size", ^{
+				CGFloat width = CGImageGetWidth(imageRef);
+				CGFloat height = CGImageGetHeight(imageRef);
+				[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+			});
 		});
-		it(@"should return an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+		context(@"creating an image from a CGPDFPageRef", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:(id)[pdfPage pageRef] withSize:desiredSize];
+			});
+			it(@"should return an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
+			it(@"should be in the specified size", ^{
+				CGFloat width = CGImageGetWidth(imageRef);
+				CGFloat height = CGImageGetHeight(imageRef);
+				[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+			});
 		});
-		it(@"should be in the specified size", ^{
-			CGFloat width = CGImageGetWidth(image);
-			CGFloat height = CGImageGetHeight(image);
-			[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+		context(@"invoking with a non pdf item", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:@"Test"
+									 withSize:desiredSize];
+			});
+			it(@"should not return an image", ^{
+				[[theValue(imageRef == NULL) should] beTrue];
+			});
 		});
 	});
-	context(@"creating an image from a CGPDFPageRef", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:(id)[pdfPage pageRef] withSize:desiredSize];
+	context(@"imageFromItem:", ^{
+		__block NSImage *image = nil;
+
+		afterEach(^{
+			image = nil;
 		});
-		it(@"should return an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+		context(@"creating an image from a PDFPage", ^{
+			beforeEach(^{
+				image = [sut imageFromItem:pdfPage];
+			});
+			it(@"should return an image", ^{
+				[[image shouldNot] beNil];
+			});
 		});
-		it(@"should be in the specified size", ^{
-			CGFloat width = CGImageGetWidth(image);
-			CGFloat height = CGImageGetHeight(image);
-			[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+		context(@"creating an image from a CGPDFPageRef", ^{
+			beforeEach(^{
+				image = [sut imageFromItem:(id)[pdfPage pageRef]];
+			});
+			it(@"should return an image", ^{
+				[[image shouldNot] beNil];
+			});
 		});
-	});
-	context(@"invoking with a non pdf item", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:@"Test"
-							  withSize:desiredSize];
-		});
-		it(@"should not return an image", ^{
-			[[theValue(image == NULL) should] beTrue];
+		context(@"invoking with a non pdf item", ^{
+			it(@"should not return an image", ^{
+				[[[sut imageFromItem:@"Test"] should] beNil];
+			});
 		});
 	});
 });
-
 
 SPEC_END

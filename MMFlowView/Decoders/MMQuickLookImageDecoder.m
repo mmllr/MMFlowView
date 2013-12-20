@@ -31,4 +31,17 @@
 	return image;
 }
 
+- (NSImage*)imageFromItem:(id)anItem
+{
+	NSURL *url = nil;
+	if ( [anItem isKindOfClass:[NSURL class]] ) {
+		url = anItem;
+	}
+	else if ( [anItem isKindOfClass:[NSString class]] ) {
+		url = [[NSFileManager defaultManager] fileExistsAtPath:anItem] ? [NSURL fileURLWithPath:anItem] : [NSURL URLWithString:anItem];
+	}
+	NSImage *image = url ? [[NSImage alloc] initWithContentsOfURL:url] : nil;
+	return image;
+}
+
 @end

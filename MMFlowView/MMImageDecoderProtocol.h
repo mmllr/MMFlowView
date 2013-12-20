@@ -10,6 +10,7 @@
 
 @protocol MMImageDecoderProtocol <NSObject>
 
--(CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize;
+- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize;
+- (NSImage*)imageFromItem:(id)anItem;
 
 @end

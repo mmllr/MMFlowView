@@ -24,4 +24,9 @@
 	}
 }
 
+- (NSImage*)imageFromItem:(id)anItem
+{
+	return [anItem isKindOfClass:[NSImage class]] ? anItem : nil;
+}
+
 @end
