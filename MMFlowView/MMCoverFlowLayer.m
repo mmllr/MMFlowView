@@ -324,7 +324,6 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		}
 	}];
 	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems )] : [NSIndexSet indexSet];
-	NSLog(@"%@", self.visibleItemIndexes);
 }
 
 #pragma mark - KVO
