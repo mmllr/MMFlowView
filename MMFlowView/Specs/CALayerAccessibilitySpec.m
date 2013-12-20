@@ -9,11 +9,6 @@
 #import <Kiwi.h>
 #import <QuartzCore/QuartzCore.h>
 #import "CALayer+NSAccessibility.h"
-/*
-static void valueChangeNotification(AXObserverRef observer, AXUIElementRef element, CFStringRef notification, void *context)
-{
-	NSLog(@"changed");
-}*/
 
 SPEC_BEGIN(CALayerAccessibilitySpec)
 
