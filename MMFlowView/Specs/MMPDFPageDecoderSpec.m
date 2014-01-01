@@ -101,6 +101,10 @@ describe(@"MMPDFPageDecoder", ^{
 			it(@"should return an image", ^{
 				[[image shouldNot] beNil];
 			});
+			it(@"should return an NSImage", ^{
+				[[image should] beKindOfClass:[NSImage class]];
+			});
+
 		});
 		context(@"creating an image from a CGPDFPageRef", ^{
 			beforeEach(^{
