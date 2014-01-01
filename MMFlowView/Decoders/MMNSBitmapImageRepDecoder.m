@@ -12,12 +12,25 @@
 
 - (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
 {
-	NSBitmapImageRep *bitmapImage = anItem;
+	if ([anItem isKindOfClass:[NSBitmapImageRep class]]) {
+		NSBitmapImageRep *bitmapImage = anItem;
+		
+		NSRect proposedRect = NSMakeRect(0, 0, imageSize.width, imageSize.height);
+		return CGImageRetain([bitmapImage CGImageForProposedRect:&proposedRect
+														 context:nil
+														   hints:nil]);
+	}
+	return NULL;
+}
 
-	NSRect proposedRect = NSMakeRect(0, 0, imageSize.width, imageSize.height);
-	return CGImageRetain([bitmapImage CGImageForProposedRect:&proposedRect
-													   context:nil
-														 hints:nil]);
+- (NSImage*)imageFromItem:(id)anItem
+{
+	NSImage *image = nil;
+	if (anItem && [anItem isKindOfClass:[NSBitmapImageRep class]]) {
+		image = [[NSImage alloc] init];
+		[image addRepresentation:anItem];
+	}
+	return image;
 }
 
 @end
