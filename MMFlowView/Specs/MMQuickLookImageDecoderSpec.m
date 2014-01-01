@@ -95,6 +95,9 @@ describe(@"MMQuickLookImageDecoder", ^{
 				it(@"should load an image", ^{
 					[[image shouldNot] beNil];
 				});
+				it(@"should return an NSImage", ^{
+					[[image should] beKindOfClass:[NSImage class]];
+				});
 			});
 			context(@"http urlstring", ^{
 				beforeEach(^{
