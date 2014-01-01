@@ -29,4 +29,19 @@
 	return NULL;
 }
 
+- (NSImage*)imageFromItem:(id)anItem
+{
+	NSImage *image = nil;
+	if ( anItem && (CGImageSourceGetTypeID() == CFGetTypeID((__bridge CFTypeRef)(anItem))) ) {
+		CFStringRef imageSourceType = CGImageSourceGetType((__bridge CGImageSourceRef)(anItem));
+		if ( imageSourceType != NULL ) {
+			CGImageRef imageRef = [self newImageFromItem:anItem withSize:CGSizeZero];
+			if (imageRef) {
+				image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
+			}
+		}
+	}
+	return image;
+}
+
 @end

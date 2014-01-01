@@ -47,33 +47,64 @@ describe(@"MMCGImageSourceDecoder", ^{
 	it(@"should respond to newImageFromItem:withSize:", ^{
 		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
 	});
-	context(@"when created with NSURL and non-zero size", ^{
-		beforeEach(^{
-			imageRef = [sut newImageFromItem:(__bridge id)imageSource withSize:desiredSize];
+	it(@"should respond to imageFromItem:", ^{
+		[[sut should] respondToSelector:@selector(imageFromItem:)];
+	});
+	context(@"newImageFromItem:withSize:", ^{
+		context(@"when created with NSURL and non-zero size", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:(__bridge id)imageSource withSize:desiredSize];
+			});
+			it(@"should load an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
+			it(@"should be in the specified size", ^{
+				CGFloat width = CGImageGetWidth(imageRef);
+				CGFloat height = CGImageGetHeight(imageRef);
+				[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+			});
 		});
-		it(@"should load an image", ^{
-			[[theValue(imageRef != NULL) should] beTrue];
+		context(@"when asking for an image with an invalid item", ^{
+			it(@"should not return an image for nil", ^{
+				[[theValue([sut newImageFromItem:nil withSize:desiredSize] == NULL) should] beTrue];
+			});
+			it(@"should not return an image for an item from wrong type", ^{
+				[[theValue([sut newImageFromItem:@"Test" withSize:desiredSize] == NULL) should] beTrue];
+			});
 		});
-		it(@"should be in the specified size", ^{
-			CGFloat width = CGImageGetWidth(imageRef);
-			CGFloat height = CGImageGetHeight(imageRef);
-			[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+		context(@"when asking for an image with zero image size", ^{
+			beforeEach(^{
+				imageRef = [sut newImageFromItem:(__bridge id)imageSource withSize:CGSizeZero];
+			});
+			it(@"should return an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
 		});
 	});
-	context(@"when asking for an image with an invalid item", ^{
-		it(@"should not return an image for nil", ^{
-			[[theValue([sut newImageFromItem:nil withSize:desiredSize] == NULL) should] beTrue];
+	context(@"imageFromItem:", ^{
+		context(@"creating an image from a CGImageSourceRef", ^{
+			__block NSImage *image = nil;
+
+			beforeEach(^{
+				image = [sut imageFromItem:(__bridge id)imageSource];
+			});
+			afterEach(^{
+				image = nil;
+			});
+			it(@"should return an image", ^{
+				[[image shouldNot] beNil];
+			});
+			it(@"should return an NSImage", ^{
+				[[image should] beKindOfClass:[NSImage class]];
+			});
 		});
-		it(@"should not return an image for an item from wrong type", ^{
-			[[theValue([sut newImageFromItem:@"Test" withSize:desiredSize] == NULL) should] beTrue];
-		});
-	});
-	context(@"when asking for an image with zero image size", ^{
-		beforeEach(^{
-			imageRef = [sut newImageFromItem:(__bridge id)imageSource withSize:CGSizeZero];
-		});
-		it(@"should return an image", ^{
-			[[theValue(imageRef != NULL) should] beTrue];
+		context(@"when asking for an image with an invalid item", ^{
+			it(@"should not return an image for nil", ^{
+				[[[sut imageFromItem:nil] should] beNil];
+			});
+			it(@"should not return an image for an item from wrong type", ^{
+				[[[sut imageFromItem:@"Test"] should] beNil];
+			});
 		});
 	});
 });

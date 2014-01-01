@@ -253,8 +253,8 @@
 				28FE78D7186213BD00BA5D1E /* MMPDFPageDecoderSpec.m */,
 				28FE78E0186234A300BA5D1E /* MMCGImageSourceDecoderSpec.m */,
 				283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */,
-				288FA4B91862F3F20040F410 /* MMFlowViewImageFactorySpec.m */,
 				288FA4BB186309D40040F410 /* MMNSDataImageDecoderSpec.m */,
+				288FA4B91862F3F20040F410 /* MMFlowViewImageFactorySpec.m */,
 			);
 			name = Specs;
 			path = MMFlowView/Specs;
