@@ -32,4 +32,12 @@
 	return NULL;
 }
 
+- (NSImage*)imageFromItem:(id)anItem
+{
+	if ([anItem isKindOfClass:[NSData class]]) {
+		return [[NSImage alloc] initWithData:anItem];
+	}
+	return nil;
+}
+
 @end

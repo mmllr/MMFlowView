@@ -42,25 +42,56 @@ describe(@"MMNSDataImageDecoder", ^{
 	it(@"should respond to newImageFromItem:withSize:", ^{
 		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
 	});
-	context(@"when created from NSData and non-zero size", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:imageData withSize:desiredSize];
+	it(@"should respond to imageFromItem:", ^{
+		[[sut should] respondToSelector:@selector(imageFromItem:)];
+	});
+	context(@"newImageFromItem:withSize:", ^{
+		context(@"when created from NSData and non-zero size", ^{
+			beforeEach(^{
+				image = [sut newImageFromItem:imageData withSize:desiredSize];
+			});
+			it(@"should load an image", ^{
+				[[theValue(image != NULL) should] beTrue];
+			});
+			it(@"should be in the specified size", ^{
+				CGFloat width = CGImageGetWidth(image);
+				CGFloat height = CGImageGetHeight(image);
+				[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+			});
 		});
-		it(@"should load an image", ^{
-			[[theValue(image != NULL) should] beTrue];
-		});
-		it(@"should be in the specified size", ^{
-			CGFloat width = CGImageGetWidth(image);
-			CGFloat height = CGImageGetHeight(image);
-			[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+		context(@"when asking for an image with zero image size", ^{
+			beforeEach(^{
+				image = [sut newImageFromItem:imageData withSize:CGSizeZero];
+			});
+			it(@"should return an image", ^{
+				[[theValue(image != NULL) should] beTrue];
+			});
 		});
 	});
-	context(@"when asking for an image with zero image size", ^{
-		beforeEach(^{
-			image = [sut newImageFromItem:imageData withSize:CGSizeZero];
+	context(@"imageFromItem:", ^{
+		__block NSImage *image = nil;
+
+		afterEach(^{
+			image = nil;
 		});
-		it(@"should return an image", ^{
-			[[theValue(image != NULL) should] beTrue];
+		context(@"loading from an NSData object", ^{
+			beforeEach(^{
+				image = [sut imageFromItem:imageData];
+			});
+			it(@"should load an image", ^{
+				[[image shouldNot] beNil];
+			});
+			it(@"should return an NSImage", ^{
+				[[image should] beKindOfClass:[NSImage class]];
+			});
+		});
+		context(@"when asking for an image with an invalid item", ^{
+			it(@"should not return an image for nil", ^{
+				[[[sut imageFromItem:nil] should] beNil];
+			});
+			it(@"should not return an image for an item from wrong type", ^{
+				[[[sut imageFromItem:@"Test"] should] beNil];
+			});
 		});
 	});
 });
