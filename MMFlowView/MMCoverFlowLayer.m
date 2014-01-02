@@ -312,18 +312,18 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	__block NSUInteger firstVisibleItem = NSNotFound;
 	__block NSUInteger numberOfVisibleItems = 0;
 
-	[ self.sublayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-		if ( !CGRectIsEmpty( contentLayer.visibleRect ) ) {
+	[self.contentLayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+		if ( !CGRectIsNull(contentLayer.visibleRect) ) {
 			if ( firstVisibleItem == NSNotFound ) {
 				firstVisibleItem = idx;
 			}
 			numberOfVisibleItems++;
 		}
-		if ( firstVisibleItem + numberOfVisibleItems < idx ) {
+		if ( idx > (firstVisibleItem + numberOfVisibleItems) ) {
 			*stop = YES;
 		}
 	}];
-	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [ NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems ) ] : [ NSIndexSet indexSet ];
+	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems )] : [NSIndexSet indexSet];
 }
 
 #pragma mark - KVO

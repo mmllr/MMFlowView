@@ -284,7 +284,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 	[ self addAnimation:animation forKey:kMMVideoOverlayLayerIndicatorScaleKey ];
 	self.indicatorScale = 1.;
 	[ self startMovieUpdateTimer ];
-	[ self.movie autoplay ];
+	//[ self.movie autoplay ];
 	self.buttonLayer.state = NSOnState;
 }
 
