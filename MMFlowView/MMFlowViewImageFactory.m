@@ -65,11 +65,11 @@
 	return [self.imageDecoders valueForKey:representationType] != nil;
 }
 
-- (void)createImageForItem:(id)item withRepresentationType:(NSString*)representationType maximumSize:(CGSize)maxiumSize completionHandler:(void(^)(CGImageRef image))completionHandler
+- (void)createCGImageForItem:(id)item withRepresentationType:(NSString*)representationType maximumSize:(CGSize)maxiumSize completionHandler:(void(^)(CGImageRef image))completionHandler
 {
 	NSParameterAssert(completionHandler != NULL);
 
-	if ( [self canDecodeRepresentationType:representationType] ) {
+	if ([self canDecodeRepresentationType:representationType]) {
 		id<MMImageDecoderProtocol> decoder = self.imageDecoders[representationType];
 
 		[self.operationQueue addOperationWithBlock:^{

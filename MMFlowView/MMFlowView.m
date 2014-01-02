@@ -1363,7 +1363,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		id<MMFlowViewItem> item = [self imageItemForIndex:idx];
 		id imageRepresentation = [self imageRepresentationForItem:item];
 		NSString *imageRepresentationType = [self imageRepresentationTypeForItem:item];
-		[self.imageFactory createImageForItem:imageRepresentation withRepresentationType:imageRepresentationType maximumSize:itemSize completionHandler:^(CGImageRef image) {
+		[self.imageFactory createCGImageForItem:imageRepresentation withRepresentationType:imageRepresentationType maximumSize:itemSize completionHandler:^(CGImageRef image) {
 			contentLayer.contents = (__bridge id)image;
 		}];
 	}];

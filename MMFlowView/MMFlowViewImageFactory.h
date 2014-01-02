@@ -11,6 +11,6 @@
 @interface MMFlowViewImageFactory : NSObject
 
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType;
-- (void)createImageForItem:(id)item withRepresentationType:(NSString*)representationType maximumSize:(CGSize)maxiumSize completionHandler:(void(^)(CGImageRef image))completionHandler;
+- (void)createCGImageForItem:(id)item withRepresentationType:(NSString*)representationType maximumSize:(CGSize)maxiumSize completionHandler:(void(^)(CGImageRef image))completionHandler;
 
 @end
