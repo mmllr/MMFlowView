@@ -17,7 +17,6 @@
 		2849FADE1860DC6100E401D0 /* MMFlowViewImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */; };
 		2849FAE01860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADF1860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m */; };
 		2849FAE31860E6D800E401D0 /* MMQuickLookImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FAE21860E6D800E401D0 /* MMQuickLookImageDecoder.m */; };
-		2876FF3F180B269C00318C7B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF3E180B269C00318C7B /* SenTestingKit.framework */; };
 		2876FF45180B269C00318C7B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF43180B269C00318C7B /* InfoPlist.strings */; };
 		2876FF4F180B28B800318C7B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF4E180B28B800318C7B /* Podfile */; };
 		2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */; };
@@ -92,12 +91,11 @@
 		2849FAE11860E6D800E401D0 /* MMQuickLookImageDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMQuickLookImageDecoder.h; path = MMFlowView/Decoders/MMQuickLookImageDecoder.h; sourceTree = "<group>"; };
 		2849FAE21860E6D800E401D0 /* MMQuickLookImageDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMQuickLookImageDecoder.m; path = MMFlowView/Decoders/MMQuickLookImageDecoder.m; sourceTree = "<group>"; };
 		2849FAE51860E76F00E401D0 /* MMImageDecoderProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MMImageDecoderProtocol.h; path = MMFlowView/MMImageDecoderProtocol.h; sourceTree = "<group>"; };
-		2876FF3D180B269C00318C7B /* MMFlowViewTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MMFlowViewTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2876FF3E180B269C00318C7B /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		2876FF3D180B269C00318C7B /* MMFlowViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MMFlowViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2876FF42180B269C00318C7B /* MMFlowViewTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewTests-Info.plist"; sourceTree = "<group>"; };
 		2876FF44180B269C00318C7B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2876FF48180B269C00318C7B /* MMFlowViewTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MMFlowViewTests-Prefix.pch"; sourceTree = "<group>"; };
-		2876FF4E180B28B800318C7B /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; };
+		2876FF4E180B28B800318C7B /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerAccessibilitySpec.m; sourceTree = "<group>"; };
 		2876FF53180B2CA300318C7B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2876FF55180B2CBA00318C7B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -175,7 +173,6 @@
 				28FE78DD186215A800BA5D1E /* Quartz.framework in Frameworks */,
 				2876FF56180B2CBA00318C7B /* QuartzCore.framework in Frameworks */,
 				2876FF54180B2CA300318C7B /* Cocoa.framework in Frameworks */,
-				2876FF3F180B269C00318C7B /* SenTestingKit.framework in Frameworks */,
 				1290F5C6EDAD4187B55E9B75 /* libPods-MMFlowViewTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -314,7 +311,7 @@
 			isa = PBXGroup;
 			children = (
 				28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */,
-				2876FF3D180B269C00318C7B /* MMFlowViewTests.octest */,
+				2876FF3D180B269C00318C7B /* MMFlowViewTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -325,7 +322,6 @@
 				28FE78DC186215A800BA5D1E /* Quartz.framework */,
 				2876FF55180B2CBA00318C7B /* QuartzCore.framework */,
 				2876FF53180B2CA300318C7B /* Cocoa.framework */,
-				2876FF3E180B269C00318C7B /* SenTestingKit.framework */,
 				28DEFBF915AEEE9A0096FBA4 /* Other Frameworks */,
 				125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */,
 			);
@@ -392,8 +388,8 @@
 			);
 			name = MMFlowViewTests;
 			productName = MMFlowViewTests;
-			productReference = 2876FF3D180B269C00318C7B /* MMFlowViewTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = 2876FF3D180B269C00318C7B /* MMFlowViewTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		28DEFBF215AEEE9A0096FBA4 /* MMFlowViewDemo */ = {
 			isa = PBXNativeTarget;
@@ -633,7 +629,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -667,7 +662,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};

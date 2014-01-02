@@ -6,6 +6,6 @@ target "MMFlowViewDemo" do
 end
 
 target :"MMFlowViewTests", :exclusive => true do
-   pod 'Kiwi'
+   pod 'Kiwi/XCTest'
 end
 
