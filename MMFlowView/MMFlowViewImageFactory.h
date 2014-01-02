@@ -12,5 +12,6 @@
 
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType;
 - (void)createCGImageForItem:(id)item withRepresentationType:(NSString*)representationType maximumSize:(CGSize)maxiumSize completionHandler:(void(^)(CGImageRef image))completionHandler;
+- (void)imageForItem:(id)item withRepresentationType:(NSString*)representationType completionHandler:(void(^)(NSImage *image))completionHandler;
 
 @end

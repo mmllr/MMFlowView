@@ -85,4 +85,22 @@
 	}
 }
 
+- (void)imageForItem:(id)item withRepresentationType:(NSString *)representationType completionHandler:(void (^)(NSImage *))completionHandler
+{
+	NSParameterAssert(completionHandler != NULL);
+	if ([self canDecodeRepresentationType:representationType]) {
+		id<MMImageDecoderProtocol> decoder = self.imageDecoders[representationType];
+		
+		[self.operationQueue addOperationWithBlock:^{
+			NSImage *image = [decoder imageFromItem:item];
+			
+			if (image) {
+				[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+					completionHandler(image);
+				}];
+			}
+		}];
+	}
+}
+
 @end

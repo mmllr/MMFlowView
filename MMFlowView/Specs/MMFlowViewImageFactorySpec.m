@@ -57,9 +57,13 @@ describe(@"MMFlowViewImageFactory", ^{
 			}) should] raise];
 		});
 	});
+	context(@"imageForItem:withRepresentationType:completionHandler:", ^{
+		it(@"should respond to imageForItem:withRepresentationType:completionHandler:", ^{
+			[[sut should] respondToSelector:@selector(imageForItem:withRepresentationType:completionHandler:)];
+		});
 		it(@"should throw an exception when invoked with a NULL completetionHandler", ^{
 			[[theBlock(^{
-				[sut createImageForItem:imageURL withRepresentationType:kMMFlowViewQuickLookPathRepresentationType maximumSize:maximumImageSize completionHandler:NULL];
+				[sut imageForItem:testImageURL withRepresentationType:kMMFlowViewQuickLookPathRepresentationType completionHandler:NULL];
 			}) should] raise];
 		});
 	});
@@ -76,8 +80,14 @@ describe(@"MMFlowViewImageFactory", ^{
 			}];
 			[[expectFutureValue(theValue(quickLookImage != NULL)) shouldEventually] beTrue];
 		});
-
-		it(@"should asynchronously load an image from an NSString", ^{
+		it(@"should asynchronously load an NSImage from an NSURL", ^{
+			__block NSImage *quickLookImage = nil;
+			
+			[sut imageForItem:testImageURL withRepresentationType:kMMFlowViewQuickLookPathRepresentationType completionHandler:^(NSImage *anImage) {
+				quickLookImage = anImage;
+			}];
+			[[expectFutureValue(quickLookImage) shouldEventually] beNonNil];
+		});
 		it(@"should asynchronously load an CGImageRef from an NSString", ^{
 			__block CGImageRef quickLookImage = NULL;
 
@@ -85,6 +95,14 @@ describe(@"MMFlowViewImageFactory", ^{
 				quickLookImage = imageRef;
 			}];
 			[[expectFutureValue(theValue(quickLookImage != NULL)) shouldEventually] beTrue];
+		});
+		it(@"should asynchronously load an NSImage from an NSString", ^{
+			__block NSImage *quickLookImage = nil;
+			
+			[sut imageForItem:testImageString withRepresentationType:kMMFlowViewQuickLookPathRepresentationType completionHandler:^(NSImage *anImage) {
+				quickLookImage = anImage;
+			}];
+			[[expectFutureValue(quickLookImage) shouldEventually] beNonNil];
 		});
 	});
 	context(@"kMMFlowViewPDFPageRepresentationType", ^{
@@ -113,7 +131,14 @@ describe(@"MMFlowViewImageFactory", ^{
 			}];
 			[[expectFutureValue(theValue(pdfImage != NULL)) shouldEventually] beTrue];
 		});
-		it(@"should asynchronously load an image from an CGPDFPageRef", ^{
+		it(@"should asynchronously load an NSImage from an PDFPage", ^{
+			__block NSImage *pdfImage = nil;
+			
+			[sut imageForItem:pdfPage withRepresentationType:kMMFlowViewPDFPageRepresentationType completionHandler:^(NSImage *image) {
+				pdfImage = image;
+			}];
+			[[expectFutureValue(pdfImage) shouldEventually] beNonNil];
+		});
 		it(@"should asynchronously load an CGImageRef from an CGPDFPageRef", ^{
 			__block CGImageRef pdfImage = NULL;
 			
@@ -121,6 +146,14 @@ describe(@"MMFlowViewImageFactory", ^{
 				pdfImage = image;
 			}];
 			[[expectFutureValue(theValue(pdfImage != NULL)) shouldEventually] beTrue];
+		});
+		it(@"should asynchronously load an NSImage from an CGPDFPageRef", ^{
+			__block NSImage *pdfImage = nil;
+
+			[sut imageForItem:(id)[pdfPage pageRef] withRepresentationType:kMMFlowViewPDFPageRepresentationType completionHandler:^(NSImage *image) {
+				pdfImage = image;
+			}];
+			[[expectFutureValue(pdfImage) shouldEventually] beNonNil];
 		});
 	});
 	context(@"kMMFlowViewPathRepresentationType", ^{
@@ -136,6 +169,14 @@ describe(@"MMFlowViewImageFactory", ^{
 			}];
 			[[expectFutureValue(theValue(imageFromPath != NULL)) shouldEventually] beTrue];
 		});
+		it(@"should asynchronously load an NSImage from an NSString", ^{
+			__block NSImage *imageFromPath = nil;
+
+			[sut imageForItem:testImageString withRepresentationType:kMMFlowViewPathRepresentationType completionHandler:^(NSImage *image) {
+				imageFromPath = image;
+			}];
+			[[expectFutureValue(imageFromPath) shouldEventually] beNonNil];
+		});
 	});
 	context(@"kMMFlowViewURLRepresentationType", ^{
 		it(@"should handle kMMFlowViewURLRepresentationType", ^{
@@ -149,6 +190,14 @@ describe(@"MMFlowViewImageFactory", ^{
 				imageFromURL = image;
 			}];
 			[[expectFutureValue(theValue(imageFromURL != NULL)) shouldEventually] beTrue];
+		});
+		it(@"should asynchronously load an NSImage from an NSURL", ^{
+			__block NSImage *imageFromURL = nil;
+			
+			[sut imageForItem:testImageURL withRepresentationType:kMMFlowViewURLRepresentationType completionHandler:^(NSImage *image) {
+				imageFromURL = image;
+			}];
+			[[expectFutureValue(imageFromURL) shouldEventually] beNonNil];
 		});
 	});
 	context(@"kMMFlowViewNSImageRepresentationType", ^{
@@ -164,6 +213,14 @@ describe(@"MMFlowViewImageFactory", ^{
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
 		});
+		it(@"should asynchronously load an NSImage from an NSImage", ^{
+			__block NSImage *decodedImage = nil;
+			
+			[sut imageForItem:testImage withRepresentationType:kMMFlowViewNSImageRepresentationType completionHandler:^(NSImage *anImage) {
+				decodedImage = anImage;
+			}];
+			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];
+		});
 	});
 	context(@"kMMFlowViewNSBitmapRepresentationType", ^{
 		it(@"should handle kMMFlowViewNSBitmapRepresentationType", ^{
@@ -177,6 +234,14 @@ describe(@"MMFlowViewImageFactory", ^{
 				decodedImage = imageRef;
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
+		});
+		it(@"should asynchronously load an NSImage from an NSBitmapImageRep", ^{
+			__block NSImage *decodedImage = nil;
+			
+			[sut imageForItem:testImageRep withRepresentationType:kMMFlowViewNSBitmapRepresentationType completionHandler:^(NSImage *anImage) {
+				decodedImage = anImage;
+			}];
+			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];
 		});
 	});
 	context(@"kMMFlowViewCGImageSourceRepresentationType", ^{
@@ -204,6 +269,15 @@ describe(@"MMFlowViewImageFactory", ^{
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
 		});
+		it(@"should asynchronously load an NSImage from an CGImageSourceRef", ^{
+			__block NSImage *decodedImage = nil;
+			
+			[sut imageForItem:(__bridge id)imageSource withRepresentationType:kMMFlowViewCGImageSourceRepresentationType completionHandler:^(NSImage *anImage) {
+				decodedImage = anImage;
+			}];
+			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];
+		});
+		
 	});
 	context(@"kMMFlowViewNSDataRepresentationType", ^{
 		__block NSData *dataImage = nil;
@@ -225,6 +299,14 @@ describe(@"MMFlowViewImageFactory", ^{
 				decodedImage = image;
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
+		});
+		it(@"should asynchronously load an NSImage from a NSData", ^{
+			__block NSImage *decodedImage = nil;
+			
+			[sut imageForItem:dataImage withRepresentationType:kMMFlowViewNSDataRepresentationType completionHandler:^(NSImage *anImage) {
+				decodedImage = anImage;
+			}];
+			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];
 		});
 	});
 });
