@@ -1375,7 +1375,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	imageSize = ( anIndex == self.selectedIndex ) ? imageSize : CGSizeApplyAffineTransform(imageSize, CGAffineTransformMakeScale( self.previewScale, self.previewScale ) );
 	id item = [ self imageItemForIndex:anIndex ];
 	NSString *imageUID = [ self imageUIDForItem:item ];
-	id imageRepresentation = [ self imageRepresentationForItem:item ];
 	
 	CGImageRef itemImage = (CGImageRef)[ self lookupForImageUID:imageUID ];;
 

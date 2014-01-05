@@ -38,6 +38,7 @@
 			CGImageRef imageRef = [self newImageFromItem:anItem withSize:CGSizeZero];
 			if (imageRef) {
 				image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
+				CGImageRelease(imageRef);
 			}
 		}
 	}
