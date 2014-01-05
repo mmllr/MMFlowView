@@ -5,34 +5,34 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>137BCBE2-CED7-4679-AE7F-52653D680600</string>
+	<string>9F4F1529-EB25-4DE7-A9C2-1929CD3BAB44</string>
 	<key>IDESourceControlProjectName</key>
 	<string>MMFlowViewDemo</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>F06D51C2-96D8-4ED4-BAE5-DDB3DA7DE414</key>
-		<string>ssh://MacBook-Pro.local/~/coding/gitrepos/MMFlowView.git</string>
+		<key>E289E247-68E3-418F-9869-843F5B67FBE0</key>
+		<string>ssh://James.local/git/MMFlowView.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>MMFlowViewDemo.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>F06D51C2-96D8-4ED4-BAE5-DDB3DA7DE414</key>
+		<key>E289E247-68E3-418F-9869-843F5B67FBE0</key>
 		<string>..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>ssh://MacBook-Pro.local/~/coding/gitrepos/MMFlowView.git</string>
+	<string>ssh://James.local/git/MMFlowView.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>F06D51C2-96D8-4ED4-BAE5-DDB3DA7DE414</string>
+	<string>E289E247-68E3-418F-9869-843F5B67FBE0</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>F06D51C2-96D8-4ED4-BAE5-DDB3DA7DE414</string>
+			<string>E289E247-68E3-418F-9869-843F5B67FBE0</string>
 			<key>IDESourceControlWCCName</key>
 			<string>MMFlowView</string>
 		</dict>
