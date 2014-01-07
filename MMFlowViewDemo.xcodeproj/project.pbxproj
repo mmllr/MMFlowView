@@ -742,7 +742,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
@@ -758,7 +758,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
