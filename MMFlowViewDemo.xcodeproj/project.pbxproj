@@ -110,7 +110,6 @@
 		2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowImageLayerSpec.m; sourceTree = "<group>"; };
 		2877D885181FF08D00FD5E07 /* MMFlowViewImageLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewImageLayer.h; path = MMFlowView/MMFlowViewImageLayer.h; sourceTree = "<group>"; };
 		2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewImageLayer.m; path = MMFlowView/MMFlowViewImageLayer.m; sourceTree = "<group>"; };
-		287A4909187C8573000B3121 /* integrate.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = integrate.sh; sourceTree = "<group>"; };
 		287F73C116308E2D0004BA0F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C316308E320004BA0F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C516308E360004BA0F /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -307,7 +306,6 @@
 		28DEFBE815AEEE9A0096FBA4 = {
 			isa = PBXGroup;
 			children = (
-				287A4909187C8573000B3121 /* integrate.sh */,
 				288591B21739675B000E04EF /* MMFlowView */,
 				28DEFBFD15AEEE9A0096FBA4 /* MMFlowViewDemo */,
 				2876FF40180B269C00318C7B /* MMFlowViewTests */,
