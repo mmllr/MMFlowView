@@ -4,3 +4,8 @@ build
 .DS_Store
 *.perspectivev3
 xcuserdata
+build.obj
+build.pch
+build.sym
+coverage.xml
+test-reports

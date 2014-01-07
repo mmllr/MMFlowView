@@ -1,0 +1,5 @@
+[
+  "-workspace", "MMFlowViewDemo.xcworkspace",
+  "-scheme", "MMFlowViewDemo_CI",
+  "-reporter", "junit:test-reports/junit-report.xml"
+]
