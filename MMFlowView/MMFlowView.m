@@ -900,10 +900,9 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-	if ( self.canControlQuickLookPanel ) {
-		if ( [ [ theEvent characters ] isEqualToString:@" " ] ) {
-			[ self togglePreviewPanel:self ];
-		}
+	if ( self.canControlQuickLookPanel &&
+		[[theEvent characters] isEqualToString:@" "]) {
+			[self togglePreviewPanel:self];
 	}
 	[ super keyDown:theEvent ];
 }
