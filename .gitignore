@@ -9,3 +9,6 @@ build.pch
 build.sym
 coverage.xml
 test-reports
+oclint.xml
+compile_commands.json
+xcodebuild.log
