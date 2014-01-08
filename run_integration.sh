@@ -46,7 +46,7 @@ echo "[*] Generating code-coverage results"
 echo "[*] Code quality analysis"
 xcodebuild -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
-clean
+clean 1> /dev/null
 
 /usr/local/bin/xctool -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
