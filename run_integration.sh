@@ -1,5 +1,3 @@
-set -e
-
 # set the desired version of Xcode
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
 
@@ -46,14 +44,20 @@ echo "[*] Generating code-coverage results"
 /usr/local/bin/gcovr -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)'
 
 echo "[*] Code quality analysis"
- xcodebuild -project MMFlowViewDemo.xcodeproj \
- -scheme MMFlowViewDemo_CI \
-DSTROOT=${WORKSPACE}/tmp \
-OBJROOT=${WORKSPACE}/Build/Intermediates \
-SYMROOT=${WORKSPACE}/Build/Products \
-SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
-clean build > xcodebuild.log
+xcodebuild -project MMFlowViewDemo.xcodeproj \
+-scheme MMFlowViewDemo_CI \
+clean
 
-oclint-xcodebuild
-oclint-json-compilation-database -- -report-type pmd -o oclint.xml
+/usr/local/bin/xctool -project MMFlowViewDemo.xcodeproj \
+-scheme MMFlowViewDemo_CI \
+-reporter json-compilation-database:compile_commands.json \
+build
+
+$HOME/.oclint/bin/oclint-json-compilation-database -- \
+-report-type=pmd \
+-o oclint.xml \
+-rc LONG_LINE=250 \
+-rc LONG_VARIABLE_NAME=50 \
+-max-priority-2=15 \
+max-priority-3=220
 echo "[*] Done"
