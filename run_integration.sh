@@ -59,5 +59,5 @@ $HOME/.oclint/bin/oclint-json-compilation-database -- \
 -rc LONG_LINE=250 \
 -rc LONG_VARIABLE_NAME=50 \
 -max-priority-2=15 \
-max-priority-3=220
+-max-priority-3=220
 echo "[*] Done"
