@@ -49,7 +49,7 @@ GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES \
 clean test
 
 echo "[*] Generating code-coverage results"
-/usr/local/bin/gcovr -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)'
+/usr/local/bin/gcovr -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)|(Pods/*)'
 
 echo "[*] Performing code quality analysis"
 xcodebuild -project MMFlowViewDemo.xcodeproj \
