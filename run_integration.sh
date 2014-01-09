@@ -1,3 +1,7 @@
+if [ -f ${HOME}/.bash_profile ]; then
+	source ${HOME}/.bash_profile
+fi
+
 # set the desired version of Xcode
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
 
@@ -30,20 +34,38 @@ if [ -f test-reports ]; then
 	rm -rf test-reports
 fi
 
+# delete our custom intermediates directory
+if [ -f tmp ]; then
+	rm -rf "${WORKSPACE}"/tmp
+fi
+
 echo "[*] Perform tests"
 /usr/local/bin/xctool -workspace MMFlowViewDemo.xcworkspace \
 -scheme MMFlowViewDemo_CI \
 -reporter junit:test-reports/junit-report.xml \
 DSTROOT=${WORKSPACE}/tmp \
-OBJROOT=${WORKSPACE}/Build/Intermediates \
-SYMROOT=${WORKSPACE}/Build/Products \
+OBJROOT=${WORKSPACE}/build/Intermediates \
+SYMROOT=${WORKSPACE}/build/Products \
 SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
 clean test
 
 echo "[*] Generating code-coverage results"
 /usr/local/bin/gcovr -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)'
 
-echo "[*] Code quality analysis"
+if [ -f tmp ]; then
+	rm -rf "${WORKSPACE}"/tmp
+fi
+
+echo "[*] Performing static analysis"
+/usr/local/bin/xctool -project MMFlowViewDemo.xcodeproj \
+-scheme MMFlowViewDemo_CI \
+DSTROOT=${WORKSPACE}/tmp \
+OBJROOT=${WORKSPACE}/build/Intermediates \
+SYMROOT=${WORKSPACE}/build/Products \
+SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
+clean analyze 1> /dev/null
+
+echo "[*] Performing code quality analysis"
 xcodebuild -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
 clean 1> /dev/null
@@ -53,7 +75,7 @@ clean 1> /dev/null
 -reporter json-compilation-database:compile_commands.json \
 build
 
-$HOME/.oclint/bin/oclint-json-compilation-database -- \
+${OCLINT_HOME}/bin/oclint-json-compilation-database -- \
 -report-type=pmd \
 -o oclint.xml \
 -rc LONG_LINE=250 \
