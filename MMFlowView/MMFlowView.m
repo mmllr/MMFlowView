@@ -449,17 +449,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	_canControlQuickLookPanel = flag;
 }
 
-- (void)setDraggingKnob:(BOOL)flag
-{
-	if ( _draggingKnob != flag ) {
-		_draggingKnob = flag;
-		// update at end of dragging
-		if ( !flag ) {
-			//[ self selectLayerAtIndex:self.selectedIndex ];
-		}
-	}
-}
-
 - (void)setNumberOfItems:(NSUInteger)numberOfItems
 {
 	self.layout.numberOfItems = numberOfItems;
