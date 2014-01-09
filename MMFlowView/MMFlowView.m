@@ -738,8 +738,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		}
 	}
 	else if ( willBeInSuperview && !inView ) {
-		for ( NSString *binding in [ self.bindingInfo allKeys ] ) {
-		}
 	}
 	[ super viewWillMoveToSuperview:newSuperview ];
 }
