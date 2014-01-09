@@ -63,7 +63,7 @@ DSTROOT=${WORKSPACE}/tmp \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build/Products \
 SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
-clean analyze 1> /dev/null
+clean analyze
 
 echo "[*] Performing code quality analysis"
 xcodebuild -project MMFlowViewDemo.xcodeproj \
