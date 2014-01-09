@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -f ${HOME}/.bash_profile ]; then
-	. ${HOME}/.bash_profile
+if [ -f $HOME/.bash_profile ]; then
+	source $HOME/.bash_profile
 fi
 
 # set the desired version of Xcode
@@ -44,6 +44,8 @@ DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build \
 SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
+MM_IS_COVERAGE_BUILD=YES \
+GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES \
 clean test
 
 echo "[*] Generating code-coverage results"
