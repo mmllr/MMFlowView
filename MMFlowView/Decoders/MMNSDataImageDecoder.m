@@ -12,24 +12,24 @@
 
 - (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
 {
-	if ([ anItem isKindOfClass:[NSData class]] ) {
-		CFDataRef dataRef = (__bridge CFDataRef)(anItem);
-
-		imageSize.width = imageSize.width > 0 ? imageSize.width : 16000;
-		imageSize.height = imageSize.height > 0 ? imageSize.height : 16000;
-
-		NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
-								  (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
-
-		CGImageSourceRef imageSource = CGImageSourceCreateWithData(dataRef, (__bridge CFDictionaryRef)options);
-		if (imageSource) {
-			CGImageRef image = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (__bridge CFDictionaryRef)options );
-			CFRelease(imageSource);
-			imageSource = NULL;
-			return image;
-		}
+	if (![ anItem isKindOfClass:[NSData class]] ) {
+		return NULL;
 	}
-	return NULL;
+	CFDataRef dataRef = (__bridge CFDataRef)(anItem);
+
+	imageSize.width = imageSize.width > 0 ? imageSize.width : 16000;
+	imageSize.height = imageSize.height > 0 ? imageSize.height : 16000;
+	NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
+							  (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
+	
+	CGImageSourceRef imageSource = CGImageSourceCreateWithData(dataRef, (__bridge CFDictionaryRef)options);
+	CGImageRef image = NULL;
+	if (imageSource) {
+		image = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (__bridge CFDictionaryRef)options );
+		CFRelease(imageSource);
+		imageSource = NULL;
+	}
+	return image;
 }
 
 - (NSImage*)imageFromItem:(id)anItem
