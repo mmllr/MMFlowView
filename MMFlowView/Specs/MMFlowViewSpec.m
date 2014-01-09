@@ -627,7 +627,7 @@ describe(@"MMFlowView", ^{
 							});
 							it(@"should set the images in the visible range", ^{
 								[sut.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:sut.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-									id<MMFlowViewItem> item = [mockedItems objectAtIndex:idx];
+									//id<MMFlowViewItem> item = [mockedItems objectAtIndex:idx];
 								}];
 							});
 						});
