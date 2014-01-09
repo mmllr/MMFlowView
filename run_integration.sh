@@ -36,35 +36,26 @@ if [ -f test-reports ]; then
 	rm -rf test-reports
 fi
 
-# delete our custom intermediates directory
-if [ -f tmp ]; then
-	rm -rf "${WORKSPACE}"/tmp
-fi
-
 echo "[*] Perform tests"
 /usr/local/bin/xctool -workspace MMFlowViewDemo.xcworkspace \
 -scheme MMFlowViewDemo_CI \
 -reporter junit:test-reports/junit-report.xml \
-DSTROOT=${WORKSPACE}/tmp \
+DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
-SYMROOT=${WORKSPACE}/build/Products \
+SYMROOT=${WORKSPACE}/build \
 SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
 clean test
 
 echo "[*] Generating code-coverage results"
 /usr/local/bin/gcovr -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)'
 
-if [ -f tmp ]; then
-	rm -rf "${WORKSPACE}"/tmp
-fi
-
 echo "[*] Performing static analysis"
 /usr/local/bin/xctool -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
 -reporter plain \
-DSTROOT=${WORKSPACE}/tmp \
+DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
-SYMROOT=${WORKSPACE}/build/Products \
+SYMROOT=${WORKSPACE}/build \
 SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
 clean analyze
 
