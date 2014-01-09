@@ -50,14 +50,17 @@ echo "[*] Generating code-coverage results"
 /usr/local/bin/gcovr -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)'
 
 echo "[*] Performing static analysis"
-/usr/local/bin/xctool -project MMFlowViewDemo.xcodeproj \
--scheme MMFlowViewDemo_CI \
--reporter plain \
-DSTROOT=${WORKSPACE}/build/Products \
-OBJROOT=${WORKSPACE}/build/Intermediates \
-SYMROOT=${WORKSPACE}/build \
-SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
-clean analyze
+if [ -n "${CLANG_SCAN_BUILD_HOME}" ]; then
+	${CLANG_CSCAN_BUILD_HOME}/scan-build -k -v -v --keep-empty \
+	-o ./clangScanBuildReports xcodebuild \
+	-workspace MMFlowViewDemo.xcworkspace \
+	-scheme MMFlowViewDemo_CI \
+	-configuration Debug \
+	ONLY_ACTIVE_ARCH=NO \
+	CODE_SIGN_IDENTITY="" \
+	CODE_SIGNING_REQUIRED=NO \
+	clean build 1> /dev/null
+fi
 
 echo "[*] Performing code quality analysis"
 xcodebuild -project MMFlowViewDemo.xcodeproj \
