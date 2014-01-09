@@ -1,5 +1,7 @@
+#!/bin/bash
+
 if [ -f ${HOME}/.bash_profile ]; then
-	source ${HOME}/.bash_profile
+	. ${HOME}/.bash_profile
 fi
 
 # set the desired version of Xcode
@@ -59,6 +61,7 @@ fi
 echo "[*] Performing static analysis"
 /usr/local/bin/xctool -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
+-reporter plain \
 DSTROOT=${WORKSPACE}/tmp \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build/Products \
