@@ -8,6 +8,7 @@
 
 #import "MMScrollKnobLayer.h"
 #import "CALayer+NSAccessibility.h"
+#import "CALayer+MMAdditions.h"
 
 static NSString * const kLayerName = @"MMScrollKnobLayer";
 static const CGFloat kKnobHeight = 16.;
@@ -17,17 +18,6 @@ static const CGFloat kCornerRadius = 9.;
 @implementation MMScrollKnobLayer
 
 #pragma mark - private methods
-
-- (void)setupActions
-{
-	// disable animation for position
-	NSMutableDictionary *customActions = [NSMutableDictionary dictionaryWithDictionary:[self actions]];
-	// add the new action for sublayers
-	customActions[@"position"] = [NSNull null];
-	customActions[@"bounds"] = [NSNull null];
-	// set theLayer actions to the updated dictionary
-	self.actions = customActions;
-}
 
 - (void)setupAccessibility
 {
@@ -53,7 +43,7 @@ static const CGFloat kCornerRadius = 9.;
 					(__bridge id)[[ NSColor colorWithCalibratedRed:51.f / 255.f green:52.f / 255.f blue:66.f / 255.f alpha:1.f ] CGColor ]];
 	self.locations = @[@0., @.5, @.51, @1.];
 	self.type = kCAGradientLayerAxial;
-	[self setupActions];
+	[self disableImplicitPositionAndBoundsAnimations];
 	[self setupAccessibility];
 }
 
