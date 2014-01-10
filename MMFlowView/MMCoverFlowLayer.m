@@ -131,8 +131,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 - (CGPoint)selectedScrollPoint
 {
 	MMCoverFlowLayoutAttributes *attr = [self.layout layoutAttributesForItemAtIndex:self.layout.selectedItemIndex];
-	CGPoint point = CGPointMake( attr.position.x - (CGRectGetWidth(self.bounds) / 2.) + self.layout.itemSize.width / 2, 0 );
-	return point;
+	return CGPointMake( attr.position.x - (CGRectGetWidth(self.bounds) / 2.) + self.layout.itemSize.width / 2, 0 );;
 }
 
 - (NSArray*)contentLayers
