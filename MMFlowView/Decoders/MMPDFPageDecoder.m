@@ -19,7 +19,6 @@
 		return NULL;
 	}
 	CGRect boxRect = CGPDFPageGetBoxRect( pdfPage, kCGPDFCropBox );
-
 	size_t width = imageSize.width > 0 ? imageSize.width : CGRectGetWidth(boxRect);
 	size_t height = imageSize.height > 0 ? imageSize.height : CGRectGetHeight(boxRect);
 	size_t bytesPerLine = width * 4;
@@ -33,7 +32,6 @@
 		return NULL;
 	
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
-	
 	CGContextRef context = CGBitmapContextCreate(bitmapData, width, height, 8, bytesPerLine, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst);
 	CGColorSpaceRelease(colorSpace);
 	
@@ -51,21 +49,14 @@
 	}
 	else {
 		CGFloat scaleX = imageSize.width / boxRect.size.width;
-		//CGFloat scaleY = imageSize.height / boxRect.size.height;
-		
 		drawingTransform = CGAffineTransformMakeTranslation( -boxRect.origin.x, -boxRect.origin.y );
 		drawingTransform = CGAffineTransformScale(drawingTransform, scaleX, scaleX );
 	}
 	CGContextConcatCTM( context, drawingTransform );
-	
 	CGContextDrawPDFPage( context, pdfPage );
-	
 	CGImageRef pdfImage = CGBitmapContextCreateImage( context );
-	
 	CGContextRelease(context);
-	
 	free(bitmapData);
-	
 	return pdfImage;
 }
 
