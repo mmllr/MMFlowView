@@ -1379,27 +1379,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	}
 	[ self setImage:itemImage
 			atIndex:anIndex ];
-	if ( shouldUpdateCache ) {
-		// image not in cache or wrong size -> reload
-/*		NSString *imageRepresentationType = [ self imageRepresentationTypeForItem:item ];
-		
-		[ self.operationQueue addOperationWithBlock:^{
-			CGImageRef newImage = NULL;//[ [ self class ] newImageFromRepresentation:imageRepresentation
-			//														 withType:imageRepresentationType
-																	//	 size:imageSize ];
-			if (newImage != NULL) {
-				[ self cacheImage:newImage
-						  withUID:imageUID ];
-				CGImageRetain(newImage);
-				[ [  NSOperationQueue mainQueue ] addOperationWithBlock:^{
-					[ self setImage:newImage
-							atIndex:anIndex ];
-					CGImageRelease(newImage);
-				} ];
-				CGImageRelease(newImage);
-			}
-		} ];*/
-	}
 }
 
 - (void)updateMovieLayerAtIndex:(NSUInteger)anIndex
