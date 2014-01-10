@@ -76,12 +76,6 @@
 + (NSArray*)backgroundGradientColors;
 + (NSArray*)backgroundGradientLocations;
 
-/* updates the image layer: asynchronously loads the image from the datasource or provides a default image */
-- (void)updateImageLayerAtIndex:(NSUInteger)index;
-
-/* updates the movielayer for a movie-item */
-- (void)updateMovieLayerAtIndex:(NSUInteger)index;
-
 /* invoked if mouse enters the frame of a specific layer */
 - (void)mouseEnteredLayerAtIndex:(NSUInteger)anIndex;
 
