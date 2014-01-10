@@ -9,6 +9,7 @@
 #import "MMScrollBarLayer.h"
 #import "CALayer+NSAccessibility.h"
 #import "MMScrollKnobLayer.h"
+#import "CALayer+MMAdditions.h"
 
 static void* kRelayoutObservationContext = @"MMRelayoutObservationContext";
 
@@ -56,7 +57,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 		self.cornerRadius = kCornerRadius;
 		self.frame = CGRectMake(0, 0, 100., kHeight);
 		[self setupConstraints];
-		[self setupActions];
+		[self disableImplicitPositionAndBoundsAnimations];
 		[self setupAccessibility];
 		[self setupSublayers];
 		[self setupObservations];
@@ -83,16 +84,6 @@ static const CGFloat kMinimumKnobWidth = 40.;
 													attribute:kCAConstraintWidth
 														scale:kWidthScale
 													   offset:0 ] ];
-}
-
-- (void)setupActions
-{
-	// disable animation for position
-	NSMutableDictionary *customActions = [NSMutableDictionary dictionaryWithDictionary:self.actions];
-	// add the new action for sublayers
-	customActions[@"position"] = [NSNull null];
-	customActions[@"bounds"] = [NSNull null];
-	self.actions = customActions;
 }
 
 - (void)setupSublayers
