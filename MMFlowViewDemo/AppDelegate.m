@@ -223,7 +223,7 @@
 
 - (IBAction)toggleReflection:(id)sender
 {
-	BOOL show = [ (NSButton*)sender state ] == NSOnState ? YES : NO;
+	BOOL show = [ (NSButton*)sender state ] == NSOnState;
 	self.flowView.showsReflection = show;
 	[ self.reflectionSlider setHidden:!show ];
 }
