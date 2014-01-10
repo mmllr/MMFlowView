@@ -147,9 +147,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		[ key isEqualToString:kMMFlowViewStackedAngleKey ] ) {
 		return [ CABasicAnimation animation ];
 	}
-	else {
-		return [ super defaultAnimationForKey:key ];
-	}
+	return [ super defaultAnimationForKey:key ];
 }
 
 + (CGImageRef)defaultImage
@@ -427,9 +425,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 		return MAX( self.selectedIndex - first, last - self.selectedIndex ) + 1;
 	}
-	else {
-		return 0;
-	}
+	return 0;
 }
 
 - (void)setSelectedLayer:(CALayer *)aLayer
@@ -970,9 +966,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( self.bindingsEnabled && self.imageUIDKeyPath ) {
 		return [ anItem valueForKeyPath:self.imageUIDKeyPath ];
 	}
-	else {
-		return [ anItem respondsToSelector:@selector(imageItemUID) ] ? [ anItem imageItemUID ] : nil;
-	}
+	return [ anItem respondsToSelector:@selector(imageItemUID) ] ? [ anItem imageItemUID ] : nil;
 }
 
 - (NSString*)imageRepresentationTypeForItem:(id)anItem
@@ -991,9 +985,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( self.bindingsEnabled && self.imageTitleKeyPath ) {
 		return [ anItem valueForKeyPath:self.imageTitleKeyPath ];
 	}
-	else {
-		return [ anItem respondsToSelector:@selector(imageItemTitle) ] ? [ anItem imageItemTitle ] : [ NSString stringWithFormat:NSLocalizedString(@"Untitled item", @"Default item title" ) ];
-	}
+	return [ anItem respondsToSelector:@selector(imageItemTitle) ] ? [ anItem imageItemTitle ] : [ NSString stringWithFormat:NSLocalizedString(@"Untitled item", @"Default item title" ) ];
 }
 
 - (id)imageRepresentationForItem:(id)anItem
@@ -1001,9 +993,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( self.bindingsEnabled && self.imageRepresentationKeyPath ) {
 		return [ anItem valueForKeyPath:self.imageRepresentationKeyPath ];
 	}
-	else {
-		return [ anItem respondsToSelector:@selector(imageItemRepresentation) ] ? [ anItem imageItemRepresentation ] : nil;
-	}
+	return [ anItem respondsToSelector:@selector(imageItemRepresentation) ] ? [ anItem imageItemRepresentation ] : nil;
 }
 
 - (NSString*)titleAtIndex:(NSUInteger)anIndex
@@ -1420,9 +1410,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		CGFloat differenceInPercent = ( difference / desiredSize.width ) * 100.;
 		return differenceInPercent;
 	}
-	else {
-		return FLT_MAX;
-	}
+	return FLT_MAX;
 }
 
 #pragma mark -
@@ -1485,9 +1473,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
         [ panel reloadData ];
         return YES;
     }
-	else {
-		return NO;
-	}
+	return NO;
 }
 
 - (NSRect)previewPanel:(QLPreviewPanel *)panel sourceFrameOnScreenForPreviewItem:(id <QLPreviewItem>)item
