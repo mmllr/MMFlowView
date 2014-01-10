@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 if [ -f $HOME/.bash_profile ]; then
 	source $HOME/.bash_profile
 fi
@@ -38,10 +36,15 @@ if [ -f test-reports ]; then
 	rm -rf test-reports
 fi
 
+if [ -f cpd-output.xml ]; then
+	rm -rf cpd-output.xml
+fi
+
 echo "[*] Perform tests"
 /usr/local/bin/xctool -workspace MMFlowViewDemo.xcworkspace \
 -scheme MMFlowViewDemo_CI \
 -reporter junit:test-reports/junit-report.xml \
+-reporter plain \
 DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build \
