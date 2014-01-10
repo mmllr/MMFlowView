@@ -26,7 +26,7 @@
 - (NSImage*)imageFromItem:(id)anItem
 {
 	NSImage *image = nil;
-	if (anItem && [anItem isKindOfClass:[NSBitmapImageRep class]]) {
+	if ([anItem isKindOfClass:[NSBitmapImageRep class]]) {
 		image = [[NSImage alloc] init];
 		[image addRepresentation:anItem];
 	}
