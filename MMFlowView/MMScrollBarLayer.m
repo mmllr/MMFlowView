@@ -27,7 +27,12 @@ static const CGFloat kMinimumKnobWidth = 40.;
 
 + (NSSet*)scrollLayerRelayoutObservationKeys
 {
-	return [NSSet setWithObjects:@"bounds", @"sublayers", nil];
+	static NSSet *keys = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		keys = [NSSet setWithObjects:@"bounds", @"sublayers", nil];
+	});
+	return keys;
 }
 
 #pragma mark - init/cleanup
