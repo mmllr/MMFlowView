@@ -27,8 +27,7 @@
 		imageSize.height = 16000;
 	}
 	NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
-	CGImageRef image = QLThumbnailImageCreate(NULL, itemURL, imageSize, (__bridge CFDictionaryRef)quickLookOptions );
-	return image;
+	return QLThumbnailImageCreate(NULL, itemURL, imageSize, (__bridge CFDictionaryRef)quickLookOptions );;
 }
 
 - (NSImage*)imageFromItem:(id)anItem
