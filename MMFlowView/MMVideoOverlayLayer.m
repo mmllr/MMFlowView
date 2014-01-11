@@ -52,29 +52,39 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 #pragma mark -
 #pragma mark Class methods
 
++ (CGRect)overlayImageRect
+{
+	return CGRectMake(0, 0, kMovieOverlayPausedRadius * 2, kMovieOverlayPausedRadius * 2);
+}
+
++ (CGImageRef)overlayImageWithPath:(CGPathRef)aPath
+{
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	if (!colorSpace) {
+		return NULL;
+	}
+	CGRect imageRect = [self overlayImageRect];
+	CGContextRef context = CGBitmapContextCreate(NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst);
+	CGColorSpaceRelease(colorSpace);
+	CGContextSetGrayFillColor(context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha);
+	CGContextSetLineWidth(context, kMovieOverlayButtonBorderWidth);
+	CGContextSetShouldAntialias(context, true);
+	CGContextSetGrayStrokeColor(context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha);
+	CGContextAddPath(context, aPath);
+	CGContextDrawPath(context, kCGPathEOFill);
+	CGImageRef image = CGBitmapContextCreateImage(context);
+	CGContextRelease(context);
+	return image;
+}
+
 + (CGImageRef)playImage
 {
 	static CGImageRef image = NULL;
-	
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		CGRect imageRect = CGRectMake( 0, 0, kMovieOverlayPausedRadius * 2, kMovieOverlayPausedRadius * 2 );
-		CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-		if ( colorSpace ) {
-			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst );
-			CGColorSpaceRelease(colorSpace);
-			CGContextSetGrayFillColor( context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha );
-			CGContextSetLineWidth( context, kMovieOverlayButtonBorderWidth );
-			CGContextSetShouldAntialias( context, true );
-			CGContextSetGrayStrokeColor( context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha );
-			// button
-			CGPathRef path = [ self newTrianglePathInRect:imageRect ];
-			CGContextAddPath( context, path );
-			CGContextDrawPath( context, kCGPathEOFill );
-			CGPathRelease( path );
-			image = CGBitmapContextCreateImage( context );
-			CGContextRelease( context );
-		}
+		CGPathRef path = [self newTrianglePathInRect:[self overlayImageRect]];
+		image = [self overlayImageWithPath:path];
+		CGPathRelease( path );
 	});
 	return image;
 }
@@ -82,26 +92,11 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 + (CGImageRef)pauseImage
 {
 	static CGImageRef image = NULL;
-	
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		CGRect imageRect = CGRectMake( 0, 0, kMovieOverlayPausedRadius * 2, kMovieOverlayPausedRadius * 2 );
-		CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-		if ( colorSpace ) {
-			CGContextRef context = CGBitmapContextCreate( NULL, imageRect.size.width, imageRect.size.height, 8, imageRect.size.width * 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst );
-			CGColorSpaceRelease(colorSpace);
-			CGContextSetGrayFillColor( context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha );
-			CGContextSetLineWidth( context, kMovieOverlayButtonBorderWidth );
-			CGContextSetShouldAntialias( context, true );
-			CGContextSetGrayStrokeColor( context, kMovieOverlayButtonColor, kMovieOverlayButtonAlpha );
-			// button
-			CGPathRef path = [ self newPausePathInRect:imageRect ];
-			CGContextAddPath( context, path );
-			CGContextDrawPath( context, kCGPathEOFill );
-			CGPathRelease( path );
-			image = CGBitmapContextCreateImage( context );
-			CGContextRelease( context );
-		}
+		CGPathRef path = [self newPausePathInRect:[self overlayImageRect]];
+		image = [self overlayImageWithPath:path];
+		CGPathRelease(path);
 	});
 	return image;
 }
