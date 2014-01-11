@@ -345,16 +345,9 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 	if ( QTGetTimeInterval( self.movie.currentTime, &currentTime ) && QTGetTimeInterval( self.movie.duration, &duration ) ) {
 		self.indicatorValue = currentTime / duration;
 	}
-	
-	// is movie playing?
-	BOOL isMoviePlaying = ( [ self.movie rate ] > 0. );
-	if ( isMoviePlaying ) {
-	}
-	else {
+	if ( [ self.movie rate ] <= 0. ) {
 		[ self collapse ];
 	}
-	
-	
 }
 
 #pragma mark -
