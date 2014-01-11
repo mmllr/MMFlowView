@@ -285,13 +285,15 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		MMCoverFlowLayer *strongSelf = weakSelf;
 
 		NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
-		return children ? [children objectsAtIndexes:strongSelf.visibleItemIndexes] : [NSArray array];
+		NSArray *visibleChildren = children ? [children objectsAtIndexes:strongSelf.visibleItemIndexes] : [NSArray array];
+		return visibleChildren;
 	}];
 	[self setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
 								   readBlock:^id{
 									   MMCoverFlowLayer *strongSelf = weakSelf;
 									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
-									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : [NSArray array];
+									   NSArray *selectedChildren = children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : [NSArray array];
+									   return selectedChildren;
 								   }
 								  writeBlock:^(id value) {
 									  MMCoverFlowLayer *strongSelf = weakSelf;
