@@ -131,7 +131,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 - (CGPoint)selectedScrollPoint
 {
 	MMCoverFlowLayoutAttributes *attr = [self.layout layoutAttributesForItemAtIndex:self.layout.selectedItemIndex];
-	return CGPointMake( attr.position.x - (CGRectGetWidth(self.bounds) / 2.) + self.layout.itemSize.width / 2, 0 );;
+	return CGPointMake( attr.position.x - (CGRectGetWidth(self.bounds) / 2.) + self.layout.itemSize.width / 2, 0 );
 }
 
 - (NSArray*)contentLayers
@@ -285,15 +285,13 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		MMCoverFlowLayer *strongSelf = weakSelf;
 
 		NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
-		NSArray *visibleChildren = children ? [children objectsAtIndexes:strongSelf.visibleItemIndexes] : [NSArray array];
-		return visibleChildren;
+		return children ? [children objectsAtIndexes:strongSelf.visibleItemIndexes] : @[];
 	}];
 	[self setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
 								   readBlock:^id{
 									   MMCoverFlowLayer *strongSelf = weakSelf;
 									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
-									   NSArray *selectedChildren = children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : [NSArray array];
-									   return selectedChildren;
+									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : @[];
 								   }
 								  writeBlock:^(id value) {
 									  MMCoverFlowLayer *strongSelf = weakSelf;

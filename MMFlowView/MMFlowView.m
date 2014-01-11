@@ -1575,7 +1575,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		// associated with this binding
 		NSDictionary *bindingsData = @{NSObservedObjectKey: observableController,
 									  NSObservedKeyPathKey: [keyPath copy],
-									  NSOptionsKey: options ? [options copy] : [NSDictionary dictionary] };
+									   NSOptionsKey: options ? [options copy] : @{} };
 		[self setInfo:bindingsData
 		   forBinding:binding];
 
