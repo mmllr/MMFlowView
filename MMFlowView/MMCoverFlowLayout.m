@@ -217,14 +217,12 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 
 - (CGPoint)originForItem:(NSUInteger)itemIndex
 {
-	CGPoint origin = CGPointMake( [self horizontalOffsetForItem:itemIndex], self.contentHeight/2 - self.itemSize.height / 2 );
-	return origin;
+	return CGPointMake( [self horizontalOffsetForItem:itemIndex], self.contentHeight/2 - self.itemSize.height / 2 );
 }
 
 - (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex
 {
 	CGFloat itemWidth = self.itemSize.width;
-
 	CGFloat stackedWidth = (itemWidth * cos(DEGREES2RADIANS(self.stackedAngle))) + self.interItemSpacing;
 
 	if ( anIndex < self.selectedItemIndex || anIndex == 0 ) {
