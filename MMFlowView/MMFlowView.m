@@ -1376,41 +1376,16 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 #pragma mark Overlay code
 
 - (void)mouseEnteredLayerAtIndex:(NSUInteger)anIndex
-{/*
-	CALayer *overlayLayer = [ self overlayLayerAtIndex:anIndex ];
-	overlayLayer.hidden = NO;
-	[ overlayLayer setNeedsDisplay ];*/
+{
 }
 
 - (void)mouseExitedLayerAtIndex:(NSUInteger)anIndex
-{/*
-	CALayer *overlayLayer = [ self overlayLayerAtIndex:anIndex ];
-	overlayLayer.hidden = YES;*/
-}
-
-#pragma mark -
-#pragma mark Image cache
-
-- (void)cacheImage:(CGImageRef)anImage withUID:(NSString*)anUID
 {
-	[ self.imageCache setObject:(__bridge id)anImage forKey:anUID ];
 }
 
 - (CGImageRef)lookupForImageUID:(NSString*)anUID
 {
-	CGImageRef cachedImage = (__bridge CGImageRef)[ self.imageCache objectForKey:anUID ];
-	return cachedImage;
-}
-
-- (CGFloat)differenceForImage:(CGImageRef)anImage forDesiredSize:(CGSize)desiredSize
-{
-	if ( anImage ) {
-		CGFloat imageWidth = CGImageGetWidth( anImage );
-		CGFloat difference = imageWidth - desiredSize.width;
-		CGFloat differenceInPercent = ( difference / desiredSize.width ) * 100.;
-		return differenceInPercent;
-	}
-	return FLT_MAX;
+	return (__bridge CGImageRef)[self.imageCache objectForKey:anUID];
 }
 
 #pragma mark -

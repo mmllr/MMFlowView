@@ -124,9 +124,6 @@
 /* returns the UTI for item at index */
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex;
 
-/* returns the size-difference in percent for an image */
-- (CGFloat)differenceForImage:(CGImageRef)anImage forDesiredSize:(CGSize)desiredSize;
-
 /* sets the image for an itemlayer */
 - (void)setImage:(CGImageRef)anImage atIndex:(NSUInteger)anIndex;
 
