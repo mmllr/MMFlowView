@@ -277,6 +277,14 @@ describe(@"CALayer+NSAccessibility", ^{
 					[sut accessibilityAttributeValue:NSAccessibilityParentAttribute];
 				}) should ] raiseWithName:NSInternalInconsistencyException reason:@"No accessibility parent available" ];
 			});
+			context(@"removing the children", ^{
+				beforeEach(^{
+					sut.sublayers = nil;
+				});
+				it(@"should not handle the removeObject:NSAccessibilityChildrenAttribute", ^{
+					[[[sut accessibilityAttributeNames] shouldNot] contain:NSAccessibilityChildrenAttribute];
+				});
+			});
 		});
 		context(@"layer in view", ^{
 			__block NSWindow *window = nil;
