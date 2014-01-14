@@ -188,24 +188,22 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 
 - (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex
 {
-	if ( itemIndex < self.numberOfItems ) {
-		MMCoverFlowLayoutAttributes *attributes = [[MMCoverFlowLayoutAttributes alloc] init];
-		attributes.index = itemIndex;
-		CGSize size = self.itemSize;
-		attributes.bounds = CGRectMake(0, 0, size.width, size.height);
-		attributes.position = [self originForItem:itemIndex];
-		attributes.anchorPoint = CGPointMake(0.5, 0);
-		if (itemIndex == self.selectedItemIndex) {
-			attributes.zPosition = 0;
-			return attributes;
-		}
-		else {
-			attributes.zPosition = -self.stackedDistance;
-			attributes.transform = CATransform3DMakeRotation( DEGREES2RADIANS(itemIndex < self.selectedItemIndex ? self.stackedAngle : -self.stackedAngle), 0, 1, 0 );
-			return attributes;
-		}
+	if (itemIndex >= self.numberOfItems) {
+		return nil;
 	}
-	return nil;
+	MMCoverFlowLayoutAttributes *attributes = [[MMCoverFlowLayoutAttributes alloc] init];
+	attributes.index = itemIndex;
+	CGSize size = self.itemSize;
+	attributes.bounds = CGRectMake(0, 0, size.width, size.height);
+	attributes.position = [self originForItem:itemIndex];
+	attributes.anchorPoint = CGPointMake(0.5, 0);
+	if (itemIndex == self.selectedItemIndex) {
+		attributes.zPosition = 0;
+		return attributes;
+	}
+	attributes.zPosition = -self.stackedDistance;
+	attributes.transform = CATransform3DMakeRotation( DEGREES2RADIANS(itemIndex < self.selectedItemIndex ? self.stackedAngle : -self.stackedAngle), 0, 1, 0 );
+	return attributes;
 }
 
 #pragma mark - layout logic
