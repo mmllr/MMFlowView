@@ -17,4 +17,6 @@
 @property CGPoint anchorPoint;
 @property CGFloat zPosition;
 
+- (id)initWithIndex:(NSUInteger)anIndex position:(CGPoint)aPosition size:(CGSize)aSize anchorPoint:(CGPoint)anAnchorPoint transfrom:(CATransform3D)aTransform zPosition:(CGFloat)aZPosition;
+
 @end

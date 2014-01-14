@@ -14,11 +14,20 @@ static const CGPoint kDefaultAnchorPoint = {.5, .5};
 
 - (id)init
 {
+	[ NSException raise:NSInternalInconsistencyException format:@"init not allowed, use designated initalizer initWithIndex:position:size:anchorPoint:transfrom:zPosition: instead"];
+	return nil;
+}
+
+- (id)initWithIndex:(NSUInteger)anIndex position:(CGPoint)aPosition size:(CGSize)aSize anchorPoint:(CGPoint)anAnchorPoint transfrom:(CATransform3D)aTransform zPosition:(CGFloat)aZPosition
+{
     self = [super init];
     if (self) {
-		_index = NSNotFound;
-        _transform = CATransform3DIdentity;
-		_anchorPoint = kDefaultAnchorPoint;
+		_index = anIndex;
+        _transform = aTransform;
+		_anchorPoint = anAnchorPoint;
+		_position = aPosition;
+		_bounds = CGRectMake(0, 0, aSize.width, aSize.height);
+		_zPosition = aZPosition;
     }
     return self;
 }

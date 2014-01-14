@@ -191,19 +191,15 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 	if (itemIndex >= self.numberOfItems) {
 		return nil;
 	}
-	MMCoverFlowLayoutAttributes *attributes = [[MMCoverFlowLayoutAttributes alloc] init];
-	attributes.index = itemIndex;
-	CGSize size = self.itemSize;
-	attributes.bounds = CGRectMake(0, 0, size.width, size.height);
-	attributes.position = [self originForItem:itemIndex];
-	attributes.anchorPoint = CGPointMake(0.5, 0);
-	if (itemIndex == self.selectedItemIndex) {
-		attributes.zPosition = 0;
-		return attributes;
-	}
-	attributes.zPosition = -self.stackedDistance;
-	attributes.transform = CATransform3DMakeRotation( DEGREES2RADIANS(itemIndex < self.selectedItemIndex ? self.stackedAngle : -self.stackedAngle), 0, 1, 0 );
-	return attributes;
+	BOOL isSelectedItem = (itemIndex == self.selectedItemIndex);
+	CATransform3D transform = isSelectedItem ? CATransform3DIdentity :
+	CATransform3DMakeRotation( DEGREES2RADIANS(itemIndex < self.selectedItemIndex ? self.stackedAngle : -self.stackedAngle), 0, 1, 0);
+	return [[MMCoverFlowLayoutAttributes alloc] initWithIndex:itemIndex
+													 position:[self originForItem:itemIndex]
+														 size:self.itemSize
+												  anchorPoint:CGPointMake(0.5, 0)
+													transfrom:transform
+													zPosition:isSelectedItem ? 0 : -self.stackedDistance];
 }
 
 #pragma mark - layout logic
