@@ -1,8 +1,12 @@
 #!/bin/bash
 
-if [ -f $HOME/.bash_profile ]; then
-	source $HOME/.bash_profile
-fi
+set -e
+set -o pipefail
+
+OCLINT=`which oclint`
+XCTOOL=`which xctool`
+GCOVR=`which gcovr`
+OCLINT_JSON_COMPILATION_DATABASE=`which oclint-json-compilation-database`
 
 # set the desired version of Xcode
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
@@ -41,7 +45,7 @@ if [ -f cpd-output.xml ]; then
 fi
 
 echo "[*] Perform tests"
-/usr/local/bin/xctool -workspace MMFlowViewDemo.xcworkspace \
+${XCTOOL} -workspace MMFlowViewDemo.xcworkspace \
 -scheme MMFlowViewDemo_CI \
 -reporter junit:test-reports/junit-report.xml \
 -reporter plain \
@@ -55,23 +59,28 @@ GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES \
 clean test
 
 echo "[*] Generating code-coverage results"
-/usr/local/bin/gcovr -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)|(Pods/*)'
+${GCOVR} -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)|(Pods/*)'
 
 echo "[*] Performing code quality analysis"
 xcodebuild -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
 clean 1> /dev/null
 
-/usr/local/bin/xctool -project MMFlowViewDemo.xcodeproj \
+${XCTOOL} -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
 -reporter json-compilation-database:compile_commands.json \
 build
 
-${OCLINT_HOME}/bin/oclint-json-compilation-database -- \
+${OCLINT_JSON_COMPILATION_DATABASE} -- \
 -report-type=pmd \
 -o oclint.xml \
 -rc LONG_LINE=250 \
 -rc LONG_VARIABLE_NAME=50 \
 -max-priority-2=15 \
 -max-priority-3=220
-echo "[*] Done"
+
+if [ "$?" -ne "0" ]; then
+	echo "[ ] ERROR! Integration failed!"
+else
+	echo "[*] Integration successful!"
+fi
