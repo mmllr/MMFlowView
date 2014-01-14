@@ -14,6 +14,7 @@
 		28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		283338E818623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */; };
 		283338EB18623B0D00A0846F /* MMNSBitmapImageRepDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 283338EA18623B0D00A0846F /* MMNSBitmapImageRepDecoder.m */; };
+		283BCCF81881CD5A002A2166 /* MMLayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283BCCF71881CD5A002A2166 /* MMLayerAccessibilitySpec.m */; };
 		2849FADE1860DC6100E401D0 /* MMFlowViewImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */; };
 		2849FAE01860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADF1860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m */; };
 		2849FAE31860E6D800E401D0 /* MMQuickLookImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FAE21860E6D800E401D0 /* MMQuickLookImageDecoder.m */; };
@@ -60,6 +61,7 @@
 		28E6979A183AA0B400210AE1 /* MMScrollKnobLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E69799183AA0B400210AE1 /* MMScrollKnobLayer.m */; };
 		28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */; };
 		28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */; };
+		28FA098E18840A2000D0B1E3 /* MMLayerAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FA098D18840A2000D0B1E3 /* MMLayerAccessibility.m */; };
 		28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */; };
 		28FE78D31862099E00BA5D1E /* MMNSImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FE78D21862099E00BA5D1E /* MMNSImageDecoderSpec.m */; };
 		28FE78D618620A1400BA5D1E /* MMNSImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FE78D518620A1400BA5D1E /* MMNSImageDecoder.m */; };
@@ -91,6 +93,7 @@
 		283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSBitmapImageRepDecoderSpec.m; sourceTree = "<group>"; };
 		283338E918623B0D00A0846F /* MMNSBitmapImageRepDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMNSBitmapImageRepDecoder.h; path = MMFlowView/Decoders/MMNSBitmapImageRepDecoder.h; sourceTree = "<group>"; };
 		283338EA18623B0D00A0846F /* MMNSBitmapImageRepDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMNSBitmapImageRepDecoder.m; path = MMFlowView/Decoders/MMNSBitmapImageRepDecoder.m; sourceTree = "<group>"; };
+		283BCCF71881CD5A002A2166 /* MMLayerAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMLayerAccessibilitySpec.m; sourceTree = "<group>"; };
 		2849FADC1860DC6100E401D0 /* MMFlowViewImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewImageFactory.h; path = MMFlowView/MMFlowViewImageFactory.h; sourceTree = "<group>"; };
 		2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewImageFactory.m; path = MMFlowView/MMFlowViewImageFactory.m; sourceTree = "<group>"; };
 		2849FADF1860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMQuickLookImageDecoderSpec.m; sourceTree = "<group>"; };
@@ -138,6 +141,7 @@
 		288FA4BB186309D40040F410 /* MMNSDataImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSDataImageDecoderSpec.m; sourceTree = "<group>"; };
 		288FA4BD18630A360040F410 /* MMNSDataImageDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMNSDataImageDecoder.h; path = MMFlowView/Decoders/MMNSDataImageDecoder.h; sourceTree = "<group>"; };
 		288FA4BE18630A360040F410 /* MMNSDataImageDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMNSDataImageDecoder.m; path = MMFlowView/Decoders/MMNSDataImageDecoder.m; sourceTree = "<group>"; };
+		2899D3841883FE7E009E2C53 /* run_integration.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = run_integration.sh; sourceTree = "<group>"; };
 		28B9EAB518807FB7000E793D /* CALayerMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerMMAdditionsSpec.m; sourceTree = "<group>"; };
 		28B9EAB7188080AD000E793D /* CALayer+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+MMAdditions.h"; path = "MMFlowView/CALayer+MMAdditions.h"; sourceTree = "<group>"; };
 		28B9EAB8188080AD000E793D /* CALayer+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+MMAdditions.m"; path = "MMFlowView/CALayer+MMAdditions.m"; sourceTree = "<group>"; };
@@ -165,6 +169,8 @@
 		28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFLowLayoutSpec.m; sourceTree = "<group>"; };
 		28EE5F801811BBDF006D0540 /* MMCoverFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayout.h; path = MMFlowView/MMCoverFlowLayout.h; sourceTree = "<group>"; };
 		28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayout.m; path = MMFlowView/MMCoverFlowLayout.m; sourceTree = "<group>"; };
+		28FA098C18840A2000D0B1E3 /* MMLayerAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMLayerAccessibility.h; path = MMFlowView/MMLayerAccessibility.h; sourceTree = "<group>"; };
+		28FA098D18840A2000D0B1E3 /* MMLayerAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMLayerAccessibility.m; path = MMFlowView/MMLayerAccessibility.m; sourceTree = "<group>"; };
 		28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewSpec.m; sourceTree = "<group>"; };
 		28FE78D21862099E00BA5D1E /* MMNSImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSImageDecoderSpec.m; sourceTree = "<group>"; };
 		28FE78D418620A1400BA5D1E /* MMNSImageDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMNSImageDecoder.h; path = MMFlowView/Decoders/MMNSImageDecoder.h; sourceTree = "<group>"; };
@@ -255,6 +261,7 @@
 				28B9EAB518807FB7000E793D /* CALayerMMAdditionsSpec.m */,
 				286543251876C598002424AE /* MMFlowViewImageCacheSpec.m */,
 				2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */,
+				283BCCF71881CD5A002A2166 /* MMLayerAccessibilitySpec.m */,
 				28FE253418106E6100D9D3CA /* MMFlowViewSpec.m */,
 				28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */,
 				28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */,
@@ -313,6 +320,8 @@
 				2849FAE41860E6DD00E401D0 /* Decoders */,
 				28B9EAB7188080AD000E793D /* CALayer+MMAdditions.h */,
 				28B9EAB8188080AD000E793D /* CALayer+MMAdditions.m */,
+				28FA098C18840A2000D0B1E3 /* MMLayerAccessibility.h */,
+				28FA098D18840A2000D0B1E3 /* MMLayerAccessibility.m */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -326,6 +335,7 @@
 				28DEFBF615AEEE9A0096FBA4 /* Frameworks */,
 				28DEFBF415AEEE9A0096FBA4 /* Products */,
 				BA2D2796A66E4CB9A899D451 /* Pods-MMFlowViewTests.xcconfig */,
+				2899D3841883FE7E009E2C53 /* run_integration.sh */,
 			);
 			sourceTree = "<group>";
 		};
@@ -544,6 +554,7 @@
 				288FA4BC186309D40040F410 /* MMNSDataImageDecoderSpec.m in Sources */,
 				2887C2C5187F41B900D37FEF /* MMCodeCoverageTests.m in Sources */,
 				283338E818623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m in Sources */,
+				283BCCF81881CD5A002A2166 /* MMLayerAccessibilitySpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -567,6 +578,7 @@
 				286543291876C5A9002424AE /* MMFlowViewImageCache.m in Sources */,
 				28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */,
 				28FE78E41862350900BA5D1E /* MMCGImageSourceDecoder.m in Sources */,
+				28FA098E18840A2000D0B1E3 /* MMLayerAccessibility.m in Sources */,
 				2886239818356132008D6246 /* MMScrollBarLayer.m in Sources */,
 				2887C2C3187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.m in Sources */,
 				2849FADE1860DC6100E401D0 /* MMFlowViewImageFactory.m in Sources */,
@@ -771,6 +783,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
@@ -789,6 +802,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
