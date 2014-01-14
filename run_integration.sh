@@ -10,7 +10,6 @@ set -o pipefail
 
 OCLINT=`which oclint`
 XCTOOL=`which xctool`
-GCOVR=`which gcovr`
 OCLINT_JSON_COMPILATION_DATABASE=`which oclint-json-compilation-database`
 
 # set the desired version of Xcode
@@ -52,7 +51,7 @@ fi
 echo "[*] Perform tests"
 ${XCTOOL} -workspace MMFlowViewDemo.xcworkspace \
 -scheme MMFlowViewDemo_CI \
--reporter junit:test-reports/junit-report.xml \
+-reporter junit:${WORKSPACE}/test-reports/junit-report.xml \
 -reporter plain \
 DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
@@ -64,7 +63,7 @@ GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES \
 clean test
 
 echo "[*] Generating code-coverage results"
-${GCOVR} -x -o coverage.xml --root=. --exclude='(.*./Developer/SDKs/.*)|(.*Spec\.m)|(Pods/*)'
+${WORKSPACE}/scripts/gcovr -x -o ${WORKSPACE}/coverage.xml --root=. --exclude='(.*Spec\.m)|(Pods/*)|(.*Test\.m)|(.*.h)'
 
 echo "[*] Performing code quality analysis"
 xcodebuild -project MMFlowViewDemo.xcodeproj \
@@ -73,12 +72,12 @@ clean 1> /dev/null
 
 ${XCTOOL} -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
--reporter json-compilation-database:compile_commands.json \
+-reporter json-compilation-database:${WORKSPACE}/compile_commands.json \
 build
 
 ${OCLINT_JSON_COMPILATION_DATABASE} -- \
 -report-type=pmd \
--o oclint.xml \
+-o ${WORKSPACE}/oclint.xml \
 -rc LONG_LINE=250 \
 -rc LONG_VARIABLE_NAME=50 \
 -max-priority-2=15 \
