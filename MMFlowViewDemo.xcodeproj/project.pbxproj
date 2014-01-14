@@ -41,6 +41,8 @@
 		288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BD17398F88000E04EF /* NSColor+MMAdditions.m */; };
 		28862395183560D0008D6246 /* MMScrollBarLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28862394183560D0008D6246 /* MMScrollBarLayerSpec.m */; };
 		2886239818356132008D6246 /* MMScrollBarLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2886239718356132008D6246 /* MMScrollBarLayer.m */; };
+		28864874188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28864873188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m */; };
+		2886487718856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m in Sources */ = {isa = PBXBuildFile; fileRef = 2886487618856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m */; };
 		2887C2C3187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2887C2C2187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.m */; };
 		2887C2C5187F41B900D37FEF /* MMCodeCoverageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2887C2C4187F41B900D37FEF /* MMCodeCoverageTests.m */; };
 		288CAB6A183AA04700420CC7 /* MMScrollKnobLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 288CAB69183AA04700420CC7 /* MMScrollKnobLayerSpec.m */; };
@@ -133,6 +135,10 @@
 		28862394183560D0008D6246 /* MMScrollBarLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMScrollBarLayerSpec.m; sourceTree = "<group>"; };
 		2886239618356132008D6246 /* MMScrollBarLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMScrollBarLayer.h; path = MMFlowView/MMScrollBarLayer.h; sourceTree = "<group>"; };
 		2886239718356132008D6246 /* MMScrollBarLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMScrollBarLayer.m; path = MMFlowView/MMScrollBarLayer.m; sourceTree = "<group>"; };
+		28864872188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+MMLayerAccessibilityPrivate.h"; path = "MMFlowView/CALayer+MMLayerAccessibilityPrivate.h"; sourceTree = "<group>"; };
+		28864873188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+MMLayerAccessibilityPrivate.m"; path = "MMFlowView/CALayer+MMLayerAccessibilityPrivate.m"; sourceTree = "<group>"; };
+		2886487518856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+MMLayerAccessibilityDefaultHandlers.h"; path = "MMFlowView/CALayer+MMLayerAccessibilityDefaultHandlers.h"; sourceTree = "<group>"; };
+		2886487618856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+MMLayerAccessibilityDefaultHandlers.m"; path = "MMFlowView/CALayer+MMLayerAccessibilityDefaultHandlers.m"; sourceTree = "<group>"; };
 		2887C2C1187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSApplication+MMCodeCoverageFixer.h"; path = "MMTestingHelper/NSApplication+MMCodeCoverageFixer.h"; sourceTree = SOURCE_ROOT; };
 		2887C2C2187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSApplication+MMCodeCoverageFixer.m"; path = "MMTestingHelper/NSApplication+MMCodeCoverageFixer.m"; sourceTree = SOURCE_ROOT; };
 		2887C2C4187F41B900D37FEF /* MMCodeCoverageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCodeCoverageTests.m; path = MMTestingHelper/MMCodeCoverageTests.m; sourceTree = SOURCE_ROOT; };
@@ -322,6 +328,10 @@
 				28B9EAB8188080AD000E793D /* CALayer+MMAdditions.m */,
 				28FA098C18840A2000D0B1E3 /* MMLayerAccessibility.h */,
 				28FA098D18840A2000D0B1E3 /* MMLayerAccessibility.m */,
+				28864872188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.h */,
+				28864873188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m */,
+				2886487518856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.h */,
+				2886487618856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -562,6 +572,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28864874188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m in Sources */,
 				28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */,
 				2877D882181FE1DF00FD5E07 /* MMFlowViewItemLayer.m in Sources */,
 				28DEFC0B15AEEE9A0096FBA4 /* AppDelegate.m in Sources */,
@@ -585,6 +596,7 @@
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
 				28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */,
 				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
+				2886487718856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m in Sources */,
 				288FA4BF18630A360040F410 /* MMNSDataImageDecoder.m in Sources */,
 				28E6979A183AA0B400210AE1 /* MMScrollKnobLayer.m in Sources */,
 				28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */,

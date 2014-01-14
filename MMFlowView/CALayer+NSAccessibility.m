@@ -7,20 +7,9 @@
 //
 
 #import "CALayer+NSAccessibility.h"
+#import "CALayer+MMLayerAccessibilityPrivate.h"
+#import "CALayer+MMLayerAccessibilityDefaultHandlers.h"
 #import <objc/runtime.h>
-
-static const void* kMMLayerAccessibilityParentViewKey = @"mm_AXParentView";
-
-static NSString * const kGetterPrefix = @"get";
-static NSString * const kSetterPrefix = @"set";
-static NSString * const kParamerizedPrefix = @"param";
-static NSString * const kActionPrefix = @"action";
-
-#define PREFIX_STRING(PREFIX, STRING) [PREFIX stringByAppendingString:STRING]
-#define PARAMERTERIZED_ATTRIBUTE_KEY(ATTRIBUTE) PREFIX_STRING(kParamerizedPrefix, ATTRIBUTE)
-#define GETTER_ATTRIBUTE_KEY(ATTRIBUTE) PREFIX_STRING(kGetterPrefix, ATTRIBUTE)
-#define SETTER_ATTRIBUTE_KEY(ATTRIBUTE) PREFIX_STRING(kSetterPrefix, ATTRIBUTE)
-#define ACTION_ATTRIBUTE_KEY(ATTRIBUTE) PREFIX_STRING(kActionPrefix, ATTRIBUTE)
 
 @implementation NSView (MMLayerAccessibility)
 
@@ -33,35 +22,7 @@ static NSString * const kActionPrefix = @"action";
 
 @end
 
-@interface CALayer (MMLayerAccessibilityAdditions)
-
-@property (nonatomic, strong) NSMutableArray *mmAccessibilityAttributes;
-@property (nonatomic, strong) NSMutableArray *mmParameterizedAttributes;
-@property (nonatomic, strong) NSMutableArray *mmActionNames;
-	
-@end
-
-@implementation CALayer (MMLayerAccessibilityAdditions)
-
-@dynamic mmAccessibilityAttributes;
-@dynamic mmParameterizedAttributes;
-@dynamic mmActionNames;
-
-@end
-
 @implementation CALayer (MMLayerAccessibility)
-
-#pragma mark - class methods
-
-+ (NSArray*)defaultAccessibilityAttributes
-{
-	static NSArray *defaultAttributes = nil;
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		defaultAttributes = @[NSAccessibilityParentAttribute, NSAccessibilitySizeAttribute, NSAccessibilityPositionAttribute, NSAccessibilityWindowAttribute, NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityRoleAttribute, NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute, NSAccessibilityFocusedAttribute];
-	});
-	return defaultAttributes;
-}
 
 #pragma mark - NSAccessibility
 
@@ -81,28 +42,17 @@ static NSString * const kActionPrefix = @"action";
 
 - (NSArray*)accessibilityAttributeNames
 {
-	NSMutableArray *attributeNames = self.mmAccessibilityAttributes;
-	BOOL hasChildrenAttribute = [attributeNames containsObject:NSAccessibilityChildrenAttribute];
-
-	if (self.sublayers) {
-		if ( !hasChildrenAttribute ) {
-			[attributeNames addObject:NSAccessibilityChildrenAttribute];
-		}
-	}
-	else if (hasChildrenAttribute) {
-		[attributeNames removeObject:NSAccessibilityChildrenAttribute];
-	}
-	return [[[self class] defaultAccessibilityAttributes] arrayByAddingObjectsFromArray:attributeNames];
+	return [self mm_attributeNames];
 }
 
 - (id)accessibilityAttributeValue:(NSString*)anAttribute
 {
-	NSArray *customAttributes = self.mmAccessibilityAttributes;
-	if ( [customAttributes containsObject:anAttribute] ) {
-		id (^attributeGetter)(void) =  [self mm_getterForAttribute:anAttribute];
-		if ( attributeGetter ) {
-			return attributeGetter();
-		}
+	if (anAttribute == nil) {
+		return nil;
+	}
+	id value = [self mm_handleCustomAttribute:anAttribute];
+	if (value) {
+		return value;
 	}
 	else if ([anAttribute isEqualToString:NSAccessibilityRoleAttribute]) {
 		// default role
@@ -112,29 +62,16 @@ static NSString * const kActionPrefix = @"action";
 		return NSAccessibilityUnignoredChildren(self.sublayers);
 	}
 	else if ([anAttribute isEqualToString:NSAccessibilityParentAttribute]) {
-		id parent = [self mm_accessibilityParent];
-		if (parent) {
-			return NSAccessibilityUnignoredAncestor(parent);
-		}
-		NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
-														 reason:@"No accessibility parent available"
-													   userInfo:nil ];
-		[exception raise];
+		return [self mm_defaultParentAttributeHandler];
 	}
 	else if ([ anAttribute isEqualToString:NSAccessibilityRoleDescriptionAttribute]) {
 		return NSAccessibilityRoleDescriptionForUIElement(self);
 	}
 	else if ([ anAttribute isEqualToString:NSAccessibilitySizeAttribute ]) {
-		NSView *containingView = [self mm_containingView];
-		return [NSValue valueWithSize:[containingView convertSizeFromBacking:self.bounds.size]];
+		return [self mm_defaultSizeAttributeHandler];
 	}
 	else if ([anAttribute isEqualToString:NSAccessibilityPositionAttribute]) {
-		NSView *containingView = [self mm_containingView];
-		CGPoint pointInView = [containingView.layer convertPoint:self.frame.origin
-													   fromLayer:self.superlayer];
-		NSPoint windowPoint = [containingView convertPoint:NSPointFromCGPoint(pointInView)
-													toView:nil ];
-		return [ NSValue valueWithPoint:[[containingView window ] convertRectToScreen:NSMakeRect(windowPoint.x, windowPoint.y, 1,1)].origin];
+		return [self mm_defaultPositionAttributeHandler];
 	}
 	else if ([anAttribute isEqualToString:NSAccessibilityWindowAttribute]) {
 		return [[self mm_accessibilityParent] accessibilityAttributeValue:NSAccessibilityWindowAttribute];
@@ -218,100 +155,6 @@ static NSString * const kActionPrefix = @"action";
 {
 	id (^attributeHandler)(id) = [self mm_handlerForParameterizedAttribute:attribute];
 	return attributeHandler ? attributeHandler(parameter) : nil;
-}
-
-#pragma mark - private implementation
-	
-- (id(^)(void))mm_getterForAttribute:(NSString*)attribute
-{
-	return [self valueForKey:GETTER_ATTRIBUTE_KEY(attribute)];
-}
-
-- (void(^)(id))mm_setterForAttribute:(NSString*)attribute
-{
-	return [self valueForKey:SETTER_ATTRIBUTE_KEY(attribute)];
-}
-
-- (id(^)(id))mm_handlerForParameterizedAttribute:(NSString*)attribute
-{
-	return [self valueForKey:PARAMERTERIZED_ATTRIBUTE_KEY(attribute)];
-}
-
-- (id)mm_accessibilityParent
-{
-	return self.superlayer ? self.superlayer : [self mm_containingView];
-}
-
-- (NSView*)mm_containingView
-{
-	id parentView = nil;
-	CALayer *layer = self;
-	while ( layer ) {
-		parentView = objc_getAssociatedObject(layer, kMMLayerAccessibilityParentViewKey );
-		layer = layer.superlayer;
-		if ( parentView ) {
-			break;
-		}
-	}
-	return parentView;
-}
-
-- (void)mm_addAXCustomAttributeName:(NSString*)anAttribute
-{
-	NSMutableArray *attributes = self.mmAccessibilityAttributes;
-	if ( attributes == nil ) {
-		self.mmAccessibilityAttributes = [NSMutableArray array];
-	}
-	if (![attributes containsObject:anAttribute]) {
-		[self.mmAccessibilityAttributes addObject:anAttribute];
-	}
-}
-
-- (void)mm_removeAXCustomAttribute:(NSString*)anAttribute
-{
-	[self.mmAccessibilityAttributes removeObject:anAttribute];
-	[self.mmParameterizedAttributes removeObject:anAttribute];
-	
-}
-
-- (void)mm_addAXActionName:(NSString*)action
-{
-	if (self.mmActionNames == nil) {
-		self.mmActionNames = [NSMutableArray array];
-	}
-	if (![self.mmActionNames containsObject:action]) {
-		[self.mmActionNames addObject:action];
-	}
-}
-
-- (void)mm_addAXParameterizedAttributeName:(NSString*)attribute
-{
-	if ( self.mmParameterizedAttributes == nil ) {
-		self.mmParameterizedAttributes = [NSMutableArray array];
-	}
-	if (![self.mmParameterizedAttributes containsObject:attribute]) {
-		[self.mmParameterizedAttributes addObject:attribute];
-	}
-}
-
-- (void(^)(void))mm_handlerForAction:(NSString*)action
-{
-	return [self valueForKey:ACTION_ATTRIBUTE_KEY(action)];
-}
-
-- (BOOL)mm_hasCustomAttributes
-{
-	return [self.mmAccessibilityAttributes count] > 0;
-}
-
-- (BOOL)mm_hasActions
-{
-	return [self.mmActionNames count] > 0;
-}
-
-- (BOOL)mm_hasParameterizedAttributes
-{
-	return [self.mmParameterizedAttributes count] > 0;
 }
 
 #pragma mark - public API
