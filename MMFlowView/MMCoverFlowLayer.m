@@ -115,9 +115,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		CGRect selectedBounds = selectedLayer.bounds;
 		return CGRectMake(CGRectGetMidX(self.bounds) - CGRectGetMidX(selectedBounds), CGRectGetMidY(self.bounds) - CGRectGetMidY(selectedBounds), CGRectGetWidth(selectedBounds), CGRectGetHeight(selectedBounds));
 	}
-	else {
-		return CGRectZero;
-	}
+	return CGRectZero;
 }
 
 - (void)setEyeDistance:(CGFloat)eyeDistance
@@ -187,9 +185,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		// disable implicit animations for scrolllayer in live resize
 		return (id<CAAction>)[NSNull null];
 	}
-	else {
-		return nil;
-	}
+	return nil;
 }
 
 #pragma mark - CALayer overrides
