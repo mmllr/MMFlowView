@@ -57,7 +57,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 	return CGRectMake(0, 0, kMovieOverlayPausedRadius * 2, kMovieOverlayPausedRadius * 2);
 }
 
-+ (CGImageRef)overlayImageWithPath:(CGPathRef)aPath
++ (CGImageRef)newOverlayImageWithPath:(CGPathRef)aPath
 {
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 	if (!colorSpace) {
@@ -83,7 +83,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		CGPathRef path = [self newTrianglePathInRect:[self overlayImageRect]];
-		image = [self overlayImageWithPath:path];
+		image = [self newOverlayImageWithPath:path];
 		CGPathRelease( path );
 	});
 	return image;
@@ -95,7 +95,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		CGPathRef path = [self newPausePathInRect:[self overlayImageRect]];
-		image = [self overlayImageWithPath:path];
+		image = [self newOverlayImageWithPath:path];
 		CGPathRelease(path);
 	});
 	return image;
