@@ -195,20 +195,15 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		attributes.bounds = CGRectMake(0, 0, size.width, size.height);
 		attributes.position = [self originForItem:itemIndex];
 		attributes.anchorPoint = CGPointMake(0.5, 0);
-		if ( itemIndex < self.selectedItemIndex ) {
-			// left stack
-			attributes.transform = CATransform3DMakeRotation( DEGREES2RADIANS(self.stackedAngle), 0, 1, 0 );
-			attributes.zPosition = -self.stackedDistance;
-		}
-		else if ( itemIndex > self.selectedItemIndex ) {
-			// right stack
-			attributes.transform = CATransform3DMakeRotation( -DEGREES2RADIANS(self.stackedAngle), 0, 1, 0 );
-			attributes.zPosition = -self.stackedDistance;
-		}
-		else if ( itemIndex == self.selectedItemIndex ) {
+		if (itemIndex == self.selectedItemIndex) {
 			attributes.zPosition = 0;
+			return attributes;
 		}
-		return attributes;
+		else {
+			attributes.zPosition = -self.stackedDistance;
+			attributes.transform = CATransform3DMakeRotation( DEGREES2RADIANS(itemIndex < self.selectedItemIndex ? self.stackedAngle : -self.stackedAngle), 0, 1, 0 );
+			return attributes;
+		}
 	}
 	return nil;
 }
