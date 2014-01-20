@@ -18,7 +18,7 @@ describe(@"MMNSDataImageDecoder", ^{
 	__block CGImageRef image = NULL;
 
 	beforeAll(^{
-		imageData = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:@"/Library/Screen Savers/Default Collections/3-Cosmos/Cosmos01.jpg"]];
+		imageData = [NSData dataWithContentsOfURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"]];
 	});
 	afterAll(^{
 		imageData = nil;

@@ -18,8 +18,8 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 	const CGSize desiredSize = {50, 50};
 
 	beforeAll(^{
-		NSString *imageString = @"/Library/Screen Savers/Default Collections/3-Cosmos/Cosmos01.jpg";
-		NSImage *image = [[NSImage alloc] initWithContentsOfURL:[NSURL fileURLWithPath:imageString]];
+		NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+		NSImage *image = [[NSImage alloc] initWithContentsOfURL:testImageURL];
 
 		for ( NSImageRep* rep in [image representations] ) {
 			if ([rep isKindOfClass:[NSBitmapImageRep class]] ) {

@@ -10,6 +10,7 @@
 		1290F5C6EDAD4187B55E9B75 /* libPods-MMFlowViewTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 125EAD5177344AF980C2D749 /* libPods-MMFlowViewTests.a */; };
 		2807B3FA1822D7F1005E3D0E /* MMCoverFlowLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2807B3F91822D7F1005E3D0E /* MMCoverFlowLayerSpec.m */; };
 		2807B3FD1822D860005E3D0E /* MMCoverFlowLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2807B3FC1822D860005E3D0E /* MMCoverFlowLayer.m */; };
+		28155C4A188C3E9F00CF12FB /* TestImage01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28155C49188C3E9F00CF12FB /* TestImage01.jpg */; };
 		282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */; };
 		28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		283338E818623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */; };
@@ -90,6 +91,7 @@
 		2807B3F91822D7F1005E3D0E /* MMCoverFlowLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowLayerSpec.m; sourceTree = "<group>"; };
 		2807B3FB1822D860005E3D0E /* MMCoverFlowLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayer.h; path = MMFlowView/MMCoverFlowLayer.h; sourceTree = "<group>"; };
 		2807B3FC1822D860005E3D0E /* MMCoverFlowLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayer.m; path = MMFlowView/MMCoverFlowLayer.m; sourceTree = "<group>"; };
+		28155C49188C3E9F00CF12FB /* TestImage01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TestImage01.jpg; sourceTree = "<group>"; };
 		282FEE8618095A5200A306F5 /* CALayer+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+NSAccessibility.h"; path = "MMFlowView/CALayer+NSAccessibility.h"; sourceTree = "<group>"; };
 		282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+NSAccessibility.m"; path = "MMFlowView/CALayer+NSAccessibility.m"; sourceTree = "<group>"; };
 		283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSBitmapImageRepDecoderSpec.m; sourceTree = "<group>"; };
@@ -221,6 +223,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		28155C48188C3C2C00CF12FB /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				282FEE8618095A5200A306F5 /* CALayer+NSAccessibility.h */,
+				282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */,
+				28B9EAB7188080AD000E793D /* CALayer+MMAdditions.h */,
+				28B9EAB8188080AD000E793D /* CALayer+MMAdditions.m */,
+				28FA098C18840A2000D0B1E3 /* MMLayerAccessibility.h */,
+				28FA098D18840A2000D0B1E3 /* MMLayerAccessibility.m */,
+				28864872188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.h */,
+				28864873188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m */,
+				2886487518856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.h */,
+				2886487618856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m */,
+				288591BC17398F88000E04EF /* NSColor+MMAdditions.h */,
+				288591BD17398F88000E04EF /* NSColor+MMAdditions.m */,
+			);
+			name = Shared;
+			sourceTree = "<group>";
+		};
 		2849FAE41860E6DD00E401D0 /* Decoders */ = {
 			isa = PBXGroup;
 			children = (
@@ -253,6 +274,7 @@
 		2876FF41180B269C00318C7B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				28155C49188C3E9F00CF12FB /* TestImage01.jpg */,
 				28FE78DE1862327D00BA5D1E /* Test.pdf */,
 				2876FF42180B269C00318C7B /* MMFlowViewTests-Info.plist */,
 				2876FF43180B269C00318C7B /* InfoPlist.strings */,
@@ -291,18 +313,15 @@
 		288591B21739675B000E04EF /* MMFlowView */ = {
 			isa = PBXGroup;
 			children = (
+				28155C48188C3C2C00CF12FB /* Shared */,
 				286543271876C5A9002424AE /* MMFlowViewImageCache.h */,
 				286543281876C5A9002424AE /* MMFlowViewImageCache.m */,
-				282FEE8618095A5200A306F5 /* CALayer+NSAccessibility.h */,
-				282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */,
 				28DEFC2015AEEF300096FBA4 /* MMFlowView.h */,
 				28DEFC2115AEEF300096FBA4 /* MMFlowView.m */,
 				288591B3173967BE000E04EF /* MMButtonLayer.h */,
 				288591B4173967BE000E04EF /* MMButtonLayer.m */,
 				288591B6173968AD000E04EF /* MMVideoOverlayLayer.h */,
 				288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */,
-				288591BC17398F88000E04EF /* NSColor+MMAdditions.h */,
-				288591BD17398F88000E04EF /* NSColor+MMAdditions.m */,
 				28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */,
 				28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */,
 				28BD85EF1802FAB00095224B /* MMFlowView_Private.h */,
@@ -324,14 +343,6 @@
 				2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */,
 				2849FAE51860E76F00E401D0 /* MMImageDecoderProtocol.h */,
 				2849FAE41860E6DD00E401D0 /* Decoders */,
-				28B9EAB7188080AD000E793D /* CALayer+MMAdditions.h */,
-				28B9EAB8188080AD000E793D /* CALayer+MMAdditions.m */,
-				28FA098C18840A2000D0B1E3 /* MMLayerAccessibility.h */,
-				28FA098D18840A2000D0B1E3 /* MMLayerAccessibility.m */,
-				28864872188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.h */,
-				28864873188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m */,
-				2886487518856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.h */,
-				2886487618856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -490,6 +501,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				28FE78DF1862327D00BA5D1E /* Test.pdf in Resources */,
+				28155C4A188C3E9F00CF12FB /* TestImage01.jpg in Resources */,
 				2876FF45180B269C00318C7B /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

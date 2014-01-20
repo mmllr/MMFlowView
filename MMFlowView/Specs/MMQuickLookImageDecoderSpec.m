@@ -13,8 +13,8 @@ SPEC_BEGIN(MMQuickLookImageDecoderSpec)
 
 describe(@"MMQuickLookImageDecoder", ^{
 	CGSize desiredSize = {50, 50};
-	NSString *imageString = @"/Library/Screen Savers/Default Collections/3-Cosmos/Cosmos01.jpg";
-	NSURL *imageURL = [NSURL fileURLWithPath:imageString];
+	NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+	NSString *testImageString = [testImageURL path];
 	__block MMQuickLookImageDecoder *sut = nil;
 	__block CGImageRef imageRef = NULL;
 	__block NSImage *image = nil;
@@ -50,7 +50,7 @@ describe(@"MMQuickLookImageDecoder", ^{
 		});
 		context(@"when created with NSURL and non-zero size", ^{
 			beforeEach(^{
-				imageRef = [sut newImageFromItem:imageURL withSize:desiredSize];
+				imageRef = [sut newImageFromItem:testImageURL withSize:desiredSize];
 			});
 			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
@@ -63,7 +63,7 @@ describe(@"MMQuickLookImageDecoder", ^{
 		});
 		context(@"when asking for an image with zero image size", ^{
 			beforeEach(^{
-				imageRef = [sut newImageFromItem:imageURL withSize:CGSizeZero];
+				imageRef = [sut newImageFromItem:testImageURL withSize:CGSizeZero];
 			});
 			it(@"should return an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
@@ -71,7 +71,7 @@ describe(@"MMQuickLookImageDecoder", ^{
 		});
 		context(@"when asking for an image from a string item", ^{
 			beforeEach(^{
-				imageRef = [sut newImageFromItem:imageString withSize:desiredSize];
+				imageRef = [sut newImageFromItem:testImageString withSize:desiredSize];
 			});
 			it(@"should return an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
@@ -81,7 +81,7 @@ describe(@"MMQuickLookImageDecoder", ^{
 	context(@"imageFromItem:", ^{
 		context(@"when created with NSURL", ^{
 			beforeEach(^{
-				image = [sut imageFromItem:imageURL];
+				image = [sut imageFromItem:testImageURL];
 			});
 			it(@"should load an image", ^{
 				[[image shouldNot] beNil];
@@ -90,7 +90,7 @@ describe(@"MMQuickLookImageDecoder", ^{
 		context(@"when created with NSString", ^{
 			context(@"filepath", ^{
 				beforeEach(^{
-					image = [sut imageFromItem:imageString];
+					image = [sut imageFromItem:testImageString];
 				});
 				it(@"should load an image", ^{
 					[[image shouldNot] beNil];

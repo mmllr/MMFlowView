@@ -18,8 +18,7 @@ describe(@"MMCGImageSourceDecoder", ^{
 	__block CGImageRef imageRef = NULL;
 
 	beforeAll(^{
-		NSString *imageString = @"/Library/Screen Savers/Default Collections/3-Cosmos/Cosmos01.jpg";
-		NSURL *imageURL = [NSURL fileURLWithPath:imageString];
+		NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
 		imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)(imageURL), NULL);
 	});
 	afterAll(^{
