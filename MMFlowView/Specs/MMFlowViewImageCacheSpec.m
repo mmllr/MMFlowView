@@ -12,10 +12,10 @@
 SPEC_BEGIN(MMFlowViewImageCacheSpec)
 
 describe(@"MMFlowViewImageCache", ^{
-	__block MMFlowViewImageCache* sut = nil;
+	__block id sut = nil;
 
 	beforeEach(^{
-		sut = [[MMFlowViewImageCache alloc] init];
+		sut = [KWMock nullMockForProtocol:@protocol(MMFlowViewImageCache)];
 	});
 	afterEach(^{
 		sut = nil;
@@ -24,8 +24,11 @@ describe(@"MMFlowViewImageCache", ^{
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
 		});
-		it(@"should have no cached images", ^{
-			[[theValue(sut.numberOfImages) should] equal:theValue(0)];
+		it(@"should respond to cacheImage:", ^{
+			[[sut should] respondToSelector:@selector(cacheImage:withUID:)];
+		});
+		it(@"should respond to imageForUID:", ^{
+			[[sut should] respondToSelector:@selector(imageForUID:)];
 		});
 	});
 	

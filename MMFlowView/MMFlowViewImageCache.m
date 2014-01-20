@@ -8,6 +8,3 @@
 
 #import "MMFlowViewImageCache.h"
 
-@implementation MMFlowViewImageCache
-
-@end

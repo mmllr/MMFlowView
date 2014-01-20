@@ -8,8 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface MMFlowViewImageCache : NSObject
+@protocol MMFlowViewImageCache <NSObject>
 
-@property (nonatomic, readonly) NSUInteger numberOfImages;
+- (void)cacheImage:(id)anImage withUID:(id)anUID;
+- (void)imageForUID:(id)anUID;
 
 @end
+
