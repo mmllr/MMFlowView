@@ -8,10 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol MMFlowViewItem;
+@protocol MMImageDecoderProtocol;
+
 @interface MMFlowViewImageFactory : NSObject
 
+@property (nonatomic) CGSize maxImageSize;
+
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType;
-- (void)createCGImageForItem:(id)item withRepresentationType:(NSString*)representationType maximumSize:(CGSize)maxiumSize completionHandler:(void(^)(CGImageRef image))completionHandler;
-- (void)imageForItem:(id)item withRepresentationType:(NSString*)representationType completionHandler:(void(^)(NSImage *image))completionHandler;
+- (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType;
+- (void)setDecoder:(id<MMImageDecoderProtocol>)aDecoder forRepresentationType:(NSString*)representationType;
+- (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef image))completionHandler;
+- (void)imageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(NSImage *image))completionHandler;
 
 @end

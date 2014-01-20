@@ -15,9 +15,11 @@
 #import "MMCGImageSourceDecoder.h"
 #import "MMNSDataImageDecoder.h"
 
+static CGFloat const kDefaultMaxImageDimension = 100;
+
 @interface MMFlowViewImageFactory ()
 
-@property (strong) NSDictionary *imageDecoders;
+@property (strong) NSMutableDictionary *imageDecoders;
 @property (strong) NSOperationQueue *operationQueue;
 
 @end
@@ -48,7 +50,8 @@
     self = [super init];
     if (self) {
 		_operationQueue = [[NSOperationQueue alloc] init];
-        _imageDecoders = [[self class] createImageDecoders];
+        _imageDecoders = [NSMutableDictionary dictionaryWithDictionary:[[self class] createImageDecoders]];
+		_maxImageSize = CGSizeMake(kDefaultMaxImageDimension, kDefaultMaxImageDimension);
     }
     return self;
 }
@@ -60,20 +63,36 @@
 
 #pragma mark - public API
 
+- (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType
+{
+	return nil;
+}
+
+- (void)setDecoder:(id<MMImageDecoderProtocol>)aDecoder forRepresentationType:(NSString*)representationType
+{
+	if (![aDecoder conformsToProtocol:@protocol(MMImageDecoderProtocol)]) {
+		[NSException raise:NSInvalidArgumentException format:@"aDecoder %@ doesnt conform to MMImageDecoderProtocol", aDecoder];
+	}
+	if (representationType) {
+		_imageDecoders[representationType] = aDecoder;
+	}
+}
+
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType
 {
 	return [self.imageDecoders valueForKey:representationType] != nil;
 }
 
-- (void)createCGImageForItem:(id)item withRepresentationType:(NSString*)representationType maximumSize:(CGSize)maxiumSize completionHandler:(void(^)(CGImageRef image))completionHandler
+- (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef image))completionHandler
 {
 	NSParameterAssert(completionHandler != NULL);
 
+	NSString *representationType = anItem.imageItemRepresentationType;
 	if ([self canDecodeRepresentationType:representationType]) {
 		id<MMImageDecoderProtocol> decoder = self.imageDecoders[representationType];
 
 		[self.operationQueue addOperationWithBlock:^{
-			CGImageRef image = [decoder newImageFromItem:item withSize:maxiumSize];
+			CGImageRef image = [decoder newImageFromItem:anItem.imageItemRepresentation withSize:self.maxImageSize];
 			
 			if (image) {
 				[[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -85,15 +104,15 @@
 	}
 }
 
-- (void)imageForItem:(id)item withRepresentationType:(NSString *)representationType completionHandler:(void (^)(NSImage *))completionHandler
+- (void)imageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void (^)(NSImage *))completionHandler
 {
 	NSParameterAssert(completionHandler != NULL);
-	if ([self canDecodeRepresentationType:representationType]) {
-		id<MMImageDecoderProtocol> decoder = self.imageDecoders[representationType];
-		
+	if ([self canDecodeRepresentationType:anItem.imageItemRepresentationType]) {
+		id<MMImageDecoderProtocol> decoder = self.imageDecoders[anItem.imageItemRepresentationType];
+
 		[self.operationQueue addOperationWithBlock:^{
-			NSImage *image = [decoder imageFromItem:item];
-			
+			NSImage *image = [decoder imageFromItem:anItem.imageItemRepresentation];
+
 			if (image) {
 				[[NSOperationQueue mainQueue] addOperationWithBlock:^{
 					completionHandler(image);

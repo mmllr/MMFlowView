@@ -11,20 +11,26 @@
 #import <Quartz/Quartz.h>
 
 #import "MMFlowViewImageFactory.h"
+#import "MMImageDecoderProtocol.h"
 #import "MMFlowView.h"
 
 SPEC_BEGIN(MMFlowViewImageFactorySpec)
 
 describe(@"MMFlowViewImageFactory", ^{
-	NSString *testImageString = @"/Library/Screen Savers/Default Collections/3-Cosmos/Cosmos01.jpg";
-	NSURL *testImageURL = [NSURL fileURLWithPath:testImageString];
-	const CGSize maximumImageSize = {100, 100};
+	NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+	NSString *testImageString = [testImageURL path];
 	__block MMFlowViewImageFactory *sut = nil;
 	__block NSImage *testImage = nil;
 	__block NSBitmapImageRep *testImageRep = nil;
+	__block id itemMock = nil;
+	__block CGImageRef testImageRef = NULL;
+	__block id decoderMock = nil;
 
 	beforeAll(^{
 		testImage = [[NSImage alloc] initWithContentsOfURL:testImageURL];
+		testImageRef = [testImage CGImageForProposedRect:NULL
+												 context:NULL
+												   hints:nil];
 		for ( NSImageRep* rep in [testImage representations] ) {
 			if ([rep isKindOfClass:[NSBitmapImageRep class]] ) {
 				testImageRep = [(NSBitmapImageRep*)rep copy];
@@ -35,75 +41,170 @@ describe(@"MMFlowViewImageFactory", ^{
 	afterAll(^{
 		testImage = nil;
 		testImageRep = nil;
+		itemMock = nil;
+		if (testImageRef) {
+			CGImageRelease(testImageRef);
+			testImageRef = NULL;
+		}
 	});
-	
+
 	beforeEach(^{
 		sut = [[MMFlowViewImageFactory alloc] init];
+		itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
+		[itemMock stub:@selector(imageItemRepresentationType) andReturn:@"testRepresentationType"];
+		[itemMock stub:@selector(imageItemRepresentation) andReturn:(__bridge id)testImageRef];
+		decoderMock = [KWMock mockForProtocol:@protocol(MMImageDecoderProtocol)];
+		[decoderMock stub:@selector(newImageFromItem:withSize:) andReturn:(__bridge id)(testImageRef)];
+		[sut setDecoder:decoderMock forRepresentationType:@"testRepresentationType"];
 	});
 	afterEach(^{
 		sut = nil;
+		itemMock = nil;
+		decoderMock = nil;
 	});
 
 	it(@"should exist", ^{
 		[[sut shouldNot] beNil];
 	});
-	context(@"createCGImageForItem:withRepresentationType:maximumSize:completionHandler:", ^{
-		it(@"should respond to createCGImageForItem:withRepresentationType:maximumSize:completionHandler:", ^{
-			[[sut should] respondToSelector:@selector(createCGImageForItem:withRepresentationType:maximumSize:completionHandler:)];
-		});
-		it(@"should throw an exception when invoked with a NULL completetionHandler", ^{
+	it(@"should respond to maxImageSize", ^{
+		[[sut should] respondToSelector:@selector(maxImageSize)];
+	});
+	it(@"should respond to setMaxImageSize:", ^{
+		[[sut should] respondToSelector:@selector(setMaxImageSize:)];
+	});
+	it(@"should respond to decoderforRepresentationType:", ^{
+		[[sut should] respondToSelector:@selector(decoderforRepresentationType:)];
+	});
+	it(@"should respond to setDecoder:forRepresentationType:", ^{
+		[[sut should] respondToSelector:@selector(setDecoder:forRepresentationType:)];
+	});
+	it(@"should have a initial maxImageSize of {100,100}", ^{
+		NSValue *expectedSize = [NSValue valueWithSize:CGSizeMake(100, 100)];
+		[[[NSValue valueWithSize:sut.maxImageSize] should] equal:expectedSize];
+	});
+	context(@"decoders", ^{
+		it(@"should raise an NSInvalidArgumentExcption when setting an object not conforming to MMImageDecoderProtocol", ^{
 			[[theBlock(^{
-				[sut createCGImageForItem:testImageURL withRepresentationType:kMMFlowViewQuickLookPathRepresentationType maximumSize:maximumImageSize completionHandler:NULL];
-			}) should] raise];
+				[sut setDecoder:((id<MMImageDecoderProtocol>)@"A string") forRepresentationType:@"type"];
+			}) should] raiseWithName:NSInvalidArgumentException];
+		});
+		it(@"should not raise when setting a decoder a nil representationType", ^{
+			[[theBlock(^{
+				[sut setDecoder:decoderMock forRepresentationType:nil];
+			}) shouldNot] raise];
+		});
+		context(@"setting decoder with empty representation type", ^{
+			it(@"should not raise when setting a decoder for an empty string representationType", ^{
+				[[theBlock(^{
+					[sut setDecoder:decoderMock forRepresentationType:@""];
+				}) shouldNot] raise];
+			});
+		});
+		it(@"should do nothing when setting a decoder for an empty string representationType", ^{
+			[sut setDecoder:decoderMock forRepresentationType:@""];
+			[[(id)[sut decoderforRepresentationType:@""] should] beNil];
 		});
 	});
-	context(@"imageForItem:withRepresentationType:completionHandler:", ^{
-		it(@"should respond to imageForItem:withRepresentationType:completionHandler:", ^{
-			[[sut should] respondToSelector:@selector(imageForItem:withRepresentationType:completionHandler:)];
+	
+	context(@"createCGImageForItem:completionHandler:", ^{
+		it(@"should respond to createCGImageForItem:completionHandler:", ^{
+			[[sut should] respondToSelector:@selector(createCGImageForItem:completionHandler:)];
 		});
 		it(@"should throw an exception when invoked with a NULL completetionHandler", ^{
 			[[theBlock(^{
-				[sut imageForItem:testImageURL withRepresentationType:kMMFlowViewQuickLookPathRepresentationType completionHandler:NULL];
+				[sut createCGImageForItem:itemMock completionHandler:NULL];
+			}) should] raise];
+		});
+		it(@"should call back on the same thread as the caller", ^{
+			NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+			__block NSOperationQueue *queueOnCompletionBlock = nil;
+			
+			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+				queueOnCompletionBlock = [NSOperationQueue currentQueue];
+			}];
+			[[expectFutureValue(queueOnCompletionBlock) shouldEventually] equal:mainQueue];
+		});
+		context(@"interaction with image decoder", ^{
+			beforeEach(^{
+				[sut setDecoder:decoderMock forRepresentationType:@"testRepresentationType"];
+			});
+			context(@"createCGImageForItem:completionHandler", ^{
+				it(@"should ask the item for its imageRepresentationType", ^{
+					[[itemMock should] receive:@selector(imageItemRepresentationType)];
+					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+					}];
+				});
+				it(@"should should ask the item for its imageRepresentation", ^{
+					[[itemMock should] receive:@selector(imageItemRepresentationType)];
+					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+					}];
+				});
+				it(@"should send the decoder newImageFromItem:withSize:", ^{
+					[[decoderMock shouldEventually] receive:@selector(newImageFromItem:withSize:) andReturn:(__bridge id)testImageRef];
+					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+					}];
+				});
+			});
+		});
+	});
+	context(@"imageForItem:completionHandler:", ^{
+		it(@"should respond to imageForItem:completionHandler:", ^{
+			[[sut should] respondToSelector:@selector(imageForItem:completionHandler:)];
+		});
+		it(@"should throw an exception when invoked with a NULL completetionHandler", ^{
+			[[theBlock(^{
+				[sut imageForItem:itemMock completionHandler:NULL];
 			}) should] raise];
 		});
 	});
 	context(@"kMMFlowViewQuickLookPathRepresentationType", ^{
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewQuickLookPathRepresentationType];
+		});
 		it(@"should handle kMMFlowViewQuickLookPathRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewQuickLookPathRepresentationType]) should] beYes];
 		});
-
-		it(@"should asynchronously load an CGImageRef from an NSURL", ^{
-			__block CGImageRef quickLookImage = NULL;
-
-			[sut createCGImageForItem:testImageURL withRepresentationType:kMMFlowViewQuickLookPathRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef imageRef) {
-				quickLookImage = imageRef;
-			}];
-			[[expectFutureValue(theValue(quickLookImage != NULL)) shouldEventually] beTrue];
+		context(@"load from NSURL", ^{
+			beforeEach(^{
+				[itemMock stub:@selector(imageItemRepresentation) andReturn:testImageURL];
+			});
+			it(@"should asynchronously load an CGImageRef from an NSURL", ^{
+				__block CGImageRef quickLookImage = NULL;
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef imageRef) {
+					quickLookImage = imageRef;
+				}];
+				[[expectFutureValue(theValue(quickLookImage != NULL)) shouldEventually] beTrue];
+			});
+			it(@"should asynchronously load an NSImage from an NSURL", ^{
+				__block NSImage *quickLookImage = nil;
+				
+				[sut imageForItem:itemMock completionHandler:^(NSImage *anImage) {
+					quickLookImage = anImage;
+				}];
+				[[expectFutureValue(quickLookImage) shouldEventually] beNonNil];
+			});
 		});
-		it(@"should asynchronously load an NSImage from an NSURL", ^{
-			__block NSImage *quickLookImage = nil;
-			
-			[sut imageForItem:testImageURL withRepresentationType:kMMFlowViewQuickLookPathRepresentationType completionHandler:^(NSImage *anImage) {
-				quickLookImage = anImage;
-			}];
-			[[expectFutureValue(quickLookImage) shouldEventually] beNonNil];
+		context(@"load from NSString", ^{
+			beforeEach(^{
+				[itemMock stub:@selector(imageItemRepresentation) andReturn:testImageString];
+			});
+			it(@"should asynchronously load an CGImageRef from an NSString", ^{
+				__block CGImageRef quickLookImage = NULL;
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef imageRef) {
+					quickLookImage = imageRef;
+				}];
+				[[expectFutureValue(theValue(quickLookImage != NULL)) shouldEventually] beTrue];
+			});
+			it(@"should asynchronously load an NSImage from an NSString", ^{
+				__block NSImage *quickLookImage = nil;
+				
+				[sut imageForItem:itemMock completionHandler:^(NSImage *anImage) {
+					quickLookImage = anImage;
+				}];
+				[[expectFutureValue(quickLookImage) shouldEventually] beNonNil];
+			});
 		});
-		it(@"should asynchronously load an CGImageRef from an NSString", ^{
-			__block CGImageRef quickLookImage = NULL;
-
-			[sut createCGImageForItem:testImageString withRepresentationType:kMMFlowViewQuickLookPathRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef imageRef) {
-				quickLookImage = imageRef;
-			}];
-			[[expectFutureValue(theValue(quickLookImage != NULL)) shouldEventually] beTrue];
-		});
-		it(@"should asynchronously load an NSImage from an NSString", ^{
-			__block NSImage *quickLookImage = nil;
-			
-			[sut imageForItem:testImageString withRepresentationType:kMMFlowViewQuickLookPathRepresentationType completionHandler:^(NSImage *anImage) {
-				quickLookImage = anImage;
-			}];
-			[[expectFutureValue(quickLookImage) shouldEventually] beNonNil];
-		});
+		
 	});
 	context(@"kMMFlowViewPDFPageRepresentationType", ^{
 		__block PDFDocument *document = nil;
@@ -118,67 +219,91 @@ describe(@"MMFlowViewImageFactory", ^{
 			document = nil;
 			pdfPage = nil;
 		});
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewPDFPageRepresentationType];
+		});
 
 		it(@"should handle MMFlowViewPDFPageRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewPDFPageRepresentationType]) should] beYes];
 		});
 
-		it(@"should asynchronously load an CGImageRef from an PDFPage", ^{
-			__block CGImageRef pdfImage = NULL;
-			
-			[sut createCGImageForItem:pdfPage withRepresentationType:kMMFlowViewPDFPageRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef image) {
-				pdfImage = image;
-			}];
-			[[expectFutureValue(theValue(pdfImage != NULL)) shouldEventually] beTrue];
-		});
-		it(@"should asynchronously load an NSImage from an PDFPage", ^{
-			__block NSImage *pdfImage = nil;
-			
-			[sut imageForItem:pdfPage withRepresentationType:kMMFlowViewPDFPageRepresentationType completionHandler:^(NSImage *image) {
-				pdfImage = image;
-			}];
-			[[expectFutureValue(pdfImage) shouldEventually] beNonNil];
-		});
-		it(@"should asynchronously load an CGImageRef from an CGPDFPageRef", ^{
-			__block CGImageRef pdfImage = NULL;
-			
-			[sut createCGImageForItem:(id)[pdfPage pageRef] withRepresentationType:kMMFlowViewPDFPageRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef image) {
-				pdfImage = image;
-			}];
-			[[expectFutureValue(theValue(pdfImage != NULL)) shouldEventually] beTrue];
-		});
-		it(@"should asynchronously load an NSImage from an CGPDFPageRef", ^{
-			__block NSImage *pdfImage = nil;
+		context(@"load from PDFPage", ^{
+			beforeEach(^{
+				[itemMock stub:@selector(imageItemRepresentation) andReturn:pdfPage];
+			});
+			it(@"should asynchronously load an CGImageRef from an PDFPage", ^{
+				__block CGImageRef pdfImage = NULL;
+				
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+					pdfImage = image;
+				}];
+				[[expectFutureValue(theValue(pdfImage != NULL)) shouldEventually] beTrue];
+			});
+			it(@"should asynchronously load an NSImage from an PDFPage", ^{
+				__block NSImage *pdfImage = nil;
 
-			[sut imageForItem:(id)[pdfPage pageRef] withRepresentationType:kMMFlowViewPDFPageRepresentationType completionHandler:^(NSImage *image) {
-				pdfImage = image;
-			}];
-			[[expectFutureValue(pdfImage) shouldEventually] beNonNil];
+				[sut imageForItem:itemMock completionHandler:^(NSImage *image) {
+					pdfImage = image;
+				}];
+				[[expectFutureValue(pdfImage) shouldEventually] beNonNil];
+			});
 		});
+
+		context(@"load from CGPDFPageRef", ^{
+			beforeEach(^{
+				[itemMock stub:@selector(imageItemRepresentation) andReturn:(id)[pdfPage pageRef]];
+			});
+			it(@"should asynchronously load an CGImageRef from an CGPDFPageRef", ^{
+				__block CGImageRef pdfImage = NULL;
+				
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+					pdfImage = image;
+				}];
+				[[expectFutureValue(theValue(pdfImage != NULL)) shouldEventually] beTrue];
+			});
+			it(@"should asynchronously load an NSImage from an CGPDFPageRef", ^{
+				__block NSImage *pdfImage = nil;
+				
+				[sut imageForItem:itemMock completionHandler:^(NSImage *image) {
+					pdfImage = image;
+				}];
+				[[expectFutureValue(pdfImage) shouldEventually] beNonNil];
+			});
+		});
+		
 	});
 	context(@"kMMFlowViewPathRepresentationType", ^{
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewPathRepresentationType];
+			[itemMock stub:@selector(imageItemRepresentation) andReturn:testImageString];
+		});
 		it(@"should handle kMMFlowViewPathRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewPathRepresentationType]) should] beYes];
 		});
-		
+
 		it(@"should asynchronously load an CGImageRef from an NSString", ^{
 			__block CGImageRef imageFromPath = NULL;
 			
-			[sut createCGImageForItem:testImageString withRepresentationType:kMMFlowViewPathRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef image) {
+			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
 				imageFromPath = image;
 			}];
 			[[expectFutureValue(theValue(imageFromPath != NULL)) shouldEventually] beTrue];
 		});
+
 		it(@"should asynchronously load an NSImage from an NSString", ^{
 			__block NSImage *imageFromPath = nil;
 
-			[sut imageForItem:testImageString withRepresentationType:kMMFlowViewPathRepresentationType completionHandler:^(NSImage *image) {
+			[sut imageForItem:itemMock completionHandler:^(NSImage *image) {
 				imageFromPath = image;
 			}];
 			[[expectFutureValue(imageFromPath) shouldEventually] beNonNil];
 		});
 	});
 	context(@"kMMFlowViewURLRepresentationType", ^{
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewURLRepresentationType];
+			[itemMock stub:@selector(imageItemRepresentation) andReturn:testImageURL];
+		});
 		it(@"should handle kMMFlowViewURLRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewURLRepresentationType]) should] beYes];
 		});
@@ -186,7 +311,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an CGImageRef from an NSURL", ^{
 			__block CGImageRef imageFromURL = NULL;
 			
-			[sut createCGImageForItem:testImageURL withRepresentationType:kMMFlowViewURLRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef image) {
+			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
 				imageFromURL = image;
 			}];
 			[[expectFutureValue(theValue(imageFromURL != NULL)) shouldEventually] beTrue];
@@ -194,13 +319,17 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an NSImage from an NSURL", ^{
 			__block NSImage *imageFromURL = nil;
 			
-			[sut imageForItem:testImageURL withRepresentationType:kMMFlowViewURLRepresentationType completionHandler:^(NSImage *image) {
+			[sut imageForItem:itemMock completionHandler:^(NSImage *image) {
 				imageFromURL = image;
 			}];
 			[[expectFutureValue(imageFromURL) shouldEventually] beNonNil];
 		});
 	});
 	context(@"kMMFlowViewNSImageRepresentationType", ^{
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
+			[itemMock stub:@selector(imageItemRepresentation) andReturn:testImage];
+		});
 		it(@"should handle kMMFlowViewNSImageRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewNSImageRepresentationType]) should] beYes];
 		});
@@ -208,7 +337,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an CGImageRef from an NSImage", ^{
 			__block CGImageRef decodedImage = NULL;
 			
-			[sut createCGImageForItem:testImage withRepresentationType:kMMFlowViewNSImageRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef imageRef) {
+			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef imageRef) {
 				decodedImage = imageRef;
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
@@ -216,13 +345,17 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an NSImage from an NSImage", ^{
 			__block NSImage *decodedImage = nil;
 			
-			[sut imageForItem:testImage withRepresentationType:kMMFlowViewNSImageRepresentationType completionHandler:^(NSImage *anImage) {
+			[sut imageForItem:itemMock completionHandler:^(NSImage *anImage) {
 				decodedImage = anImage;
 			}];
 			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];
 		});
 	});
 	context(@"kMMFlowViewNSBitmapRepresentationType", ^{
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSBitmapRepresentationType];
+			[itemMock stub:@selector(imageItemRepresentation) andReturn:testImageRep];
+		});
 		it(@"should handle kMMFlowViewNSBitmapRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewNSBitmapRepresentationType]) should] beYes];
 		});
@@ -230,7 +363,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an CGImageRef from an NSBitmapImageRep", ^{
 			__block CGImageRef decodedImage = NULL;
 			
-			[sut createCGImageForItem:testImageRep withRepresentationType:kMMFlowViewNSBitmapRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef imageRef) {
+			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef imageRef) {
 				decodedImage = imageRef;
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
@@ -238,7 +371,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an NSImage from an NSBitmapImageRep", ^{
 			__block NSImage *decodedImage = nil;
 			
-			[sut imageForItem:testImageRep withRepresentationType:kMMFlowViewNSBitmapRepresentationType completionHandler:^(NSImage *anImage) {
+			[sut imageForItem:itemMock completionHandler:^(NSImage *anImage) {
 				decodedImage = anImage;
 			}];
 			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];
@@ -256,6 +389,10 @@ describe(@"MMFlowViewImageFactory", ^{
 				imageSource = NULL;
 			}
 		});
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewCGImageSourceRepresentationType];
+			[itemMock stub:@selector(imageItemRepresentation) andReturn:(__bridge id)imageSource];
+		});
 
 		it(@"should handle kMMFlowViewCGImageSourceRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewCGImageSourceRepresentationType]) should] beYes];
@@ -264,7 +401,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an CGImageRef from an CGImageSourceRef", ^{
 			__block CGImageRef decodedImage = NULL;
 			
-			[sut createCGImageForItem:(__bridge id)imageSource withRepresentationType:kMMFlowViewCGImageSourceRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef imageRef) {
+			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef imageRef) {
 				decodedImage = imageRef;
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
@@ -272,7 +409,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an NSImage from an CGImageSourceRef", ^{
 			__block NSImage *decodedImage = nil;
 			
-			[sut imageForItem:(__bridge id)imageSource withRepresentationType:kMMFlowViewCGImageSourceRepresentationType completionHandler:^(NSImage *anImage) {
+			[sut imageForItem:itemMock completionHandler:^(NSImage *anImage) {
 				decodedImage = anImage;
 			}];
 			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];
@@ -288,6 +425,10 @@ describe(@"MMFlowViewImageFactory", ^{
 		afterAll(^{
 			dataImage = nil;
 		});
+		beforeEach(^{
+			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSDataRepresentationType];
+			[itemMock stub:@selector(imageItemRepresentation) andReturn:dataImage];
+		});
 		it(@"should handle kMMFlowViewNSDataRepresentationType", ^{
 			[[theValue([sut canDecodeRepresentationType:kMMFlowViewNSDataRepresentationType]) should] beYes];
 		});
@@ -295,7 +436,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an CGImageRef from a NSData", ^{
 			__block CGImageRef decodedImage = NULL;
 			
-			[sut createCGImageForItem:dataImage withRepresentationType:kMMFlowViewNSDataRepresentationType maximumSize:maximumImageSize completionHandler:^(CGImageRef image) {
+			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
 				decodedImage = image;
 			}];
 			[[expectFutureValue(theValue(decodedImage != NULL)) shouldEventually] beTrue];
@@ -303,7 +444,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		it(@"should asynchronously load an NSImage from a NSData", ^{
 			__block NSImage *decodedImage = nil;
 			
-			[sut imageForItem:dataImage withRepresentationType:kMMFlowViewNSDataRepresentationType completionHandler:^(NSImage *anImage) {
+			[sut imageForItem:itemMock completionHandler:^(NSImage *anImage) {
 				decodedImage = anImage;
 			}];
 			[[expectFutureValue(decodedImage) shouldEventually] beNonNil];

@@ -1331,13 +1331,9 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)updateImages
 {
-	CGSize itemSize = self.layout.itemSize;
-
 	[self.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:self.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-		id<MMFlowViewItem> item = [self imageItemForIndex:idx];
-		id imageRepresentation = [self imageRepresentationForItem:item];
-		NSString *imageRepresentationType = [self imageRepresentationTypeForItem:item];
-		[self.imageFactory createCGImageForItem:imageRepresentation withRepresentationType:imageRepresentationType maximumSize:itemSize completionHandler:^(CGImageRef image) {
+		[self.imageFactory createCGImageForItem:[self imageItemForIndex:idx]
+							  completionHandler:^(CGImageRef image) {
 			contentLayer.contents = (__bridge id)image;
 		}];
 	}];
