@@ -12,7 +12,7 @@
 SPEC_BEGIN(MMQuickLookImageDecoderSpec)
 
 describe(@"MMQuickLookImageDecoder", ^{
-	CGSize desiredSize = {50, 50};
+	const NSUInteger desiredSize = 50;
 	NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
 	NSString *testImageString = [testImageURL path];
 	__block MMQuickLookImageDecoder *sut = nil;
@@ -36,21 +36,25 @@ describe(@"MMQuickLookImageDecoder", ^{
 	it(@"should conform to MMImageDecoderProtocol", ^{
 		[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
 	});
-	it(@"should respond to newImageFromItem:withSize:", ^{
-		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
+	it(@"should respond to newCGImageFromItem", ^{
+		[[sut should] respondToSelector:@selector(newCGImageFromItem:)];
 	});
 	it(@"should respond to imageFromItem:", ^{
 		[[sut should] respondToSelector:@selector(imageFromItem:)];
 	});
-	context(@"newImageFromItem:withSize:", ^{
+	it(@"should have a maxPixelSize of zero", ^{
+		[[theValue(sut.maxPixelSize) should] beZero];
+	});
+	context(@"newCGImageFromItem:", ^{
 		it(@"should raise when invoked with nil item", ^{
 			[[theBlock(^{
-				[sut newImageFromItem:nil withSize:CGSizeZero];
+				[sut newCGImageFromItem:nil];
 			}) should] raiseWithName:NSInternalInconsistencyException];
 		});
-		context(@"when created with NSURL and non-zero size", ^{
+		context(@"when created with NSURL", ^{
 			beforeEach(^{
-				imageRef = [sut newImageFromItem:testImageURL withSize:desiredSize];
+				sut.maxPixelSize = desiredSize;
+				imageRef = [sut newCGImageFromItem:testImageURL];
 			});
 			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
@@ -58,20 +62,28 @@ describe(@"MMQuickLookImageDecoder", ^{
 			it(@"should be in the specified size", ^{
 				CGFloat width = CGImageGetWidth(imageRef);
 				CGFloat height = CGImageGetHeight(imageRef);
-				[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+				[[theValue(width == desiredSize || height == desiredSize) should] beTrue];
 			});
 		});
-		context(@"when asking for an image with zero image size", ^{
+		context(@"when asking for an image with zero pixel size", ^{
 			beforeEach(^{
-				imageRef = [sut newImageFromItem:testImageURL withSize:CGSizeZero];
+				sut.maxPixelSize = 0;
+				imageRef = [sut newCGImageFromItem:testImageURL];
 			});
 			it(@"should return an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
 			});
+			it(@"should have a width less or equal than 4000 points", ^{
+				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(4000)];
+			});
+			it(@"should have a height less or equal than 4000 points", ^{
+				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(4000)];
+			});
 		});
 		context(@"when asking for an image from a string item", ^{
 			beforeEach(^{
-				imageRef = [sut newImageFromItem:testImageString withSize:desiredSize];
+				sut.maxPixelSize = desiredSize;
+				imageRef = [sut newCGImageFromItem:testImageString];
 			});
 			it(@"should return an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
@@ -99,15 +111,6 @@ describe(@"MMQuickLookImageDecoder", ^{
 					[[image should] beKindOfClass:[NSImage class]];
 				});
 			});
-			context(@"http urlstring", ^{
-				beforeEach(^{
-					image = [sut imageFromItem:@"http://images.apple.com/global/elements/flags/22x22/usa.png"];
-				});
-				it(@"should load an image", ^{
-					[[image shouldNot] beNil];
-				});
-			});
-			
 		});
 	});
 });

@@ -65,22 +65,22 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 
 - (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType
 {
-	return nil;
+	return self.imageDecoders[representationType];
 }
 
 - (void)setDecoder:(id<MMImageDecoderProtocol>)aDecoder forRepresentationType:(NSString*)representationType
 {
-	if (![aDecoder conformsToProtocol:@protocol(MMImageDecoderProtocol)]) {
-		[NSException raise:NSInvalidArgumentException format:@"aDecoder %@ doesnt conform to MMImageDecoderProtocol", aDecoder];
-	}
-	if (representationType) {
-		_imageDecoders[representationType] = aDecoder;
+	NSParameterAssert([aDecoder conformsToProtocol:@protocol(MMImageDecoderProtocol)]);
+	NSParameterAssert(representationType);
+
+	if ([representationType length] > 0) {
+		self.imageDecoders[representationType] = aDecoder;
 	}
 }
 
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType
 {
-	return [self.imageDecoders valueForKey:representationType] != nil;
+	return [self decoderforRepresentationType:representationType] != nil;
 }
 
 - (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef image))completionHandler
@@ -89,11 +89,11 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 
 	NSString *representationType = anItem.imageItemRepresentationType;
 	if ([self canDecodeRepresentationType:representationType]) {
-		id<MMImageDecoderProtocol> decoder = self.imageDecoders[representationType];
-
+		id<MMImageDecoderProtocol> decoder = [self decoderforRepresentationType:representationType];
+		decoder.maxPixelSize = MAX(self.maxImageSize.width, self.maxImageSize.height);
 		[self.operationQueue addOperationWithBlock:^{
-			CGImageRef image = [decoder newImageFromItem:anItem.imageItemRepresentation withSize:self.maxImageSize];
-			
+			CGImageRef image = [decoder newCGImageFromItem:anItem.imageItemRepresentation];
+
 			if (image) {
 				[[NSOperationQueue mainQueue] addOperationWithBlock:^{
 					completionHandler(image);
@@ -108,7 +108,7 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 {
 	NSParameterAssert(completionHandler != NULL);
 	if ([self canDecodeRepresentationType:anItem.imageItemRepresentationType]) {
-		id<MMImageDecoderProtocol> decoder = self.imageDecoders[anItem.imageItemRepresentationType];
+		id<MMImageDecoderProtocol> decoder = [self decoderforRepresentationType:anItem.imageItemRepresentationType];
 
 		[self.operationQueue addOperationWithBlock:^{
 			NSImage *image = [decoder imageFromItem:anItem.imageItemRepresentation];

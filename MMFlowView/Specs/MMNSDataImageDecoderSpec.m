@@ -12,7 +12,7 @@
 SPEC_BEGIN(MMNSDataImageDecoderSpec)
 
 describe(@"MMNSDataImageDecoder", ^{
-	CGSize desiredSize = {100, 100};
+	const NSUInteger desiredSize = 100;
 	__block NSData *imageData = nil;
 	__block MMNSDataImageDecoder *sut = nil;
 	__block CGImageRef image = NULL;
@@ -39,16 +39,20 @@ describe(@"MMNSDataImageDecoder", ^{
 	it(@"should conform to MMImageDecoderProtocol", ^{
 		[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
 	});
-	it(@"should respond to newImageFromItem:withSize:", ^{
-		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
+	it(@"should respond to newCGImageFromItem:", ^{
+		[[sut should] respondToSelector:@selector(newCGImageFromItem:)];
 	});
 	it(@"should respond to imageFromItem:", ^{
 		[[sut should] respondToSelector:@selector(imageFromItem:)];
 	});
-	context(@"newImageFromItem:withSize:", ^{
+	it(@"should have a maxPixelSize of zero", ^{
+		[[theValue(sut.maxPixelSize) should] beZero];
+	});
+	context(@"newCGImageFromItem:", ^{
 		context(@"when created from NSData and non-zero size", ^{
 			beforeEach(^{
-				image = [sut newImageFromItem:imageData withSize:desiredSize];
+				sut.maxPixelSize = desiredSize;
+				image = [sut newCGImageFromItem:imageData];
 			});
 			it(@"should load an image", ^{
 				[[theValue(image != NULL) should] beTrue];
@@ -56,12 +60,12 @@ describe(@"MMNSDataImageDecoder", ^{
 			it(@"should be in the specified size", ^{
 				CGFloat width = CGImageGetWidth(image);
 				CGFloat height = CGImageGetHeight(image);
-				[[theValue(width == desiredSize.width || height == desiredSize.height) should] beTrue];
+				[[theValue(width == desiredSize || height == desiredSize) should] beTrue];
 			});
 		});
 		context(@"when asking for an image with zero image size", ^{
 			beforeEach(^{
-				image = [sut newImageFromItem:imageData withSize:CGSizeZero];
+				image = [sut newCGImageFromItem:imageData];
 			});
 			it(@"should return an image", ^{
 				[[theValue(image != NULL) should] beTrue];

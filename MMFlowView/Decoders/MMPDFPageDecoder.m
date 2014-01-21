@@ -11,7 +11,9 @@
 
 @implementation MMPDFPageDecoder
 
-- (CGImageRef)newImageFromPDFPage:(CGPDFPageRef)pdfPage withSize:(CGSize)imageSize andTransparentBackground:(BOOL)transparentBackground
+@synthesize maxPixelSize;
+
++ (CGImageRef)newImageFromPDFPage:(CGPDFPageRef)pdfPage withSize:(CGSize)imageSize andTransparentBackground:(BOOL)transparentBackground
 {
 	NSParameterAssert(pdfPage != NULL);
 
@@ -60,7 +62,7 @@
 	return pdfImage;
 }
 
-- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
+- (CGImageRef)newCGImageFromItem:(id)anItem
 {
 	CGPDFPageRef pageRef = NULL;
 	if ( [anItem isKindOfClass:[PDFPage class]] ) {
@@ -69,9 +71,9 @@
 	else if ( CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID() ) {
 		pageRef = (__bridge CGPDFPageRef)(anItem);
 	}
-	return pageRef ? [self newImageFromPDFPage:pageRef
-								   withSize:imageSize
-					andTransparentBackground:NO] : NULL;
+	return pageRef ? [[self class ]newImageFromPDFPage:pageRef
+											  withSize:CGSizeMake(self.maxPixelSize, self.maxPixelSize)
+							  andTransparentBackground:NO] : NULL;
 }
 
 - (NSImage*)imageFromItem:(id)anItem
@@ -81,7 +83,7 @@
 		image = [[NSImage alloc] initWithData:[anItem dataRepresentation]];
 	}
 	else if ( CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID()) {
-		CGImageRef imageRef = [self newImageFromPDFPage:(__bridge CGPDFPageRef)(anItem) withSize:CGSizeZero andTransparentBackground:NO];
+		CGImageRef imageRef = [self newCGImageFromItem:anItem];
 		if ( imageRef) {
 			image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
 			CGImageRelease(imageRef);

@@ -53,9 +53,10 @@ describe(@"MMFlowViewImageFactory", ^{
 		itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 		[itemMock stub:@selector(imageItemRepresentationType) andReturn:@"testRepresentationType"];
 		[itemMock stub:@selector(imageItemRepresentation) andReturn:(__bridge id)testImageRef];
-		decoderMock = [KWMock mockForProtocol:@protocol(MMImageDecoderProtocol)];
-		[decoderMock stub:@selector(newImageFromItem:withSize:) andReturn:(__bridge id)(testImageRef)];
-		[sut setDecoder:decoderMock forRepresentationType:@"testRepresentationType"];
+		decoderMock = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
+		//[decoderMock stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
+		//[decoderMock stub:@selector(maxPixelSize) andReturn:@100];
+		//[decoderMock stub:@selector(setMaxPixelSize:)];
 	});
 	afterEach(^{
 		sut = nil;
@@ -83,30 +84,40 @@ describe(@"MMFlowViewImageFactory", ^{
 		[[[NSValue valueWithSize:sut.maxImageSize] should] equal:expectedSize];
 	});
 	context(@"decoders", ^{
-		it(@"should raise an NSInvalidArgumentExcption when setting an object not conforming to MMImageDecoderProtocol", ^{
+		it(@"should raise an NSInternalInconsistencyException when setting an object not conforming to MMImageDecoderProtocol", ^{
 			[[theBlock(^{
 				[sut setDecoder:((id<MMImageDecoderProtocol>)@"A string") forRepresentationType:@"type"];
-			}) should] raiseWithName:NSInvalidArgumentException];
+			}) should] raiseWithName:NSInternalInconsistencyException];
 		});
-		it(@"should not raise when setting a decoder a nil representationType", ^{
+		it(@"should raise an NSInternalInconsistencyException when setting a decoder with a nil representationType", ^{
 			[[theBlock(^{
 				[sut setDecoder:decoderMock forRepresentationType:nil];
-			}) shouldNot] raise];
+			}) should] raiseWithName:NSInternalInconsistencyException];
 		});
-		context(@"setting decoder with empty representation type", ^{
+		context(@"when setting decoder with empty representation type", ^{
 			it(@"should not raise when setting a decoder for an empty string representationType", ^{
 				[[theBlock(^{
 					[sut setDecoder:decoderMock forRepresentationType:@""];
 				}) shouldNot] raise];
 			});
+			it(@"should not set the decoder", ^{
+				[sut setDecoder:decoderMock forRepresentationType:@""];
+				[[(id)[sut decoderforRepresentationType:@""] should] beNil];
+			});
 		});
-		it(@"should do nothing when setting a decoder for an empty string representationType", ^{
-			[sut setDecoder:decoderMock forRepresentationType:@""];
-			[[(id)[sut decoderforRepresentationType:@""] should] beNil];
+		context(@"when setting a valid decoder", ^{
+			beforeEach(^{
+				[sut setDecoder:decoderMock forRepresentationType:@"myRepresentationType"];
+			});
+			it(@"should set the decoder", ^{
+				[[(id)[sut decoderforRepresentationType:@"myRepresentationType"] should] equal:decoderMock];
+			});
 		});
 	});
-	
 	context(@"createCGImageForItem:completionHandler:", ^{
+		beforeEach(^{
+			[sut setDecoder:decoderMock forRepresentationType:@"testRepresentationType"];
+		});
 		it(@"should respond to createCGImageForItem:completionHandler:", ^{
 			[[sut should] respondToSelector:@selector(createCGImageForItem:completionHandler:)];
 		});
@@ -115,9 +126,10 @@ describe(@"MMFlowViewImageFactory", ^{
 				[sut createCGImageForItem:itemMock completionHandler:NULL];
 			}) should] raise];
 		});
-		it(@"should call back on the same thread as the caller", ^{
+		it(@"should call invoke completionBlock on the main thread", ^{
 			NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
 			__block NSOperationQueue *queueOnCompletionBlock = nil;
+			[decoderMock stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
 			
 			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
 				queueOnCompletionBlock = [NSOperationQueue currentQueue];
@@ -125,25 +137,26 @@ describe(@"MMFlowViewImageFactory", ^{
 			[[expectFutureValue(queueOnCompletionBlock) shouldEventually] equal:mainQueue];
 		});
 		context(@"interaction with image decoder", ^{
-			beforeEach(^{
-				[sut setDecoder:decoderMock forRepresentationType:@"testRepresentationType"];
+			it(@"should ask the item for its imageRepresentationType", ^{
+				[[itemMock should] receive:@selector(imageItemRepresentationType)];
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+				}];
 			});
-			context(@"createCGImageForItem:completionHandler", ^{
-				it(@"should ask the item for its imageRepresentationType", ^{
-					[[itemMock should] receive:@selector(imageItemRepresentationType)];
-					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
-					}];
-				});
-				it(@"should should ask the item for its imageRepresentation", ^{
-					[[itemMock should] receive:@selector(imageItemRepresentationType)];
-					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
-					}];
-				});
-				it(@"should send the decoder newImageFromItem:withSize:", ^{
-					[[decoderMock shouldEventually] receive:@selector(newImageFromItem:withSize:) andReturn:(__bridge id)testImageRef];
-					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
-					}];
-				});
+			it(@"should should ask the item for its imageRepresentation", ^{
+				[[itemMock should] receive:@selector(imageItemRepresentationType)];
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+				}];
+			});
+			it(@"should set its image size to the decoder", ^{
+				[[decoderMock should] receive:@selector(setMaxPixelSize:) withArguments:theValue(MAX(sut.maxImageSize.width, sut.maxImageSize.height))];
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+				}];
+			});
+			it(@"should send the decoder newImageFromItem:", ^{
+				[[decoderMock shouldEventually] receive:@selector(newCGImageFromItem:) andReturn:(__bridge id)testImageRef];
+				 
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+				}];
 			});
 		});
 	});

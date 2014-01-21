@@ -10,18 +10,17 @@
 
 @implementation MMCGImageSourceDecoder
 
-- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
+@synthesize maxPixelSize;
+
+- (CGImageRef)newCGImageFromItem:(id)anItem
 {
 	if ( anItem && (CGImageSourceGetTypeID() == CFGetTypeID((__bridge CFTypeRef)(anItem))) ) {
 		CFStringRef imageSourceType = CGImageSourceGetType((__bridge CGImageSourceRef)(anItem));
 		CGImageRef image = NULL;
 		if ( imageSourceType ) {
-			if (CGSizeEqualToSize(imageSize, CGSizeZero)) {
-				imageSize.width = 16000;
-				imageSize.height = 16000;
-			}
-			NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
-									  (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
+			NSDictionary *options = self.maxPixelSize ? @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
+									  (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(self.maxPixelSize)
+														  } : @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES};
 			image = CGImageSourceCreateThumbnailAtIndex((__bridge CGImageSourceRef)(anItem), 0, (__bridge CFDictionaryRef)options );
 		}
 		return image;
@@ -35,7 +34,7 @@
 	if ( anItem && (CGImageSourceGetTypeID() == CFGetTypeID((__bridge CFTypeRef)(anItem))) ) {
 		CFStringRef imageSourceType = CGImageSourceGetType((__bridge CGImageSourceRef)(anItem));
 		if ( imageSourceType != NULL ) {
-			CGImageRef imageRef = [self newImageFromItem:anItem withSize:CGSizeZero];
+			CGImageRef imageRef = [self newCGImageFromItem:anItem];
 			if (imageRef) {
 				image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
 				CGImageRelease(imageRef);

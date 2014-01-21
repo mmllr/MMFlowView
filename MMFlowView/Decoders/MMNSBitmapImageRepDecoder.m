@@ -7,18 +7,19 @@
 //
 
 #import "MMNSBitmapImageRepDecoder.h"
+#import "MMNSDataImageDecoder.h"
 
 @implementation MMNSBitmapImageRepDecoder
 
-- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
+@synthesize maxPixelSize;
+
+- (CGImageRef)newCGImageFromItem:(id)anItem
 {
 	if ([anItem isKindOfClass:[NSBitmapImageRep class]]) {
 		NSBitmapImageRep *bitmapImage = anItem;
-		
-		NSRect proposedRect = NSMakeRect(0, 0, imageSize.width, imageSize.height);
-		return CGImageRetain([bitmapImage CGImageForProposedRect:&proposedRect
-														 context:nil
-														   hints:nil]);
+		MMNSDataImageDecoder *dataDecoder = [[MMNSDataImageDecoder alloc] init];
+		dataDecoder.maxPixelSize = self.maxPixelSize;
+		return [dataDecoder newCGImageFromItem:[bitmapImage TIFFRepresentation]];
 	}
 	return NULL;
 }

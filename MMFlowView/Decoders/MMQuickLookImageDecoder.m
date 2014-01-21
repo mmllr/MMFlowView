@@ -9,9 +9,13 @@
 #import "MMQuickLookImageDecoder.h"
 #import <QuickLook/QuickLook.h>
 
+const CGFloat kDefaultMaxPixelSize = 4000;
+
 @implementation MMQuickLookImageDecoder
 
-- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
+@synthesize maxPixelSize;
+
+- (CGImageRef)newCGImageFromItem:(id)anItem
 {
 	NSParameterAssert(anItem);
 	CFURLRef itemURL = NULL;
@@ -22,12 +26,8 @@
 	else if ( [anItem isKindOfClass:[NSString class]] ) {
 		itemURL = (__bridge CFURLRef)[NSURL fileURLWithPath:anItem];
 	}
-	if (CGSizeEqualToSize(imageSize, CGSizeZero)) {
-		imageSize.width = 16000;
-		imageSize.height = 16000;
-	}
 	NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
-	return QLThumbnailImageCreate(NULL, itemURL, imageSize, (__bridge CFDictionaryRef)quickLookOptions );
+	return QLThumbnailImageCreate(NULL, itemURL, self.maxPixelSize ? CGSizeMake(self.maxPixelSize, self.maxPixelSize) : CGSizeMake(kDefaultMaxPixelSize, kDefaultMaxPixelSize), (__bridge CFDictionaryRef)quickLookOptions );
 }
 
 - (NSImage*)imageFromItem:(id)anItem

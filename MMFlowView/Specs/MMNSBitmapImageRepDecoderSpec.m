@@ -13,9 +13,8 @@ SPEC_BEGIN(MMNSBitmapImageRepDecoderSpec)
 
 describe(@"MMNSBitmapImageRepDecoder", ^{
 	__block MMNSBitmapImageRepDecoder *sut = nil;
-	__block CGImageRef image = NULL;
+	__block CGImageRef imageRef = NULL;
 	__block NSBitmapImageRep *imageRep = nil;
-	const CGSize desiredSize = {50, 50};
 
 	beforeAll(^{
 		NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
@@ -31,83 +30,102 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 	afterAll(^{
 		imageRep = nil;
 	});
-	beforeEach(^{
-		sut = [[MMNSBitmapImageRepDecoder alloc] init];
-	});
-	afterEach(^{
-		sut = nil;
-		if (image) {
-			CGImageRelease(image);
-			image = NULL;
-		}
-	});
-	it(@"should exist", ^{
-		[[sut shouldNot] beNil];
-	});
-	it(@"should conform to MMImageDecoderProtocol", ^{
-		[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
-	});
-	it(@"should respond to newImageFromItem:withSize:", ^{
-		[[sut should] respondToSelector:@selector(newImageFromItem:withSize:)];
-	});
-	it(@"should respond to imageFromItem:", ^{
-		[[sut should] respondToSelector:@selector(imageFromItem:)];
-	});
-	context(@"newImageFromItem:withSize:", ^{
-		context(@"creating images from a NSBitmapImageRep", ^{
+	context(@"a new instance", ^{
+		beforeEach(^{
+			sut = [[MMNSBitmapImageRepDecoder alloc] init];
+		});
+		afterEach(^{
+			sut = nil;
+			if (imageRef) {
+				CGImageRelease(imageRef);
+				imageRef = NULL;
+			}
+		});
+		it(@"should exist", ^{
+			[[sut shouldNot] beNil];
+		});
+		it(@"should conform to MMImageDecoderProtocol", ^{
+			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
+		});
+		it(@"should respond to newCGImageFromItem:", ^{
+			[[sut should] respondToSelector:@selector(newCGImageFromItem:)];
+		});
+		it(@"should respond to imageFromItem:", ^{
+			[[sut should] respondToSelector:@selector(imageFromItem:)];
+		});
+		it(@"should have a maxPixelSize of zero", ^{
+			[[theValue(sut.maxPixelSize) should] beZero];
+		});
+		context(@"setting the maxPixelSize to 100", ^{
 			beforeEach(^{
-				image = [sut newImageFromItem:imageRep withSize:desiredSize];
+				sut.maxPixelSize = 100;
 			});
-			it(@"should create an image", ^{
-				[[theValue(image != NULL) should] beTrue];
+			it(@"should have a maxPixelSize of 100", ^{
+				[[theValue(sut.maxPixelSize) should] equal:theValue(100)];
+			});
+			context(@"newCGImageFromItem:", ^{
+				context(@"creating images from a NSBitmapImageRep", ^{
+					beforeEach(^{
+						imageRef = [sut newCGImageFromItem:imageRep];
+					});
+					it(@"should create an image", ^{
+						[[theValue(imageRef != NULL) should] beTrue];
+					});
+					it(@"should have a width less or equal 100", ^{
+						[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+					});
+					it(@"should have a height less or equal 100", ^{
+						[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+					});
+				});
+				context(@"asking for image with an invalid item", ^{
+					it(@"should not return an image from nil", ^{
+						[[theValue([sut newCGImageFromItem:nil] == NULL) should] beTrue];
+					});
+					it(@"should not return an image from a non NSBitmapImageRep", ^{
+						[[theValue([sut newCGImageFromItem:@"String"] == NULL) should] beTrue];
+					});
+				});
+				context(@"when asking for an image with zero image size", ^{
+					beforeEach(^{
+						imageRef = [sut newCGImageFromItem:imageRep];
+					});
+					it(@"should return an image", ^{
+						[[theValue(imageRef != NULL) should] beTrue];
+					});
+				});
+			});
+			context(@"imageFromItem:", ^{
+				context(@"creating an image from a NSBitmapImageRep", ^{
+					__block NSImage *image = nil;
+					beforeEach(^{
+						image = [sut imageFromItem:imageRep];
+					});
+					afterEach(^{
+						image = nil;
+					});
+					it(@"should return an image", ^{
+						[[image shouldNot] beNil];
+					});
+					it(@"should return an NSImage", ^{
+						[[image should] beKindOfClass:[NSImage class]];
+					});
+					it(@"should contain the bitmapRef in its representations", ^{
+						[[[image representations] should] contain:imageRep];
+					});
+				});
+				context(@"when asking for an image with an invalid item", ^{
+					it(@"should not return an image for nil", ^{
+						[[[sut imageFromItem:nil] should] beNil];
+					});
+					it(@"should not return an image for an item from wrong type", ^{
+						[[[sut imageFromItem:@"Test"] should] beNil];
+					});
+				});
 			});
 		});
-		context(@"asking for image with an invalid item", ^{
-			it(@"should not return an image from nil", ^{
-				[[theValue([sut newImageFromItem:nil withSize:desiredSize] == NULL) should] beTrue];
-			});
-			it(@"should not return an image from a non NSBitmapImageRep", ^{
-				[[theValue([sut newImageFromItem:@"String" withSize:desiredSize] == NULL) should] beTrue];
-			});
-		});
-		context(@"when asking for an image with zero image size", ^{
-			beforeEach(^{
-				image = [sut newImageFromItem:imageRep withSize:CGSizeZero];
-			});
-			it(@"should return an image", ^{
-				[[theValue(image != NULL) should] beTrue];
-			});
-		});
+		
 	});
-	context(@"imageFromItem:", ^{
-		context(@"creating an image from a NSBitmapImageRep", ^{
-			__block NSImage *image = nil;
-			beforeEach(^{
-				image = [sut imageFromItem:imageRep];
-			});
-			afterEach(^{
-				image = nil;
-			});
-			it(@"should return an image", ^{
-				[[image shouldNot] beNil];
-			});
-			it(@"should return an NSImage", ^{
-				[[image should] beKindOfClass:[NSImage class]];
-			});
-			it(@"should contain the bitmapRef in its representations", ^{
-				[[[image representations] should] contain:imageRep];
-			});
-		});
-		context(@"when asking for an image with an invalid item", ^{
-			it(@"should not return an image for nil", ^{
-				[[[sut imageFromItem:nil] should] beNil];
-			});
-			it(@"should not return an image for an item from wrong type", ^{
-				[[[sut imageFromItem:@"Test"] should] beNil];
-			});
-		});
-	});
-	
 });
 
 SPEC_END

@@ -10,17 +10,18 @@
 
 @implementation MMNSDataImageDecoder
 
-- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
+@synthesize maxPixelSize;
+
+- (CGImageRef)newCGImageFromItem:(id)anItem
 {
 	if (![ anItem isKindOfClass:[NSData class]] ) {
 		return NULL;
 	}
 	CFDataRef dataRef = (__bridge CFDataRef)(anItem);
 
-	imageSize.width = imageSize.width > 0 ? imageSize.width : 16000;
-	imageSize.height = imageSize.height > 0 ? imageSize.height : 16000;
-	NSDictionary *options = @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
-							  (NSString *)kCGImageSourceThumbnailMaxPixelSize: [ NSNumber numberWithInteger:MAX(imageSize.width, imageSize.height) ]};
+	NSDictionary *options = self.maxPixelSize ? @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
+												  (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(self.maxPixelSize)} :
+												@{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES};
 	
 	CGImageSourceRef imageSource = CGImageSourceCreateWithData(dataRef, (__bridge CFDictionaryRef)options);
 	CGImageRef image = NULL;

@@ -7,17 +7,19 @@
 //
 
 #import "MMNSImageDecoder.h"
+#import "MMNSDataImageDecoder.h"
 
 @implementation MMNSImageDecoder
 
-- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize
+@synthesize maxPixelSize;
+
+- (CGImageRef)newCGImageFromItem:(id)anItem
 {
 	if ( [anItem isKindOfClass:[NSImage class]] ) {
-		NSImage *image = [anItem copy];
-		[image setSize:imageSize];
-		return CGImageRetain([image CGImageForProposedRect:NULL
-												   context:nil
-													 hints:nil]);
+		NSImage *image = (NSImage*)anItem;
+		MMNSDataImageDecoder *dataDecoder = [[MMNSDataImageDecoder alloc] init];
+		dataDecoder.maxPixelSize = self.maxPixelSize;
+		return [dataDecoder newCGImageFromItem:[image TIFFRepresentation]];
 	}
 	else {
 		return NULL;

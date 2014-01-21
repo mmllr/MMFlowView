@@ -10,7 +10,9 @@
 
 @protocol MMImageDecoderProtocol <NSObject>
 
-- (CGImageRef)newImageFromItem:(id)anItem withSize:(CGSize)imageSize;
+@property NSUInteger maxPixelSize;
+
+- (CGImageRef)newCGImageFromItem:(id)anItem;
 - (NSImage*)imageFromItem:(id)anItem;
 
 @end
