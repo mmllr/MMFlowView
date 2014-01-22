@@ -220,14 +220,10 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 	else if ( anIndex == self.selectedItemIndex ) {
 		return stackedWidth*anIndex + itemWidth;
 	}
-	else {
-		if ( self.selectedItemIndex == 0 ) {
-			return stackedWidth*anIndex + itemWidth;
-		}
-		else {
-			return stackedWidth*anIndex + itemWidth*2;
-		}
+	if ( self.selectedItemIndex == 0 ) {
+		return stackedWidth*anIndex + itemWidth;
 	}
+	return stackedWidth*anIndex + itemWidth*2;
 }
 
 @end
