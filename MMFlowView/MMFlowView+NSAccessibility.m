@@ -54,9 +54,7 @@
 	else if ( [anAttribute isEqualToString:NSAccessibilityHorizontalScrollBarAttribute] ) {
 		return self.scrollBarLayer;
 	}
-	else {
-		return [ super accessibilityAttributeValue:anAttribute ];
-    }
+	return [ super accessibilityAttributeValue:anAttribute ];
 }
 
 - (id)accessibilityHitTest:(NSPoint)aPoint
