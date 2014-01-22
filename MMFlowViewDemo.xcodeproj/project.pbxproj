@@ -150,6 +150,7 @@
 		288FA4BD18630A360040F410 /* MMNSDataImageDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMNSDataImageDecoder.h; path = MMFlowView/Decoders/MMNSDataImageDecoder.h; sourceTree = "<group>"; };
 		288FA4BE18630A360040F410 /* MMNSDataImageDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMNSDataImageDecoder.m; path = MMFlowView/Decoders/MMNSDataImageDecoder.m; sourceTree = "<group>"; };
 		2899D3841883FE7E009E2C53 /* run_integration.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = run_integration.sh; sourceTree = "<group>"; };
+		28A83C60189031110044B13E /* MMMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMMacros.h; path = MMFlowView/MMMacros.h; sourceTree = "<group>"; };
 		28B9EAB518807FB7000E793D /* CALayerMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerMMAdditionsSpec.m; sourceTree = "<group>"; };
 		28B9EAB7188080AD000E793D /* CALayer+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+MMAdditions.h"; path = "MMFlowView/CALayer+MMAdditions.h"; sourceTree = "<group>"; };
 		28B9EAB8188080AD000E793D /* CALayer+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+MMAdditions.m"; path = "MMFlowView/CALayer+MMAdditions.m"; sourceTree = "<group>"; };
@@ -238,6 +239,7 @@
 				2886487618856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m */,
 				288591BC17398F88000E04EF /* NSColor+MMAdditions.h */,
 				288591BD17398F88000E04EF /* NSColor+MMAdditions.m */,
+				28A83C60189031110044B13E /* MMMacros.h */,
 			);
 			name = Shared;
 			sourceTree = "<group>";

@@ -8,6 +8,7 @@
 
 #import "Kiwi.h"
 #import "MMNSImageDecoder.h"
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMNSImageDecoderSpec)
 
@@ -28,11 +29,10 @@ describe(@"MMNSImageDecoder", ^{
 			sut = [[MMNSImageDecoder alloc] init];
 		});
 		afterEach(^{
-			if (imageRef) {
-				CGImageRelease(imageRef);
-				imageRef = NULL;
-			}
 			sut = nil;
+		});
+		afterAll(^{
+			SAFE_CGIMAGE_RELEASE(imageRef)
 		});
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
@@ -58,8 +58,11 @@ describe(@"MMNSImageDecoder", ^{
 			});
 			context(@"newImageFromItem:withSize:", ^{
 				context(@"when created with an NSImage and non-zero size", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:testImage];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should load an image", ^{
 						[[theValue(imageRef != NULL) should] beTrue];
@@ -72,8 +75,11 @@ describe(@"MMNSImageDecoder", ^{
 					});
 				});
 				context(@"when not invoked with an NSImage", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:@"Test"];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should not return an image", ^{
 						[[theValue(imageRef == NULL) should] beTrue];
@@ -84,10 +90,10 @@ describe(@"MMNSImageDecoder", ^{
 				__block NSImage *image = nil;
 				
 				context(@"when created with an NSImage", ^{
-					beforeEach(^{
+					beforeAll(^{
 						image = [sut imageFromItem:testImage];
 					});
-					afterEach(^{
+					afterAll(^{
 						image = nil;
 					});
 					it(@"should load an image", ^{

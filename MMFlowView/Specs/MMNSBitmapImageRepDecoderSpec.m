@@ -8,6 +8,7 @@
 
 #import "Kiwi.h"
 #import "MMNSBitmapImageRepDecoder.h"
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMNSBitmapImageRepDecoderSpec)
 
@@ -36,10 +37,9 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 		});
 		afterEach(^{
 			sut = nil;
-			if (imageRef) {
-				CGImageRelease(imageRef);
-				imageRef = NULL;
-			}
+		});
+		afterAll(^{
+			SAFE_CGIMAGE_RELEASE(imageRef)
 		});
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
@@ -65,8 +65,11 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 			});
 			context(@"newCGImageFromItem:", ^{
 				context(@"creating images from a NSBitmapImageRep", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:imageRep];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should create an image", ^{
 						[[theValue(imageRef != NULL) should] beTrue];
@@ -87,8 +90,11 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 					});
 				});
 				context(@"when asking for an image with zero image size", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:imageRep];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should return an image", ^{
 						[[theValue(imageRef != NULL) should] beTrue];
@@ -98,10 +104,10 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 			context(@"imageFromItem:", ^{
 				context(@"creating an image from a NSBitmapImageRep", ^{
 					__block NSImage *image = nil;
-					beforeEach(^{
+					beforeAll(^{
 						image = [sut imageFromItem:imageRep];
 					});
-					afterEach(^{
+					afterAll(^{
 						image = nil;
 					});
 					it(@"should return an image", ^{
@@ -124,7 +130,6 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 				});
 			});
 		});
-		
 	});
 });
 

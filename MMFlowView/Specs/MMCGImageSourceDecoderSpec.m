@@ -8,6 +8,7 @@
 
 #import "Kiwi.h"
 #import "MMCGImageSourceDecoder.h"
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMCGImageSourceDecoderSpec)
 
@@ -31,11 +32,10 @@ describe(@"MMCGImageSourceDecoder", ^{
 			sut = [[MMCGImageSourceDecoder alloc] init];
 		});
 		afterEach(^{
-			if (imageRef) {
-				CGImageRelease(imageRef);
-				imageRef = NULL;
-			}
 			sut = nil;
+		});
+		afterAll(^{
+			SAFE_CGIMAGE_RELEASE(imageRef)
 		});
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
@@ -61,8 +61,11 @@ describe(@"MMCGImageSourceDecoder", ^{
 			});
 			context(@"newCGImageFromItem:", ^{
 				context(@"when created with NSURL and non-zero size", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:(__bridge id)imageSource];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should load an image", ^{
 						[[theValue(imageRef != NULL) should] beTrue];
@@ -83,8 +86,11 @@ describe(@"MMCGImageSourceDecoder", ^{
 					});
 				});
 				context(@"when asking for an image with zero image size", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:(__bridge id)imageSource];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should return an image", ^{
 						[[theValue(imageRef != NULL) should] beTrue];
@@ -95,10 +101,10 @@ describe(@"MMCGImageSourceDecoder", ^{
 				context(@"creating an image from a CGImageSourceRef", ^{
 					__block NSImage *image = nil;
 					
-					beforeEach(^{
+					beforeAll(^{
 						image = [sut imageFromItem:(__bridge id)imageSource];
 					});
-					afterEach(^{
+					afterAll(^{
 						image = nil;
 					});
 					it(@"should return an image", ^{

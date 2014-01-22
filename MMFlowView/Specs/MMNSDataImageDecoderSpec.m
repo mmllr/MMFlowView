@@ -8,14 +8,14 @@
 
 #import "Kiwi.h"
 #import "MMNSDataImageDecoder.h"
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMNSDataImageDecoderSpec)
 
 describe(@"MMNSDataImageDecoder", ^{
-	const NSUInteger desiredSize = 100;
 	__block NSData *imageData = nil;
 	__block MMNSDataImageDecoder *sut = nil;
-	__block CGImageRef image = NULL;
+	__block CGImageRef imageRef = NULL;
 
 	beforeAll(^{
 		imageData = [NSData dataWithContentsOfURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"]];
@@ -27,11 +27,10 @@ describe(@"MMNSDataImageDecoder", ^{
 		sut = [[MMNSDataImageDecoder alloc] init];
 	});
 	afterEach(^{
-		if (image) {
-			CGImageRelease(image);
-			image = NULL;
-		}
 		sut = nil;
+	});
+	afterAll(^{
+		SAFE_CGIMAGE_RELEASE(imageRef)
 	});
 	it(@"should exist", ^{
 		[[sut shouldNot] beNil];
@@ -49,38 +48,46 @@ describe(@"MMNSDataImageDecoder", ^{
 		[[theValue(sut.maxPixelSize) should] beZero];
 	});
 	context(@"newCGImageFromItem:", ^{
-		context(@"when created from NSData and non-zero size", ^{
-			beforeEach(^{
-				sut.maxPixelSize = desiredSize;
-				image = [sut newCGImageFromItem:imageData];
+		context(@"when created from NSData and a maxPixelSize of 100", ^{
+			beforeAll(^{
+				sut.maxPixelSize = 100;
+				imageRef = [sut newCGImageFromItem:imageData];
+			});
+			afterAll(^{
+				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
 			it(@"should load an image", ^{
-				[[theValue(image != NULL) should] beTrue];
+				[[theValue(imageRef != NULL) should] beTrue];
 			});
-			it(@"should be in the specified size", ^{
-				CGFloat width = CGImageGetWidth(image);
-				CGFloat height = CGImageGetHeight(image);
-				[[theValue(width == desiredSize || height == desiredSize) should] beTrue];
+			it(@"should have a width less or equal 100", ^{
+				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+			});
+			it(@"should have a height less or equal 100", ^{
+				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
 			});
 		});
 		context(@"when asking for an image with zero image size", ^{
-			beforeEach(^{
-				image = [sut newCGImageFromItem:imageData];
+			beforeAll(^{
+				sut.maxPixelSize = 0;
+				imageRef = [sut newCGImageFromItem:imageData];
+			});
+			afterAll(^{
+				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
 			it(@"should return an image", ^{
-				[[theValue(image != NULL) should] beTrue];
+				[[theValue(imageRef != NULL) should] beTrue];
 			});
 		});
 	});
 	context(@"imageFromItem:", ^{
 		__block NSImage *image = nil;
 
-		afterEach(^{
-			image = nil;
-		});
 		context(@"loading from an NSData object", ^{
-			beforeEach(^{
+			beforeAll(^{
 				image = [sut imageFromItem:imageData];
+			});
+			afterAll(^{
+				image = nil;
 			});
 			it(@"should load an image", ^{
 				[[image shouldNot] beNil];

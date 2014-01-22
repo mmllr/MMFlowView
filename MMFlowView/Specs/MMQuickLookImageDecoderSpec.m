@@ -8,6 +8,7 @@
 
 #import "Kiwi.h"
 #import "MMQuickLookImageDecoder.h"
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMQuickLookImageDecoderSpec)
 
@@ -23,12 +24,11 @@ describe(@"MMQuickLookImageDecoder", ^{
 		sut = [[MMQuickLookImageDecoder alloc] init];
 	});
 	afterEach(^{
-		if (imageRef) {
-			CGImageRelease(imageRef);
-			imageRef = NULL;
-		}
-		image = nil;
 		sut = nil;
+	});
+	afterAll(^{
+		SAFE_CGIMAGE_RELEASE(imageRef)
+		image = nil;
 	});
 	it(@"should exist", ^{
 		[[sut shouldNot] beNil];
@@ -51,24 +51,31 @@ describe(@"MMQuickLookImageDecoder", ^{
 				[sut newCGImageFromItem:nil];
 			}) should] raiseWithName:NSInternalInconsistencyException];
 		});
-		context(@"when created with NSURL", ^{
-			beforeEach(^{
+		context(@"when created with NSURL and maxPixelSize of 100", ^{
+			beforeAll(^{
 				sut.maxPixelSize = desiredSize;
 				imageRef = [sut newCGImageFromItem:testImageURL];
+			});
+			afterAll(^{
+				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
 			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
 			});
-			it(@"should be in the specified size", ^{
-				CGFloat width = CGImageGetWidth(imageRef);
-				CGFloat height = CGImageGetHeight(imageRef);
-				[[theValue(width == desiredSize || height == desiredSize) should] beTrue];
+			it(@"should have a width less or equal 100", ^{
+				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+			});
+			it(@"should have a height less or equal 100", ^{
+				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
 			});
 		});
 		context(@"when asking for an image with zero pixel size", ^{
-			beforeEach(^{
+			beforeAll(^{
 				sut.maxPixelSize = 0;
 				imageRef = [sut newCGImageFromItem:testImageURL];
+			});
+			afterAll(^{
+				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
 			it(@"should return an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
@@ -92,24 +99,28 @@ describe(@"MMQuickLookImageDecoder", ^{
 	});
 	context(@"imageFromItem:", ^{
 		context(@"when created with NSURL", ^{
-			beforeEach(^{
+			beforeAll(^{
 				image = [sut imageFromItem:testImageURL];
 			});
 			it(@"should load an image", ^{
 				[[image shouldNot] beNil];
 			});
+			afterAll(^{
+				image = nil;
+			});
 		});
 		context(@"when created with NSString", ^{
-			context(@"filepath", ^{
-				beforeEach(^{
-					image = [sut imageFromItem:testImageString];
-				});
-				it(@"should load an image", ^{
-					[[image shouldNot] beNil];
-				});
-				it(@"should return an NSImage", ^{
-					[[image should] beKindOfClass:[NSImage class]];
-				});
+			beforeAll(^{
+				image = [sut imageFromItem:testImageString];
+			});
+			afterAll(^{
+				image = nil;
+			});
+			it(@"should load an image", ^{
+				[[image shouldNot] beNil];
+			});
+			it(@"should return an NSImage", ^{
+				[[image should] beKindOfClass:[NSImage class]];
 			});
 		});
 	});

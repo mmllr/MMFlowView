@@ -6,9 +6,11 @@
 //  Copyright 2013 www.isnotnil.com. All rights reserved.
 //
 
+#import <Quartz/Quartz.h>
+
 #import "Kiwi.h"
 #import "MMPDFPageDecoder.h"
-#import <Quartz/Quartz.h>
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMPDFPageDecoderSpec)
 
@@ -32,11 +34,10 @@ describe(@"MMPDFPageDecoder", ^{
 			sut = [[MMPDFPageDecoder alloc] init];
 		});
 		afterEach(^{
-			if (imageRef) {
-				CGImageRelease(imageRef);
-				imageRef = NULL;
-			}
 			sut = nil;
+		});
+		afterAll(^{
+			SAFE_CGIMAGE_RELEASE(imageRef)
 		});
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
@@ -62,8 +63,11 @@ describe(@"MMPDFPageDecoder", ^{
 			});
 			context(@"newCGImageFromItem:", ^{
 				context(@"creating an image from a PDFPage", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:pdfPage];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should return an image", ^{
 						[[theValue(imageRef != NULL) should] beTrue];
@@ -76,8 +80,11 @@ describe(@"MMPDFPageDecoder", ^{
 					});
 				});
 				context(@"creating an image from a CGPDFPageRef", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:(id)[pdfPage pageRef]];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should return an image", ^{
 						[[theValue(imageRef != NULL) should] beTrue];
@@ -90,8 +97,11 @@ describe(@"MMPDFPageDecoder", ^{
 					});
 				});
 				context(@"invoking with a non pdf item", ^{
-					beforeEach(^{
+					beforeAll(^{
 						imageRef = [sut newCGImageFromItem:@"Test"];
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRef)
 					});
 					it(@"should not return an image", ^{
 						[[theValue(imageRef == NULL) should] beTrue];
@@ -101,12 +111,12 @@ describe(@"MMPDFPageDecoder", ^{
 			context(@"imageFromItem:", ^{
 				__block NSImage *image = nil;
 				
-				afterEach(^{
-					image = nil;
-				});
 				context(@"creating an image from a PDFPage", ^{
-					beforeEach(^{
+					beforeAll(^{
 						image = [sut imageFromItem:pdfPage];
+					});
+					afterAll(^{
+						image = nil;
 					});
 					it(@"should return an image", ^{
 						[[image shouldNot] beNil];
@@ -117,8 +127,11 @@ describe(@"MMPDFPageDecoder", ^{
 					
 				});
 				context(@"creating an image from a CGPDFPageRef", ^{
-					beforeEach(^{
+					beforeAll(^{
 						image = [sut imageFromItem:(id)[pdfPage pageRef]];
+					});
+					afterAll(^{
+						image = nil;
 					});
 					it(@"should return an image", ^{
 						[[image shouldNot] beNil];
