@@ -15,15 +15,13 @@
 
 - (CGImageRef)newCGImageFromItem:(id)anItem
 {
-	if ( [anItem isKindOfClass:[NSImage class]] ) {
+	if ([anItem isKindOfClass:[NSImage class]]) {
 		NSImage *image = (NSImage*)anItem;
 		MMNSDataImageDecoder *dataDecoder = [[MMNSDataImageDecoder alloc] init];
 		dataDecoder.maxPixelSize = self.maxPixelSize;
 		return [dataDecoder newCGImageFromItem:[image TIFFRepresentation]];
 	}
-	else {
-		return NULL;
-	}
+	return NULL;
 }
 
 - (NSImage*)imageFromItem:(id)anItem
