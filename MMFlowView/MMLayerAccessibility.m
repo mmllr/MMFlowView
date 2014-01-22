@@ -85,7 +85,7 @@ static NSString * const kActionPrefix = @"action";
 	[self.readHandlers setValue:handler forKey:attribute];
 }
 
-- (void)setWritableAccessibilityAttribute:(NSString*)attribute readBlock:(id(^)(void))getter writeBlock:(void(^)(CALayer *layer, id value))setter
+- (void)setWritableAccessibilityAttribute:(NSString*)attribute readBlock:(id(^)(void))getter writeBlock:(void(^)(id value))setter
 {
 	NSParameterAssert(getter);
 	NSParameterAssert(setter);
@@ -93,13 +93,13 @@ static NSString * const kActionPrefix = @"action";
 	[self.writeHandlers setObject:setter forKey:attribute];
 }
 
-- (void)setParameterizedAccessibilityAttribute:(NSString*)parameterizedAttribute withBlock:(id(^)(CALayer *layer, id))handler
+- (void)setParameterizedAccessibilityAttribute:(NSString*)parameterizedAttribute withBlock:(id(^)(id))handler
 {
 	NSParameterAssert(parameterizedAttribute);
 	NSParameterAssert(handler);
 }
 
-- (void)setAccessibilityAction:(NSString*)actionName withBlock:(void(^)(CALayer *layer))handler
+- (void)setAccessibilityAction:(NSString*)actionName withBlock:(void(^)(void))handler
 {
 	NSParameterAssert(actionName);
 	NSParameterAssert(handler);
