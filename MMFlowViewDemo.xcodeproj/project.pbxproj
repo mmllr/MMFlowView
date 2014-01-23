@@ -15,6 +15,8 @@
 		28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		283338E818623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */; };
 		283338EB18623B0D00A0846F /* MMNSBitmapImageRepDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 283338EA18623B0D00A0846F /* MMNSBitmapImageRepDecoder.m */; };
+		2838FA3718911E92000C6B15 /* NSAffineTransformMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2838FA3618911E92000C6B15 /* NSAffineTransformMMAdditionsSpec.m */; };
+		2838FA3A18911F3D000C6B15 /* NSAffineTransform+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2838FA3918911F3D000C6B15 /* NSAffineTransform+MMAdditions.m */; };
 		283BCCF81881CD5A002A2166 /* MMLayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283BCCF71881CD5A002A2166 /* MMLayerAccessibilitySpec.m */; };
 		2849FADE1860DC6100E401D0 /* MMFlowViewImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */; };
 		2849FAE01860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADF1860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m */; };
@@ -42,6 +44,8 @@
 		288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 288591BD17398F88000E04EF /* NSColor+MMAdditions.m */; };
 		28862395183560D0008D6246 /* MMScrollBarLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28862394183560D0008D6246 /* MMScrollBarLayerSpec.m */; };
 		2886239818356132008D6246 /* MMScrollBarLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2886239718356132008D6246 /* MMScrollBarLayer.m */; };
+		288628DC18905EB2008FFB80 /* MMPDFPageRendererSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 288628DB18905EB2008FFB80 /* MMPDFPageRendererSpec.m */; };
+		288628DF18905F21008FFB80 /* MMPDFPageRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 288628DE18905F21008FFB80 /* MMPDFPageRenderer.m */; };
 		28864874188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28864873188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m */; };
 		2886487718856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m in Sources */ = {isa = PBXBuildFile; fileRef = 2886487618856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m */; };
 		2887C2C3187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2887C2C2187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.m */; };
@@ -53,6 +57,7 @@
 		28B9EAB618807FB7000E793D /* CALayerMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28B9EAB518807FB7000E793D /* CALayerMMAdditionsSpec.m */; };
 		28B9EAB9188080AD000E793D /* CALayer+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 28B9EAB8188080AD000E793D /* CALayer+MMAdditions.m */; };
 		28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */; };
+		28C2CB8318913160003212A2 /* NSValue+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C2CB8218913160003212A2 /* NSValue+MMAdditions.m */; };
 		28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0015AEEE9A0096FBA4 /* InfoPlist.strings */; };
 		28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC0315AEEE9A0096FBA4 /* main.m */; };
 		28DEFC0815AEEE9A0096FBA4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 28DEFC0615AEEE9A0096FBA4 /* Credits.rtf */; };
@@ -61,6 +66,7 @@
 		28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC1D15AEEF010096FBA4 /* Item.m */; };
 		28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DEFC2115AEEF300096FBA4 /* MMFlowView.m */; };
 		28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */; };
+		28E5228618913065008E164C /* NSValueMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E5228518913065008E164C /* NSValueMMAdditionsSpec.m */; };
 		28E6979A183AA0B400210AE1 /* MMScrollKnobLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E69799183AA0B400210AE1 /* MMScrollKnobLayer.m */; };
 		28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */; };
 		28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EE5F811811BBDF006D0540 /* MMCoverFlowLayout.m */; };
@@ -97,6 +103,9 @@
 		283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSBitmapImageRepDecoderSpec.m; sourceTree = "<group>"; };
 		283338E918623B0D00A0846F /* MMNSBitmapImageRepDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMNSBitmapImageRepDecoder.h; path = MMFlowView/Decoders/MMNSBitmapImageRepDecoder.h; sourceTree = "<group>"; };
 		283338EA18623B0D00A0846F /* MMNSBitmapImageRepDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMNSBitmapImageRepDecoder.m; path = MMFlowView/Decoders/MMNSBitmapImageRepDecoder.m; sourceTree = "<group>"; };
+		2838FA3618911E92000C6B15 /* NSAffineTransformMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSAffineTransformMMAdditionsSpec.m; sourceTree = "<group>"; };
+		2838FA3818911F3D000C6B15 /* NSAffineTransform+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSAffineTransform+MMAdditions.h"; path = "MMFlowView/NSAffineTransform+MMAdditions.h"; sourceTree = "<group>"; };
+		2838FA3918911F3D000C6B15 /* NSAffineTransform+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSAffineTransform+MMAdditions.m"; path = "MMFlowView/NSAffineTransform+MMAdditions.m"; sourceTree = "<group>"; };
 		283BCCF71881CD5A002A2166 /* MMLayerAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMLayerAccessibilitySpec.m; sourceTree = "<group>"; };
 		2849FADC1860DC6100E401D0 /* MMFlowViewImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewImageFactory.h; path = MMFlowView/MMFlowViewImageFactory.h; sourceTree = "<group>"; };
 		2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewImageFactory.m; path = MMFlowView/MMFlowViewImageFactory.m; sourceTree = "<group>"; };
@@ -137,6 +146,9 @@
 		28862394183560D0008D6246 /* MMScrollBarLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMScrollBarLayerSpec.m; sourceTree = "<group>"; };
 		2886239618356132008D6246 /* MMScrollBarLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMScrollBarLayer.h; path = MMFlowView/MMScrollBarLayer.h; sourceTree = "<group>"; };
 		2886239718356132008D6246 /* MMScrollBarLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMScrollBarLayer.m; path = MMFlowView/MMScrollBarLayer.m; sourceTree = "<group>"; };
+		288628DB18905EB2008FFB80 /* MMPDFPageRendererSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMPDFPageRendererSpec.m; sourceTree = "<group>"; };
+		288628DD18905F21008FFB80 /* MMPDFPageRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMPDFPageRenderer.h; path = MMFlowView/MMPDFPageRenderer.h; sourceTree = "<group>"; };
+		288628DE18905F21008FFB80 /* MMPDFPageRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMPDFPageRenderer.m; path = MMFlowView/MMPDFPageRenderer.m; sourceTree = "<group>"; };
 		28864872188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+MMLayerAccessibilityPrivate.h"; path = "MMFlowView/CALayer+MMLayerAccessibilityPrivate.h"; sourceTree = "<group>"; };
 		28864873188569420050DECE /* CALayer+MMLayerAccessibilityPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+MMLayerAccessibilityPrivate.m"; path = "MMFlowView/CALayer+MMLayerAccessibilityPrivate.m"; sourceTree = "<group>"; };
 		2886487518856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+MMLayerAccessibilityDefaultHandlers.h"; path = "MMFlowView/CALayer+MMLayerAccessibilityDefaultHandlers.h"; sourceTree = "<group>"; };
@@ -157,6 +169,8 @@
 		28BD85EC1802F9FD0095224B /* MMFlowView+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSAccessibility.h"; path = "MMFlowView/MMFlowView+NSAccessibility.h"; sourceTree = "<group>"; };
 		28BD85ED1802F9FD0095224B /* MMFlowView+NSAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+NSAccessibility.m"; path = "MMFlowView/MMFlowView+NSAccessibility.m"; sourceTree = "<group>"; };
 		28BD85EF1802FAB00095224B /* MMFlowView_Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MMFlowView_Private.h; path = MMFlowView/MMFlowView_Private.h; sourceTree = "<group>"; };
+		28C2CB8118913160003212A2 /* NSValue+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSValue+MMAdditions.h"; path = "MMFlowView/NSValue+MMAdditions.h"; sourceTree = "<group>"; };
+		28C2CB8218913160003212A2 /* NSValue+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSValue+MMAdditions.m"; path = "MMFlowView/NSValue+MMAdditions.m"; sourceTree = "<group>"; };
 		28DEFBF315AEEE9A0096FBA4 /* MMFlowViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MMFlowViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28DEFBFF15AEEE9A0096FBA4 /* MMFlowViewDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewDemo-Info.plist"; sourceTree = "<group>"; };
 		28DEFC0115AEEE9A0096FBA4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -173,6 +187,7 @@
 		28E085321811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowLayoutAttributeSpec.m; sourceTree = "<group>"; };
 		28E085341811C2FA003CC49E /* MMCoverFlowLayoutAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayoutAttributes.h; path = MMFlowView/MMCoverFlowLayoutAttributes.h; sourceTree = "<group>"; };
 		28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayoutAttributes.m; path = MMFlowView/MMCoverFlowLayoutAttributes.m; sourceTree = "<group>"; };
+		28E5228518913065008E164C /* NSValueMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSValueMMAdditionsSpec.m; sourceTree = "<group>"; };
 		28E69798183AA0B400210AE1 /* MMScrollKnobLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMScrollKnobLayer.h; path = MMFlowView/MMScrollKnobLayer.h; sourceTree = "<group>"; };
 		28E69799183AA0B400210AE1 /* MMScrollKnobLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMScrollKnobLayer.m; path = MMFlowView/MMScrollKnobLayer.m; sourceTree = "<group>"; };
 		28EE5F7E1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFLowLayoutSpec.m; sourceTree = "<group>"; };
@@ -240,6 +255,12 @@
 				288591BC17398F88000E04EF /* NSColor+MMAdditions.h */,
 				288591BD17398F88000E04EF /* NSColor+MMAdditions.m */,
 				28A83C60189031110044B13E /* MMMacros.h */,
+				288628DD18905F21008FFB80 /* MMPDFPageRenderer.h */,
+				288628DE18905F21008FFB80 /* MMPDFPageRenderer.m */,
+				2838FA3818911F3D000C6B15 /* NSAffineTransform+MMAdditions.h */,
+				2838FA3918911F3D000C6B15 /* NSAffineTransform+MMAdditions.m */,
+				28C2CB8118913160003212A2 /* NSValue+MMAdditions.h */,
+				28C2CB8218913160003212A2 /* NSValue+MMAdditions.m */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -307,6 +328,9 @@
 				283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */,
 				288FA4BB186309D40040F410 /* MMNSDataImageDecoderSpec.m */,
 				288FA4B91862F3F20040F410 /* MMFlowViewImageFactorySpec.m */,
+				288628DB18905EB2008FFB80 /* MMPDFPageRendererSpec.m */,
+				2838FA3618911E92000C6B15 /* NSAffineTransformMMAdditionsSpec.m */,
+				28E5228518913065008E164C /* NSValueMMAdditionsSpec.m */,
 			);
 			name = Specs;
 			path = MMFlowView/Specs;
@@ -563,6 +587,8 @@
 				2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */,
 				28FE253518106E6100D9D3CA /* MMFlowViewSpec.m in Sources */,
 				28E085331811C2B0003CC49E /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
+				288628DC18905EB2008FFB80 /* MMPDFPageRendererSpec.m in Sources */,
+				2838FA3718911E92000C6B15 /* NSAffineTransformMMAdditionsSpec.m in Sources */,
 				288CAB6A183AA04700420CC7 /* MMScrollKnobLayerSpec.m in Sources */,
 				28EE5F7F1811BB7E006D0540 /* MMCoverFLowLayoutSpec.m in Sources */,
 				2807B3FA1822D7F1005E3D0E /* MMCoverFlowLayerSpec.m in Sources */,
@@ -573,6 +599,7 @@
 				286543261876C598002424AE /* MMFlowViewImageCacheSpec.m in Sources */,
 				288FA4BA1862F3F20040F410 /* MMFlowViewImageFactorySpec.m in Sources */,
 				28FE78D31862099E00BA5D1E /* MMNSImageDecoderSpec.m in Sources */,
+				28E5228618913065008E164C /* NSValueMMAdditionsSpec.m in Sources */,
 				2877D87F181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m in Sources */,
 				28862395183560D0008D6246 /* MMScrollBarLayerSpec.m in Sources */,
 				288FA4BC186309D40040F410 /* MMNSDataImageDecoderSpec.m in Sources */,
@@ -604,8 +631,10 @@
 				28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */,
 				28FE78E41862350900BA5D1E /* MMCGImageSourceDecoder.m in Sources */,
 				28FA098E18840A2000D0B1E3 /* MMLayerAccessibility.m in Sources */,
+				28C2CB8318913160003212A2 /* NSValue+MMAdditions.m in Sources */,
 				2886239818356132008D6246 /* MMScrollBarLayer.m in Sources */,
 				2887C2C3187F41A300D37FEF /* NSApplication+MMCodeCoverageFixer.m in Sources */,
+				288628DF18905F21008FFB80 /* MMPDFPageRenderer.m in Sources */,
 				2849FADE1860DC6100E401D0 /* MMFlowViewImageFactory.m in Sources */,
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
 				28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */,
@@ -614,6 +643,7 @@
 				288FA4BF18630A360040F410 /* MMNSDataImageDecoder.m in Sources */,
 				28E6979A183AA0B400210AE1 /* MMScrollKnobLayer.m in Sources */,
 				28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */,
+				2838FA3A18911F3D000C6B15 /* NSAffineTransform+MMAdditions.m in Sources */,
 				28B9EAB9188080AD000E793D /* CALayer+MMAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
