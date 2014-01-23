@@ -6,90 +6,44 @@
 //  Copyright (c) 2013 www.isnotnil.com. All rights reserved.
 //
 
-#import "MMPDFPageDecoder.h"
 #import <Quartz/Quartz.h>
+#import "MMPDFPageDecoder.h"
+#import "MMPDFPageRenderer.h"
 
 @implementation MMPDFPageDecoder
 
 @synthesize maxPixelSize;
 
-+ (CGImageRef)newImageFromPDFPage:(CGPDFPageRef)pdfPage withSize:(CGSize)imageSize andTransparentBackground:(BOOL)transparentBackground
+- (MMPDFPageRenderer*)renderForItem:(id)anItem
 {
-	NSParameterAssert(pdfPage != NULL);
-
-	if ( CFGetTypeID(pdfPage) != CGPDFPageGetTypeID() ) {
-		return NULL;
+	if ([anItem isKindOfClass:[PDFPage class]]) {
+		return [[MMPDFPageRenderer alloc] initWithPDFPage:[((PDFPage*)anItem) pageRef]];
 	}
-	CGRect boxRect = CGPDFPageGetBoxRect( pdfPage, kCGPDFCropBox );
-	size_t width = imageSize.width > 0 ? imageSize.width : CGRectGetWidth(boxRect);
-	size_t height = imageSize.height > 0 ? imageSize.height : CGRectGetHeight(boxRect);
-	size_t bytesPerLine = width * 4;
-	uint64_t size = (uint64_t)height * (uint64_t)bytesPerLine;
-	
-	if ((size == 0) || (size > SIZE_MAX))
-		return NULL;
-	
-	void *bitmapData = calloc( 1, size );
-	if (!bitmapData)
-		return NULL;
-	
-	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
-	CGContextRef context = CGBitmapContextCreate(bitmapData, width, height, 8, bytesPerLine, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst);
-	CGColorSpaceRelease(colorSpace);
-	
-	if ( transparentBackground ) {
-		CGContextClearRect( context, CGRectMake(0, 0, width, height) );
+	if (CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID()) {
+		return [[MMPDFPageRenderer alloc] initWithPDFPage:(__bridge CGPDFPageRef)(anItem)];
 	}
-	else {
-		CGContextSetRGBFillColor( context, 1, 1, 1, 1 ); // white
-		CGContextFillRect( context, CGRectMake(0, 0, imageSize.width, imageSize.height) );
-	}
-	CGRect imageRect = CGRectMake( 0, 0, imageSize.width, imageSize.height );
-	CGAffineTransform drawingTransform;
-	if ( imageSize.width <= boxRect.size.width ) {
-		drawingTransform = CGPDFPageGetDrawingTransform(pdfPage, kCGPDFCropBox, imageRect, 0, kCFBooleanTrue );
-	}
-	else {
-		CGFloat scaleX = imageSize.width / boxRect.size.width;
-		drawingTransform = CGAffineTransformMakeTranslation( -boxRect.origin.x, -boxRect.origin.y );
-		drawingTransform = CGAffineTransformScale(drawingTransform, scaleX, scaleX );
-	}
-	CGContextConcatCTM( context, drawingTransform );
-	CGContextDrawPDFPage( context, pdfPage );
-	CGImageRef pdfImage = CGBitmapContextCreateImage( context );
-	CGContextRelease(context);
-	free(bitmapData);
-	return pdfImage;
+	return nil;
 }
 
 - (CGImageRef)newCGImageFromItem:(id)anItem
 {
-	CGPDFPageRef pageRef = NULL;
-	if ( [anItem isKindOfClass:[PDFPage class]] ) {
-		pageRef = [((PDFPage*)anItem) pageRef];
+	MMPDFPageRenderer *renderer = [self renderForItem:anItem];
+	if (!renderer) {
+		return NULL;
 	}
-	else if ( CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID() ) {
-		pageRef = (__bridge CGPDFPageRef)(anItem);
-	}
-	return pageRef ? [[self class ]newImageFromPDFPage:pageRef
-											  withSize:CGSizeMake(self.maxPixelSize, self.maxPixelSize)
-							  andTransparentBackground:NO] : NULL;
+	renderer.imageSize = CGSizeMake(self.maxPixelSize, self.maxPixelSize);
+	return CGImageRetain([renderer.imageRepresentation CGImage]);
 }
 
 - (NSImage*)imageFromItem:(id)anItem
 {
-	NSImage *image = nil;
-	if ([anItem isKindOfClass:[PDFPage class]]) {
-		image = [[NSImage alloc] initWithData:[anItem dataRepresentation]];
+	CGImageRef imageRef = [self newCGImageFromItem:anItem];
+	if (imageRef) {
+		NSImage *image = [[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(CGImageGetWidth(imageRef), CGImageGetHeight(imageRef))];
+		CGImageRelease(imageRef);
+		return image;
 	}
-	else if ( CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID()) {
-		CGImageRef imageRef = [self newCGImageFromItem:anItem];
-		if ( imageRef) {
-			image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
-			CGImageRelease(imageRef);
-		}
-	}
-	return image;
+	return nil;
 }
 
 @end
