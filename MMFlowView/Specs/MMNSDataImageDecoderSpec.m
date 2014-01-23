@@ -48,24 +48,35 @@ describe(@"MMNSDataImageDecoder", ^{
 		[[theValue(sut.maxPixelSize) should] beZero];
 	});
 	context(@"newCGImageFromItem:", ^{
-		context(@"when created from NSData and a maxPixelSize of 100", ^{
-			beforeAll(^{
+		context(@"with maxPixelSize of 100", ^{
+			beforeEach(^{
 				sut.maxPixelSize = 100;
-				imageRef = [sut newCGImageFromItem:imageData];
 			});
-			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef)
+			context(@"when created from NSData", ^{
+				beforeAll(^{
+					imageRef = [sut newCGImageFromItem:imageData];
+				});
+				afterAll(^{
+					SAFE_CGIMAGE_RELEASE(imageRef)
+				});
+				it(@"should load an image", ^{
+					[[theValue(imageRef != NULL) should] beTrue];
+				});
+				it(@"should have a width less or equal 100", ^{
+					[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+				});
+				it(@"should have a height less or equal 100", ^{
+					[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+				});
 			});
-			it(@"should load an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
-			});
-			it(@"should have a width less or equal 100", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-			it(@"should have a height less or equal 100", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+			context(@"when trying to create an image from non NSData", ^{
+				it(@"should return NULL", ^{
+					imageRef = [sut newCGImageFromItem:@"a string, not a NSData instance"];
+					[[theValue(imageRef==NULL) should] beTrue];
+				});
 			});
 		});
+		
 		context(@"when asking for an image with zero image size", ^{
 			beforeAll(^{
 				sut.maxPixelSize = 0;
