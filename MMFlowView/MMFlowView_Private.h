@@ -85,15 +85,6 @@
 /* invoked after changing the selection, adjust scroll knob, visible images etc */
 - (void)updateSelectionInRange:(NSRange)invalidatedRange;
 
-/* returns the layers frane in view-coordinate space */
-- (NSRect)rectInViewForLayer:(CALayer*)aLayer;
-
-/* returns the correct items size for a specific rect, respecting layout properties */
-- (CGSize)itemSizeForRect:(CGRect)visibleRect;
-
-/* returns a bottom centered rect with a specific aspectratio for a equal-sized itemRect */
-- (CGRect)boundsFromContentWithAspectRatio:(CGFloat)aspectRatio inItemRect:(CGRect)itemRect;
-
 /* performs hittesting and returns the modellayer at the hitpoint */
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPoint;
 
@@ -123,9 +114,6 @@
 
 /* returns the UTI for item at index */
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex;
-
-/* sets the image for an itemlayer */
-- (void)setImage:(CGImageRef)anImage atIndex:(NSUInteger)anIndex;
 
 /* checks image cache for an image with an specific uid, may return NULL */
 - (CGImageRef)lookupForImageUID:(NSString*)anUID;
