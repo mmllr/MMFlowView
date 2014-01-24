@@ -9,6 +9,7 @@
 #import "Kiwi.h"
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMFlowViewSpec)
 
@@ -28,7 +29,8 @@ describe(@"MMFlowView", ^{
 				[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
 				[itemMock stub:@selector(imageItemUID) andReturn:titleString];
 				[itemMock stub:@selector(imageItemTitle) andReturn:titleString];
-				[itemMock stub:@selector(imageItemRepresentation) andReturn:[NSImage imageNamed:NSImageNameUser]];
+				id imageMock = [NSImage nullMock];
+				[itemMock stub:@selector(imageItemRepresentation) andReturn:imageMock];
 				[itemArray addObject:itemMock];
 			}
 			mockedItems = [itemArray copy];
@@ -208,6 +210,7 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
+		
 		context(@"delegate", ^{
 			it(@"should have an empty delegate", ^{
 				[[(id)sut.delegate should] beNil];
@@ -625,11 +628,35 @@ describe(@"MMFlowView", ^{
 							beforeEach(^{
 								[sut coverFlowLayerDidRelayout:sut.coverFlowLayer];
 							});
-							it(@"should set the images in the visible range", ^{
-								[sut.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:sut.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-									//id<MMFlowViewItem> item = [mockedItems objectAtIndex:idx];
-								}];
+							context(@"image factory", ^{
+								__block id mockedImageFactory = nil;
+								__block id mockedImageDecoder = nil;
+								__block CGImageRef testImageRef = NULL;
+
+								beforeAll(^{
+									NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+									testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL
+																			 context:NULL
+																			   hints:nil]);
+									
+									mockedImageFactory = [MMFlowViewImageFactory nullMock];
+									mockedImageDecoder = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
+									[mockedImageFactory stub:@selector(decoderforRepresentationType:) andReturn:mockedImageDecoder];
+									[mockedImageDecoder stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
+								});
+								afterAll(^{
+									mockedImageFactory = nil;
+									mockedImageDecoder = nil;
+									SAFE_CGIMAGE_RELEASE(testImageRef)
+								});
+								it(@"should set the images in the visible range", ^{
+									/*NSArray *updatedImages =
+									[sut.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:sut.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+										id<MMFlowViewItem> item = [mockedItems objectAtIndex:idx];
+									}];*/
+								});
 							});
+							
 						});
 						context(@"content layers", ^{
 							__block CALayer *contentLayer = nil;

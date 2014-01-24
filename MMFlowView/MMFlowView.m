@@ -495,7 +495,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer
 {
-	[self updateImages];
+	//[self updateImages];
 }
 
 #pragma mark - other helpers
@@ -712,7 +712,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	[super viewDidEndLiveResize];
 	self.coverFlowLayer.inLiveResize = NO;
 	//[ self.scrollLayer setNeedsLayout ];
-	[self updateImages];
+	//[self updateImages];
 }
 
 - (void)updateTrackingAreas
