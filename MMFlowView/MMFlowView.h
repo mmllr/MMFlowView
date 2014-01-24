@@ -21,57 +21,57 @@
 
 @class MMFlowView;
 
-/* kMMFlowViewURLRepresentationType, image representation is a NSURL */
+/** kMMFlowViewURLRepresentationType, image representation is a NSURL */
 extern NSString * const kMMFlowViewURLRepresentationType;
-/* kMMFlowViewCGImageRepresentationType, image representation is a CGImageRef */
+/** kMMFlowViewCGImageRepresentationType, image representation is a CGImageRef */
 extern NSString * const kMMFlowViewCGImageRepresentationType;
-/* kMMFlowViewPDFPageRepresentationType, image representation is a PDFPage or a CGPDFPageRef */
+/** kMMFlowViewPDFPageRepresentationType, image representation is a PDFPage or a CGPDFPageRef */
 extern NSString * const kMMFlowViewPDFPageRepresentationType;
-/* kMMFlowViewPathRepresentationType, image representation is a NSString holding a path */
+/** kMMFlowViewPathRepresentationType, image representation is a NSString holding a path */
 extern NSString * const kMMFlowViewPathRepresentationType;
-/* kMMFlowViewNSImageRepresentationType, image representation is a NSImage */
+/** kMMFlowViewNSImageRepresentationType, image representation is a NSImage */
 extern NSString * const kMMFlowViewNSImageRepresentationType;
-/* kMMFlowViewCGImageSourceRepresentationType, image representation is a CGImageSourceRef */
+/** kMMFlowViewCGImageSourceRepresentationType, image representation is a CGImageSourceRef */
 extern NSString * const kMMFlowViewCGImageSourceRepresentationType;
-/* kMMFlowViewNSDataRepresentationType, image representation is a NSData or CFDataRef containin an image-io readably format */
+/** kMMFlowViewNSDataRepresentationType, image representation is a NSData or CFDataRef containin an image-io readably format */
 extern NSString * const kMMFlowViewNSDataRepresentationType;
-/* kMMFlowViewNSBitmapRepresentationType, image representation is a NSBitmapImageRep */
+/** kMMFlowViewNSBitmapRepresentationType, image representation is a NSBitmapImageRep */
 extern NSString * const kMMFlowViewNSBitmapRepresentationType;
-/* kMMFlowViewQTMovieRepresentationType, image representation is a QTMovie */
+/** kMMFlowViewQTMovieRepresentationType, image representation is a QTMovie */
 extern NSString * const kMMFlowViewQTMovieRepresentationType;
-/* kMMFlowViewQTMoviePathRepresentationType, image representation is a NSURL or a NSString holding a filepath to a QTMovie */
+/** kMMFlowViewQTMoviePathRepresentationType, image representation is a NSURL or a NSString holding a filepath to a QTMovie */
 extern NSString * const kMMFlowViewQTMoviePathRepresentationType;
-/* kMMFlowViewQCCompositionRepresentationType, image representation is a QCComposition */
+/** kMMFlowViewQCCompositionRepresentationType, image representation is a QCComposition */
 extern NSString * const kMMFlowViewQCCompositionRepresentationType;
-/* kMMFlowViewQCCompositionPathRepresentationType, image representation is a NSURL or a NSString holding a filepath to a QCComposition */
+/** kMMFlowViewQCCompositionPathRepresentationType, image representation is a NSURL or a NSString holding a filepath to a QCComposition */
 extern NSString * const kMMFlowViewQCCompositionPathRepresentationType;
-/* kMMFlowViewQuickLookPathRepresentationType, image representation is a NSURL */
+/** kMMFlowViewQuickLookPathRepresentationType, image representation is a NSURL */
 extern NSString * const kMMFlowViewQuickLookPathRepresentationType;
-/* kMMFlowViewIconRefPathRepresentationType, image representation is a NSURL or a NSString holding a filepath to an IconRef */
+/** kMMFlowViewIconRefPathRepresentationType, image representation is a NSURL or a NSString holding a filepath to an IconRef */
 extern NSString * const kMMFlowViewIconRefPathRepresentationType;
-/* kMMFlowViewIconRefRepresentationType, image representation is an IconRef */
+/** kMMFlowViewIconRefRepresentationType, image representation is an IconRef */
 extern NSString * const kMMFlowViewIconRefRepresentationType;
 
-/* binding for keypath to the image-representation, see MMFlowViewItem protocol */
+/** binding for keypath to the image-representation, see MMFlowViewItem protocol */
 extern NSString * const kMMFlowViewImageRepresentationBinding;
-/* binding for keypath to the image-representationtype, see MMFlowViewItem protocol */
+/** binding for keypath to the image-representationtype, see MMFlowViewItem protocol */
 extern NSString * const kMMFlowViewImageRepresentationTypeBinding;
-/* binding for keypath to the image-uid, see MMFlowViewItem protocol */
+/** binding for keypath to the image-uid, see MMFlowViewItem protocol */
 extern NSString * const kMMFlowViewImageUIDBinding;
-/* binding for keypath to the image-title, see MMFlowViewItem protocol */
+/** binding for keypath to the image-title, see MMFlowViewItem protocol */
 extern NSString * const kMMFlowViewImageTitleBinding;
 
-/* posted after the selection did change. Get the current selection with the kMMFlowViewSelectedIndexKey from the userInfo */
+/** posted after the selection did change. Get the current selection with the kMMFlowViewSelectedIndexKey from the userInfo */
 extern NSString * const kMMFlowViewSelectionDidChangeNotification;
 
-/* key for accessing selection changes in notifications or for setting up bindings */
+/** key for accessing selection changes in notifications or for setting up bindings */
 extern NSString * const kMMFlowViewSelectedIndexKey;
 
-/* protocol which the image items need to implement if datasource is used or no respective keypaths in bindings are set */
+/** protocol which the image items need to implement if datasource is used or no respective keypaths in bindings are set */
 @protocol MMFlowViewItem <NSObject>
-/* The image to display, can return nil if the item has no image to display. This method is called frequently */
+/** The image to display, can return nil if the item has no image to display. This method is called frequently */
 - (id)imageItemRepresentation;
-/* A string that specifies the image representation. The string can be any of the following constants:
+/** A string that specifies the image representation. The string can be any of the following constants:
  
  kMMFlowViewURLRepresentationType
  kMMFlowViewCGImageRepresentationType
@@ -90,41 +90,40 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
  kMMFlowViewIconRefRepresentationType */
 
 - (NSString*)imageItemRepresentationType;
-/* A string the uniquely identifies the data source item. The flowview uses this identifier to associate the data source item and its cache */
+/** A string the uniquely identifies the data source item. The flowview uses this identifier to associate the data source item and its cache */
 - (NSString*)imageItemUID;
 @optional
-/* The display title of the image. */
+/** The display title of the image. */
 - (NSString*)imageItemTitle;
 
 @end
 
 @protocol MMFlowViewDataSource <NSObject>
-/* Returns the number of images in the flow view. */
+/** Returns the number of images in the flow view. */
 - (NSUInteger)numberOfItemsInFlowView:(MMFlowView*)aFlowView;
-/* Returns an object for the item in a flow view that corresponds to the specified index.
+/** Returns an object for the item in a flow view that corresponds to the specified index.
  The returned object must implement the required methods of the MMFlowViewItem protocol */
 - (id<MMFlowViewItem>)flowView:(MMFlowView*)aFlowView itemAtIndex:(NSUInteger)anIndex;
-// Drag and Drop
 @optional
-/* Invoked the flow view when the mouse button is released over the specified index if the datasource validated the drop.
+/** Invoked the flow view when the mouse button is released over the specified index if the datasource validated the drop.
  The datasource should read the data from the dragging pasteboard provided through the NSDraggingInfo-object */
 - (BOOL)flowView:(MMFlowView*)aFlowView acceptDrop:(id < NSDraggingInfo >)info atIndex:(NSUInteger)anIndex;
-/* The receiver may validate the drop at the specified index */
+/** The receiver may validate the drop at the specified index */
 - (NSDragOperation)flowView:(MMFlowView*)aFlowView validateDrop:(id < NSDraggingInfo >)info proposedIndex:(NSUInteger)anIndex;
-/* Invoked by the flow view when drag should begin. Return NO to abort the drag, otherwise write the data to the pasteboard */
+/** Invoked by the flow view when drag should begin. Return NO to abort the drag, otherwise write the data to the pasteboard */
 - (BOOL)flowView:(MMFlowView*)aFlowViev writeItemAtIndex:(NSUInteger)anIndex toPasteboard:(NSPasteboard *)pboard;
-/* Indicates that the specified index should be removed */
+/** Indicates that the specified index should be removed */
 - (void)flowView:(MMFlowView*)aFlowView removeItemAtIndex:(NSUInteger)anIndex;
 
 @end
 
 @protocol MMFlowViewDelegate <NSObject>
 @optional
-/* Allows for customizing double clicks on items */
+/** Allows for customizing double clicks on items */
 - (void)flowView:(MMFlowView *)aFlowView itemWasDoubleClickedAtIndex:(NSUInteger)anIndex;
-/* Allows for customizing right clicks at indexes */
+/** Allows for customizing right clicks at indexes */
 - (void)flowView:(MMFlowView *)aFlowView itemWasRightClickedAtIndex:(NSUInteger)anIndex withEvent:(NSEvent *)theEvent;
-/* Invoked after a selection of the flow view changed */
+/** Invoked after a selection of the flow view changed */
 - (void)flowViewSelectionDidChange:(MMFlowView *)aFlowView;
 
 @end
@@ -132,58 +131,58 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 
 @interface MMFlowView : NSControl<QLPreviewPanelDataSource, QLPreviewPanelDelegate>
 
-/* title for currently selected index */
+/** title for currently selected index */
 @property (copy,nonatomic) NSString *title;
-/* weak reference to the datasource, see MMFlowViewDataSource protocol */ 
+/** weak reference to the datasource, see MMFlowViewDataSource protocol */
 @property (weak) IBOutlet id<MMFlowViewDataSource> dataSource;
-/* weak reference to the delegate, see MMFlowViewDelegate protocol */
+/** weak reference to the delegate, see MMFlowViewDelegate protocol */
 @property (weak) IBOutlet id<MMFlowViewDelegate> delegate;
-/* the angle in degrees around which the unselected images are rotated around the y-axis (counter clockwise for the left-stack, clockwise for the right-stack) */
+/** the angle in degrees around which the unselected images are rotated around the y-axis (counter clockwise for the left-stack, clockwise for the right-stack) */
 @property (nonatomic) CGFloat stackedAngle;
-/* spacing between images in stack */
+/** spacing between images in stack */
 @property (nonatomic) CGFloat spacing;
-/* scaling used for stacked (aka non-selected images */
+/** scaling used for stacked (aka non-selected images */
 @property (nonatomic) CGFloat stackedScale;
-/* CGFloat value for darkening the reflection in the range of 0-1. 0 means no darkening, 1 is completly black, meaning no reflection at all */
+/** CGFloat value for darkening the reflection in the range of 0-1. 0 means no darkening, 1 is completly black, meaning no reflection at all */
 @property (nonatomic) CGFloat reflectionOffset;
-/* scaling factor for image-items */
+/** scaling factor for image-items */
 @property (nonatomic) CGFloat itemScale;
-/* scale value for cached image resolution in the range of 0-1, 0 means smaller cached images, 1 is images in the size of the actual image-tile */
+/** scale value for cached image resolution in the range of 0-1, 0 means smaller cached images, 1 is images in the size of the actual image-tile */
 @property (nonatomic) CGFloat previewScale;
-/* duration of a scroll in changing the selection */
+/** duration of a scroll in changing the selection */
 @property (nonatomic) CFTimeInterval scrollDuration;
-/* flag to indicate wheter reflections are shown or not */
+/** flag to indicate wheter reflections are shown or not */
 @property (nonatomic) BOOL showsReflection;
-/* if set to YES, MMFlowView can act as a datasource for QLQuickLookPanel for all path-representation types (all NSURL or filepath-NSStrings), hitting space invokes the panel */
+/** if set to YES, MMFlowView can act as a datasource for QLQuickLookPanel for all path-representation types (all NSURL or filepath-NSStrings), hitting space invokes the panel */
 @property (nonatomic) BOOL canControlQuickLookPanel;
-/* the selected index */
+/** the selected index */
 @property (nonatomic) NSUInteger selectedIndex;
-/* number of items in view */
+/** number of items in view */
 @property (readonly, nonatomic) NSUInteger numberOfItems;
-/* indexes of all visible items */
+/** indexes of all visible items */
 @property (nonatomic, readonly) NSIndexSet *visibleItemIndexes;
-/* keypath to image representation on item in observed collection, defaults to imageItemRepresentation, see MMFlowViewItem protocol */
+/** keypath to image representation on item in observed collection, defaults to imageItemRepresentation, see MMFlowViewItem protocol */
 @property (nonatomic,copy) NSString *imageRepresentationKeyPath;
-/* keypath to image representation type on item in observed collection, defaults to imageItemRepresentationType, see MMFlowViewItem protocol */
+/** keypath to image representation type on item in observed collection, defaults to imageItemRepresentationType, see MMFlowViewItem protocol */
 @property (nonatomic,copy) NSString *imageRepresentationTypeKeyPath;
-/* keypath to image uid on item in observed collection, defaults to imageItemUID, see MMFlowViewItem protocol */
+/** keypath to image uid on item in observed collection, defaults to imageItemUID, see MMFlowViewItem protocol */
 @property (nonatomic,copy) NSString *imageUIDKeyPath;
-/* keypath to image title on item in observed collection, defaults to imageItemTitle, see MMFlowViewItem protocol */
+/** keypath to image title on item in observed collection, defaults to imageItemTitle, see MMFlowViewItem protocol */
 @property (nonatomic,copy) NSString *imageTitleKeyPath;
 
-/* sets the font of the title */
+/** sets the font of the title */
 - (void)setTitleFont:(NSFont*)aFont;
-/* gets the title size */
+/** gets the title size */
 - (CGFloat)titleSize;
-/* sets the font size of the title */
+/** sets the font size of the title */
 - (void)setTitleSize:(CGFloat)aSize;
-/* sets the color for the title */
+/** sets the color for the title */
 - (void)setTitleColor:(NSColor*)aColor;
-/* returns the index of the image item if the aPoint is above it, otherwise NSNotFound */
+/** returns the index of the image item if the aPoint is above it, otherwise NSNotFound */
 - (NSUInteger)indexOfItemAtPoint:(NSPoint)aPoint;
-/* returns the frame for the image-item at a specific index */
+/** returns the frame for the image-item at a specific index */
 - (NSRect)itemFrameAtIndex:(NSUInteger)anIndex;
-/* reloads the content from the datasource, see MMFlowViewDataSource protocol */
+/** reloads the content from the datasource, see MMFlowViewDataSource protocol */
 - (void)reloadContent;
 
 @end

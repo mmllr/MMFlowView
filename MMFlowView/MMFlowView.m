@@ -227,19 +227,19 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 #pragma mark NSControl overrides
 
 + (void)initialize {
-	if ( self == [ MMFlowView class ] ) {		// Do it once
-		[ self exposeBinding:NSContentArrayBinding ];
-		[ self exposeBinding:kMMFlowViewImageRepresentationBinding ];
-		[ self exposeBinding:kMMFlowViewImageRepresentationTypeBinding ];
-		[ self exposeBinding:kMMFlowViewImageUIDBinding ];
-		[ self exposeBinding:kMMFlowViewImageTitleBinding ];
-		[ self setCellClass:[ NSActionCell class ] ];
+	if ( self == [MMFlowView class] ) {
+		[self exposeBinding:NSContentArrayBinding];
+		[self exposeBinding:kMMFlowViewImageRepresentationBinding];
+		[self exposeBinding:kMMFlowViewImageRepresentationTypeBinding];
+		[self exposeBinding:kMMFlowViewImageUIDBinding];
+		[self exposeBinding:kMMFlowViewImageTitleBinding];
+		[self setCellClass:[NSActionCell class] ];
 	}
 }
 
 + (Class)cellClass
 {
-    return [ NSActionCell class ];
+    return [NSActionCell class];
 }
 
 #pragma mark -
@@ -1078,18 +1078,18 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	[layer setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
 								   readBlock:^id{
 									   MMFlowView *strongSelf = weakSelf;
-									   return @(((double)( strongSelf.selectedIndex ) ) / ( strongSelf.numberOfItems - 1 ));
+									   return @(((double)(strongSelf.selectedIndex)) / (strongSelf.numberOfItems - 1));
 								   }
 								  writeBlock:^(id value) {
 									  MMFlowView *strongSelf = weakSelf;
-									  NSInteger index = [value doubleValue] * ( MAX( 0, strongSelf.numberOfItems - 1 ) );
+									  NSInteger index = [value doubleValue] * (MAX( 0, strongSelf.numberOfItems - 1));
 									  strongSelf.selectedIndex = index;
 								  }];
 
 	CALayer *knobLayer = [layer.sublayers firstObject];
 	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityValueAttribute withBlock:^id{
 		MMFlowView *strongSelf = weakSelf;
-		return @(((double)( strongSelf.selectedIndex ) ) / ( strongSelf.numberOfItems - 1 ));
+		return @(((double)(strongSelf.selectedIndex)) / (strongSelf.numberOfItems - 1));
 	}];
 	return layer;
 }
