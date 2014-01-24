@@ -52,7 +52,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		sut = [[MMFlowViewImageFactory alloc] init];
 		itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 		[itemMock stub:@selector(imageItemRepresentationType) andReturn:@"testRepresentationType"];
-		[itemMock stub:@selector(imageItemRepresentation) andReturn:(__bridge id)testImageRef];
+		[itemMock stub:@selector(imageItemRepresentation) andReturn:testImage];
 		decoderMock = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
 		//[decoderMock stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
 		//[decoderMock stub:@selector(maxPixelSize) andReturn:@100];
@@ -152,9 +152,10 @@ describe(@"MMFlowViewImageFactory", ^{
 				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
 				}];
 			});
-			it(@"should send the decoder newImageFromItem:", ^{
-				[[decoderMock shouldEventually] receive:@selector(newCGImageFromItem:) andReturn:(__bridge id)testImageRef];
-				 
+			it(@"should send the decoder newCGImageFromItem:", ^{
+				[itemMock stub:@selector(imageItemRepresentation) andReturn:testImage];
+				[[decoderMock shouldEventually] receive:@selector(newCGImageFromItem:) andReturn:(__bridge id)testImageRef withArguments:testImage];
+
 				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
 				}];
 			});
