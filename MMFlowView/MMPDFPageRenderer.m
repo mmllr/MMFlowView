@@ -71,18 +71,15 @@
 
 - (void)drawPage:(NSGraphicsContext *)context
 {
-	[NSGraphicsContext saveGraphicsState];
 	[NSGraphicsContext setCurrentContext:context];
 	[self drawBackground];
 	[self.affineTransform set];
 	CGContextDrawPDFPage([context graphicsPort], self.page);
-	[NSGraphicsContext restoreGraphicsState];
 }
 
 - (NSBitmapImageRep*)imageRepresentation
 {
 	CGSize size = self.imageSize;
-
 	NSBitmapImageRep *image = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
 																	  pixelsWide:size.width
 																	  pixelsHigh:size.height
@@ -95,7 +92,9 @@
 																	bitsPerPixel:0];
 
 	NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep:image];
+	[NSGraphicsContext saveGraphicsState];
 	[self drawPage:context];
+	[NSGraphicsContext restoreGraphicsState];
 	return image;
 }
 
