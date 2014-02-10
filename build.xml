@@ -37,14 +37,16 @@
     </target>
     
     <target name="oclint-xcodebuild">
-        <exec executable="oclint-xcodebuild">
+        <exec executable="which" dir="${src.dir}" failonerror="false" failifexecutionfails="false">
+ 			 <arg value="oclint-xcodebuild"/>
+       </exec>
         <env key="PATH" value="${env.PATH}"/>
         </exec>
     </target>
     
     <target name="oclint-parse">
-        <exec executable="oclint-json-compilation-database">
-            <env key="PATH" value="${env.PATH}"/>
+        <exec executable="which" dir="${src.dir}" failonerror="false" failifexecutionfails="false">
+        	<arg value="oclint-json-compilation-database"/>
             <arg value="--" />
             <arg value="-o=${basedir}/build/oclint/lint.xml" />
             <arg value="-report-type=pmd" />
