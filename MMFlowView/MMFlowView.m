@@ -1136,23 +1136,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 }
 
 #pragma mark -
-#pragma mark Layer queue
-
-- (void)enqeueItemLayer:(CALayer*)aLayer
-{
-	[ self.layerQueue addObject:aLayer ];
-}
-
-- (CALayer*)deqeueItemLayer
-{
-	CALayer *aLayer = [ self.layerQueue lastObject ];
-	if ( [ self.layerQueue count ] ) {
-		[ self.layerQueue removeLastObject ];
-	}
-	return aLayer;
-}
-
-#pragma mark -
 #pragma mark Layer updating
 
 - (void)updateImages
