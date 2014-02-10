@@ -10,8 +10,11 @@
 
 @protocol MMFlowViewImageCache <NSObject>
 
-- (void)cacheImage:(id)anImage withUID:(id)anUID;
-- (void)imageForUID:(id)anUID;
+- (id)itemForUUID:(NSString*)anUUID;
+- (void)cacheItem:(id)anItem withUUID:(NSString*)anUUID;
 
 @end
 
+@interface MMFlowViewImageCache : NSObject <MMFlowViewImageCache>
+
+@end

@@ -8,3 +8,32 @@
 
 #import "MMFlowViewImageCache.h"
 
+@interface MMFlowViewImageCache ()
+
+@property (strong) NSCache *cache;
+
+@end
+
+@implementation MMFlowViewImageCache
+
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _cache = [[NSCache alloc] init];
+    }
+    return self;
+}
+
+- (id)itemForUUID:(NSString*)anUUID
+{
+	return [self.cache objectForKey:anUUID];
+}
+
+- (void)cacheItem:(id)anItem withUUID:(NSString*)anUUID
+{
+	[self.cache setObject:anItem forKey:[anUUID copy]];
+}
+
+@end
