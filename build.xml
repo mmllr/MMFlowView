@@ -2,7 +2,7 @@
 <project name="MMFlowView" default="build-MMFlowView">
     <property environment="env"/>
     
-    <target name="build-MMFlowView" depends="prepare,oclint" />
+    <target name="build-MMFlowView" depends="prepare,oclint"/>
     
     <target name="clean" description="Cleanup build artifacts">
         <delete dir="${basedir}/build/oclint" />
@@ -40,8 +40,6 @@
         <exec executable="which" dir="${src.dir}" failonerror="false" failifexecutionfails="false">
  			 <arg value="oclint-xcodebuild"/>
        </exec>
-        <env key="PATH" value="${env.PATH}"/>
-        </exec>
     </target>
     
     <target name="oclint-parse">
