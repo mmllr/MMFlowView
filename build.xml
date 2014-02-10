@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MMFlowView" default="build-MMFlowView">
+    <property environment="env"/>
+    
+    <target name="build-MMFlowView" depends="prepare,oclint" />
+    
+    <target name="clean" description="Cleanup build artifacts">
+        <delete dir="${basedir}/build/oclint" />
+    </target>
+ 
+    <target name="prepare" depends="clean" description="Prepare for build">
+        <mkdir dir="${basedir}/build/oclint" /> 
+    </target>
+    
+    <target name="oclint">
+        <antcall target="xcodebuild-clean" />
+        <antcall target="xcodebuild" />
+        <antcall target="oclint-xcodebuild" />
+        <antcall target="oclint-parse" />
+    </target>
+    
+    <target name="xcodebuild-clean">
+        <exec executable="xcodebuild">
+            <arg value="-configuration" />
+            <arg value="Release" />
+            <arg value="clean" />
+        </exec>
+    </target>
+    
+    <target name="xcodebuild">
+        <exec executable="xcodebuild" output="xcodebuild.log">
+            <arg value="-configuration" />
+            <arg value="Release" />
+            <arg value="CODE_SIGN_IDENTITY=" />
+            <arg value="CODE_SIGNING_REQUIRED=NO" />
+        </exec>
+    </target>
+    
+    <target name="oclint-xcodebuild">
+        <exec executable="oclint-xcodebuild">
+        <env key="PATH" value="${env.PATH}"/>
+        </exec>
+    </target>
+    
+    <target name="oclint-parse">
+        <exec executable="oclint-json-compilation-database">
+            <env key="PATH" value="${env.PATH}"/>
+            <arg value="--" />
+            <arg value="-o=${basedir}/build/oclint/lint.xml" />
+            <arg value="-report-type=pmd" />
+            <arg value="-stats" />
+        </exec>
+    </target>
+</project>
