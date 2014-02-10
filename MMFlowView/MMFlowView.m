@@ -495,7 +495,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer
 {
-	//[self updateImages];
+	[self updateImages];
 }
 
 #pragma mark - other helpers

@@ -625,9 +625,6 @@ describe(@"MMFlowView", ^{
 							sut.selectedIndex = sut.selectedIndex + 1;
 						});
 						context(@"coverFlowLayerDidRelayout:", ^{
-							beforeEach(^{
-								[sut coverFlowLayerDidRelayout:sut.coverFlowLayer];
-							});
 							context(@"image factory", ^{
 								__block id mockedImageFactory = nil;
 								__block id mockedImageDecoder = nil;
@@ -643,6 +640,7 @@ describe(@"MMFlowView", ^{
 									mockedImageDecoder = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
 									[mockedImageFactory stub:@selector(decoderforRepresentationType:) andReturn:mockedImageDecoder];
 									[mockedImageDecoder stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
+									sut.imageFactory = mockedImageFactory;
 								});
 								afterAll(^{
 									mockedImageFactory = nil;
@@ -650,9 +648,8 @@ describe(@"MMFlowView", ^{
 									SAFE_CGIMAGE_RELEASE(testImageRef)
 								});
 								it(@"should set the images in the visible range", ^{
-									/*NSArray *updatedImages =
-									[sut.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:sut.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-										id<MMFlowViewItem> item = [mockedItems objectAtIndex:idx];
+									/*[sut.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:sut.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+										[[contentLayer.contents shouldEventually] equal:(__bridge id)(testImageRef)];
 									}];*/
 								});
 							});
