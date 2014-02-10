@@ -65,3 +65,27 @@ clean test
 echo "[*] Generating code-coverage results"
 scripts/gcovr -x -o coverage.xml --root=. --exclude='(.*Spec\.m)|(Pods/*)|(.*Test\.m)|(.*.h)'
 
+echo "[*] Performing code quality analysis"
+xcodebuild -project MMFlowViewDemo.xcodeproj \
+-scheme MMFlowViewDemo_CI \
+clean 1> /dev/null
+
+${XCTOOL} -project MMFlowViewDemo.xcodeproj \
+-scheme MMFlowViewDemo_CI \
+-reporter json-compilation-database:compile_commands.json \
+build
+
+${OCLINT_JSON_COMPILATION_DATABASE} -- \
+-report-type=pmd \
+-o oclint.xml \
+-rc LONG_LINE=250 \
+-rc LONG_VARIABLE_NAME=50 \
+-max-priority-2=15 \
+-max-priority-3=200
+
+if [ "$?" -ne "0" ]; then
+	echo "[ ] ERROR! Integration failed!"
+else
+	echo "[*] Integration successful!"
+fi
+
