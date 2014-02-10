@@ -21,8 +21,11 @@
     
     <target name="xcodebuild-clean">
         <exec executable="xcodebuild">
+        <env key="PATH" value="${PATH}:/usr/local/bin"/> 
             <arg value="-configuration" />
             <arg value="Release" />
+            <arg value="-scheme" />
+            <arg value="MMFlowViewDemo_CI" />
             <arg value="clean" />
         </exec>
     </target>
@@ -31,22 +34,23 @@
         <exec executable="xcodebuild" output="xcodebuild.log">
             <arg value="-configuration" />
             <arg value="Release" />
+            <arg value="-scheme" />
+            <arg value="MMFlowViewDemo_CI" />
             <arg value="CODE_SIGN_IDENTITY=" />
             <arg value="CODE_SIGNING_REQUIRED=NO" />
+            <arg value="build" />
         </exec>
     </target>
     
     <target name="oclint-xcodebuild">
-        <exec executable="which" dir="${src.dir}" failonerror="false" failifexecutionfails="false">
- 			 <arg value="oclint-xcodebuild"/>
+        <exec executable="oclint-xcodebuild">
        </exec>
     </target>
     
     <target name="oclint-parse">
-        <exec executable="which" dir="${src.dir}" failonerror="false" failifexecutionfails="false">
-        	<arg value="oclint-json-compilation-database"/>
+        <exec executable="oclint-json-compilation-database">
             <arg value="--" />
-            <arg value="-o=${basedir}/build/oclint/lint.xml" />
+            <arg value="-o=lint.xml" />
             <arg value="-report-type=pmd" />
             <arg value="-stats" />
         </exec>
