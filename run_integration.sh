@@ -4,19 +4,11 @@ if [ -f $HOME/.bash_profile ]; then
 	source $HOME/.bash_profile
 fi
 
-set +x
-set -e
-set -o pipefail
-
 OCLINT=`which oclint`
 XCTOOL=`which xctool`
 OCLINT_XCODEBUILD=`which oclint-xcodebuild`
 OCLINT_JSON_COMPILATION_DATABASE=`which oclint-json-compilation-database`
 BUILDIR=build
-
-if [ -z "${TERM}" ]; then
-    export TERM=xterm
-fi
 
 # set the desired version of Xcode
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
@@ -26,12 +18,6 @@ if [ -z "${WORKSPACE}" ]; then
 	REALPATH=$([[ -L $0 ]] && echo $(dirname $0)/$(readlink $0) || echo $0)
 	WORKSPACE=$(cd $(dirname $REALPATH); pwd)
 fi
-
-echo "[*] Updating Cocoapods"
-
-bundle install
-bundle exec pod repo update
-bundle exec pod install
 
 echo "[*] Cleaning workspace"
 
@@ -71,13 +57,13 @@ DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build \
 SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
+CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
 clean
 
 xcodebuild -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
 -configuration Release \
-CODE_SIGN_IDENTITY="" \
-CODE_SIGNING_REQUIRED=NO \
+CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
 DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build \
