@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="MMFlowView" default="build-MMFlowView">
     <property environment="env"/>
-    
     <target name="build-MMFlowView" depends="prepare,oclint"/>
-    
-    <target name="clean" description="Cleanup build artifacts">
+
+	<target name="clean" description="Cleanup build artifacts">
         <delete dir="${basedir}/build/oclint" />
     </target>
  
     <target name="prepare" depends="clean" description="Prepare for build">
-        <mkdir dir="${basedir}/build/oclint" /> 
+        <mkdir dir="${basedir}/build/oclint" />
     </target>
     
     <target name="oclint">
@@ -21,7 +20,8 @@
     
     <target name="xcodebuild-clean">
         <exec executable="xcodebuild">
-        <env key="PATH" value="${PATH}:/usr/local/bin"/> 
+			<arg value="-workspace" />
+			<arg value="${basedir}/MMFlowViewDemo.xcworkspace" />
             <arg value="-configuration" />
             <arg value="Release" />
             <arg value="-scheme" />
@@ -31,7 +31,9 @@
     </target>
     
     <target name="xcodebuild">
-        <exec executable="xcodebuild" output="xcodebuild.log">
+        <exec executable="xcodebuild" output="${basedir}/xcodebuild.log">
+			<arg value="-workspace" />
+			<arg value="${basedir}/MMFlowViewDemo.xcworkspace" />
             <arg value="-configuration" />
             <arg value="Release" />
             <arg value="-scheme" />
@@ -50,9 +52,14 @@
     <target name="oclint-parse">
         <exec executable="oclint-json-compilation-database">
             <arg value="--" />
-            <arg value="-o=lint.xml" />
+            <arg value="-o=${basedir}/build/oclint/lint.xml" />
             <arg value="-report-type=pmd" />
             <arg value="-stats" />
+			<arg value="-rc" />
+			<arg value="LONG_VARIABLE_NAME=50" />
+			<arg value="-rc" />
+			<arg value="LONG_LINE=250" />
+			<arg value="-max-priority-3=200" />
         </exec>
     </target>
 </project>
