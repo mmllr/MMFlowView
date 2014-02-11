@@ -14,6 +14,10 @@ OCLINT_XCODEBUILD=`which oclint-xcodebuild`
 OCLINT_JSON_COMPILATION_DATABASE=`which oclint-json-compilation-database`
 BUILDIR=build
 
+if [ -z "${TERM}"]; then
+    TERM=xterm
+fi
+
 # set the desired version of Xcode
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
 
