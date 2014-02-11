@@ -15,7 +15,7 @@ OCLINT_JSON_COMPILATION_DATABASE=`which oclint-json-compilation-database`
 BUILDIR=build
 
 if [ -z "${TERM}" ]; then
-    TERM=xterm
+    export TERM=xterm
 fi
 
 # set the desired version of Xcode
