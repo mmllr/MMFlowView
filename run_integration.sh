@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 if [ -f $HOME/.bash_profile ]; then
 	source $HOME/.bash_profile
 fi
