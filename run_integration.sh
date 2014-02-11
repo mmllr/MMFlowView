@@ -1,19 +1,29 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 set -o pipefail
 
-if [ -f $HOME/.bash_profile ]; then
-	source $HOME/.bash_profile
-fi
-
-OCLINT=`which oclint`
-XCTOOL=`which xctool`
-OCLINT_XCODEBUILD=`which oclint-xcodebuild`
-OCLINT_JSON_COMPILATION_DATABASE=`which oclint-json-compilation-database`
-BUILDIR=build
-
 # set the desired version of Xcode
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+
+if [ -z "${OCLINT}" ]; then
+	OCLINT=`which oclint`
+fi
+
+if [ -z "${OCLINT_XCODEBUILD}" ]; then
+	OCLINT_XCODEBUILD=`which oclint-xcodebuild`
+fi
+
+if [ -z "${OCLINT_JSON_COMPILATION_DATABASE}" ]; then
+	OCLINT_JSON_COMPILATION_DATABASE=`which oclint-json-compilation-database`
+fi
+
+if [ -z "${XCTOOL}" ]; then
+	XCTOOL=`which xctool`
+fi
+
+if [ -z "${XCODEBUILD}" ]; then
+	XCODEBUILD=`which xcodebuild`
+fi
 
 if [ -z "${WORKSPACE}" ]; then
 	echo "[*] workspace nil, setting to working copy"
@@ -27,8 +37,8 @@ if [ -f compile_commands.json ]; then
 	rm compile_commands.json
 fi
 
-if [ -d "${BUILDIR}" ]; then
-	rm -Rf ${BUILDIR}
+if [ -d build ]; then
+	rm -Rf build
 fi
 
 echo "[*] Perform tests"
@@ -52,7 +62,7 @@ echo "[*] Performing code quality analysis"
 
 mkdir -p ${WORKSPACE}/build/oclint
 
-xcodebuild -project MMFlowViewDemo.xcodeproj \
+${XCODEBUILD} -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
 -configuration Release \
 DSTROOT=${WORKSPACE}/build/Products \
@@ -62,7 +72,7 @@ SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
 clean
 
-xcodebuild -project MMFlowViewDemo.xcodeproj \
+${XCODEBUILD} -project MMFlowViewDemo.xcodeproj \
 -scheme MMFlowViewDemo_CI \
 -configuration Release \
 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
