@@ -46,64 +46,78 @@ describe(@"MMNSImageDecoder", ^{
 		it(@"should respond to imageFromItem:", ^{
 			[[sut should] respondToSelector:@selector(imageFromItem:)];
 		});
-		it(@"should have a maxPixelSize of zero", ^{
-			[[theValue(sut.maxPixelSize) should] beZero];
-		});
-		context(@"with a pixel size of 100", ^{
-			beforeEach(^{
-				sut.maxPixelSize = 100;
+		context(@"maxPixelSize", ^{
+			it(@"should have a maxPixelSize of zero", ^{
+				[[theValue(sut.maxPixelSize) should] beZero];
 			});
-			it(@"should have a maxPixelSize of 100", ^{
+			it(@"should set a size", ^{
+				sut.maxPixelSize = 100;
 				[[theValue(sut.maxPixelSize) should] equal:theValue(100)];
 			});
-			context(@"newImageFromItem:withSize:", ^{
-				context(@"when created with an NSImage and non-zero size", ^{
-					beforeAll(^{
-						imageRef = [sut newCGImageFromItem:testImage];
-					});
-					afterAll(^{
-						SAFE_CGIMAGE_RELEASE(imageRef)
-					});
-					it(@"should load an image", ^{
-						[[theValue(imageRef != NULL) should] beTrue];
-					});
-					it(@"should have a width less or equal 100", ^{
-						[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-					});
-					it(@"should have a height less or equal 100", ^{
-						[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-					});
+		});
+		context(@"newCGImageFromItem:", ^{
+			context(@"when created with an NSImage and non-zero size", ^{
+				beforeAll(^{
+					sut.maxPixelSize = 100;
+					imageRef = [sut newCGImageFromItem:testImage];
 				});
-				context(@"when not invoked with an NSImage", ^{
-					beforeAll(^{
-						imageRef = [sut newCGImageFromItem:@"Test"];
-					});
-					afterAll(^{
-						SAFE_CGIMAGE_RELEASE(imageRef)
-					});
-					it(@"should not return an image", ^{
-						[[theValue(imageRef == NULL) should] beTrue];
-					});
+				afterAll(^{
+					SAFE_CGIMAGE_RELEASE(imageRef)
+				});
+				it(@"should load an image", ^{
+					[[theValue(imageRef != NULL) should] beTrue];
+				});
+				it(@"should have a width less or equal 100", ^{
+					[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+				});
+				it(@"should have a height less or equal 100", ^{
+					[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
 				});
 			});
-			context(@"imageFromItem:", ^{
-				__block NSImage *image = nil;
-				
-				context(@"when created with an NSImage", ^{
-					beforeAll(^{
-						image = [sut imageFromItem:testImage];
-					});
-					afterAll(^{
-						image = nil;
-					});
-					it(@"should load an image", ^{
-						[[image should] equal:testImage];
-					});
+			context(@"when maxPixelSize is zero", ^{
+				beforeAll(^{
+					sut.maxPixelSize = 0;
+					imageRef = [sut newCGImageFromItem:testImage];
 				});
-				context(@"when not invoked with an NSImage", ^{
-					it(@"should not return an image", ^{
-						[[[sut imageFromItem:@"Test"] should] beNil];
-					});
+				it(@"should load an image", ^{
+					[[theValue(imageRef != NULL) should] beTrue];
+				});
+				it(@"should have a width greater than zero", ^{
+					[[theValue(CGImageGetWidth(imageRef)) should] beGreaterThan:theValue(0)];
+				});
+				it(@"should have a height greater than zero", ^{
+					[[theValue(CGImageGetHeight(imageRef)) should] beGreaterThan:theValue(0)];
+				});
+			});
+			context(@"when not invoked with an NSImage", ^{
+				beforeAll(^{
+					imageRef = [sut newCGImageFromItem:@"Test"];
+				});
+				afterAll(^{
+					SAFE_CGIMAGE_RELEASE(imageRef)
+				});
+				it(@"should not return an image", ^{
+					[[theValue(imageRef == NULL) should] beTrue];
+				});
+			});
+		});
+		context(@"imageFromItem:", ^{
+			__block NSImage *image = nil;
+			
+			context(@"when created with an NSImage", ^{
+				beforeAll(^{
+					image = [sut imageFromItem:testImage];
+				});
+				afterAll(^{
+					image = nil;
+				});
+				it(@"should load an image", ^{
+					[[image should] equal:testImage];
+				});
+			});
+			context(@"when not invoked with an NSImage", ^{
+				it(@"should not return an image", ^{
+					[[[sut imageFromItem:@"Test"] should] beNil];
 				});
 			});
 		});

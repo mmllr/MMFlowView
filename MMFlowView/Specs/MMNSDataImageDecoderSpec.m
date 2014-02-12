@@ -44,8 +44,14 @@ describe(@"MMNSDataImageDecoder", ^{
 	it(@"should respond to imageFromItem:", ^{
 		[[sut should] respondToSelector:@selector(imageFromItem:)];
 	});
-	it(@"should have a maxPixelSize of zero", ^{
-		[[theValue(sut.maxPixelSize) should] beZero];
+	context(@"maxPixelSize", ^{
+		it(@"should have a maxPixelSize of zero", ^{
+			[[theValue(sut.maxPixelSize) should] beZero];
+		});
+		it(@"should set a size", ^{
+			sut.maxPixelSize = 100;
+			[[theValue(sut.maxPixelSize) should] equal:theValue(100)];
+		});
 	});
 	context(@"newCGImageFromItem:", ^{
 		context(@"with maxPixelSize of 100", ^{
@@ -76,7 +82,6 @@ describe(@"MMNSDataImageDecoder", ^{
 				});
 			});
 		});
-		
 		context(@"when asking for an image with zero image size", ^{
 			beforeAll(^{
 				sut.maxPixelSize = 0;

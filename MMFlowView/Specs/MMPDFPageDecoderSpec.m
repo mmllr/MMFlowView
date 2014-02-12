@@ -51,8 +51,14 @@ describe(@"MMPDFPageDecoder", ^{
 		it(@"should respond to imageFromItem:", ^{
 			[[sut should] respondToSelector:@selector(imageFromItem:)];
 		});
-		it(@"should have a maxPixelSize of zero", ^{
-			[[theValue(sut.maxPixelSize) should] beZero];
+		context(@"maxPixelSize", ^{
+			it(@"should have a maxPixelSize of zero", ^{
+				[[theValue(sut.maxPixelSize) should] beZero];
+			});
+			it(@"should set a size", ^{
+				sut.maxPixelSize = 100;
+				[[theValue(sut.maxPixelSize) should] equal:theValue(100)];
+			});
 		});
 		context(@"setting the maxPixelSize to 100", ^{
 			beforeEach(^{
