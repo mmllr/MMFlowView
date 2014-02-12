@@ -26,14 +26,19 @@
     return self;
 }
 
-- (id)itemForUUID:(NSString*)anUUID
+- (CGImageRef)imageForUUID:(NSString*)anUUID
 {
-	return [self.cache objectForKey:anUUID];
+	return (__bridge CGImageRef)([self.cache objectForKey:anUUID]);
 }
 
-- (void)cacheItem:(id)anItem withUUID:(NSString*)anUUID
+- (void)cacheImage:(CGImageRef)anImage withUUID:(NSString*)anUUID
 {
-	[self.cache setObject:anItem forKey:[anUUID copy]];
+	[self.cache setObject:(__bridge id)(anImage) forKey:[anUUID copy]];
+}
+
+- (void)reset
+{
+	[self.cache removeAllObjects];
 }
 
 @end

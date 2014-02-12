@@ -10,8 +10,9 @@
 
 @protocol MMFlowViewImageCache <NSObject>
 
-- (id)itemForUUID:(NSString*)anUUID;
-- (void)cacheItem:(id)anItem withUUID:(NSString*)anUUID;
+- (CGImageRef)imageForUUID:(NSString*)anUUID;
+- (void)cacheImage:(CGImageRef)anImage withUUID:(NSString*)anUUID;
+- (void)reset;
 
 @end
 
