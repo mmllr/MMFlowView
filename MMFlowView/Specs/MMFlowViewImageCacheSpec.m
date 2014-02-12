@@ -38,16 +38,16 @@ describe(@"MMFlowViewImageCache", ^{
 			[[sut should] respondToSelector:@selector(imageForUUID:)];
 		});
 		context(@"caching items", ^{
-			__block CGImageRef imageRef = NULL;
+			__block CGImageRef testImageRef = NULL;
 
 			beforeAll(^{
 				NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
 				NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
-				imageRef = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)(imageURL), CGSizeMake(400, 400), (__bridge CFDictionaryRef)quickLookOptions );
+				testImageRef = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)(imageURL), CGSizeMake(400, 400), (__bridge CFDictionaryRef)quickLookOptions );
 				
 			});
 			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef);
+				SAFE_CGIMAGE_RELEASE(testImageRef);
 			});
 			context(@"an image in cache", ^{
 				beforeEach(^{
