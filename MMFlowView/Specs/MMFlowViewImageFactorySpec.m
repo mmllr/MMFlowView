@@ -13,6 +13,8 @@
 #import "MMFlowViewImageFactory.h"
 #import "MMImageDecoderProtocol.h"
 #import "MMFlowView.h"
+#import "MMMacros.h"
+#import "MMFlowViewImageCache.h"
 
 SPEC_BEGIN(MMFlowViewImageFactorySpec)
 
@@ -42,10 +44,7 @@ describe(@"MMFlowViewImageFactory", ^{
 		testImage = nil;
 		testImageRep = nil;
 		itemMock = nil;
-		if (testImageRef) {
-			CGImageRelease(testImageRef);
-			testImageRef = NULL;
-		}
+		SAFE_CGIMAGE_RELEASE(testImageRef);
 	});
 
 	beforeEach(^{
@@ -82,6 +81,65 @@ describe(@"MMFlowViewImageFactory", ^{
 	it(@"should have a initial maxImageSize of {100,100}", ^{
 		NSValue *expectedSize = [NSValue valueWithSize:CGSizeMake(100, 100)];
 		[[[NSValue valueWithSize:sut.maxImageSize] should] equal:expectedSize];
+	});
+	it(@"should not have an image cache", ^{
+		[[(id)sut.cache should] beNil];
+	});
+	context(@"image cache", ^{
+		__block id cacheMock = nil;
+
+		beforeEach(^{
+			[decoderMock stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
+			[decoderMock stub:@selector(maxPixelSize) andReturn:@100];
+			[decoderMock stub:@selector(setMaxPixelSize:)];
+			
+			cacheMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewImageCache)];
+			sut.cache = cacheMock;
+			[sut setDecoder:decoderMock forRepresentationType:@"cacheTests"];
+		});
+		afterEach(^{
+			cacheMock = nil;
+		});
+		it(@"should set the cache", ^{
+			[[(id)sut.cache should] equal:cacheMock];
+		});
+		context(@"when asking for an image", ^{
+			beforeEach(^{
+				[itemMock stub:@selector(imageItemUID) andReturn:@"cacheUUID"];
+				[itemMock stub:@selector(imageItemRepresentationType) andReturn:@"cacheTests"];
+			});
+			it(@"should ask the cache for the image", ^{
+				[[cacheMock should] receive:@selector(imageForUUID:) withArguments:@"cacheUUID"];
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+				}];
+			});
+			it(@"should put the image in the cache", ^{
+				[[cacheMock shouldEventually] receive:@selector(cacheImage:withUUID:) withArguments:theValue(testImageRef), @"cacheUUID"];
+				[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+				}];
+			});
+			context(@"when image is in cache", ^{
+				beforeEach(^{
+					[cacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)testImageRef];
+				});
+				it(@"should immediately call the completion block", ^{
+					__block BOOL blockInvoked = NO;
+
+					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+						blockInvoked = YES;
+					}];
+					[[theValue(blockInvoked) should] beYes];
+				});
+				it(@"should return the image in cache", ^{
+					__block CGImageRef createdImage = NULL;
+					[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
+						createdImage = CGImageRetain(image);
+					}];
+					[[theValue(createdImage == testImageRef) should] beYes];
+					SAFE_CGIMAGE_RELEASE(createdImage);
+				});
+			});
+		});
 	});
 	context(@"decoders", ^{
 		it(@"should raise an NSInternalInconsistencyException when setting an object not conforming to MMImageDecoderProtocol", ^{

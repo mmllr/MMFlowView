@@ -10,10 +10,12 @@
 
 @protocol MMFlowViewItem;
 @protocol MMImageDecoderProtocol;
+@protocol MMFlowViewImageCache;
 
 @interface MMFlowViewImageFactory : NSObject
 
 @property (nonatomic) CGSize maxImageSize;
+@property (strong) id<MMFlowViewImageCache> cache;
 
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType;
 - (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType;

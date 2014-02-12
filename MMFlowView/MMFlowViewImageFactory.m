@@ -14,6 +14,7 @@
 #import "MMNSBitmapImageRepDecoder.h"
 #import "MMCGImageSourceDecoder.h"
 #import "MMNSDataImageDecoder.h"
+#import "MMFlowViewImageCache.h"
 
 static CGFloat const kDefaultMaxImageDimension = 100;
 
@@ -88,6 +89,14 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 	NSParameterAssert(completionHandler != NULL);
 
 	NSString *representationType = anItem.imageItemRepresentationType;
+	NSString *itemUUID = anItem.imageItemUID;
+
+	CGImageRef cachedImage = [self.cache imageForUUID:itemUUID];
+
+	if (cachedImage) {
+		completionHandler(cachedImage);
+		return;
+	}
 	if ([self canDecodeRepresentationType:representationType]) {
 		id<MMImageDecoderProtocol> decoder = [self decoderforRepresentationType:representationType];
 		decoder.maxPixelSize = MAX(self.maxImageSize.width, self.maxImageSize.height);
@@ -96,6 +105,7 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 			CGImageRef image = [decoder newCGImageFromItem:anItem.imageItemRepresentation];
 
 			if (image) {
+				[self.cache cacheImage:image withUUID:itemUUID];
 				[callingQueue addOperationWithBlock:^{
 					completionHandler(image);
 					CGImageRelease(image);
