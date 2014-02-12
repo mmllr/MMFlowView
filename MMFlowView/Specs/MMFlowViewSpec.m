@@ -204,7 +204,12 @@ describe(@"MMFlowView", ^{
 			it(@"should be a MMFlowViewImageFactory class", ^{
 				[[sut.imageFactory should] beKindOfClass:[MMFlowViewImageFactory class]];
 			});
-			
+			it(@"should have a cache", ^{
+				[[(id)sut.imageFactory.cache shouldNot] beNil];
+			});
+			it(@"should have the flowviews image cache", ^{
+				[[(id)sut.imageFactory.cache should] equal:sut.imageCache];
+			});
 		});
 		context(@"live resizing", ^{
 			context(@"coverflow layer related", ^{

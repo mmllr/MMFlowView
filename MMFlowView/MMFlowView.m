@@ -252,8 +252,9 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
     if (self) {
         // Initialization code here.
 		_bindingInfo = [NSMutableDictionary dictionary];
-		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageCache = [[MMFlowViewImageCache alloc] init];
+		_imageFactory = [[MMFlowViewImageFactory alloc] init];
+		_imageFactory.cache = _imageCache;
 		_layerQueue = [NSMutableArray array];
 		_layout = [[MMCoverFlowLayout alloc] init];
 		[self setInitialDefaults];
@@ -272,8 +273,9 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( self ) {
 		_bindingInfo = [ NSMutableDictionary dictionary ];
 		_layerQueue = [ NSMutableArray array ];
-		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageCache = [[MMFlowViewImageCache alloc] init];
+		_imageFactory = [[MMFlowViewImageFactory alloc] init];
+		_imageFactory.cache = _imageCache;
 		[self setAcceptsTouchEvents:YES];
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
@@ -747,8 +749,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		BOOL isURL = [ [ [ self class ] pathRepresentationTypes ] containsObject:representationType ];
 
 		// ask imagecache for drag image
-		NSImage *dragImage = [ [ NSImage alloc ] initWithCGImage:[ self lookupForImageUID:[ self imageUIDForItem:item ] ]
-															  size:NSSizeFromCGSize(hitLayer.bounds.size) ];
+		NSImage *dragImage = [[NSImage alloc] initWithCGImage:[self.imageCache imageForUUID:[self imageUIDForItem:item]] size:NSSizeFromCGSize(hitLayer.bounds.size)];
 		// double click handling
 		if ( [ theEvent clickCount ] > 1 ) {
 			if ( [ self.delegate respondsToSelector:@selector(flowView:itemWasDoubleClickedAtIndex:) ] ) {
