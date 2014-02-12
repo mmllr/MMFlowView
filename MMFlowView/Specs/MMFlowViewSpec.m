@@ -639,7 +639,7 @@ describe(@"MMFlowView", ^{
 									mockedImageFactory = [MMFlowViewImageFactory nullMock];
 									mockedImageDecoder = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
 									[mockedImageFactory stub:@selector(decoderforRepresentationType:) andReturn:mockedImageDecoder];
-									[mockedImageDecoder stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
+									[mockedImageDecoder stub:NSSelectorFromString(@"newCGImageFromItem:") andReturn:(__bridge id)(testImageRef)];
 									sut.imageFactory = mockedImageFactory;
 								});
 								afterAll(^{
