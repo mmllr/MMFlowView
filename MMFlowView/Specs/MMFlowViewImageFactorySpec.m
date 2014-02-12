@@ -53,9 +53,6 @@ describe(@"MMFlowViewImageFactory", ^{
 		[itemMock stub:@selector(imageItemRepresentationType) andReturn:@"testRepresentationType"];
 		[itemMock stub:@selector(imageItemRepresentation) andReturn:testImage];
 		decoderMock = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
-		//[decoderMock stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
-		//[decoderMock stub:@selector(maxPixelSize) andReturn:@100];
-		//[decoderMock stub:@selector(setMaxPixelSize:)];
 	});
 	afterEach(^{
 		sut = nil;
@@ -66,24 +63,76 @@ describe(@"MMFlowViewImageFactory", ^{
 	it(@"should exist", ^{
 		[[sut shouldNot] beNil];
 	});
-	it(@"should respond to maxImageSize", ^{
-		[[sut should] respondToSelector:@selector(maxImageSize)];
-	});
-	it(@"should respond to setMaxImageSize:", ^{
-		[[sut should] respondToSelector:@selector(setMaxImageSize:)];
-	});
 	it(@"should respond to decoderforRepresentationType:", ^{
 		[[sut should] respondToSelector:@selector(decoderforRepresentationType:)];
 	});
 	it(@"should respond to setDecoder:forRepresentationType:", ^{
 		[[sut should] respondToSelector:@selector(setDecoder:forRepresentationType:)];
 	});
-	it(@"should have a initial maxImageSize of {100,100}", ^{
-		NSValue *expectedSize = [NSValue valueWithSize:CGSizeMake(100, 100)];
-		[[[NSValue valueWithSize:sut.maxImageSize] should] equal:expectedSize];
-	});
+	
 	it(@"should not have an image cache", ^{
 		[[(id)sut.cache should] beNil];
+	});
+	context(@"maxImageSize", ^{
+		it(@"should respond to maxImageSize", ^{
+			[[sut should] respondToSelector:@selector(maxImageSize)];
+		});
+		it(@"should respond to setMaxImageSize:", ^{
+			[[sut should] respondToSelector:@selector(setMaxImageSize:)];
+		});
+		it(@"should have a initial maxImageSize of {100,100}", ^{
+			NSValue *expectedSize = [NSValue valueWithSize:CGSizeMake(100, 100)];
+			[[[NSValue valueWithSize:sut.maxImageSize] should] equal:expectedSize];
+		});
+		it(@"should set a valid image size", ^{
+			sut.maxImageSize = CGSizeMake(500, 500);
+			NSValue *expectedSize = [NSValue valueWithSize:CGSizeMake(500, 500)];
+			[[[NSValue valueWithSize:sut.maxImageSize] should] equal:expectedSize];
+		});
+		context(@"when setting an CGSizeZero maxImageSize", ^{
+			beforeEach(^{
+				sut.maxImageSize = CGSizeZero;
+			});
+			it(@"should have a maxImageSize width greater than zero", ^{
+				[[theValue(sut.maxImageSize.width) should] beGreaterThan:theValue(0)];
+			});
+			it(@"should have a maxImageSize height greater than zero", ^{
+				[[theValue(sut.maxImageSize.height) should] beGreaterThan:theValue(0)];
+			});
+		});
+		context(@"when setting an maxImageSize with its width equal to 0", ^{
+			beforeEach(^{
+				sut.maxImageSize = CGSizeMake(0, 100);
+			});
+			it(@"should have a maxImageSize width greater than zero", ^{
+				[[theValue(sut.maxImageSize.width) should] beGreaterThan:theValue(0)];
+			});
+			it(@"should have a maxImageSize height greater than zero", ^{
+				[[theValue(sut.maxImageSize.height) should] beGreaterThan:theValue(0)];
+			});
+		});
+		context(@"when setting an maxImageSize with its height equal to 0", ^{
+			beforeEach(^{
+				sut.maxImageSize = CGSizeMake(100, 0);
+			});
+			it(@"should have a maxImageSize width greater than zero", ^{
+				[[theValue(sut.maxImageSize.width) should] beGreaterThan:theValue(0)];
+			});
+			it(@"should have a maxImageSize height greater than zero", ^{
+				[[theValue(sut.maxImageSize.height) should] beGreaterThan:theValue(0)];
+			});
+		});
+		context(@"when setting an maxImageSize negative values", ^{
+			beforeEach(^{
+				sut.maxImageSize = CGSizeMake(-100, -100);
+			});
+			it(@"should have a maxImageSize width greater than zero", ^{
+				[[theValue(sut.maxImageSize.width) should] beGreaterThan:theValue(0)];
+			});
+			it(@"should have a maxImageSize height greater than zero", ^{
+				[[theValue(sut.maxImageSize.height) should] beGreaterThan:theValue(0)];
+			});
+		});
 	});
 	context(@"image cache", ^{
 		__block id cacheMock = nil;
@@ -102,6 +151,12 @@ describe(@"MMFlowViewImageFactory", ^{
 		});
 		it(@"should set the cache", ^{
 			[[(id)sut.cache should] equal:cacheMock];
+		});
+		context(@"when changing the maxImageSize", ^{
+			it(@"should invalidate the image cache", ^{
+				[[cacheMock should] receive:@selector(reset)];
+				sut.maxImageSize = CGSizeMake(200, 200);
+			});
 		});
 		context(@"when asking for an image", ^{
 			beforeEach(^{

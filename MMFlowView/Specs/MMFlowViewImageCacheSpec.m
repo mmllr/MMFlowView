@@ -44,7 +44,6 @@ describe(@"MMFlowViewImageCache", ^{
 				NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
 				NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
 				testImageRef = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)(imageURL), CGSizeMake(400, 400), (__bridge CFDictionaryRef)quickLookOptions );
-				
 			});
 			afterAll(^{
 				SAFE_CGIMAGE_RELEASE(testImageRef);

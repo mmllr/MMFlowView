@@ -64,6 +64,19 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 
 #pragma mark - public API
 
+- (void)setMaxImageSize:(CGSize)maxImageSize
+{
+	if (CGSizeEqualToSize(_maxImageSize, CGSizeZero) ||
+		CGSizeEqualToSize(_maxImageSize, maxImageSize) ||
+		maxImageSize.width <= 0 ||
+		maxImageSize.height <= 0) {
+		return;
+	}
+	_maxImageSize = maxImageSize;
+	[self.cache reset];
+	
+}
+
 - (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType
 {
 	return self.imageDecoders[representationType];
