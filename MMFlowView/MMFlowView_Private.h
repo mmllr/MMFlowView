@@ -67,5 +67,6 @@
 - (void)highlightLayer:(CALayer*)aLayer highlighted:(BOOL)isHighlighted cornerRadius:(CGFloat)cornerRadius highlightingColor:(CGColorRef)highlightingColor;
 - (void)startObservingCollection:(NSArray*)aCollection atKeyPaths:(NSSet*)keyPaths;
 - (void)stopObservingCollection:(NSArray*)aCollection atKeyPaths:(NSSet*)keyPaths;
+- (void)updateImages;
 
 @end

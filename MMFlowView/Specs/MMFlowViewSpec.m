@@ -615,6 +615,38 @@ describe(@"MMFlowView", ^{
 							[[theValue(sut.numberOfItems) should] equal:theValue(numberOfItems)];
 						});
 					});
+					context(@"updateImages", ^{
+						__block id mockedImageFactory = nil;
+						__block CGImageRef testImageRef = NULL;
+						__block NSArray *contentLayers = nil;
+						__block MMCoverFlowLayer *coverFlowLayerMock = nil;
+						
+						beforeAll(^{
+							NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+							testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL context:NULL hints:nil]);
+							contentLayers = @[[CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer]];
+							mockedImageFactory = [MMFlowViewImageFactory nullMock];
+							coverFlowLayerMock = [MMCoverFlowLayer nullMock];
+							[coverFlowLayerMock stub:@selector(contentLayers) andReturn:contentLayers];
+						});
+						afterAll(^{
+							mockedImageFactory = nil;
+							SAFE_CGIMAGE_RELEASE(testImageRef)
+						});
+						beforeEach(^{
+							sut.coverFlowLayer = coverFlowLayerMock;
+							sut.imageFactory = mockedImageFactory;
+						});
+						context(@"when all layers are visible", ^{
+							beforeEach(^{
+								[sut stub:@selector(visibleItemIndexes) andReturn:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 5)]];
+							});
+							it(@"should set the images in the visible range", ^{
+								[[mockedImageFactory should] receive:@selector(createCGImageForItem:completionHandler:) withCount:[sut.visibleItemIndexes count]];
+								[sut updateImages];
+							});
+						});
+					});
 					context(@"MMCoverFlowLayerDataSource", ^{
 						it(@"should conform to the MMCoverFlowLayerDataSource protocol", ^{
 							[[sut should] conformToProtocol:@protocol(MMCoverFlowLayerDataSource)];
@@ -640,35 +672,11 @@ describe(@"MMFlowView", ^{
 							sut.selectedIndex = sut.selectedIndex + 1;
 						});
 						context(@"coverFlowLayerDidRelayout:", ^{
-							context(@"image factory", ^{
-								__block id mockedImageFactory = nil;
-								__block id mockedImageDecoder = nil;
-								__block CGImageRef testImageRef = NULL;
-
-								beforeAll(^{
-									NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-									testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL
-																			 context:NULL
-																			   hints:nil]);
-									
-									mockedImageFactory = [MMFlowViewImageFactory nullMock];
-									mockedImageDecoder = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
-									[mockedImageFactory stub:@selector(decoderforRepresentationType:) andReturn:mockedImageDecoder];
-									[mockedImageDecoder stub:NSSelectorFromString(@"newCGImageFromItem:") andReturn:(__bridge id)(testImageRef)];
-									sut.imageFactory = mockedImageFactory;
-								});
-								afterAll(^{
-									mockedImageFactory = nil;
-									mockedImageDecoder = nil;
-									SAFE_CGIMAGE_RELEASE(testImageRef)
-								});
-								it(@"should set the images in the visible range", ^{
-									/*[sut.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:sut.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-										[[contentLayer.contents shouldEventually] equal:(__bridge id)(testImageRef)];
-									}];*/
-								});
+							it(@"should invoke updateImages", ^{
+								MMCoverFlowLayer *layerMock = [MMCoverFlowLayer nullMock];
+								[[sut should] receive:@selector(updateImages)];
+								[ sut coverFlowLayerDidRelayout:layerMock];
 							});
-							
 						});
 						context(@"content layers", ^{
 							__block CALayer *contentLayer = nil;
