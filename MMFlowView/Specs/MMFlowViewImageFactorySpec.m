@@ -126,15 +126,15 @@ describe(@"MMFlowViewImageFactory", ^{
 				[sut createCGImageForItem:itemMock completionHandler:NULL];
 			}) should] raise];
 		});
-		it(@"should call invoke completionBlock on the main thread", ^{
-			NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+		it(@"should call invoke completionBlock on the same thread as the caller", ^{
+			NSOperationQueue *currentQueue = [NSOperationQueue currentQueue];
 			__block NSOperationQueue *queueOnCompletionBlock = nil;
 			[decoderMock stub:@selector(newCGImageFromItem:) andReturn:(__bridge id)(testImageRef)];
 			
 			[sut createCGImageForItem:itemMock completionHandler:^(CGImageRef image) {
 				queueOnCompletionBlock = [NSOperationQueue currentQueue];
 			}];
-			[[expectFutureValue(queueOnCompletionBlock) shouldEventually] equal:mainQueue];
+			[[expectFutureValue(queueOnCompletionBlock) shouldEventually] equal:currentQueue];
 		});
 		context(@"interaction with image decoder", ^{
 			it(@"should ask the item for its imageRepresentationType", ^{

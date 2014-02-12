@@ -91,11 +91,12 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 	if ([self canDecodeRepresentationType:representationType]) {
 		id<MMImageDecoderProtocol> decoder = [self decoderforRepresentationType:representationType];
 		decoder.maxPixelSize = MAX(self.maxImageSize.width, self.maxImageSize.height);
+		NSOperationQueue *callingQueue = [NSOperationQueue currentQueue];
 		[self.operationQueue addOperationWithBlock:^{
 			CGImageRef image = [decoder newCGImageFromItem:anItem.imageItemRepresentation];
 
 			if (image) {
-				[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+				[callingQueue addOperationWithBlock:^{
 					completionHandler(image);
 					CGImageRelease(image);
 				}];
