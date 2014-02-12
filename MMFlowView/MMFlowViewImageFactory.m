@@ -84,7 +84,7 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 	return [self decoderforRepresentationType:representationType] != nil;
 }
 
-- (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef image))completionHandler
+- (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef))completionHandler
 {
 	NSParameterAssert(completionHandler != NULL);
 
