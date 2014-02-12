@@ -49,17 +49,34 @@ describe(@"MMFlowViewImageCache", ^{
 			afterAll(^{
 				SAFE_CGIMAGE_RELEASE(testImageRef);
 			});
-			context(@"an image in cache", ^{
+			context(@"when having images in cache", ^{
 				beforeEach(^{
-					[sut cacheImage:imageRef withUUID:@"item"];
+					[sut cacheImage:testImageRef withUUID:@"item1"];
+					[sut cacheImage:testImageRef withUUID:@"item2"];
+					[sut cacheImage:testImageRef withUUID:@"item3"];
+				});
+				it(@"should contain the cached items", ^{
+					NSArray *expectedUUIDs = @[@"item1", @"item2", @"item3"];
+
+					for (NSString *itemID in expectedUUIDs) {
+						CGImageRef cachedImage = [sut imageForUUID:itemID];
+						[[theValue(cachedImage != NULL) should] beYes];
+					}
 				});
 				it(@"should not return NULL when asking for the item", ^{
-					CGImageRef cachedImage = [sut imageForUUID:@"item"];
+					CGImageRef cachedImage = [sut imageForUUID:@"item1"];
 					[[theValue(cachedImage != NULL) should] beYes];
 				});
 				it(@"should put an item to the cache", ^{
-					CGImageRef cachedImage = [sut imageForUUID:@"item"];
-					[[theValue(cachedImage == imageRef) should] beYes];
+					CGImageRef cachedImage = [sut imageForUUID:@"item1"];
+					[[theValue(cachedImage == testImageRef) should] beYes];
+				});
+				it(@"should return the same image when asking repeatedly for it", ^{
+					for (int i = 0; i < 5; ++i) {
+						CGImageRef cachedImage = [sut imageForUUID:@"item1"];
+						[[theValue(cachedImage == testImageRef) should] beYes];
+					}
+				});
 				});
 				context(@"when the cache is reset", ^{
 					beforeEach(^{
