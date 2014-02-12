@@ -10,6 +10,7 @@
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMMacros.h"
+#import "MMFlowViewImageCache.h"
 
 SPEC_BEGIN(MMFlowViewSpec)
 
@@ -188,6 +189,14 @@ describe(@"MMFlowView", ^{
 		it(@"should have an empty datasource", ^{
 			[[(id)sut.dataSource should] beNil];
 		});
+		context(@"image cache", ^{
+			it(@"should have an image cache", ^{
+				[[(id)sut.imageCache shouldNot] beNil];
+			});
+			it(@"should conform to the MMFlowViewImageCache protocol", ^{
+				[[((id)sut.imageCache) should] conformToProtocol:@protocol(MMFlowViewImageCache)];
+			});
+		});
 		context(@"image factory", ^{
 			it(@"should have an image factory", ^{
 				[[sut.imageFactory shouldNot] beNil];
@@ -195,6 +204,7 @@ describe(@"MMFlowView", ^{
 			it(@"should be a MMFlowViewImageFactory class", ^{
 				[[sut.imageFactory should] beKindOfClass:[MMFlowViewImageFactory class]];
 			});
+			
 		});
 		context(@"live resizing", ^{
 			context(@"coverflow layer related", ^{

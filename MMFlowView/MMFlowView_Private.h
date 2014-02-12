@@ -17,6 +17,8 @@
 #import "MMScrollBarLayer.h"
 #import "MMFlowViewImageFactory.h"
 
+@protocol MMFlowViewImageCache;
+
 @interface MMFlowView () <MMCoverFlowLayerDataSource>
 
 @property (strong) MMCoverFlowLayout *layout;
@@ -39,7 +41,7 @@
 @property (readonly,nonatomic) NSUInteger maximumNumberOfStackedVisibleItems;
 
 /* image cache which holds key-value pairs of image-uids (key) and CGImageRefs (value) */
-@property (readwrite,strong) NSCache *imageCache;
+@property (readwrite,strong) id<MMFlowViewImageCache> imageCache;
 
 /* the bound content array if bindings are used */
 @property (weak, nonatomic, readonly) NSArray *contentArray;

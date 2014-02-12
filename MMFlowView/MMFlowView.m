@@ -28,6 +28,7 @@
 #import "CALayer+NSAccessibility.h"
 #import "MMCoverFlowLayoutAttributes.h"
 #import "MMScrollBarLayer.h"
+#import "MMFlowViewImageCache.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -252,7 +253,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
         // Initialization code here.
 		_bindingInfo = [NSMutableDictionary dictionary];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
-		_imageCache = [[NSCache alloc] init];
+		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_layerQueue = [NSMutableArray array];
 		_layout = [[MMCoverFlowLayout alloc] init];
 		[self setInitialDefaults];
@@ -272,9 +273,8 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		_bindingInfo = [ NSMutableDictionary dictionary ];
 		_layerQueue = [ NSMutableArray array ];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
-		_imageCache = [[ NSCache alloc ] init ];
-		[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
-		[ self setAcceptsTouchEvents:YES ];
+		_imageCache = [[MMFlowViewImageCache alloc] init];
+		[self setAcceptsTouchEvents:YES];
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
 			self.spacing = [ aDecoder decodeDoubleForKey:kMMFlowViewSpacingKey ];
@@ -323,8 +323,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)setInitialDefaults
 {
-	[ self.imageCache setEvictsObjectsWithDiscardedContent:YES ];
-	[ self setAcceptsTouchEvents:YES ];
+	[self setAcceptsTouchEvents:YES];
 	self.stackedAngle = kDefaultStackedAngle;
 	self.spacing = kDefaultItemSpacing;
 	self.stackedScale = kDefaultStackedScale;
@@ -412,7 +411,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 {
 	if ( _previewScale != aPreviewScale ) {
 		_previewScale = CLAMP( aPreviewScale, 0.01, 1. );
-		[ self.imageCache removeAllObjects ];
+		[self.imageCache reset];
 		[self updateImages];
 	}
 }
@@ -1188,11 +1187,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 {
 }
 
-- (CGImageRef)lookupForImageUID:(NSString*)anUID
-{
-	return (__bridge CGImageRef)[self.imageCache objectForKey:anUID];
-}
-
 #pragma mark -
 #pragma mark Notifications
 
@@ -1450,7 +1444,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		if ( [keyPath isEqualToString:self.imageUIDKeyPath] ||
 			[keyPath isEqualToString:self.imageRepresentationKeyPath] ||
 			[keyPath isEqualToString:self.imageRepresentationTypeKeyPath] ) {
-			[self.imageCache removeObjectForKey:[observedObject valueForKeyPath:self.imageUIDKeyPath]];
+			[self.imageCache removeImageWithUUID:[observedObject valueForKeyPath:self.imageUIDKeyPath]];
 			[self.coverFlowLayer setNeedsLayout];
 		}
 		else if ( [keyPath isEqualToString:self.imageTitleKeyPath] ) {
