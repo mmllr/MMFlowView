@@ -77,6 +77,13 @@ describe(@"MMFlowViewImageCache", ^{
 						[[theValue(cachedImage == testImageRef) should] beYes];
 					}
 				});
+				context(@"removing images", ^{
+					beforeEach(^{
+						[sut removeImageWithUUID:@"item2"];
+					});
+					it(@"should not contain the removed item", ^{
+						[[theValue([sut imageForUUID:@"item2"] == NULL) should] beYes];
+					});
 				});
 				context(@"when the cache is reset", ^{
 					beforeEach(^{

@@ -12,6 +12,7 @@
 
 - (CGImageRef)imageForUUID:(NSString*)anUUID;
 - (void)cacheImage:(CGImageRef)anImage withUUID:(NSString*)anUUID;
+- (void)removeImageWithUUID:(NSString*)anUUID;
 - (void)reset;
 
 @end

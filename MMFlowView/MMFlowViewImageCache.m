@@ -36,6 +36,11 @@
 	[self.cache setObject:(__bridge id)(anImage) forKey:[anUUID copy]];
 }
 
+- (void)removeImageWithUUID:(NSString *)anUUID
+{
+	[self.cache removeObjectForKey:anUUID];
+}
+
 - (void)reset
 {
 	[self.cache removeAllObjects];
