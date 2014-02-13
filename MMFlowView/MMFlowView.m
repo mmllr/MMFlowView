@@ -1143,7 +1143,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	[self.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:self.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
 		[self.imageFactory createCGImageForItem:[self imageItemForIndex:idx]
 							  completionHandler:^(CGImageRef image) {
-			contentLayer.contents = (__bridge id)image;
+			contentLayer.contents = (__bridge id)(image);
 		}];
 	}];
 }
