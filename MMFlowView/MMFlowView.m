@@ -496,6 +496,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer
 {
+	self.imageFactory.maxImageSize = self.layout.itemSize;
 	[self updateImages];
 }
 

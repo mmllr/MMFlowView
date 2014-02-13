@@ -626,6 +626,7 @@ describe(@"MMFlowView", ^{
 							mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
 							contentLayers = @[[CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer]];
 							[[mockedCoverFlowLayer stubAndReturn:contentLayers] contentLayers];
+							sut.coverFlowLayer = mockedCoverFlowLayer;
 						});
 						afterEach(^{
 							contentLayers = nil;
@@ -639,11 +640,12 @@ describe(@"MMFlowView", ^{
 							afterAll(^{
 								mockedImageFactory = nil;
 							});
+							beforeEach(^{
+								sut.imageFactory = mockedImageFactory;
+							});
 							context(@"when all 10 layers are visible", ^{
 								beforeEach(^{
 									[sut stub:@selector(visibleItemIndexes) andReturn:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 10)]];
-									sut.imageFactory = mockedImageFactory;
-									sut.coverFlowLayer = mockedCoverFlowLayer;
 								});
 								it(@"should ask the image factory for the images", ^{
 									[[mockedImageFactory should] receive:@selector(createCGImageForItem:completionHandler:) withCount:10];
@@ -712,11 +714,22 @@ describe(@"MMFlowView", ^{
 							sut.selectedIndex = sut.selectedIndex + 1;
 						});
 						context(@"coverFlowLayerDidRelayout:", ^{
-							it(@"should invoke updateImages", ^{
-								MMCoverFlowLayer *layerMock = [MMCoverFlowLayer nullMock];
-								[[sut should] receive:@selector(updateImages)];
-								[ sut coverFlowLayerDidRelayout:layerMock];
+							__block MMCoverFlowLayer *layerMock = nil;
+
+							beforeEach(^{
+								layerMock = [MMCoverFlowLayer nullMock];
 							});
+							it(@"should invoke updateImages", ^{
+								[[sut should] receive:@selector(updateImages)];
+								[sut coverFlowLayerDidRelayout:layerMock];
+							});
+							it(@"should set the maxImageSize of the image factory to the layouts itemSite", ^{
+								MMFlowViewImageFactory *mockedImageFactory = [MMFlowViewImageFactory nullMock];
+								[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(sut.layout.itemSize)];
+								sut.imageFactory = mockedImageFactory;
+								[sut coverFlowLayerDidRelayout:layerMock];
+							});
+							
 						});
 						context(@"content layers", ^{
 							__block CALayer *contentLayer = nil;
