@@ -11,6 +11,14 @@
 		2807B3FA1822D7F1005E3D0E /* MMCoverFlowLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2807B3F91822D7F1005E3D0E /* MMCoverFlowLayerSpec.m */; };
 		2807B3FD1822D860005E3D0E /* MMCoverFlowLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2807B3FC1822D860005E3D0E /* MMCoverFlowLayer.m */; };
 		28155C4A188C3E9F00CF12FB /* TestImage01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28155C49188C3E9F00CF12FB /* TestImage01.jpg */; };
+		2823299418AD2B740022A112 /* MMFlowViewKeyValueObservingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2823299318AD2B740022A112 /* MMFlowViewKeyValueObservingSpec.m */; };
+		2823299A18AD2DFA0022A112 /* MMFlowView+NSDraggingSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2823299918AD2DFA0022A112 /* MMFlowView+NSDraggingSource.m */; };
+		2823299D18AD2E1A0022A112 /* MMFlowView+NSDraggingDestination.m in Sources */ = {isa = PBXBuildFile; fileRef = 2823299C18AD2E1A0022A112 /* MMFlowView+NSDraggingDestination.m */; };
+		282329A018AD2E590022A112 /* MMFlowView+QLPreviewPanelDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2823299F18AD2E590022A112 /* MMFlowView+QLPreviewPanelDataSource.m */; };
+		282329A318AD2EC80022A112 /* MMFlowView+QLPreviewPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 282329A218AD2EC80022A112 /* MMFlowView+QLPreviewPanelController.m */; };
+		282329A618AD2F2B0022A112 /* MMFlowView+QLPreviewPanelDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 282329A518AD2F2B0022A112 /* MMFlowView+QLPreviewPanelDelegate.m */; };
+		282329A918AD2FB60022A112 /* MMFlowView+NSResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 282329A818AD2FB60022A112 /* MMFlowView+NSResponder.m */; };
+		282329AC18AD382E0022A112 /* MMFlowView+NSKeyValueObserving.m in Sources */ = {isa = PBXBuildFile; fileRef = 282329AB18AD382E0022A112 /* MMFlowView+NSKeyValueObserving.m */; };
 		282FEE8818095A5200A306F5 /* CALayer+NSAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */; };
 		28330C6D1815434A0069F265 /* MMCoverFlowLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E085351811C2FA003CC49E /* MMCoverFlowLayoutAttributes.m */; };
 		283338E818623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */; };
@@ -98,6 +106,21 @@
 		2807B3FB1822D860005E3D0E /* MMCoverFlowLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMCoverFlowLayer.h; path = MMFlowView/MMCoverFlowLayer.h; sourceTree = "<group>"; };
 		2807B3FC1822D860005E3D0E /* MMCoverFlowLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMCoverFlowLayer.m; path = MMFlowView/MMCoverFlowLayer.m; sourceTree = "<group>"; };
 		28155C49188C3E9F00CF12FB /* TestImage01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TestImage01.jpg; sourceTree = "<group>"; };
+		2823299318AD2B740022A112 /* MMFlowViewKeyValueObservingSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewKeyValueObservingSpec.m; sourceTree = "<group>"; };
+		2823299818AD2DFA0022A112 /* MMFlowView+NSDraggingSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSDraggingSource.h"; path = "MMFlowView/MMFlowView+NSDraggingSource.h"; sourceTree = "<group>"; };
+		2823299918AD2DFA0022A112 /* MMFlowView+NSDraggingSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+NSDraggingSource.m"; path = "MMFlowView/MMFlowView+NSDraggingSource.m"; sourceTree = "<group>"; };
+		2823299B18AD2E1A0022A112 /* MMFlowView+NSDraggingDestination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSDraggingDestination.h"; path = "MMFlowView/MMFlowView+NSDraggingDestination.h"; sourceTree = "<group>"; };
+		2823299C18AD2E1A0022A112 /* MMFlowView+NSDraggingDestination.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+NSDraggingDestination.m"; path = "MMFlowView/MMFlowView+NSDraggingDestination.m"; sourceTree = "<group>"; };
+		2823299E18AD2E590022A112 /* MMFlowView+QLPreviewPanelDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+QLPreviewPanelDataSource.h"; path = "MMFlowView/MMFlowView+QLPreviewPanelDataSource.h"; sourceTree = "<group>"; };
+		2823299F18AD2E590022A112 /* MMFlowView+QLPreviewPanelDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+QLPreviewPanelDataSource.m"; path = "MMFlowView/MMFlowView+QLPreviewPanelDataSource.m"; sourceTree = "<group>"; };
+		282329A118AD2EC80022A112 /* MMFlowView+QLPreviewPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+QLPreviewPanelController.h"; path = "MMFlowView/MMFlowView+QLPreviewPanelController.h"; sourceTree = "<group>"; };
+		282329A218AD2EC80022A112 /* MMFlowView+QLPreviewPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+QLPreviewPanelController.m"; path = "MMFlowView/MMFlowView+QLPreviewPanelController.m"; sourceTree = "<group>"; };
+		282329A418AD2F2B0022A112 /* MMFlowView+QLPreviewPanelDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+QLPreviewPanelDelegate.h"; path = "MMFlowView/MMFlowView+QLPreviewPanelDelegate.h"; sourceTree = "<group>"; };
+		282329A518AD2F2B0022A112 /* MMFlowView+QLPreviewPanelDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+QLPreviewPanelDelegate.m"; path = "MMFlowView/MMFlowView+QLPreviewPanelDelegate.m"; sourceTree = "<group>"; };
+		282329A718AD2FB60022A112 /* MMFlowView+NSResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSResponder.h"; path = "MMFlowView/MMFlowView+NSResponder.h"; sourceTree = "<group>"; };
+		282329A818AD2FB60022A112 /* MMFlowView+NSResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+NSResponder.m"; path = "MMFlowView/MMFlowView+NSResponder.m"; sourceTree = "<group>"; };
+		282329AA18AD382E0022A112 /* MMFlowView+NSKeyValueObserving.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MMFlowView+NSKeyValueObserving.h"; path = "MMFlowView/MMFlowView+NSKeyValueObserving.h"; sourceTree = "<group>"; };
+		282329AB18AD382E0022A112 /* MMFlowView+NSKeyValueObserving.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MMFlowView+NSKeyValueObserving.m"; path = "MMFlowView/MMFlowView+NSKeyValueObserving.m"; sourceTree = "<group>"; };
 		282FEE8618095A5200A306F5 /* CALayer+NSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CALayer+NSAccessibility.h"; path = "MMFlowView/CALayer+NSAccessibility.h"; sourceTree = "<group>"; };
 		282FEE8718095A5200A306F5 /* CALayer+NSAccessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CALayer+NSAccessibility.m"; path = "MMFlowView/CALayer+NSAccessibility.m"; sourceTree = "<group>"; };
 		283338E718623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSBitmapImageRepDecoderSpec.m; sourceTree = "<group>"; };
@@ -309,6 +332,7 @@
 		2876FF50180B2A5600318C7B /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				2823299318AD2B740022A112 /* MMFlowViewKeyValueObservingSpec.m */,
 				2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */,
 				28B9EAB518807FB7000E793D /* CALayerMMAdditionsSpec.m */,
 				28FE78E0186234A300BA5D1E /* MMCGImageSourceDecoderSpec.m */,
@@ -369,6 +393,20 @@
 				288591B6173968AD000E04EF /* MMVideoOverlayLayer.h */,
 				288591B7173968AD000E04EF /* MMVideoOverlayLayer.m */,
 				28155C48188C3C2C00CF12FB /* Shared */,
+				2823299818AD2DFA0022A112 /* MMFlowView+NSDraggingSource.h */,
+				2823299918AD2DFA0022A112 /* MMFlowView+NSDraggingSource.m */,
+				2823299B18AD2E1A0022A112 /* MMFlowView+NSDraggingDestination.h */,
+				2823299C18AD2E1A0022A112 /* MMFlowView+NSDraggingDestination.m */,
+				2823299E18AD2E590022A112 /* MMFlowView+QLPreviewPanelDataSource.h */,
+				2823299F18AD2E590022A112 /* MMFlowView+QLPreviewPanelDataSource.m */,
+				282329A118AD2EC80022A112 /* MMFlowView+QLPreviewPanelController.h */,
+				282329A218AD2EC80022A112 /* MMFlowView+QLPreviewPanelController.m */,
+				282329A418AD2F2B0022A112 /* MMFlowView+QLPreviewPanelDelegate.h */,
+				282329A518AD2F2B0022A112 /* MMFlowView+QLPreviewPanelDelegate.m */,
+				282329A718AD2FB60022A112 /* MMFlowView+NSResponder.h */,
+				282329A818AD2FB60022A112 /* MMFlowView+NSResponder.m */,
+				282329AA18AD382E0022A112 /* MMFlowView+NSKeyValueObserving.h */,
+				282329AB18AD382E0022A112 /* MMFlowView+NSKeyValueObserving.m */,
 			);
 			name = MMFlowView;
 			sourceTree = "<group>";
@@ -600,6 +638,7 @@
 				288FA4BA1862F3F20040F410 /* MMFlowViewImageFactorySpec.m in Sources */,
 				28FE78D31862099E00BA5D1E /* MMNSImageDecoderSpec.m in Sources */,
 				28E5228618913065008E164C /* NSValueMMAdditionsSpec.m in Sources */,
+				2823299418AD2B740022A112 /* MMFlowViewKeyValueObservingSpec.m in Sources */,
 				2877D87F181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m in Sources */,
 				28862395183560D0008D6246 /* MMScrollBarLayerSpec.m in Sources */,
 				288FA4BC186309D40040F410 /* MMNSDataImageDecoderSpec.m in Sources */,
@@ -617,9 +656,13 @@
 				28DEFC0415AEEE9A0096FBA4 /* main.m in Sources */,
 				2877D882181FE1DF00FD5E07 /* MMFlowViewItemLayer.m in Sources */,
 				28DEFC0B15AEEE9A0096FBA4 /* AppDelegate.m in Sources */,
+				282329A318AD2EC80022A112 /* MMFlowView+QLPreviewPanelController.m in Sources */,
 				2807B3FD1822D860005E3D0E /* MMCoverFlowLayer.m in Sources */,
+				282329A618AD2F2B0022A112 /* MMFlowView+QLPreviewPanelDelegate.m in Sources */,
 				28DEFC1E15AEEF010096FBA4 /* Item.m in Sources */,
+				282329A018AD2E590022A112 /* MMFlowView+QLPreviewPanelDataSource.m in Sources */,
 				28DEFC2215AEEF300096FBA4 /* MMFlowView.m in Sources */,
+				282329AC18AD382E0022A112 /* MMFlowView+NSKeyValueObserving.m in Sources */,
 				288591B5173967BE000E04EF /* MMButtonLayer.m in Sources */,
 				2849FAE31860E6D800E401D0 /* MMQuickLookImageDecoder.m in Sources */,
 				28FE78DB1862143700BA5D1E /* MMPDFPageDecoder.m in Sources */,
@@ -638,12 +681,15 @@
 				2849FADE1860DC6100E401D0 /* MMFlowViewImageFactory.m in Sources */,
 				288591B8173968AE000E04EF /* MMVideoOverlayLayer.m in Sources */,
 				28EE5F821811BBDF006D0540 /* MMCoverFlowLayout.m in Sources */,
+				2823299D18AD2E1A0022A112 /* MMFlowView+NSDraggingDestination.m in Sources */,
 				288591BE17398F88000E04EF /* NSColor+MMAdditions.m in Sources */,
 				2886487718856DE80050DECE /* CALayer+MMLayerAccessibilityDefaultHandlers.m in Sources */,
 				288FA4BF18630A360040F410 /* MMNSDataImageDecoder.m in Sources */,
+				2823299A18AD2DFA0022A112 /* MMFlowView+NSDraggingSource.m in Sources */,
 				28E6979A183AA0B400210AE1 /* MMScrollKnobLayer.m in Sources */,
 				28BD85EE1802F9FD0095224B /* MMFlowView+NSAccessibility.m in Sources */,
 				2838FA3A18911F3D000C6B15 /* NSAffineTransform+MMAdditions.m in Sources */,
+				282329A918AD2FB60022A112 /* MMFlowView+NSResponder.m in Sources */,
 				28B9EAB9188080AD000E793D /* CALayer+MMAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

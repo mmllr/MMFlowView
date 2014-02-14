@@ -244,78 +244,7 @@ describe(@"MMFlowView", ^{
 				sut.title = @"";
 			});
 		});
-		context(@"bindings", ^{
-			__block NSArray *exposedBindings = nil;
-
-			beforeEach(^{
-				exposedBindings = [sut exposedBindings];
-			});
-			afterEach(^{
-				exposedBindings = nil;
-			});
-
-			it(@"should expose NSContentArrayBinding", ^{
-				[[exposedBindings should] contain:NSContentArrayBinding];
-			});
-			it(@"should expose kMMFlowViewImageRepresentationBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageRepresentationBinding];
-			});
-			it(@"should expose kMMFlowViewImageRepresentationTypeBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageRepresentationTypeBinding];
-			});
-			it(@"should expose kMMFlowViewImageUIDBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageUIDBinding];
-			});
-			it(@"should expose kMMFlowViewImageTitleBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageTitleBinding];
-			});
-			context(@"NSContentArrayBinding", ^{
-				context(@"binding to an NSArrayController", ^{
-					__block NSArrayController *arrayController = nil;
-					
-					beforeEach(^{
-						arrayController = [[NSArrayController alloc] initWithContent:mockedItems];
-						[arrayController setEditable:NO];
-						[sut bind:NSContentArrayBinding toObject:arrayController withKeyPath:@"arrangedObjects" options:nil];
-					});
-					afterEach(^{
-						arrayController = nil;
-					});
-					it(@"should be bound to the array controller", ^{
-						[[sut.observedItems should] equal:mockedItems];
-					});
-					it(@"should have the same number of items", ^{
-						[[theValue(sut.numberOfItems) should] equal:theValue([mockedItems count])];
-					});
-					it(@"should have a default imageRepresentationKeyPath", ^{
-						[[sut.imageRepresentationKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentation))];
-					});
-					it(@"should have a default imageRepresentationTypeKeyPath ", ^{
-						[[sut.imageRepresentationTypeKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentationType))];
-					});
-					it(@"should have a default imageUIDKeyPath ", ^{
-						[[sut.imageUIDKeyPath should] equal:NSStringFromSelector(@selector(imageItemUID))];
-					});
-					context(@"selection", ^{
-						it(@"should set the NSArrayControllers selection", ^{
-							sut.selectedIndex = 5;
-							[[theValue([arrayController selectionIndex]) should] equal:theValue(5)];
-						});
-					});
-				});
-				context(@"binding to an non-NSArrayController", ^{
-					__block NSDictionary *dict = nil;
-					beforeEach(^{
-						dict = @{@"arrangedObjects": @[@1, @2]};
-					});
-					it(@"should raise when not bound to an NSArrayController", ^{
-						[[theBlock(^{
-							[sut bind:NSContentArrayBinding toObject:dict withKeyPath:@"arrangedObjects" options:nil];
-						}) should] raiseWithName:NSInternalInconsistencyException];
-					});
-				});
-			});
-		});
+		
 		context(@"layers", ^{
 			beforeEach(^{
 				[sut.layer layoutSublayers];

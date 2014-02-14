@@ -31,20 +31,15 @@
 @property (strong,nonatomic) CALayer *highlightedLayer;
 @property (strong,readwrite) MMScrollBarLayer *scrollBarLayer;
 @property (strong) MMFlowViewImageFactory *imageFactory;
-
+@property (strong,nonatomic,readwrite) NSMutableDictionary *bindingInfo;
+@property (nonatomic,copy) NSArray *observedItems;
 @property (assign,nonatomic) BOOL draggingKnob;
 @property (assign) CGFloat mouseDownInKnob;
 @property (readwrite,nonatomic) NSUInteger numberOfItems;
 @property (readonly,nonatomic) NSUInteger maximumNumberOfStackedVisibleItems;
 @property (readwrite,strong) id<MMFlowViewImageCache> imageCache;
-@property (weak, nonatomic, readonly) NSArray *contentArray;
-@property (weak, nonatomic, readonly) NSArrayController *contentArrayController;
-@property (weak, nonatomic, readonly) NSString *contentArrayKeyPath;
-@property (strong,nonatomic,readwrite) NSMutableDictionary *bindingInfo;
 @property (strong,readwrite) NSMutableArray *layerQueue;
-@property (nonatomic,copy) NSArray *observedItems;
-@property (weak, nonatomic,readonly) NSSet *observedItemKeyPaths;
-@property (nonatomic,readonly) BOOL bindingsEnabled;
+
 
 + (NSSet*)pathRepresentationTypes;
 + (NSDictionary*)uniformTypesDictionary;
@@ -65,8 +60,8 @@
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex;
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex;
 - (void)highlightLayer:(CALayer*)aLayer highlighted:(BOOL)isHighlighted cornerRadius:(CGFloat)cornerRadius highlightingColor:(CGColorRef)highlightingColor;
-- (void)startObservingCollection:(NSArray*)aCollection atKeyPaths:(NSSet*)keyPaths;
-- (void)stopObservingCollection:(NSArray*)aCollection atKeyPaths:(NSSet*)keyPaths;
+
 - (void)updateImages;
+- (IBAction)togglePreviewPanel:(id)previewPanel;
 
 @end

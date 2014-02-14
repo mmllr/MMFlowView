@@ -29,6 +29,7 @@
 #import "MMCoverFlowLayoutAttributes.h"
 #import "MMScrollBarLayer.h"
 #import "MMFlowViewImageCache.h"
+#import "MMFlowView+NSKeyValueObserving.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -46,11 +47,7 @@ NSString * const kMMFlowViewQCCompositionPathRepresentationType = @"MMFlowViewQC
 NSString * const kMMFlowViewQuickLookPathRepresentationType = @"MMFlowViewQuickLookPathRepresentationType";
 NSString * const kMMFlowViewIconRefPathRepresentationType = @"MMFlowViewIconRefPathRepresentationType";
 NSString * const kMMFlowViewIconRefRepresentationType = @"MMFlowViewIconRefRepresentationType";
-/* bindings */
-NSString * const kMMFlowViewImageRepresentationBinding = @"imageRepresentationKeyPath";
-NSString * const kMMFlowViewImageRepresentationTypeBinding = @"imageRepresentationTypeKeyPath";
-NSString * const kMMFlowViewImageUIDBinding = @"imageUIDKeyPath";
-NSString * const kMMFlowViewImageTitleBinding = @"imageTitleKeyPath";
+
 /* layer names */
 static NSString * const kMMFlowViewScrollLayerName = @"MMFlowViewScrollLayerName";
 static NSString * const kMMFlowViewScrollKnobLayerName = @"MMFlowViewScrollKnobLayerName";
@@ -118,15 +115,6 @@ static NSString * const kStringKey = @"string";
 static NSString * const kContentsKey = @"contents";
 static NSString * const kLayoutKey = @"layout";
 
-/* observation context */
-static void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
-static void * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
-/* default item keys */
-static NSString * const kMMFlowViewItemImageRepresentationKey = @"imageItemRepresentation";
-static NSString * const kMMFlowViewItemImageRepresentationTypeKey = @"imageItemRepresentationType";
-static NSString * const kMMFlowViewItemImageUIDKey = @"imageItemUID";
-static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
-
 #ifndef CLAMP
 #define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
 #endif
@@ -138,6 +126,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 @dynamic showsReflection;
 @dynamic reflectionOffset;
 @dynamic visibleItemIndexes;
+
 
 #pragma mark -
 #pragma mark Class methods
@@ -335,19 +324,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	self.scrollDuration = kDefaultScrollDuration;
 	self.itemScale = kDefaultItemScale;
 	self.previewScale = kDefaultPreviewScale;
-}
-
-
-- (void)setUpBindings
-{
-	[self.layout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
-	[self.layout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
-}
-
-- (void)tearDownBindings
-{
-	[self.layout unbind:@"stackedAngle"];
-	[self.layout unbind:@"interItemSpacing"];
 }
 
 #pragma mark -
@@ -552,59 +528,17 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	return NSZeroRect;
 }
 
-#pragma mark -
-#pragma mark Binding releated accessors
-
-- (NSArrayController*)contentArrayController
-{
-	return [ self infoForBinding:NSContentArrayBinding ][NSObservedObjectKey];
-}
-
-- (NSString*)contentArrayKeyPath
-{
-	return [ self infoForBinding:NSContentArrayBinding ][NSObservedKeyPathKey];
-}
-
-- (NSArray *)contentArray
-{
-	NSArray *array = [ self.contentArrayController valueForKeyPath:self.contentArrayKeyPath ];
-	return array ? array : @[];
-}
-
-- (NSSet*)observedItemKeyPaths
-{
-	NSMutableSet *observedItemKeyPaths = [NSMutableSet set];
-	if ( self.imageRepresentationKeyPath ) {
-		[observedItemKeyPaths addObject:self.imageRepresentationKeyPath];
-	}
-	if ( self.imageRepresentationTypeKeyPath ) {
-		[observedItemKeyPaths addObject:self.imageRepresentationTypeKeyPath];
-	}
-	if ( self.imageUIDKeyPath ) {
-		[observedItemKeyPaths addObject:self.imageUIDKeyPath];
-	}
-	if ( self.imageTitleKeyPath ) {
-		[observedItemKeyPaths addObject:self.imageTitleKeyPath];
-	}
-	return [NSSet setWithSet:observedItemKeyPaths];
-}
-
-- (BOOL)bindingsEnabled
-{
-	return [self infoForBinding:NSContentArrayBinding] != nil;
-}
-
 - (void)setImageRepresentationKeyPath:(NSString *)aKeyPath
 {
 	if ( aKeyPath != _imageRepresentationKeyPath ) {
 		if ( _imageRepresentationKeyPath ) {
 			[self stopObservingCollection:self.observedItems
-								atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
+							   atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
 		}
 		_imageRepresentationKeyPath = [aKeyPath copy];
 		if ( _imageRepresentationKeyPath ) {
 			[self startObservingCollection:self.observedItems
-								 atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
+								atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
 		}
 	}
 }
@@ -629,12 +563,12 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( aKeyPath != _imageUIDKeyPath ) {
 		if ( _imageUIDKeyPath ) {
 			[self stopObservingCollection:self.observedItems
-								atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
+							   atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
 		}
 		_imageUIDKeyPath = [ aKeyPath copy ];
 		if ( _imageUIDKeyPath ) {
 			[self startObservingCollection:self.observedItems
-								 atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
+								atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
 		}
 	}
 }
@@ -644,12 +578,12 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if ( aKeyPath != _imageTitleKeyPath ) {
 		if ( _imageTitleKeyPath ) {
 			[self stopObservingCollection:self.observedItems
-								atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
+							   atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
 		}
 		_imageTitleKeyPath = [ aKeyPath copy ];
 		if ( _imageTitleKeyPath ) {
 			[self startObservingCollection:self.observedItems
-								 atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
+								atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
 		}
 	}
 }
@@ -726,164 +660,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 #pragma mark -
 #pragma mark NSResponder overrides
 
-- (BOOL)acceptsFirstResponder
-{
-	return YES;
-}
 
-- (void)mouseDown:(NSEvent *)theEvent
-{
-	NSPoint locationInWindow = [ theEvent locationInWindow ];
-	CGPoint mouseInView = NSPointToCGPoint( [ self convertPoint:locationInWindow fromView:nil ] );
-
-	CALayer *hitLayer = [ self hitLayerAtPoint:mouseInView ];
-	CALayer *knob = (self.scrollBarLayer.sublayers)[0];
-
-	NSUInteger clickedIndex = [ self indexOfItemAtPoint:[ self convertPoint:locationInWindow fromView:nil ] ];
-
-	// dragging only from selection
-	if ( clickedIndex == self.selectedIndex ) {
-		id item = [ self imageItemForIndex:clickedIndex ];
-		NSString *representationType = [ self imageRepresentationTypeForItem:item ];
-		id representation = [ self imageRepresentationForItem:item ];
-		NSPasteboard *dragPBoard = [ NSPasteboard pasteboardWithName:NSDragPboard ];
-		BOOL isURL = [ [ [ self class ] pathRepresentationTypes ] containsObject:representationType ];
-
-		// ask imagecache for drag image
-		NSImage *dragImage = [[NSImage alloc] initWithCGImage:[self.imageCache imageForUUID:[self imageUIDForItem:item]] size:NSSizeFromCGSize(hitLayer.bounds.size)];
-		// double click handling
-		if ( [ theEvent clickCount ] > 1 ) {
-			if ( [ self.delegate respondsToSelector:@selector(flowView:itemWasDoubleClickedAtIndex:) ] ) {
-				[ self.delegate flowView:self itemWasDoubleClickedAtIndex:clickedIndex ];
-			}
-			else if ( [ self action ] ) {
-				[ self sendAction:self.action to:self.target ];
-			}
-			else if ( isURL ) {
-				NSString *filePath = [ representation isKindOfClass:[ NSURL class ] ] ? [ representation path ] : representation;
-				[ [ NSWorkspace sharedWorkspace ] openFile:filePath
-												 fromImage:dragImage
-														at:NSPointFromCGPoint(mouseInView)
-													inView:self ];
-			}
-		}
-		else {
-			// dragging
-			if ( [ self.dataSource respondsToSelector:@selector(flowView:writeItemAtIndex:toPasteboard:) ] ) {
-				[ self.dataSource flowView:self
-						  writeItemAtIndex:clickedIndex
-							  toPasteboard:dragPBoard ];
-			}
-			else if ( isURL ) {
-				NSURL *fileURL = [ representation isKindOfClass:[ NSURL class ] ] ? representation : [ NSURL fileURLWithPath:representation ];
-				[ dragPBoard declareTypes:@[NSURLPboardType]
-									owner:nil ];
-				[ fileURL writeToPasteboard:dragPBoard ];
-			}
-			[ self dragImage:dragImage
-						  at:[ self itemFrameAtIndex:clickedIndex ].origin
-					  offset:NSZeroSize
-					   event:theEvent
-				  pasteboard:dragPBoard
-					  source:self
-				   slideBack:YES ];
-		}
-	}
-	else if ( clickedIndex != NSNotFound ) {
-		self.selectedIndex = clickedIndex;
-	}
-	else if ( [ hitLayer.name isEqualToString:kMMFlowViewScrollBarLayerName ] ) {
-		CGPoint mouseInScrollBar = [ self.layer convertPoint:mouseInView toLayer:self.scrollBarLayer ];
-
-		if ( mouseInScrollBar.x < knob.frame.origin.x ) {
-			[ self moveLeft:self ];
-		}
-		else {
-			[ self moveRight:self ];
-		}
-	}
-	else if ( [ hitLayer.name isEqualToString:kMMFlowViewScrollKnobLayerName ] ) {
-		self.mouseDownInKnob = [ self.layer convertPoint:mouseInView toLayer:knob ].x;
-		self.draggingKnob = YES;
-	}
-	self.selectedLayer = hitLayer;
-}
-
-- (void)mouseDragged:(NSEvent *)theEvent
-{
-	NSPoint locationInWindow = [ theEvent locationInWindow ];
-	CGPoint mouseInView = NSPointToCGPoint( [ self convertPoint:locationInWindow fromView:nil ] );
-
-	self.selectedLayer = [ self hitLayerAtPoint:mouseInView ];
-
-	if ( self.draggingKnob ) {
-		CALayer *knob = (self.scrollBarLayer.sublayers)[0];
-
-		CGPoint mouseInScrollBar = [ self.layer convertPoint:mouseInView toLayer:self.scrollBarLayer ];
-		CGFloat maxX = self.scrollBarLayer.bounds.size.width - knob.bounds.size.width;
-		CGFloat scrollPoint = CLAMP( mouseInScrollBar.x - self.mouseDownInKnob, 0, maxX );
-		self.selectedIndex = ( scrollPoint / maxX ) * self.numberOfItems;
-	}
-}
-
-- (void)mouseUp:(NSEvent *)theEvent
-{
-	self.draggingKnob = NO;
-	if ( [ self.selectedLayer respondsToSelector:@selector(performClick:) ] ) {
-		[ (id)self.selectedLayer performClick:self ];
-	}
-}
-
-- (void)rightMouseUp:(NSEvent *)theEvent
-{
-	NSPoint locationInWindow = [ theEvent locationInWindow ];
-	NSUInteger clickedIndex = [ self indexOfItemAtPoint:[ self convertPoint:locationInWindow fromView:nil ] ];
-	if ( [ self.delegate respondsToSelector:@selector(flowView:itemWasRightClickedAtIndex:withEvent:) ] &&
-		(clickedIndex != NSNotFound ) ) {
-		[ self.delegate flowView:self
-	  itemWasRightClickedAtIndex:clickedIndex
-					   withEvent:theEvent ];
-	}
-}
-
-- (void)mouseEntered:(NSEvent *)theEvent
-{
-	[ self mouseEnteredLayerAtIndex:self.selectedIndex ];
-}
-
-- (void)mouseExited:(NSEvent *)theEvent
-{
-	[ self mouseExitedLayerAtIndex:self.selectedIndex ];
-}
-
-- (void)keyDown:(NSEvent *)theEvent
-{
-	if ( self.canControlQuickLookPanel &&
-		[[theEvent characters] isEqualToString:@" "]) {
-			[self togglePreviewPanel:self];
-	}
-	[ super keyDown:theEvent ];
-}
-
-- (IBAction)moveLeft:(id)sender
-{
-	self.selectedIndex = self.selectedIndex - 1;
-}
-
-- (IBAction)moveRight:(id)sender
-{
-	self.selectedIndex = self.selectedIndex + 1;
-}
-
-- (void)swipeWithEvent:(NSEvent *)event
-{
-	self.selectedIndex = self.selectedIndex + ( fabs([ event deltaX ] )> fabs ( [ event deltaY ] ) ? [ event deltaX ] : [ event deltaY ] );
-}
-
-- (void)scrollWheel:(NSEvent *)event
-{
-	self.selectedIndex = self.selectedIndex + ( fabs([ event deltaX ] )> fabs ( [ event deltaY ] ) ? [ event deltaX ] : [ event deltaY ] );
-}
 
 #pragma mark -
 #pragma mark IBActions
@@ -1198,308 +975,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)teardownNotifications
 {
-}
-
-
-#pragma mark -
-#pragma mark QLPreviewPanelController protocol
-
-- (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel
-{
-	id item = [ self imageItemForIndex:self.selectedIndex ];
-	return [ [ [ self class ] pathRepresentationTypes ] containsObject:[ self imageRepresentationTypeForItem:item ] ];
-}
-
-- (void)beginPreviewPanelControl:(QLPreviewPanel *)panel
-{
-	panel.dataSource = self;
-	panel.delegate = self;
-}
-
-- (void)endPreviewPanelControl:(QLPreviewPanel *)panel
-{
-}
-
-#pragma mark -
-#pragma mark QLPreviewPanelDataSource
-
-- (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel
-{
-	return 1;
-}
-
-- (id <QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)index
-{
-	id item = [ self imageItemForIndex:self.selectedIndex ];
-	if ( [ [ [ self class ] pathRepresentationTypes ] containsObject:[ self imageRepresentationTypeForItem:item ] ] ) {
-		id representation = [ self imageRepresentationForItem:item ];
-		NSURL *previewURL = [ representation isKindOfClass:[ NSURL class ] ] ? representation : [ NSURL fileURLWithPath:representation ];
-		return previewURL;
-	}
-	return nil;
-}
-
-#pragma mark -
-#pragma mark QLPreviewPanelDelegate
-
-- (BOOL)previewPanel:(QLPreviewPanel *)panel handleEvent:(NSEvent *)event
-{
-	if ( [event type] == NSKeyDown ) {
-		[ self keyDown:event ];
-        [ panel reloadData ];
-        return YES;
-    }
-	return NO;
-}
-
-- (NSRect)previewPanel:(QLPreviewPanel *)panel sourceFrameOnScreenForPreviewItem:(id <QLPreviewItem>)item
-{/*
-	NSRect selectedItemRectInWindow = [ self convertRect:[ self rectInViewForLayer:[ self imageLayerAtIndex:self.selectedIndex ] ] toView:nil ];
-	selectedItemRectInWindow.origin = [ [ self window ] convertBaseToScreen:selectedItemRectInWindow.origin ];
-	return selectedItemRectInWindow;*/
-	return NSZeroRect;
-}
-
-#pragma mark -
-#pragma mark NSDraggingSource protocol
-
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
-{
-	return isLocal ? NSDragOperationMove : NSDragOperationCopy;
-}
-
-- (void)draggedImage:(NSImage *)anImage beganAt:(NSPoint)aPoint
-{
-}
-
-- (void)draggedImage:(NSImage *)draggedImage movedTo:(NSPoint)screenPoint
-{
-}
-
-- (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
-{
-	if ( operation == NSDragOperationDelete && [ self.dataSource respondsToSelector:@selector(flowView:removeItemAtIndex:) ] ) {
-		[ self.dataSource flowView:self
-				 removeItemAtIndex:self.selectedIndex ];
-	}
-}
-
-#pragma mark -
-#pragma mark NSDraggingDestination protocol 
-
-- (BOOL)wantsPeriodicDraggingUpdates
-{
-	return NO;
-}
-
-- (BOOL)prepareForDragOperation:(id < NSDraggingInfo >)dragInfo
-{
-	return YES;
-}
-
-- (BOOL)performDragOperation:(id < NSDraggingInfo >)dragInfo
-{
-	NSPoint pointInView = [ self convertPointFromBase:[ dragInfo draggingLocation ] ];
-	NSUInteger draggedIndex = [ self indexOfItemAtPoint:pointInView ];
-
-	if ( ( draggedIndex != NSNotFound ) &&
-		[ self.dataSource respondsToSelector:@selector(flowView:acceptDrop:atIndex:) ] ) {
-		return [ self.dataSource flowView:self
-							   acceptDrop:dragInfo
-								  atIndex:draggedIndex ];
-	}
-	return NO;
-}
-
-- (void)concludeDragOperation:(id < NSDraggingInfo >)dragInfo
-{
-	self.highlightedLayer = nil;
-}
-
-- (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)dragInfo
-{
-	if ( ( [ dragInfo draggingSource ] == self ) ) {
-		return NSDragOperationNone;
-	}
-	self.highlightedLayer = self.backgroundLayer;
-	return NSDragOperationNone;
-}
-
-- (void)draggingExited:(id < NSDraggingInfo >)sender
-{
-	self.highlightedLayer = nil;
-}
-
-- (NSDragOperation)draggingUpdated:(id < NSDraggingInfo >)dragInfo
-{
-	NSPoint pointInView = [ self convertPointFromBase:[ dragInfo draggingLocation ] ];
-	NSUInteger draggedIndex = [ self indexOfItemAtPoint:pointInView ];
-
-	BOOL dragFromSelf = [ dragInfo draggingSource ] == self;
-	if ( draggedIndex != NSNotFound ) {
-		// no drag from self to selected index
-		if ( dragFromSelf && draggedIndex == self.selectedIndex ) {
-			return NSDragOperationNone;
-		}
-		//self.highlightedLayer = [ self imageLayerAtIndex:draggedIndex ];
-		if ( [ self.dataSource respondsToSelector:@selector(flowView:validateDrop:proposedIndex:) ] ) {
-			return [ self.dataSource flowView:self
-								 validateDrop:dragInfo
-								proposedIndex:draggedIndex ];
-		}
-	}
-	else if ( !dragFromSelf ) {
-		self.highlightedLayer = self.backgroundLayer;
-	}
-	return NSDragOperationNone;
-}
-
-#pragma mark -
-#pragma mark NSKeyValueBindingCreation overrides
-
-- (NSDictionary *)infoForBinding:(NSString *)binding
-{
-	NSDictionary *info = [self.bindingInfo valueForKey:binding];
-	return info ? info : [super infoForBinding:binding];
-}
-
-- (void)bind:(NSString *)binding toObject:(id)observableController withKeyPath:(NSString *)keyPath options:(NSDictionary *)options
-{
-	if ( [binding isEqualToString:NSContentArrayBinding] ) {
-		NSParameterAssert([observableController isKindOfClass:[NSArrayController class]]);
-
-		// already set?
-		if ( [self infoForBinding:binding][NSObservedKeyPathKey] != nil ) {
-			[self unbind:NSContentArrayBinding];
-		}
-		// Register what object and what keypath are
-		// associated with this binding
-		NSDictionary *bindingsData = @{NSObservedObjectKey: observableController,
-									  NSObservedKeyPathKey: [keyPath copy],
-									   NSOptionsKey: options ? [options copy] : @{} };
-		[self setInfo:bindingsData
-		   forBinding:binding];
-
-		[observableController addObserver:self
-							   forKeyPath:keyPath
-								  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
-								  context:kMMFlowViewContentArrayObservationContext];
-		// set keypaths to MMFlowViewItem defaults
-		if ( !self.imageRepresentationKeyPath ) {
-			self.imageRepresentationKeyPath = kMMFlowViewItemImageRepresentationKey;
-		}
-		if ( !self.imageRepresentationTypeKeyPath ) {
-			self.imageRepresentationTypeKeyPath = kMMFlowViewItemImageRepresentationTypeKey;
-		}
-		if ( !self.imageUIDKeyPath ) {
-			self.imageUIDKeyPath = kMMFlowViewItemImageUIDKey;
-		}
-	}
-	else {
-		[super bind:binding
-		   toObject:observableController
-		withKeyPath:keyPath
-			options:options];
-	}
-}
-
-- (void)unbind:(NSString*)binding
-{
-	if ( [binding isEqualToString:NSContentArrayBinding] && [self infoForBinding:NSContentArrayBinding] ) {
-		[self.contentArrayController removeObserver:self forKeyPath:self.contentArrayKeyPath];
-		[self stopObservingCollection:self.contentArray atKeyPaths:self.observedItemKeyPaths];
-		[self.layer setNeedsDisplay ];
-		[self.bindingInfo removeObjectForKey:binding];
-	}
-	else {
-		[super unbind:binding];
-	}
-}
-
-#pragma mark -
-#pragma mark NSKeyValueObserving protocol
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(NSObject *)observedObject change:(NSDictionary *)change context:(void *)context
-{
-	if ( context == kMMFlowViewContentArrayObservationContext ) {
-		// Have items been removed from the bound-to container?
-		/*
-		 Should be able to use
-		 NSArray *oldItems = [change objectForKey:NSKeyValueChangeOldKey];
-		 etc. but the dictionary doesn't contain old and new arrays.
-		 */
-		NSArray *newItems = [observedObject valueForKeyPath:keyPath];
-		
-		NSMutableArray *onlyNew = [NSMutableArray arrayWithArray:newItems];
-		[onlyNew removeObjectsInArray:self.observedItems];
-		[self startObservingCollection:onlyNew atKeyPaths:self.observedItemKeyPaths];
-		
-		NSMutableArray *removed = [self.observedItems mutableCopy];
-		[removed removeObjectsInArray:newItems];
-		[self stopObservingCollection:removed atKeyPaths:self.observedItemKeyPaths];
-		self.observedItems = newItems;
-
-		[self reloadContent];
-	}
-	else if ( context == kMMFlowViewIndividualItemKeyPathsObservationContext ) {
-		// tracks individual item-properties and resets observations
-		if ( [keyPath isEqualToString:self.imageUIDKeyPath] ||
-			[keyPath isEqualToString:self.imageRepresentationKeyPath] ||
-			[keyPath isEqualToString:self.imageRepresentationTypeKeyPath] ) {
-			[self.imageCache removeImageWithUUID:[observedObject valueForKeyPath:self.imageUIDKeyPath]];
-			[self.coverFlowLayer setNeedsLayout];
-		}
-		else if ( [keyPath isEqualToString:self.imageTitleKeyPath] ) {
-			self.title = [observedObject valueForKeyPath:keyPath];
-		}
-	}
-	else {
-		[super observeValueForKeyPath:keyPath
-							  ofObject:observedObject
-								change:change
-							   context:context];
-	}
-}
-
-#pragma mark -
-#pragma mark Bindings helper methods
-
-- (void)setInfo:(NSDictionary*)infoDict forBinding:(NSString*)aBinding
-{
-	NSDictionary *info = [self.bindingInfo valueForKey:aBinding];
-	if ( info ) {
-		[self.bindingInfo removeObjectForKey:aBinding];
-		[self unbind:aBinding];
-	}
-	[self.bindingInfo setValue:infoDict forKey:aBinding];
-}
-
-- (void)startObservingCollection:(NSArray*)items atKeyPaths:(NSArray*)keyPaths
-{
-	if ( [ items isEqual:[NSNull null] ] || ![items count] ) {
-		return;
-	}
-	NSIndexSet *allItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [items count] )];
-	for ( NSString *keyPath in keyPaths ) {
-		[items addObserver:self
-		 toObjectsAtIndexes:allItemIndexes
-				 forKeyPath:keyPath
-					options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial )
-					context:kMMFlowViewIndividualItemKeyPathsObservationContext];
-	}
-}
-
-- (void)stopObservingCollection:(NSArray*)items atKeyPaths:(NSArray*)keyPaths
-{
-	if ( !items || [items isEqual:[NSNull null]] || ![items count] ) {
-		return;
-	}
-	NSIndexSet *allItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [items count] )];
-	for ( NSString *keyPath in keyPaths ) {
-		[items removeObserver:self
-		  fromObjectsAtIndexes:allItemIndexes
-					forKeyPath:keyPath];
-	}
 }
 
 @end

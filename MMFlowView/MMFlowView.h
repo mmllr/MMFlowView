@@ -129,7 +129,7 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 @end
 
 
-@interface MMFlowView : NSControl<QLPreviewPanelDataSource, QLPreviewPanelDelegate>
+@interface MMFlowView : NSControl
 
 /** title for currently selected index */
 @property (copy,nonatomic) NSString *title;
