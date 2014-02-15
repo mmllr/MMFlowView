@@ -11,7 +11,7 @@
 #import "MMFlowView+NSKeyValueObserving.h"
 #import <objc/runtime.h>
 
-static BOOL bindSuperInvoked = NO;
+static BOOL testingSuperInvoked = NO;
 
 @interface MMFlowView (MMBindingsTests)
 
@@ -23,7 +23,12 @@ static BOOL bindSuperInvoked = NO;
 
 - (void)mmTesting_bind:(NSString *)binding toObject:(id)observable withKeyPath:(NSString *)keyPath options:(NSDictionary *)options
 {
-	bindSuperInvoked = YES;
+	testingSuperInvoked = YES;
+}
+
+- (void)mmTesting_unbind:(NSString *)binding
+{
+	testingSuperInvoked = YES;
 }
 
 @end
@@ -205,7 +210,7 @@ describe(@"NSKeyValueObserving", ^{
 						supersBindMethod = class_getInstanceMethod([sut superclass], @selector(bind:toObject:withKeyPath:options:));
 						testingBindMethod = class_getInstanceMethod([sut class], @selector(mmTesting_bind:toObject:withKeyPath:options:));
 						method_exchangeImplementations(supersBindMethod, testingBindMethod);
-						bindSuperInvoked = NO;
+						testingSuperInvoked = NO;
 					});
 					afterEach(^{
 						method_exchangeImplementations(testingBindMethod, supersBindMethod);
@@ -213,7 +218,7 @@ describe(@"NSKeyValueObserving", ^{
 					it(@"should call the supers implementation of -bind:toObject:withKeyPath:options:", ^{
 						NSDictionary *dict = @{@"angle" : @10 };
 						[sut bind:@"stackedAngle" toObject:dict withKeyPath:@"angle" options:nil];
-						[[theValue(bindSuperInvoked) should] beYes];
+						[[theValue(testingSuperInvoked) should] beYes];
 						
 					});
 				});
@@ -232,7 +237,25 @@ describe(@"NSKeyValueObserving", ^{
 						[sut unbind:NSContentArrayBinding];
 					});
 				});
-				
+				context(@"when unbind other property than NSContentArrayBinding", ^{
+					__block Method supersUnbindMethod;
+					__block Method testingUnbindMethod;
+					
+					beforeEach(^{
+						supersUnbindMethod = class_getInstanceMethod([sut superclass], @selector(unbind:));
+						testingUnbindMethod = class_getInstanceMethod([sut class], @selector(mmTesting_unbind:));
+						method_exchangeImplementations(supersUnbindMethod, testingUnbindMethod);
+						testingSuperInvoked = NO;
+					});
+					afterEach(^{
+						method_exchangeImplementations(testingUnbindMethod, supersUnbindMethod);
+					});
+					it(@"should call the supers implementation of -bind:toObject:withKeyPath:options:", ^{
+						[sut unbind:@"stackedAngle"];
+						[[theValue(testingSuperInvoked) should] beYes];
+					});
+				});
+
 				
 			});
 			
