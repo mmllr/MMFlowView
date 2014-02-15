@@ -128,7 +128,6 @@
 
 - (void)loadItems:(NSString*)aPath withRepresentationType:(NSString*)aRepresentationType
 {
-	//[ self removeItemsAtIndexes:[ NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [ self countOfItems ] ) ] ];
 	NSFileManager *fileManager = [ NSFileManager defaultManager ];
 	BOOL isDirectory = NO;
     BOOL exists = [ fileManager fileExistsAtPath:aPath isDirectory:&isDirectory ];
@@ -139,11 +138,11 @@
 																	 options:NSDirectoryEnumerationSkipsHiddenFiles
 																errorHandler:nil ];
 		for ( NSURL *url in dirEnumerator ) {
-			NSNumber *isDirectory = NO;
-			[ url getResourceValue:&isDirectory
+			NSNumber *isItemDirectory = NO;
+			[url getResourceValue:&isItemDirectory
 							forKey:NSURLIsDirectoryKey
-							 error:NULL ];
-			if ( ![ isDirectory boolValue ] ) {
+							 error:NULL];
+			if ( ![isItemDirectory boolValue] ) {
 				[ self insertObject:[ Item itemWithURL:url representationType:aRepresentationType ]
 					 inItemsAtIndex:[ self countOfItems ] ];
 			}
@@ -153,7 +152,6 @@
 
 - (void)loadPDFDocument:(NSURL*)anURL
 {
-	//[ self removeItemsAtIndexes:[ NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [ self countOfItems ] ) ] ];
 	PDFDocument *document = [ [ PDFDocument alloc ] initWithURL:anURL ];
 	
 	for ( NSUInteger i = 0; i < document.pageCount; ++i ) {
