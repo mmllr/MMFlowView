@@ -17,6 +17,9 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 static const CFTimeInterval kDefaultScrollDuration = .4;
 static const CGFloat kDefaultReflectionOffset = -.4;
 
+
+static NSString * const kMMCoverFlowLayerIndexAttributeKey = @"mmCoverFlowLayerIndex";
+
 static void* kLayoutObservationContext = @"layoutContext";
 static void* kReloadContentObservationContext = @"reloadContent";
 
@@ -232,6 +235,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	contentLayer.bounds = attributes.bounds;
 	CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(attributes.anchorPoint.x*CGRectGetWidth(attributes.bounds), attributes.anchorPoint.y*CGRectGetHeight(attributes.bounds));
 	contentLayer.position = CGPointApplyAffineTransform(attributes.position, anchorTransform);
+	[contentLayer setValue:@(attributes.index) forKey:kMMCoverFlowLayerIndexAttributeKey];
 }
 
 - (void)setupObservations

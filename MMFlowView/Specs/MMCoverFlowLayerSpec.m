@@ -435,6 +435,9 @@ describe(@"MMCoverFlowLayer", ^{
 							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
 							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
 						});
+						it(@"should have an index of zero", ^{
+							[[[layer valueForKey:@"mmCoverFlowLayerIndex"] should] equal:theValue(0)];
+						});
 					});
 					context(@"last item of left stack", ^{
 						beforeEach(^{
@@ -461,6 +464,9 @@ describe(@"MMCoverFlowLayer", ^{
 						it(@"should have the correct transform", ^{
 							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
 							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
+						});
+						it(@"should have an index of zero", ^{
+							[[[layer valueForKey:@"mmCoverFlowLayerIndex"] should] equal:theValue(expectedAttributes.index)];
 						});
 					});
 					context(@"selected item", ^{
@@ -497,6 +503,9 @@ describe(@"MMCoverFlowLayer", ^{
 							NSValue *expectedRect = [NSValue valueWithRect:[sut convertRect:layer.visibleRect fromLayer:layer]];
 							[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedRect];
 						});
+						it(@"should have an index of zero", ^{
+							[[[layer valueForKey:@"mmCoverFlowLayerIndex"] should] equal:theValue(expectedAttributes.index)];
+						});
 					});
 					context(@"first item of right stack", ^{
 						beforeEach(^{
@@ -524,6 +533,9 @@ describe(@"MMCoverFlowLayer", ^{
 							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
 							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
 						});
+						it(@"should have an index of zero", ^{
+							[[[layer valueForKey:@"mmCoverFlowLayerIndex"] should] equal:theValue(expectedAttributes.index)];
+						});
 					});
 					context(@"last item of right stack", ^{
 						beforeEach(^{
@@ -550,6 +562,9 @@ describe(@"MMCoverFlowLayer", ^{
 						it(@"should have the correct transform", ^{
 							NSValue *expectedTransform = [NSValue valueWithCATransform3D:expectedAttributes.transform];
 							[[[NSValue valueWithCATransform3D:layer.transform] should] equal:expectedTransform];
+						});
+						it(@"should have an index of zero", ^{
+							[[[layer valueForKey:@"mmCoverFlowLayerIndex"] should] equal:theValue(expectedAttributes.index)];
 						});
 					});
 				});
