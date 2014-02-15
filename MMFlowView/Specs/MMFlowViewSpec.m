@@ -99,6 +99,12 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
+		context(@"selectedItemFrame", ^{
+			it(@"should initially have a selectedItemFrame of NSZeroRect", ^{
+				NSValue *expectedFrame = [NSValue valueWithRect:NSZeroRect];
+				[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
+			});
+		});
 		context(@"spacing property", ^{
 			it(@"should have a default spacing of 50", ^{
 				[[theValue(sut.spacing) should] equal:theValue(50)];
@@ -765,6 +771,14 @@ describe(@"MMFlowView", ^{
 						});
 					});
 				});
+				context(@"selectedItemFrame", ^{
+					it(@"should have a selectedItemFrame matching the coverflow layers selectedItemFrame coverted into view space", ^{
+						NSRect rectInHostingLayer = NSRectFromCGRect([sut.layer convertRect:sut.coverFlowLayer.selectedItemFrame fromLayer:sut.coverFlowLayer]);
+						NSRect rectInView = [sut convertRectFromBacking:[sut convertRectFromLayer:rectInHostingLayer]];
+						NSValue *expectedFrame = [NSValue valueWithRect:rectInView];
+						[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
+					});
+				});
 				context(@"tracking areas", ^{
 					__block NSTrackingArea *trackingArea = nil;
 					
@@ -779,8 +793,7 @@ describe(@"MMFlowView", ^{
 						[[[sut trackingAreas] should] haveCountOf:1];
 					});
 					it(@"should have the selected item rect", ^{
-						CGRect rectInHostingLayer = [sut.layer convertRect:sut.coverFlowLayer.selectedItemFrame fromLayer:sut.coverFlowLayer];
-						NSValue *expectedRect = [NSValue valueWithRect:NSRectFromCGRect(rectInHostingLayer)];
+						NSValue *expectedRect = [NSValue valueWithRect:sut.selectedItemFrame];
 						[[[NSValue valueWithRect:[trackingArea rect]] should] equal:expectedRect];
 					});
 					it(@"should have the NSTrackingActiveInActiveApp option", ^{

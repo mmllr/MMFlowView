@@ -76,7 +76,7 @@
 				[ fileURL writeToPasteboard:dragPBoard ];
 			}
 			[ self dragImage:dragImage
-						  at:[ self itemFrameAtIndex:clickedIndex ].origin
+						  at:self.selectedItemFrame.origin
 					  offset:NSZeroSize
 					   event:theEvent
 				  pasteboard:dragPBoard

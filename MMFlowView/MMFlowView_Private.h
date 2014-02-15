@@ -38,8 +38,7 @@
 @property (readwrite,nonatomic) NSUInteger numberOfItems;
 @property (readonly,nonatomic) NSUInteger maximumNumberOfStackedVisibleItems;
 @property (readwrite,strong) id<MMFlowViewImageCache> imageCache;
-@property (strong,readwrite) NSMutableArray *layerQueue;
-
+@property (nonatomic, readonly) NSRect selectedItemFrame;
 
 + (NSSet*)pathRepresentationTypes;
 + (NSDictionary*)uniformTypesDictionary;

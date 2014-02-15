@@ -126,7 +126,7 @@ static NSString * const kLayoutKey = @"layout";
 @dynamic showsReflection;
 @dynamic reflectionOffset;
 @dynamic visibleItemIndexes;
-
+@dynamic selectedItemFrame;
 
 #pragma mark -
 #pragma mark Class methods
@@ -238,7 +238,6 @@ static NSString * const kLayoutKey = @"layout";
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageFactory.cache = _imageCache;
-		_layerQueue = [NSMutableArray array];
 		_layout = [[MMCoverFlowLayout alloc] init];
 		[self setInitialDefaults];
 		[self setupLayers];
@@ -254,7 +253,6 @@ static NSString * const kLayoutKey = @"layout";
 {
 	self = [ super initWithCoder:aDecoder ];
 	if ( self ) {
-		_layerQueue = [ NSMutableArray array ];
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageFactory.cache = _imageCache;
@@ -450,6 +448,17 @@ static NSString * const kLayoutKey = @"layout";
 	return self.coverFlowLayer.visibleItemIndexes;
 }
 
+- (NSRect)selectedItemFrame
+{
+	CGRect selectedFrameInCoverFlowLayer = self.coverFlowLayer.selectedItemFrame;
+
+	if (CGRectIsEmpty(selectedFrameInCoverFlowLayer)) {
+		return NSZeroRect;
+	}
+	NSRect rectInHostingLayer = NSRectFromCGRect([self.layer convertRect:selectedFrameInCoverFlowLayer fromLayer:self.coverFlowLayer]);
+	return [self convertRectFromBacking:[self convertRectFromLayer:rectInHostingLayer]];
+}
+
 #pragma mark - MMCoverFlowLayerDataSource
 
 - (CALayer*)coverFlowLayer:(MMCoverFlowLayer *)layer contentLayerForIndex:(NSUInteger)index
@@ -502,23 +511,14 @@ static NSString * const kLayoutKey = @"layout";
 
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPointInView
 {
-	CALayer *presentationLayer = [ self.layer presentationLayer ];
-	CALayer *hitLayer = [ presentationLayer hitTest:aPointInView ];
-	return [ hitLayer modelLayer ];
+	CALayer *hitLayer = [self.layer hitTest:aPointInView];
+	return [hitLayer modelLayer];
 }
 
 - (NSUInteger)indexOfItemAtPoint:(NSPoint)aPoint
 {
-	CALayer *hitLayer = [self hitLayerAtPoint:NSPointToCGPoint( aPoint )];
-	if ( [ hitLayer.name hasPrefix:kMMFlowViewItemContentLayerPrefix ] ) {
-		return [[hitLayer valueForKey:kMMFlowViewItemIndexKey] unsignedIntegerValue];
-	}
-	return NSNotFound;
-}
-
-- (NSRect)itemFrameAtIndex:(NSUInteger)anIndex
-{
-	return NSZeroRect;
+	CGPoint pointInContainerLayer = [[self layer] convertPoint:aPoint toLayer:self.containerLayer];
+	return [self.coverFlowLayer indexOfLayerAtPointInSuperLayer:pointInContainerLayer];
 }
 
 - (void)setImageRepresentationKeyPath:(NSString *)aKeyPath
@@ -924,10 +924,6 @@ static NSString * const kLayoutKey = @"layout";
 	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
 }
 
-
-#pragma mark -
-#pragma mark Selection
-
 #pragma mark -
 #pragma mark Private implementation
 
@@ -937,8 +933,7 @@ static NSString * const kLayoutKey = @"layout";
 		[self removeTrackingArea:trackingArea];
 	}
 	if ( self.selectedIndex != NSNotFound ) {
-		NSRect rect = NSRectFromCGRect([self.layer convertRect:self.coverFlowLayer.selectedItemFrame fromLayer:self.coverFlowLayer]);
-		NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:rect
+		NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.selectedItemFrame
 																		 options:NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside
 																		   owner:self
 																		userInfo:nil];

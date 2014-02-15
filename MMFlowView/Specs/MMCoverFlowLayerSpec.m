@@ -101,8 +101,9 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should not have a datasource set", ^{
 			[[(id)sut.dataSource should] beNil];
 		});
-		it(@"should have a selectedItemFrame property", ^{
-			[[theValue(CGRectEqualToRect(CGRectZero, sut.selectedItemFrame) == true) should] beTrue];
+		it(@"should initally have a selectedItemFrame of CGRectZero", ^{
+			NSValue *expectedFrame = [NSValue valueWithRect:CGRectZero];
+			[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
 		});
 		it(@"should not initially show reflections", ^{
 			[[theValue(sut.showsReflection) should] beNo];

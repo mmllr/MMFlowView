@@ -180,8 +180,6 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 - (void)setTitleColor:(NSColor*)aColor;
 /** returns the index of the image item if the aPoint is above it, otherwise NSNotFound */
 - (NSUInteger)indexOfItemAtPoint:(NSPoint)aPoint;
-/** returns the frame for the image-item at a specific index */
-- (NSRect)itemFrameAtIndex:(NSUInteger)anIndex;
 /** reloads the content from the datasource, see MMFlowViewDataSource protocol */
 - (void)reloadContent;
 
