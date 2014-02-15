@@ -79,8 +79,9 @@ static NSString * const kIndexKey = @"index";
 	CGFloat width = isLandscape ? CGRectGetWidth(self.bounds) : CGRectGetWidth(self.bounds) * aspectRatio;
 	CGFloat height = isLandscape ? ( CGRectGetHeight(self.bounds) / aspectRatio ) : CGRectGetHeight(self.bounds);
 
-	self.imageLayer.contents = (__bridge id)anImage;
-	self.imageLayer.frame = CGRectMake(0, 0, width, height);
+	MMFlowViewImageLayer *imageLayer = self.imageLayer;
+	imageLayer.contents = (__bridge id)anImage;
+	imageLayer.frame = CGRectMake(0, 0, width, height);
 }
 
 - (CGRect)boundsFromContentWithAspectRatio:(CGFloat)aspectRatio inItemRect:(CGRect)itemRect
