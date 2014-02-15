@@ -40,6 +40,7 @@
 		2877D882181FE1DF00FD5E07 /* MMFlowViewItemLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D881181FE1DF00FD5E07 /* MMFlowViewItemLayer.m */; };
 		2877D884181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */; };
 		2877D887181FF08D00FD5E07 /* MMFlowViewImageLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */; };
+		2878AFD318AF8AF800028E15 /* MMFlowViewNSDraggingDestinationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2878AFD218AF8AF800028E15 /* MMFlowViewNSDraggingDestinationSpec.m */; };
 		287F73C216308E2D0004BA0F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C116308E2D0004BA0F /* Quartz.framework */; };
 		287F73C416308E320004BA0F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C316308E320004BA0F /* Cocoa.framework */; };
 		287F73C616308E360004BA0F /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287F73C516308E360004BA0F /* QTKit.framework */; };
@@ -153,6 +154,7 @@
 		2877D883181FF06300FD5E07 /* MMCoverFlowImageLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowImageLayerSpec.m; sourceTree = "<group>"; };
 		2877D885181FF08D00FD5E07 /* MMFlowViewImageLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewImageLayer.h; path = MMFlowView/MMFlowViewImageLayer.h; sourceTree = "<group>"; };
 		2877D886181FF08D00FD5E07 /* MMFlowViewImageLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewImageLayer.m; path = MMFlowView/MMFlowViewImageLayer.m; sourceTree = "<group>"; };
+		2878AFD218AF8AF800028E15 /* MMFlowViewNSDraggingDestinationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewNSDraggingDestinationSpec.m; sourceTree = "<group>"; };
 		287F73C116308E2D0004BA0F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C316308E320004BA0F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		287F73C516308E360004BA0F /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -332,6 +334,7 @@
 		2876FF50180B2A5600318C7B /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				2878AFD218AF8AF800028E15 /* MMFlowViewNSDraggingDestinationSpec.m */,
 				2823299318AD2B740022A112 /* MMFlowViewKeyValueObservingSpec.m */,
 				2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */,
 				28B9EAB518807FB7000E793D /* CALayerMMAdditionsSpec.m */,
@@ -633,6 +636,7 @@
 				28FE78D8186213BD00BA5D1E /* MMPDFPageDecoderSpec.m in Sources */,
 				28FE78E1186234A300BA5D1E /* MMCGImageSourceDecoderSpec.m in Sources */,
 				2849FAE01860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m in Sources */,
+				2878AFD318AF8AF800028E15 /* MMFlowViewNSDraggingDestinationSpec.m in Sources */,
 				28B9EAB618807FB7000E793D /* CALayerMMAdditionsSpec.m in Sources */,
 				286543261876C598002424AE /* MMFlowViewImageCacheSpec.m in Sources */,
 				288FA4BA1862F3F20040F410 /* MMFlowViewImageFactorySpec.m in Sources */,
