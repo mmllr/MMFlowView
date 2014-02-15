@@ -16,6 +16,11 @@
 
 @implementation MMFlowView (NSResponder)
 
++ (Class)cellClass
+{
+    return [NSActionCell class];
+}
+
 - (BOOL)acceptsFirstResponder
 {
 	return YES;

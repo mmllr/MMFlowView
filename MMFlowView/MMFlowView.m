@@ -227,11 +227,6 @@ static NSString * const kLayoutKey = @"layout";
 	}
 }
 
-+ (Class)cellClass
-{
-    return [NSActionCell class];
-}
-
 #pragma mark -
 #pragma mark Init/Cleanup
 
