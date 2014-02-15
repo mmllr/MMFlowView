@@ -23,7 +23,5 @@
 
 - (void)setUpBindings;
 - (void)tearDownBindings;
-- (void)setInfo:(NSDictionary*)infoDict forBinding:(NSString*)aBinding;
-
 
 @end

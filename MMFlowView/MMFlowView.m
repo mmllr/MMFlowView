@@ -240,7 +240,6 @@ static NSString * const kLayoutKey = @"layout";
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code here.
-		_bindingInfo = [NSMutableDictionary dictionary];
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageFactory.cache = _imageCache;
@@ -260,7 +259,6 @@ static NSString * const kLayoutKey = @"layout";
 {
 	self = [ super initWithCoder:aDecoder ];
 	if ( self ) {
-		_bindingInfo = [ NSMutableDictionary dictionary ];
 		_layerQueue = [ NSMutableArray array ];
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
@@ -630,9 +628,7 @@ static NSString * const kLayoutKey = @"layout";
 
 	if ( inView && !willBeInSuperview ) {
 		[ self stopObservingCollection:self.observedItems atKeyPaths:self.observedItemKeyPaths ];
-		for ( NSString *binding in [ self.bindingInfo allKeys ] ) {
-			[ self unbind:binding ];
-		}
+		[self unbind:NSContentArrayBinding];
 	}
 	[ super viewWillMoveToSuperview:newSuperview ];
 }

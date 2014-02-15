@@ -153,7 +153,18 @@ describe(@"NSKeyValueObserving", ^{
 					it(@"should return the observed keypath for contentArrayKeyPath", ^{
 						[[sut.contentArrayKeyPath should] equal:arrangedObjectsKeyPath];
 					});
-					context(@"NSContentArrayBinding", ^{
+					context(@"when binding NSContentArrayBinding to another array controller", ^{
+						__block id mockedArrayController = nil;
+
+						beforeEach(^{
+							mockedArrayController =[NSArrayController nullMock];
+						});
+						it(@"should unbind the previously bound arraycontroller", ^{
+							[[sut should] receive:@selector(unbind:) withArguments:NSContentArrayBinding];
+							[sut bind:NSContentArrayBinding toObject:mockedArrayController withKeyPath:arrangedObjectsKeyPath options:nil];
+						});
+					});
+					context(@"NSContentArrayBinding info", ^{
 						__block NSDictionary *contentArrayBinding = nil;
 						beforeEach(^{
 							contentArrayBinding = [sut infoForBinding:NSContentArrayBinding];

@@ -104,27 +104,24 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (NSDictionary *)infoForBinding:(NSString *)binding
 {
-	NSDictionary *info = [self.bindingInfo valueForKey:binding];
-	return info ? info : [super infoForBinding:binding];
+	if ([binding isEqualToString:NSContentArrayBinding]) {
+		return self.contentArrayBindingInfo;
+	}
+	return [super infoForBinding:binding];
 }
 
 - (void)bind:(NSString *)binding toObject:(id)observableController withKeyPath:(NSString *)keyPath options:(NSDictionary *)options
 {
 	if ([binding isEqualToString:NSContentArrayBinding]) {
 		NSParameterAssert([observableController isKindOfClass:[NSArrayController class]]);
-		
-		// already set?
-		if ( [self infoForBinding:binding][NSObservedKeyPathKey] != nil ) {
+
+		if (self.contentArrayBindingInfo) {
 			[self unbind:NSContentArrayBinding];
 		}
-		// Register what object and what keypath are
-		// associated with this binding
-		NSDictionary *bindingsData = @{NSObservedObjectKey: observableController,
+		self.contentArrayBindingInfo = @{NSObservedObjectKey: observableController,
 									   NSObservedKeyPathKey: [keyPath copy],
 									   NSOptionsKey: options ? [options copy] : @{} };
-		[self setInfo:bindingsData
-		   forBinding:binding];
-		
+
 		[observableController addObserver:self
 							   forKeyPath:keyPath
 								  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
@@ -151,10 +148,10 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 - (void)unbind:(NSString*)binding
 {
 	if ([binding isEqualToString:NSContentArrayBinding] && [self infoForBinding:NSContentArrayBinding] ) {
-		[self.contentArrayController removeObserver:self forKeyPath:self.contentArrayKeyPath];
+		[self.contentArrayController removeObserver:self forKeyPath:self.contentArrayKeyPath context:kMMFlowViewContentArrayObservationContext];
 		[self stopObservingCollection:self.contentArray atKeyPaths:self.observedItemKeyPaths];
-		[self.layer setNeedsDisplay ];
-		[self.bindingInfo removeObjectForKey:binding];
+		[self.layer setNeedsDisplay];
+		self.contentArrayBindingInfo = nil;
 	}
 	else {
 		[super unbind:binding];
@@ -172,17 +169,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	[self.layout unbind:@"stackedAngle"];
 	[self.layout unbind:@"interItemSpacing"];
 }
-
-- (void)setInfo:(NSDictionary*)infoDict forBinding:(NSString*)aBinding
-{
-	NSDictionary *info = [self.bindingInfo valueForKey:aBinding];
-	if ( info ) {
-		[self.bindingInfo removeObjectForKey:aBinding];
-		[self unbind:aBinding];
-	}
-	[self.bindingInfo setValue:infoDict forKey:aBinding];
-}
-
 
 #pragma mark -
 #pragma mark NSKeyValueObserving protocol
