@@ -11,8 +11,8 @@
 #import "MMFlowViewImageCache.h"
 
 /* observation context */
-static void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
-static void * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
+void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
+void * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
 
 
 /* bindings */
@@ -175,7 +175,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(NSObject *)observedObject change:(NSDictionary *)change context:(void *)context
 {
-	if ( context == kMMFlowViewContentArrayObservationContext ) {
+	if (context == kMMFlowViewContentArrayObservationContext) {
 		// Have items been removed from the bound-to container?
 		/*
 		 Should be able to use
@@ -195,8 +195,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		
 		[self reloadContent];
 	}
-	else if ( context == kMMFlowViewIndividualItemKeyPathsObservationContext ) {
-		// tracks individual item-properties and resets observations
+	else if (context == kMMFlowViewIndividualItemKeyPathsObservationContext) {
 		if ( [keyPath isEqualToString:self.imageUIDKeyPath] ||
 			[keyPath isEqualToString:self.imageRepresentationKeyPath] ||
 			[keyPath isEqualToString:self.imageRepresentationTypeKeyPath] ) {

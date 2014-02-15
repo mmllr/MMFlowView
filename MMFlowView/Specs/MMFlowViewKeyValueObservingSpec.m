@@ -35,6 +35,11 @@ static BOOL testingSuperInvoked = NO;
 	[self mmTesting_unbind:binding];
 }
 
+- (void)mmTesting_observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	testingSuperInvoked = YES;
+}
+
 @end
 
 SPEC_BEGIN(MMFlowViewKeyValueObservingSpec)
@@ -209,9 +214,10 @@ describe(@"NSKeyValueObserving", ^{
 				context(@"when binding to other property than NSContentArrayBinding", ^{
 					__block Method supersBindMethod;
 					__block Method testingBindMethod;
-					__block NSDictionary *observedDict = @{@"angle" : @10 };
+					__block NSDictionary *observedDict = nil;
 	
 					beforeEach(^{
+						observedDict = @{@"angle" : @10 };
 						supersBindMethod = class_getInstanceMethod([sut superclass], @selector(bind:toObject:withKeyPath:options:));
 						testingBindMethod = class_getInstanceMethod([sut class], @selector(mmTesting_bind:toObject:withKeyPath:options:));
 						method_exchangeImplementations(supersBindMethod, testingBindMethod);
@@ -221,7 +227,7 @@ describe(@"NSKeyValueObserving", ^{
 					afterEach(^{
 						method_exchangeImplementations(testingBindMethod, supersBindMethod);
 					});
-					it(@"should call the supers implementation of -bind:toObject:withKeyPath:options:", ^{
+					it(@"should call the supers implementation", ^{
 						[[theValue(testingSuperInvoked) should] beYes];
 					});
 					context(@"infoForBinding:", ^{
@@ -269,13 +275,33 @@ describe(@"NSKeyValueObserving", ^{
 					afterEach(^{
 						method_exchangeImplementations(testingUnbindMethod, supersUnbindMethod);
 					});
-					it(@"should call the supers implementation of -bind:toObject:withKeyPath:options:", ^{
+					it(@"should call the supers implementation", ^{
 						[sut unbind:@"stackedAngle"];
 						[[theValue(testingSuperInvoked) should] beYes];
 					});
 				});
 
 				
+			});
+		});
+		context(@"observeValueForKeyPath:ofObject:change:context:", ^{
+			context(@"unhandled observing contexts", ^{
+				__block Method supersMethod;
+				__block Method testingMethod;
+
+				beforeEach(^{
+					supersMethod = class_getInstanceMethod([sut superclass], @selector(observeValueForKeyPath:ofObject:change:context:));
+					testingMethod = class_getInstanceMethod([sut class], @selector(mmTesting_observeValueForKeyPath:ofObject:change:context:));
+					method_exchangeImplementations(supersMethod, testingMethod);
+					testingSuperInvoked = NO;
+				});
+				afterEach(^{
+					method_exchangeImplementations(testingMethod, supersMethod);
+				});
+				it(@"should call up to supers implementation", ^{
+					[sut observeValueForKeyPath:@"testing" ofObject:[KWNull null] change:nil context:NULL];
+					[[theValue(testingSuperInvoked) should] beYes];
+				});
 			});
 		});
 	});

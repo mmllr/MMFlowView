@@ -8,6 +8,9 @@
 
 #import "MMFlowView.h"
 
+void * const kMMFlowViewContentArrayObservationContext;
+void * const kMMFlowViewIndividualItemKeyPathsObservationContext;
+
 @interface MMFlowView (NSKeyValueObserving)
 
 @property (weak, nonatomic, readonly) NSArray *contentArray;
