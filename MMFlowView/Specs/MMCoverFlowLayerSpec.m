@@ -567,6 +567,50 @@ describe(@"MMCoverFlowLayer", ^{
 							[[[layer valueForKey:@"mmCoverFlowLayerIndex"] should] equal:theValue(expectedAttributes.index)];
 						});
 					});
+					context(@"indexOfItemAtPoint:", ^{
+						__block CGPoint pointInLayer;
+						__block NSUInteger expectedIndex;
+
+						context(@"when point is not over any content layer", ^{
+							beforeEach(^{
+								pointInLayer =  [sut convertPoint:CGPointMake(-1000, -1000) toLayer:sut.superlayer];
+							});
+							it(@"should return NSNotFount", ^{
+								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(NSNotFound)];
+							});
+
+						});
+						context(@"when point is over the selected layer", ^{
+							beforeEach(^{
+								pointInLayer =  [sut convertPoint:CGPointMake(CGRectGetMidX(sut.selectedItemFrame), CGRectGetMidY(sut.selectedItemFrame)) toLayer:sut.superlayer];
+							});
+							it(@"should return the index of the selected layer", ^{
+								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(sut.layout.selectedItemIndex)];
+							});
+						});
+						context(@"when point is over first visible layer", ^{
+							beforeEach(^{
+								expectedIndex = sut.visibleItemIndexes.firstIndex;
+								CALayer *layer = sublayers[expectedIndex];
+								pointInLayer = [sut convertPoint:CGPointMake(CGRectGetMaxX(layer.frame), CGRectGetMidY(layer.frame))
+														 toLayer:sut.superlayer];
+							});
+							it(@"should return the index of the first visible layer", ^{
+								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(expectedIndex)];
+							});
+						});
+						context(@"when point is over last visible layer", ^{
+							beforeEach(^{
+								expectedIndex = sut.visibleItemIndexes.lastIndex;
+								CALayer *layer = sublayers[expectedIndex];
+								pointInLayer = [sut convertPoint:CGPointMake(CGRectGetMinX(layer.frame), CGRectGetMidY(layer.frame))
+														 toLayer:sut.superlayer];
+							});
+							it(@"should return the index of the last visible layer", ^{
+								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(expectedIndex)];
+							});
+						});
+					});
 				});
 			});
 			context(@"NSAccessibility", ^{

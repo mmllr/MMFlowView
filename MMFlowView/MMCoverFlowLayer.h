@@ -37,5 +37,6 @@
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout;
 - (id)initWithLayout:(MMCoverFlowLayout*)layout;
 - (void)reloadContent;
+- (NSUInteger)indexOfLayerAtPointInSuperLayer:(CGPoint)pointInLayer;
 
 @end

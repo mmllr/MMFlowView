@@ -180,6 +180,13 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	[self layoutSublayers];
 }
 
+- (NSUInteger)indexOfLayerAtPointInSuperLayer:(CGPoint)pointInLayer
+{
+	CALayer *hitLayer = [[self hitTest:pointInLayer] modelLayer];
+	NSNumber *indexOfLayer = [hitLayer valueForKey:kMMCoverFlowLayerIndexAttributeKey];
+	return indexOfLayer ? [indexOfLayer unsignedIntegerValue] :  NSNotFound;
+}
+
 #pragma mark - CALayerDelegate
 
 - (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
