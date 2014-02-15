@@ -24,11 +24,15 @@ static BOOL testingSuperInvoked = NO;
 - (void)mmTesting_bind:(NSString *)binding toObject:(id)observable withKeyPath:(NSString *)keyPath options:(NSDictionary *)options
 {
 	testingSuperInvoked = YES;
+	// invoke swizzled method - strange naming: mmTesting_bind is Cocoas bind:...
+	[self mmTesting_bind:binding toObject:observable withKeyPath:keyPath options:options];
 }
 
 - (void)mmTesting_unbind:(NSString *)binding
 {
 	testingSuperInvoked = YES;
+	// invoke swizzled method - strange naming: mmTesting_unbind: is Cocoas unbind:...
+	[self mmTesting_unbind:binding];
 }
 
 @end
@@ -205,22 +209,37 @@ describe(@"NSKeyValueObserving", ^{
 				context(@"when binding to other property than NSContentArrayBinding", ^{
 					__block Method supersBindMethod;
 					__block Method testingBindMethod;
-					
+					__block NSDictionary *observedDict = @{@"angle" : @10 };
+	
 					beforeEach(^{
 						supersBindMethod = class_getInstanceMethod([sut superclass], @selector(bind:toObject:withKeyPath:options:));
 						testingBindMethod = class_getInstanceMethod([sut class], @selector(mmTesting_bind:toObject:withKeyPath:options:));
 						method_exchangeImplementations(supersBindMethod, testingBindMethod);
 						testingSuperInvoked = NO;
+						[sut bind:@"stackedAngle" toObject:observedDict withKeyPath:@"angle" options:nil];
 					});
 					afterEach(^{
 						method_exchangeImplementations(testingBindMethod, supersBindMethod);
 					});
 					it(@"should call the supers implementation of -bind:toObject:withKeyPath:options:", ^{
-						NSDictionary *dict = @{@"angle" : @10 };
-						[sut bind:@"stackedAngle" toObject:dict withKeyPath:@"angle" options:nil];
 						[[theValue(testingSuperInvoked) should] beYes];
-						
 					});
+					context(@"infoForBinding:", ^{
+						__block NSDictionary *bindingInfo = nil;
+						beforeEach(^{
+							bindingInfo = [sut infoForBinding:@"stackedAngle"];
+						});
+						it(@"should have a valid infoForBinding:", ^{
+							[[bindingInfo shouldNot] beNil];
+						});
+						it(@"should have the bound dictionary as NSObservedObjectKey", ^{
+							[[bindingInfo[NSObservedObjectKey] should] equal:observedDict];
+						});
+						it(@"should have angle as NSObservedKeyPathKey", ^{
+							[[bindingInfo[NSObservedKeyPathKey] should] equal:@"angle"];
+						});
+					});
+					
 				});
 			});
 			context(@"unbind:", ^{
@@ -258,7 +277,6 @@ describe(@"NSKeyValueObserving", ^{
 
 				
 			});
-			
 		});
 	});
 });
