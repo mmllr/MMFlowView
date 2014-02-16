@@ -8,6 +8,6 @@
 
 #import "MMFlowView.h"
 
-@interface MMFlowView (NSDraggingDestination)
+@interface MMFlowView (NSDraggingDestination) <NSDraggingDestination>
 
 @end

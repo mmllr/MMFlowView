@@ -23,14 +23,14 @@
 
 - (BOOL)performDragOperation:(id < NSDraggingInfo >)dragInfo
 {
-	NSPoint pointInView = [ self convertPointFromBase:[ dragInfo draggingLocation ] ];
-	NSUInteger draggedIndex = [ self indexOfItemAtPoint:pointInView ];
+	NSPoint pointInView = [self convertPointFromBacking:[dragInfo draggingLocation]];
+	NSUInteger draggedIndex = [self indexOfItemAtPoint:pointInView];
 	
-	if ( ( draggedIndex != NSNotFound ) &&
-		[ self.dataSource respondsToSelector:@selector(flowView:acceptDrop:atIndex:) ] ) {
-		return [ self.dataSource flowView:self
-							   acceptDrop:dragInfo
-								  atIndex:draggedIndex ];
+	if ( (draggedIndex != NSNotFound) &&
+		[self.dataSource respondsToSelector:@selector(flowView:acceptDrop:atIndex:)]) {
+		return [self.dataSource flowView:self
+							  acceptDrop:dragInfo
+								 atIndex:draggedIndex ];
 	}
 	return NO;
 }
@@ -42,7 +42,7 @@
 
 - (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)dragInfo
 {
-	if ( ( [ dragInfo draggingSource ] == self ) ) {
+	if (([dragInfo draggingSource] == self)) {
 		return NSDragOperationNone;
 	}
 	self.highlightedLayer = self.backgroundLayer;
@@ -56,26 +56,25 @@
 
 - (NSDragOperation)draggingUpdated:(id < NSDraggingInfo >)dragInfo
 {
-	NSPoint pointInView = [ self convertPointFromBase:[ dragInfo draggingLocation ] ];
-	NSUInteger draggedIndex = [ self indexOfItemAtPoint:pointInView ];
-	
-	BOOL dragFromSelf = [ dragInfo draggingSource ] == self;
-	if ( draggedIndex != NSNotFound ) {
-		// no drag from self to selected index
-		if ( dragFromSelf && draggedIndex == self.selectedIndex ) {
-			return NSDragOperationNone;
-		}
-		//self.highlightedLayer = [ self imageLayerAtIndex:draggedIndex ];
-		if ( [ self.dataSource respondsToSelector:@selector(flowView:validateDrop:proposedIndex:) ] ) {
-			return [ self.dataSource flowView:self
-								 validateDrop:dragInfo
-								proposedIndex:draggedIndex ];
-		}
+	NSPoint pointInView = [self convertPointFromBacking:[dragInfo draggingLocation]];
+	NSUInteger destinationIndex = [self indexOfItemAtPoint:pointInView];
+	BOOL dragFromSelf = ([dragInfo draggingSource] == self);
+	self.highlightedLayer = nil;
+
+	if (dragFromSelf && destinationIndex == self.selectedIndex) {
+		return NSDragOperationNone;
 	}
-	else if ( !dragFromSelf ) {
-		self.highlightedLayer = self.backgroundLayer;
+	if (![self.dataSource respondsToSelector:@selector(flowView:validateDrop:proposedIndex:)]) {
+		return NSDragOperationNone;
 	}
-	return NSDragOperationNone;
+	NSDragOperation operation = [self.dataSource flowView:self
+							 validateDrop:dragInfo
+							proposedIndex:destinationIndex];
+	if (operation != NSDragOperationNone) {
+		BOOL dragOnItem = destinationIndex != NSNotFound;
+		self.highlightedLayer = dragOnItem ? self.coverFlowLayer.contentLayers[destinationIndex] : self.backgroundLayer;
+	}
+	return operation;
 }
 
 @end
