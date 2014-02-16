@@ -182,7 +182,7 @@
 
 - (NSDragOperation)flowView:(MMFlowView *)aFlowView validateDrop:(id<NSDraggingInfo>)info proposedIndex:(NSUInteger)anIndex
 {
-	return NSDragOperationCopy;
+	return anIndex != NSNotFound ? NSDragOperationCopy : NSDragOperationNone;
 }
 
 - (BOOL)flowView:(MMFlowView *)aFlowView acceptDrop:(id<NSDraggingInfo>)info atIndex:(NSUInteger)anIndex
