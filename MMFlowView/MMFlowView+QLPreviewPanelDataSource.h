@@ -10,4 +10,6 @@
 
 @interface MMFlowView (QLPreviewPanelDataSource) <QLPreviewPanelDataSource>
 
+- (BOOL)isPathRepresentationAtSelection;
+
 @end
