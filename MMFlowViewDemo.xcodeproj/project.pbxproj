@@ -32,7 +32,6 @@
 		286543261876C598002424AE /* MMFlowViewImageCacheSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 286543251876C598002424AE /* MMFlowViewImageCacheSpec.m */; };
 		286543291876C5A9002424AE /* MMFlowViewImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 286543281876C5A9002424AE /* MMFlowViewImageCache.m */; };
 		2876FF45180B269C00318C7B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF43180B269C00318C7B /* InfoPlist.strings */; };
-		2876FF4F180B28B800318C7B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 2876FF4E180B28B800318C7B /* Podfile */; };
 		2876FF52180B2A5600318C7B /* CALayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2876FF51180B2A5600318C7B /* CALayerAccessibilitySpec.m */; };
 		2876FF54180B2CA300318C7B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF53180B2CA300318C7B /* Cocoa.framework */; };
 		2876FF56180B2CBA00318C7B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2876FF55180B2CBA00318C7B /* QuartzCore.framework */; };
@@ -579,7 +578,6 @@
 			files = (
 				28DEFC0215AEEE9A0096FBA4 /* InfoPlist.strings in Resources */,
 				28DEFC0815AEEE9A0096FBA4 /* Credits.rtf in Resources */,
-				2876FF4F180B28B800318C7B /* Podfile in Resources */,
 				28DEFC0E15AEEE9B0096FBA4 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
