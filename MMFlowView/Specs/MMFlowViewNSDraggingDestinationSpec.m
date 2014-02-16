@@ -174,6 +174,13 @@ describe(@"NSDraggingDestination", ^{
 				});
 			});
 		});
+		context(@"concludeDragOperation:", ^{
+			it(@"should not highlight any layer", ^{
+				[[sut should] receive:@selector(setHighlightedLayer:) withArguments:[KWNull null]];
+				[sut concludeDragOperation:dragInfoMock];
+				[[sut.highlightedLayer should] beNil];
+			});
+		});
 	});
 });
 SPEC_END
