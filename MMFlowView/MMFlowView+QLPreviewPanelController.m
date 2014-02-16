@@ -15,8 +15,8 @@
 
 - (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel
 {
-	id item = [ self imageItemForIndex:self.selectedIndex ];
-	return [ [ [ self class ] pathRepresentationTypes ] containsObject:[ self imageRepresentationTypeForItem:item ] ];
+	id item = [self imageItemForIndex:self.selectedIndex];
+	return [[[self class] pathRepresentationTypes] containsObject:[self imageRepresentationTypeForItem:item]];
 }
 
 - (void)beginPreviewPanelControl:(QLPreviewPanel *)panel
@@ -27,6 +27,8 @@
 
 - (void)endPreviewPanelControl:(QLPreviewPanel *)panel
 {
+	panel.dataSource = nil;
+	panel.delegate = nil;
 }
 
 @end
