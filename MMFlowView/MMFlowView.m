@@ -465,6 +465,7 @@ static NSString * const kLayoutKey = @"layout";
 {
 	CALayer *contentLayer = [CALayer layer];
 	contentLayer.contents = (id)[[self class] defaultImage];
+	contentLayer.contentsGravity = kCAGravityResizeAspectFill;
 	return contentLayer;
 }
 

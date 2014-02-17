@@ -666,21 +666,27 @@ describe(@"MMFlowView", ^{
 							});
 							
 						});
-						context(@"content layers", ^{
+						context(@"coverFlowLayer:contentLayerForIndex:", ^{
 							__block CALayer *contentLayer = nil;
 
-							beforeEach(^{
-								contentLayer = [sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0];
+							context(@"when asking for a content layer", ^{
+								beforeEach(^{
+									contentLayer = [sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0];
+								});
+								afterEach(^{
+									contentLayer = nil;
+								});
+								it(@"should not return nil when asked for a content layer", ^{
+									[[contentLayer shouldNot] beNil];
+								});
+								it(@"should have set an image", ^{
+									[[contentLayer.contents shouldNot] beNil];
+								});
+								it(@"should have a contentsGravity of kCAGravityResizeAspectFill", ^{
+									[[contentLayer.contentsGravity should] equal:kCAGravityResizeAspectFill];
+								});
 							});
-							afterEach(^{
-								contentLayer = nil;
-							});
-							it(@"should not return nil when asked for a content layer", ^{
-								[[contentLayer shouldNot] beNil];
-							});
-							it(@"should have set an image", ^{
-								[[contentLayer.contents shouldNot] beNil];
-							});
+							
 						});
 					});
 				});
