@@ -7,25 +7,33 @@
 //
 
 #import "MMFlowView+QLPreviewPanelDelegate.h"
+#import "MMFlowView_Private.h"
 
 @implementation MMFlowView (QLPreviewPanelDelegate)
 
 - (BOOL)previewPanel:(QLPreviewPanel *)panel handleEvent:(NSEvent *)event
 {
-	if ( [event type] == NSKeyDown ) {
-		[ self keyDown:event ];
-        [ panel reloadData ];
-        return YES;
+	if ([event type] != NSKeyDown) {
+		return NO;
     }
+	NSString *characters = [event charactersIgnoringModifiers];
+	if ([characters length] == 0 || [characters length] > 1) {
+		return NO;
+	}
+	unichar keyChar = [characters characterAtIndex:0];
+	if (keyChar == NSLeftArrowFunctionKey || keyChar == NSRightArrowFunctionKey){
+		[self keyDown:event];
+		[panel reloadData];
+		return YES;
+	}
 	return NO;
 }
 
 - (NSRect)previewPanel:(QLPreviewPanel *)panel sourceFrameOnScreenForPreviewItem:(id <QLPreviewItem>)item
-{/*
-  NSRect selectedItemRectInWindow = [ self convertRect:[ self rectInViewForLayer:[ self imageLayerAtIndex:self.selectedIndex ] ] toView:nil ];
-  selectedItemRectInWindow.origin = [ [ self window ] convertBaseToScreen:selectedItemRectInWindow.origin ];
-  return selectedItemRectInWindow;*/
-	return NSZeroRect;
+{
+	NSRect rectInWindow = [self convertRect:self.selectedItemFrame
+									 toView:nil];
+	return [[self window] convertRectToScreen:rectInWindow];
 }
 
 @end

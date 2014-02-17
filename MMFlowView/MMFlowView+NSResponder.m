@@ -157,7 +157,7 @@
 		[[theEvent characters] isEqualToString:@" "]) {
 		[self togglePreviewPanel:self];
 	}
-	[ super keyDown:theEvent ];
+	[super keyDown:theEvent];
 }
 
 - (IBAction)moveLeft:(id)sender
