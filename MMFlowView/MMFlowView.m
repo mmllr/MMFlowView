@@ -385,17 +385,6 @@ static NSString * const kLayoutKey = @"layout";
 	}
 }
 
-- (NSUInteger)maximumNumberOfStackedVisibleItems
-{
-	if ( [ self.visibleItemIndexes count ] ) {
-		NSUInteger first = [ self.visibleItemIndexes firstIndex ];
-		NSUInteger last = [ self.visibleItemIndexes lastIndex ];
-
-		return MAX( self.selectedIndex - first, last - self.selectedIndex ) + 1;
-	}
-	return 0;
-}
-
 - (void)setSelectedLayer:(CALayer *)aLayer
 {
 	if ( aLayer != _selectedLayer ) {
@@ -406,11 +395,6 @@ static NSString * const kLayoutKey = @"layout";
 	}
 	[ _selectedLayer setValue:@YES
 					  forKey:kMMFlowViewHiglightedLayerKey ];
-}
-
-- (void)setCanControlQuickLookPanel:(BOOL)flag
-{
-	_canControlQuickLookPanel = flag;
 }
 
 - (void)setNumberOfItems:(NSUInteger)numberOfItems
@@ -800,8 +784,6 @@ static NSString * const kLayoutKey = @"layout";
 	layer.locations = [ [ self class ] backgroundGradientLocations ];
 	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	layer.layoutManager = [ CAConstraintLayoutManager layoutManager ];
-	//layer.borderColor = [NSColor redColor].CGColor;
-	//layer.borderWidth = 5;
 	return layer;
 }
 
