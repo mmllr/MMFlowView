@@ -63,7 +63,7 @@
 			 withKeyPath:@"selectionIndex"
 				 options:nil ];
 	// turn quicklook on
-	[ self.flowView setCanControlQuickLookPanel:YES ];
+	[self.flowView setCanControlQuickLookPanel:YES];
 	[self.imageBrowserView reloadData ];
 }
 

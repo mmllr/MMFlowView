@@ -36,7 +36,6 @@
 @property (assign,nonatomic) BOOL draggingKnob;
 @property (assign) CGFloat mouseDownInKnob;
 @property (readwrite,nonatomic) NSUInteger numberOfItems;
-@property (readonly,nonatomic) NSUInteger maximumNumberOfStackedVisibleItems;
 @property (readwrite,strong) id<MMFlowViewImageCache> imageCache;
 @property (nonatomic, readonly) NSRect selectedItemFrame;
 
@@ -45,8 +44,8 @@
 + (CGImageRef)defaultImage;
 + (NSArray*)backgroundGradientColors;
 + (NSArray*)backgroundGradientLocations;
-- (void)mouseEnteredLayerAtIndex:(NSUInteger)anIndex;
-- (void)mouseExitedLayerAtIndex:(NSUInteger)anIndex;
+- (void)mouseEnteredSelection;
+- (void)mouseExitedSelection;
 - (void)updateSelectionInRange:(NSRange)invalidatedRange;
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPoint;
 - (id)imageItemForIndex:(NSUInteger)anIndex;

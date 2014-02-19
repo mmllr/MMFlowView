@@ -52,9 +52,6 @@ describe(@"MMFlowView", ^{
 			it(@"should be of MMFlowView class", ^{
 				[[sut should] beKindOfClass:[MMFlowView class]];
 			});
-			it(@"should have an action cell class", ^{
-				[[[[sut class] cellClass] should] equal:[NSActionCell class]];
-			});
 		});
 		context(@"NSView overrides", ^{
 			it(@"should not be flipped", ^{
@@ -68,11 +65,6 @@ describe(@"MMFlowView", ^{
 			});
 			it(@"should accept touch events", ^{
 				[[theValue([sut acceptsTouchEvents]) should] beYes];
-			});
-		});
-		context(@"NSResponder overrides", ^{
-			it(@"should accept being first responder", ^{
-				[[theValue([sut acceptsFirstResponder]) should] beYes];
 			});
 		});
 		context(@"visibleItemIndexes", ^{

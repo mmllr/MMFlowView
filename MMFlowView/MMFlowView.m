@@ -946,11 +946,11 @@ static NSString * const kLayoutKey = @"layout";
 #pragma mark -
 #pragma mark Overlay code
 
-- (void)mouseEnteredLayerAtIndex:(NSUInteger)anIndex
+- (void)mouseEnteredSelection
 {
 }
 
-- (void)mouseExitedLayerAtIndex:(NSUInteger)anIndex
+- (void)mouseExitedSelection
 {
 }
 

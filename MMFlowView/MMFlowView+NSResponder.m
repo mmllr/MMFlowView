@@ -143,12 +143,12 @@
 
 - (void)mouseEntered:(NSEvent *)theEvent
 {
-	[ self mouseEnteredLayerAtIndex:self.selectedIndex ];
+	[self mouseEnteredSelection];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	[ self mouseExitedLayerAtIndex:self.selectedIndex ];
+	[self mouseExitedSelection];
 }
 
 - (void)keyDown:(NSEvent *)theEvent

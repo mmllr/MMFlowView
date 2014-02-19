@@ -21,6 +21,7 @@ describe(@"MMFlowView+NSDraggingSource", ^{
 	});
 	afterEach(^{
 		sut = nil;
+		mockedDragSession = nil;
 	});
 	context(NSStringFromSelector(@selector(draggingSession:sourceOperationMaskForDraggingContext:)), ^{
 		context(@"delegate not implementing flowView:draggingSession:sourceOperationMaskForDraggingContext:", ^{
