@@ -10,22 +10,17 @@
 
 @implementation MMFlowView (NSDraggingSource)
 
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
 {
-	return isLocal ? NSDragOperationMove : NSDragOperationCopy;
+	if ([self.delegate respondsToSelector:@selector(flowView:draggingSession:sourceOperationMaskForDraggingContext:)]) {
+		return [self.delegate flowView:self draggingSession:session sourceOperationMaskForDraggingContext:context];
+	}
+	return NSDragOperationNone;
 }
 
-- (void)draggedImage:(NSImage *)anImage beganAt:(NSPoint)aPoint
+- (void)draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
-}
-
-- (void)draggedImage:(NSImage *)draggedImage movedTo:(NSPoint)screenPoint
-{
-}
-
-- (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
-{
-	if ( operation == NSDragOperationDelete && [ self.dataSource respondsToSelector:@selector(flowView:removeItemAtIndex:) ] ) {
+	if ((operation & NSDragOperationDelete) && [self.dataSource respondsToSelector:@selector(flowView:removeItemAtIndex:)]) {
 		[ self.dataSource flowView:self
 				 removeItemAtIndex:self.selectedIndex ];
 	}

@@ -26,6 +26,7 @@
 		2838FA3718911E92000C6B15 /* NSAffineTransformMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2838FA3618911E92000C6B15 /* NSAffineTransformMMAdditionsSpec.m */; };
 		2838FA3A18911F3D000C6B15 /* NSAffineTransform+MMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2838FA3918911F3D000C6B15 /* NSAffineTransform+MMAdditions.m */; };
 		283BCCF81881CD5A002A2166 /* MMLayerAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283BCCF71881CD5A002A2166 /* MMLayerAccessibilitySpec.m */; };
+		283F53CD18B4B724006FA19C /* MMFlowViewNSDraggingSourceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 283F53CC18B4B724006FA19C /* MMFlowViewNSDraggingSourceSpec.m */; };
 		2849FADE1860DC6100E401D0 /* MMFlowViewImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */; };
 		2849FAE01860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FADF1860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m */; };
 		2849FAE31860E6D800E401D0 /* MMQuickLookImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2849FAE21860E6D800E401D0 /* MMQuickLookImageDecoder.m */; };
@@ -133,6 +134,7 @@
 		2838FA3818911F3D000C6B15 /* NSAffineTransform+MMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSAffineTransform+MMAdditions.h"; path = "MMFlowView/NSAffineTransform+MMAdditions.h"; sourceTree = "<group>"; };
 		2838FA3918911F3D000C6B15 /* NSAffineTransform+MMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSAffineTransform+MMAdditions.m"; path = "MMFlowView/NSAffineTransform+MMAdditions.m"; sourceTree = "<group>"; };
 		283BCCF71881CD5A002A2166 /* MMLayerAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMLayerAccessibilitySpec.m; sourceTree = "<group>"; };
+		283F53CC18B4B724006FA19C /* MMFlowViewNSDraggingSourceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewNSDraggingSourceSpec.m; sourceTree = "<group>"; };
 		2849FADC1860DC6100E401D0 /* MMFlowViewImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMFlowViewImageFactory.h; path = MMFlowView/MMFlowViewImageFactory.h; sourceTree = "<group>"; };
 		2849FADD1860DC6100E401D0 /* MMFlowViewImageFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMFlowViewImageFactory.m; path = MMFlowView/MMFlowViewImageFactory.m; sourceTree = "<group>"; };
 		2849FADF1860DD2800E401D0 /* MMQuickLookImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMQuickLookImageDecoderSpec.m; sourceTree = "<group>"; };
@@ -339,6 +341,7 @@
 		2876FF50180B2A5600318C7B /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				283F53CC18B4B724006FA19C /* MMFlowViewNSDraggingSourceSpec.m */,
 				285DF02118B271BE00AF64C7 /* MMFlowViewQLPreviewPanelDelegateSpec.m */,
 				28C69E9418B137DB008AAEB5 /* MMFlowViewQLPreviewPanelControllerSpec.m */,
 				28C69E9218B12593008AAEB5 /* MMFlowViewQLPreviewPanelDataSourceSpec.m */,
@@ -655,6 +658,7 @@
 				2877D87F181FE1A200FD5E07 /* MMFlowViewItemLayerSpec.m in Sources */,
 				28862395183560D0008D6246 /* MMScrollBarLayerSpec.m in Sources */,
 				285DF02218B271BF00AF64C7 /* MMFlowViewQLPreviewPanelDelegateSpec.m in Sources */,
+				283F53CD18B4B724006FA19C /* MMFlowViewNSDraggingSourceSpec.m in Sources */,
 				288FA4BC186309D40040F410 /* MMNSDataImageDecoderSpec.m in Sources */,
 				2887C2C5187F41B900D37FEF /* MMCodeCoverageTests.m in Sources */,
 				283338E818623AAD00A0846F /* MMNSBitmapImageRepDecoderSpec.m in Sources */,

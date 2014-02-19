@@ -125,7 +125,8 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 - (void)flowView:(MMFlowView *)aFlowView itemWasRightClickedAtIndex:(NSUInteger)anIndex withEvent:(NSEvent *)theEvent;
 /** Invoked after a selection of the flow view changed */
 - (void)flowViewSelectionDidChange:(MMFlowView *)aFlowView;
-
+/** Allows for customizing drag operations */
+- (NSDragOperation)flowView:(MMFlowView *)aFlowView draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
 @end
 
 
