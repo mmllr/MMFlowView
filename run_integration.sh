@@ -33,6 +33,10 @@ fi
 
 echo "[*] Cleaning workspace"
 
+if [ -f graph.dot ]; then
+rm graph.dot
+fi
+
 if [ -f compile_commands.json ]; then
 	rm compile_commands.json
 fi
@@ -59,6 +63,8 @@ echo "[*] Generating code-coverage results"
 scripts/gcovr -x -o ${WORKSPACE}/build/test-reports/coverage.xml --root=. --exclude='(.*Spec\.m)|(Pods/*)|(.*Test\.m)|(.*.h)'
 
 echo "[*] Performing code quality analysis"
+
+scripts/objc_dep.py MMFlowView/ -i Specs > graph.dot
 
 mkdir -p ${WORKSPACE}/build/oclint
 
