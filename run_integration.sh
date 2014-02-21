@@ -64,8 +64,11 @@ scripts/gcovr -x -o ${WORKSPACE}/build/test-reports/coverage.xml --root=. --excl
 
 echo "[*] Performing code quality analysis"
 
-scripts/objc_dep.py MMFlowView/ -i Specs > ${WORKSPACE}/build/dependency.dot
-${DOT} -Tpdf -o${WORKSPACE}/build/dependency.pdf ${WORKSPACE}/build/dependency.dot
+mkdir -p ${WORKSPACE}/build/reports
+
+scripts/objc_dep.py MMFlowView/ -i Specs > ${WORKSPACE}/build/reports/dependency.dot
+${DOT} -Tpng -o${WORKSPACE}/build/reports/dependency.png ${WORKSPACE}/build/reports/dependency.dot
+echo "<html><body><img src=\"dependency.png\"></body></html>" > build/reports/index.html
 
 mkdir -p ${WORKSPACE}/build/oclint
 
