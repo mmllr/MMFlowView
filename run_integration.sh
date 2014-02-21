@@ -25,6 +25,10 @@ if [ -z "${XCODEBUILD}" ]; then
 	XCODEBUILD=`which xcodebuild`
 fi
 
+if [ -z "${DOT}" ]; then
+     DOT=`which dot`
+fi
+
 if [ -z "${WORKSPACE}" ]; then
 	echo "[*] workspace nil, setting to working copy"
 	REALPATH=$([[ -L $0 ]] && echo $(dirname $0)/$(readlink $0) || echo $0)
@@ -32,10 +36,6 @@ if [ -z "${WORKSPACE}" ]; then
 fi
 
 echo "[*] Cleaning workspace"
-
-if [ -f graph.dot ]; then
-rm graph.dot
-fi
 
 if [ -f compile_commands.json ]; then
 	rm compile_commands.json
@@ -64,7 +64,8 @@ scripts/gcovr -x -o ${WORKSPACE}/build/test-reports/coverage.xml --root=. --excl
 
 echo "[*] Performing code quality analysis"
 
-scripts/objc_dep.py MMFlowView/ -i Specs > graph.dot
+scripts/objc_dep.py MMFlowView/ -i Specs > ${WORKSPACE}/build/dependency.dot
+${DOT} -Tpdf -o${WORKSPACE}/build/dependency.pdf ${WORKSPACE}/build/dependency.dot
 
 mkdir -p ${WORKSPACE}/build/oclint
 
