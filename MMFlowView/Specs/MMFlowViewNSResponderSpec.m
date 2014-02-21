@@ -107,6 +107,76 @@ describe(@"MMFlowView+NSResponder", ^{
 			});
 		});
 	});
+	context(NSStringFromSelector(@selector(swipeWithEvent:)), ^{
+		context(@"when the events absolute deltaX is greater than deltaY", ^{
+			beforeEach(^{
+				[mockedEvent stub:@selector(deltaX) andReturn:theValue(10)];
+				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
+				[sut stub:@selector(selectedIndex) andReturn:theValue(3)];
+			});
+			it(@"should add deltaX (10) to the selectedIndex (3)", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3+10)];
+				[sut swipeWithEvent:mockedEvent];
+			});
+		});
+		context(@"when the events absolute deltaX is equal to deltaY", ^{
+			beforeEach(^{
+				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
+				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
+				[sut stub:@selector(selectedIndex) andReturn:theValue(7)];
+			});
+			it(@"should add deltaX (-5) to the selectedIndex (7)", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(7-5)];
+				[sut swipeWithEvent:mockedEvent];
+			});
+		});
+		context(@"when the events absolute deltaX is less than deltaY", ^{
+			beforeEach(^{
+				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
+				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-6)];
+				[sut stub:@selector(selectedIndex) andReturn:theValue(9)];
+			});
+			it(@"should add deltaY (-6) to the selectedIndex (9)", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(9-6)];
+				[sut swipeWithEvent:mockedEvent];
+			});
+		});
+	});
+	context(NSStringFromSelector(@selector(scrollWheel:)), ^{
+		context(@"when the events absolute deltaX is greater than deltaY", ^{
+			beforeEach(^{
+				[mockedEvent stub:@selector(deltaX) andReturn:theValue(10)];
+				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
+				[sut stub:@selector(selectedIndex) andReturn:theValue(3)];
+			});
+			it(@"should add deltaX (10) to the selectedIndex (3)", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3+10)];
+				[sut scrollWheel:mockedEvent];
+			});
+		});
+		context(@"when the events absolute deltaX is equal to deltaY", ^{
+			beforeEach(^{
+				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
+				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
+				[sut stub:@selector(selectedIndex) andReturn:theValue(7)];
+			});
+			it(@"should add deltaX (-5) to the selectedIndex (7)", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(7-5)];
+				[sut scrollWheel:mockedEvent];
+			});
+		});
+		context(@"when the events absolute deltaX is less than deltaY", ^{
+			beforeEach(^{
+				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
+				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-6)];
+				[sut stub:@selector(selectedIndex) andReturn:theValue(9)];
+			});
+			it(@"should add deltaY (-6) to the selectedIndex (9)", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(9-6)];
+				[sut scrollWheel:mockedEvent];
+			});
+		});
+	});
 });
 
 SPEC_END

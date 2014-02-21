@@ -170,14 +170,24 @@
 	self.selectedIndex = self.selectedIndex + 1;
 }
 
+- (void)changeSelectionFromEvent:(NSEvent *)event
+{
+	if (fabs([event deltaX]) >= fabs([event deltaY])) {
+		self.selectedIndex += [event deltaX];
+	}
+	else {
+		self.selectedIndex += [event deltaY];
+	}
+}
+
 - (void)swipeWithEvent:(NSEvent *)event
 {
-	self.selectedIndex = self.selectedIndex + ( fabs([ event deltaX ] )> fabs ( [ event deltaY ] ) ? [ event deltaX ] : [ event deltaY ] );
+	[self changeSelectionFromEvent:event];
 }
 
 - (void)scrollWheel:(NSEvent *)event
 {
-	self.selectedIndex = self.selectedIndex + ( fabs([ event deltaX ] )> fabs ( [ event deltaY ] ) ? [ event deltaX ] : [ event deltaY ] );
+	[self changeSelectionFromEvent:event];
 }
 
 @end
