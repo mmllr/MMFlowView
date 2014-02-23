@@ -461,20 +461,48 @@ describe(@"MMFlowView", ^{
 			
 		});
 		context(@"layout", ^{
-			__block NSPoint pointInView;
+			__block NSPoint pointInCenterOfView;
 			__block NSPoint pointNotInView;
 
 			beforeEach(^{
-				pointInView = NSMakePoint(NSMidX([sut bounds]), NSMidY([sut bounds]));
+				pointInCenterOfView = NSMakePoint(NSMidX([sut bounds]), NSMidY([sut bounds]));
 				pointNotInView = NSMakePoint(NSWidth([sut bounds])*2, NSHeight([sut bounds])*2);
 			});
 			context(@"indexForItemAtPoint:", ^{
 				it(@"should return NSNotFound with empty contents for point in view", ^{
-					[[theValue([sut indexOfItemAtPoint:pointInView]) should] equal:theValue(NSNotFound)];
+					[[theValue([sut indexOfItemAtPoint:pointInCenterOfView]) should] equal:theValue(NSNotFound)];
 				});
 				it(@"should return NSNotFound for point outside view", ^{
 					[[theValue([sut indexOfItemAtPoint:pointNotInView]) should] equal:theValue(NSNotFound)];
 				});
+				context(@"layer interaction", ^{
+					__block CALayer *mockedHostingLayer = nil;
+					__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
+					__block CALayer *mockedContainerLayer = nil;
+					CGPoint expectedPoint = {20, 20};
+
+					beforeEach(^{
+						mockedHostingLayer = [CALayer nullMock];
+						mockedContainerLayer = [CALayer nullMock];
+						mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
+						[sut stub:@selector(layer) andReturn:mockedHostingLayer];
+						sut.coverFlowLayer = mockedCoverFlowLayer;
+						sut.containerLayer = mockedContainerLayer;
+						[mockedHostingLayer stub:@selector(convertPoint:toLayer:) andReturn:theValue(expectedPoint)];
+					});
+					afterEach(^{
+						mockedHostingLayer = nil;
+					});
+					it(@"should ask the views layer to convert the point to the containerlayer", ^{
+						[[mockedHostingLayer should] receive:@selector(convertPoint:toLayer:) withArguments:theValue(pointInCenterOfView), mockedContainerLayer];
+						[sut indexOfItemAtPoint:pointInCenterOfView];
+					});
+					it(@"should ask the coverFlowLayer for the index", ^{
+						[[mockedCoverFlowLayer should] receive:@selector(indexOfLayerAtPointInSuperLayer:) withArguments:theValue(expectedPoint)];
+						[sut indexOfItemAtPoint:pointInCenterOfView];
+					});
+				});
+				
 			});
 			
 		});
