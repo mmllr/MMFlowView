@@ -126,9 +126,6 @@
 - (void)mouseUp:(NSEvent *)theEvent
 {
 	self.draggingKnob = NO;
-	if ( [ self.selectedLayer respondsToSelector:@selector(performClick:) ] ) {
-		[ (id)self.selectedLayer performClick:self ];
-	}
 }
 
 - (void)rightMouseUp:(NSEvent *)theEvent
