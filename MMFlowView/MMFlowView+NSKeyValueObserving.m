@@ -9,6 +9,8 @@
 #import "MMFlowView+NSKeyValueObserving.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowViewImageCache.h"
+#import "MMCoverFlowLayout.h"
+#import "MMCoverFlowLayer.h"
 
 /* observation context */
 void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";

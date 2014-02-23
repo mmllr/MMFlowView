@@ -13,6 +13,9 @@
 #import "MMFlowViewImageCache.h"
 #import "MMFlowViewImageFactory.h"
 #import "MMImageDecoderProtocol.h"
+#import "MMCoverFlowLayer.h"
+#import "MMCoverFlowLayout.h"
+#import "MMScrollBarLayer.h"
 
 SPEC_BEGIN(MMFlowViewSpec)
 

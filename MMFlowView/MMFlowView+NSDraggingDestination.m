@@ -8,6 +8,7 @@
 
 #import "MMFlowView+NSDraggingDestination.h"
 #import "MMFlowView_Private.h"
+#import "MMCoverFlowLayer.h"
 
 @implementation MMFlowView (NSDraggingDestination)
 

@@ -9,6 +9,8 @@
 #import "MMFlowView+NSResponder.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowViewImageCache.h"
+#import "MMScrollBarLayer.h"
+#import "NSEvent+MMAdditions.h"
 
 #ifndef CLAMP
 #define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
@@ -162,22 +164,12 @@
 
 - (IBAction)moveLeft:(id)sender
 {
-	self.selectedIndex = self.selectedIndex - 1;
+	self.selectedIndex -= 1;
 }
 
 - (IBAction)moveRight:(id)sender
 {
-	self.selectedIndex = self.selectedIndex + 1;
-}
-
-- (void)changeSelectionFromEvent:(NSEvent *)event
-{
-	if (fabs([event deltaX]) >= fabs([event deltaY])) {
-		self.selectedIndex += [event deltaX];
-	}
-	else {
-		self.selectedIndex += [event deltaY];
-	}
+	self.selectedIndex += 1;
 }
 
 - (void)swipeWithEvent:(NSEvent *)event
@@ -188,6 +180,11 @@
 - (void)scrollWheel:(NSEvent *)event
 {
 	[self changeSelectionFromEvent:event];
+}
+
+- (void)changeSelectionFromEvent:(NSEvent *)event
+{
+	self.selectedIndex += event.dominantDeltaInXYSpace;
 }
 
 @end

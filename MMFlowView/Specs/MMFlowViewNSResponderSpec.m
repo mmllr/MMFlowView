@@ -9,6 +9,7 @@
 #import "Kiwi.h"
 #import "MMFlowView+NSResponder.h"
 #import "MMFlowView_Private.h"
+#import "NSEvent+MMAdditions.h"
 #import <objc/runtime.h>
 
 static BOOL testingSuperInvoked = NO;
@@ -107,72 +108,28 @@ describe(@"MMFlowView+NSResponder", ^{
 			});
 		});
 	});
-	context(NSStringFromSelector(@selector(swipeWithEvent:)), ^{
-		context(@"when the events absolute deltaX is greater than deltaY", ^{
-			beforeEach(^{
-				[mockedEvent stub:@selector(deltaX) andReturn:theValue(10)];
-				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
-				[sut stub:@selector(selectedIndex) andReturn:theValue(3)];
+	context(@"scrolling and swiping", ^{
+		beforeEach(^{
+			[mockedEvent stub:@selector(dominantDeltaInXYSpace) andReturn:theValue(3)];
+			[sut stub:@selector(selectedIndex) andReturn:theValue(3)];
+		});
+		context(NSStringFromSelector(@selector(swipeWithEvent:)), ^{
+			it(@"should ask the event for its dominant delta", ^{
+				[[mockedEvent should] receive:@selector(dominantDeltaInXYSpace)];
+				[sut swipeWithEvent:mockedEvent];
 			});
-			it(@"should add deltaX (10) to the selectedIndex (3)", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3+10)];
+			it(@"should add the dominant delta to the selected index", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3+3)];
 				[sut swipeWithEvent:mockedEvent];
 			});
 		});
-		context(@"when the events absolute deltaX is equal to deltaY", ^{
-			beforeEach(^{
-				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
-				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
-				[sut stub:@selector(selectedIndex) andReturn:theValue(7)];
-			});
-			it(@"should add deltaX (-5) to the selectedIndex (7)", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(7-5)];
+		context(NSStringFromSelector(@selector(scrollWheel:)), ^{
+			it(@"should ask the event for its dominant delta", ^{
+				[[mockedEvent should] receive:@selector(dominantDeltaInXYSpace)];
 				[sut swipeWithEvent:mockedEvent];
 			});
-		});
-		context(@"when the events absolute deltaX is less than deltaY", ^{
-			beforeEach(^{
-				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
-				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-6)];
-				[sut stub:@selector(selectedIndex) andReturn:theValue(9)];
-			});
-			it(@"should add deltaY (-6) to the selectedIndex (9)", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(9-6)];
-				[sut swipeWithEvent:mockedEvent];
-			});
-		});
-	});
-	context(NSStringFromSelector(@selector(scrollWheel:)), ^{
-		context(@"when the events absolute deltaX is greater than deltaY", ^{
-			beforeEach(^{
-				[mockedEvent stub:@selector(deltaX) andReturn:theValue(10)];
-				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
-				[sut stub:@selector(selectedIndex) andReturn:theValue(3)];
-			});
-			it(@"should add deltaX (10) to the selectedIndex (3)", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3+10)];
-				[sut scrollWheel:mockedEvent];
-			});
-		});
-		context(@"when the events absolute deltaX is equal to deltaY", ^{
-			beforeEach(^{
-				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
-				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-5)];
-				[sut stub:@selector(selectedIndex) andReturn:theValue(7)];
-			});
-			it(@"should add deltaX (-5) to the selectedIndex (7)", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(7-5)];
-				[sut scrollWheel:mockedEvent];
-			});
-		});
-		context(@"when the events absolute deltaX is less than deltaY", ^{
-			beforeEach(^{
-				[mockedEvent stub:@selector(deltaX) andReturn:theValue(-5)];
-				[mockedEvent stub:@selector(deltaY) andReturn:theValue(-6)];
-				[sut stub:@selector(selectedIndex) andReturn:theValue(9)];
-			});
-			it(@"should add deltaY (-6) to the selectedIndex (9)", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(9-6)];
+			it(@"should add the dominant delta to the selected index", ^{
+				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3+3)];
 				[sut scrollWheel:mockedEvent];
 			});
 		});

@@ -10,14 +10,14 @@
 #import <QTKit/QTKit.h>
 
 #import "MMFlowView.h"
-#import "MMButtonLayer.h"
-#import "MMVideoOverlayLayer.h"
-#import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
-#import "MMScrollBarLayer.h"
-#import "MMFlowViewImageFactory.h"
 
 @protocol MMFlowViewImageCache;
+
+@class MMCoverFlowLayout;
+@class MMScrollBarLayer;
+@class MMFlowViewImageFactory;
+@class MMScrollBarLayer;
 
 @interface MMFlowView () <MMCoverFlowLayerDataSource>
 

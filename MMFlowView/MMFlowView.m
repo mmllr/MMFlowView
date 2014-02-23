@@ -30,6 +30,9 @@
 #import "MMScrollBarLayer.h"
 #import "MMFlowViewImageCache.h"
 #import "MMFlowView+NSKeyValueObserving.h"
+#import "MMFlowViewImageFactory.h"
+#import "MMCoverFlowLayout.h"
+#import "MMCoverFlowLayer.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
