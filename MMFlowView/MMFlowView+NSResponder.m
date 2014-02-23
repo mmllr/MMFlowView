@@ -130,14 +130,18 @@
 
 - (void)rightMouseUp:(NSEvent *)theEvent
 {
-	NSPoint locationInWindow = [ theEvent locationInWindow ];
-	NSUInteger clickedIndex = [ self indexOfItemAtPoint:[ self convertPoint:locationInWindow fromView:nil ] ];
-	if ( [ self.delegate respondsToSelector:@selector(flowView:itemWasRightClickedAtIndex:withEvent:) ] &&
-		(clickedIndex != NSNotFound ) ) {
-		[ self.delegate flowView:self
-	  itemWasRightClickedAtIndex:clickedIndex
-					   withEvent:theEvent ];
+	if (![self.delegate respondsToSelector:@selector
+		(flowView:itemWasRightClickedAtIndex:withEvent:)]) {
+		return;
 	}
+	NSPoint pointInView = [self convertPoint:[theEvent locationInWindow]
+									fromView:nil];
+	NSUInteger clickedIndex = [self indexOfItemAtPoint:pointInView];
+
+	if (clickedIndex == NSNotFound) {
+		return;
+	}
+	[self.delegate flowView:self itemWasRightClickedAtIndex:clickedIndex withEvent:theEvent];
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent
@@ -152,7 +156,7 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-	if ( self.canControlQuickLookPanel &&
+	if (self.canControlQuickLookPanel &&
 		[[theEvent characters] isEqualToString:@" "]) {
 		[self togglePreviewPanel:self];
 	}

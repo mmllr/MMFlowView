@@ -134,6 +134,70 @@ describe(@"MMFlowView+NSResponder", ^{
 			});
 		});
 	});
+	context(NSStringFromSelector(@selector(mouseUp:)), ^{
+		it(@"should disable dragging", ^{
+			[[sut should] receive:@selector(setDraggingKnob:) withArguments:theValue(NO)];
+			[sut mouseUp:mockedEvent];
+		});
+		it(@"should not drag the knob", ^{
+			[[theValue(sut.draggingKnob) should] beNo];
+		});
+	});
+	context(NSStringFromSelector(@selector(rightMouseUp:)), ^{
+		__block id mockedDelegate = nil;
+
+		afterEach(^{
+			mockedDelegate = nil;
+		});
+
+		context(@"when the delegate supports right clicks", ^{
+			NSPoint pointInWindow = NSMakePoint(10, 10);
+
+			beforeEach(^{
+				mockedDelegate = [KWMock nullMockForProtocol:@protocol(MMFlowViewDelegate)];
+				sut.delegate = mockedDelegate;
+				[mockedEvent stub:@selector(locationInWindow) andReturn:theValue(pointInWindow)];
+			});
+			it(@"should ask the event for the mouse location", ^{
+				[[mockedEvent should] receive:@selector(locationInWindow)];
+				[sut rightMouseUp:mockedEvent];
+			});
+			it(@"should ask for the item at the mouse position in view coordinates", ^{
+				NSPoint expectedPoint = [sut convertPoint:pointInWindow fromView:nil];
+				[[sut should] receive:@selector(indexOfItemAtPoint:) withArguments:theValue(expectedPoint)];
+				[sut rightMouseUp:mockedEvent];
+			});
+			context(@"when an item was clicked", ^{
+				const NSUInteger expectedItemIndex = 3;
+				beforeEach(^{
+					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(expectedItemIndex)];
+				});
+				it(@"should ask the delegate to handle the click", ^{
+					[[mockedDelegate should] receive:@selector(flowView:itemWasRightClickedAtIndex:withEvent:) withArguments:sut, theValue(expectedItemIndex), mockedEvent];
+					[sut rightMouseUp:mockedEvent];
+				});
+			});
+			context(@"when no item was clicked", ^{
+				beforeEach(^{
+					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(NSNotFound)];
+				});
+				it(@"should ask the delegate to handle the click", ^{
+					[[mockedDelegate shouldNot] receive:@selector(flowView:itemWasRightClickedAtIndex:withEvent:)];
+					[sut rightMouseUp:mockedEvent];
+				});
+			});
+		});
+		context(@"when the delegate does supports right clicks", ^{
+			beforeEach(^{
+				mockedDelegate = [KWMock nullMock];
+				sut.delegate = mockedDelegate;
+			});
+			it(@"should not ask the delegate to handle the click", ^{
+				[[mockedDelegate shouldNot] receive:@selector(flowView:itemWasRightClickedAtIndex:withEvent:)];
+				[sut rightMouseUp:mockedEvent];
+			});
+		});
+	});
 });
 
 SPEC_END
