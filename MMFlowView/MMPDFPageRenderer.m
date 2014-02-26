@@ -19,8 +19,14 @@
 
 #pragma mark - init/cleanup
 
+- (id)init
+{
+	return [self initWithPDFPage:NULL];
+}
+
 - (id)initWithPDFPage:(CGPDFPageRef)aPage
 {
+	NSParameterAssert(aPage != NULL);
 	NSParameterAssert(CFGetTypeID(aPage) == CGPDFPageGetTypeID());
 
 	self = [super init];

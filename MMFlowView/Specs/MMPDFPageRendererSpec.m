@@ -31,6 +31,11 @@ describe(@"MMPDFPageRenderer", ^{
 			testPage = NULL;
 		}
 	});
+	it(@"should not be possible to create without its designated initalizer", ^{
+		[[theBlock(^{
+			sut = [[MMPDFPageRenderer alloc] init];
+		}) should] raiseWithName:NSInternalInconsistencyException];
+	});
 	context(@"creating with a non CGPDFPageRef", ^{
 		it(@"should throw an NSInternalInconsistencyException", ^{
 			[[theBlock(^{
