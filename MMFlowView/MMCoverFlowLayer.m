@@ -74,12 +74,13 @@ static void* kReloadContentObservationContext = @"reloadContent";
 
 - (id)init
 {
-	[ NSException raise:NSInternalInconsistencyException format:@"init not allowed, use designated initalizer initWithLayout: instead"];
-	return nil;
+	return [self initWithLayout:nil];
 }
 
 - (id)initWithLayout:(MMCoverFlowLayout*)layout
 {
+	NSParameterAssert(layout);
+
     self = [super init];
     if (self) {
 		_layout = layout;
