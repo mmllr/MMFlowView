@@ -14,7 +14,7 @@ static const CGPoint kDefaultAnchorPoint = {.5, .5};
 
 - (id)init
 {
-	[ NSException raise:NSInternalInconsistencyException format:@"init not allowed, use designated initalizer initWithIndex:position:size:anchorPoint:transfrom:zPosition: instead"];
+	[NSException raise:NSInternalInconsistencyException format:@"init not allowed, use designated initalizer initWithIndex:position:size:anchorPoint:transfrom:zPosition: instead"];
 	return nil;
 }
 
