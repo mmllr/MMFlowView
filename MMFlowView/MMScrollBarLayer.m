@@ -10,6 +10,7 @@
 #import "CALayer+NSAccessibility.h"
 #import "MMScrollKnobLayer.h"
 #import "CALayer+MMAdditions.h"
+#import "NSArray+MMAdditions.h"
 
 static void* kRelayoutObservationContext = @"MMRelayoutObservationContext";
 
@@ -22,6 +23,12 @@ static const CGFloat kWidthScale = .75;
 static const CGFloat kKnobMargin = 5.;
 static const CGFloat kMinimumKnobWidth = 40.;
 
+@interface MMScrollBarLayer ()
+
+@property (strong) NSArray *observedSublayers;
+
+@end
+
 @implementation MMScrollBarLayer
 
 #pragma mark - class methods
@@ -32,6 +39,16 @@ static const CGFloat kMinimumKnobWidth = 40.;
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		keys = [NSSet setWithObjects:@"bounds", @"sublayers", nil];
+	});
+	return keys;
+}
+
++ (NSArray*)contentLayerObservationKeys
+{
+	static NSArray *keys = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		keys = @[@"bounds", @"position"];
 	});
 	return keys;
 }
@@ -109,7 +126,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 	for ( NSString *key in [[self class] scrollLayerRelayoutObservationKeys] ) {
 		[self.scrollLayer addObserver:self
 						   forKeyPath:key
-							  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial
+							  options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial
 							  context:kRelayoutObservationContext];
 	}
 }
@@ -121,33 +138,64 @@ static const CGFloat kMinimumKnobWidth = 40.;
 							  forKeyPath:key
 								 context:kRelayoutObservationContext];
 	}
+	[self.observedSublayers mm_removeObserver:self
+								  forKeyPaths:[[self class] contentLayerObservationKeys]
+									  context:kRelayoutObservationContext];
 }
 
 #pragma mark - KVO
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)observedObject change:(NSDictionary *)change context:(void *)context
 {
     if (context == kRelayoutObservationContext) {
+		if ([keyPath isEqualToString:@"sublayers"]) {
+			// Have items been removed from the bound-to container?
+			/*
+			 Should be able to use
+			 NSArray *oldItems = [change objectForKey:NSKeyValueChangeOldKey];
+			 etc. but the dictionary doesn't contain old and new arrays.
+			 */
+
+			NSArray *newLayers = [observedObject valueForKeyPath:keyPath];
+			NSMutableArray *onlyNew = [NSMutableArray arrayWithArray:newLayers];
+			[onlyNew removeObjectsInArray:self.observedSublayers];
+			[onlyNew mm_addObserver:self
+						forKeyPaths:[[self class] contentLayerObservationKeys]
+							context:kRelayoutObservationContext];
+			NSMutableArray *removed = [self.observedSublayers mutableCopy];
+			[removed removeObjectsInArray:newLayers];
+			[removed mm_removeObserver:self
+						   forKeyPaths:[[self class] contentLayerObservationKeys]
+							   context:kRelayoutObservationContext];
+			self.observedSublayers = newLayers;
+		}
         [self layoutSublayers];
     } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+        [super observeValueForKeyPath:keyPath ofObject:observedObject change:change context:context];
     }
 }
 
 #pragma mark - CALayer overrides
 
-- (void)layoutSublayers
+- (CGSize)scrollAreaSize
 {
-	__block CGFloat minX = FLT_MAX;
-	__block CGFloat maxX = FLT_MIN;
+	__block CGRect scrollArea = CGRectZero;
 	
 	[self.scrollLayer.sublayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
-		minX = MIN(CGRectGetMinX(layer.frame), minX);
-		maxX = MAX(CGRectGetMaxX(layer.frame), maxX);
+		if (CGRectEqualToRect(scrollArea, CGRectZero)) {
+			scrollArea = layer.frame;
+		}
+		scrollArea = CGRectUnion(scrollArea, layer.frame);
 	}];
+	return scrollArea.size;
+}
+
+- (void)layoutSublayers
+{
+	CGFloat scrollAreaWidth = [self scrollAreaSize].width;
+
 	CALayer *knobLayer = [self.sublayers firstObject];
-	CGFloat scrollAreaWidth = maxX - minX;
-	if ( !CGRectIsEmpty(self.scrollLayer.visibleRect) ) {
+	if ( !CGRectIsEmpty(self.scrollLayer.visibleRect) && scrollAreaWidth > 0 ) {
 		CGFloat visibleWidth = CGRectGetWidth(self.scrollLayer.visibleRect);
 		CGFloat aspectRatio = visibleWidth / scrollAreaWidth;
 		

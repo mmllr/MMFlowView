@@ -28,6 +28,7 @@ describe(@"MMScrollBarLayer", ^{
 	});
 	context(@"new instance created by its designated initalizer", ^{
 		__block CAScrollLayer *scrollLayer = nil;
+		__block NSArray *contentLayers = nil;
 		const NSUInteger kNumberOfContentLayers = 10;
 		const CGFloat kContentLayerOffset = 40.;
 		const CGFloat kContentLayerSize = 30.;
@@ -35,12 +36,15 @@ describe(@"MMScrollBarLayer", ^{
 		beforeEach(^{
 			scrollLayer = [CAScrollLayer layer];
 			scrollLayer.bounds = CGRectMake(0, 0, 50, 50);
-			
+			NSMutableArray *layers = [NSMutableArray arrayWithCapacity:kNumberOfContentLayers];
+
 			for ( int i = 0; i < kNumberOfContentLayers; ++i ) {
 				CALayer *layer = [CALayer layer];
 				layer.frame = CGRectMake(i * kContentLayerOffset, 0, kContentLayerSize, kContentLayerSize);
 				[scrollLayer addSublayer:layer];
+				[layers addObject:layer];
 			}
+			contentLayers = [layers copy];
 			sut = [[MMScrollBarLayer alloc] initWithScrollLayer:scrollLayer];
 		});
 		afterEach(^{
@@ -83,10 +87,37 @@ describe(@"MMScrollBarLayer", ^{
 		it(@"should have the scroll layer with it attached", ^{
 			[[sut.scrollLayer should] equal:scrollLayer];
 		});
-		context(@"scroll layer related", ^{
-			it(@"should invoke layoutSublayers when the visible rect of its scroll layer changes", ^{
+		context(@"scroll layer", ^{
+			it(@"should trigger layoutSublayers when the visible rect of its scroll layer changes", ^{
 				[[sut should] receive:@selector(layoutSublayers)];
 				[scrollLayer scrollRectToVisible:CGRectMake(50, 0, CGRectGetWidth(scrollLayer.bounds), CGRectGetHeight(scrollLayer.bounds))];
+			});
+			context(@"when removing layers", ^{
+				it(@"should invoke layoutSublayers", ^{
+					[[sut should] receive:@selector(layoutSublayers)];
+					[[contentLayers firstObject] removeFromSuperlayer];
+				});
+			});
+			context(@"adding layers to the scroll layer", ^{
+				__block CALayer *newLayer = nil;
+				beforeEach(^{
+					newLayer = [CALayer layer];
+					newLayer.frame = CGRectMake(0, 0, 300, 200);
+				});
+				afterEach(^{
+					newLayer = nil;
+				});
+				it(@"should invoke layoutSublayers", ^{
+					[[sut should] receive:@selector(layoutSublayers)];
+					[scrollLayer addSublayer:newLayer];
+				});
+			});
+			context(@"when modifying the frame of a scrollayer sublayer", ^{
+				it(@"should trigger relayout when changing the frame of the sublayer", ^{
+					[[sut should] receive:@selector(layoutSublayers) withCountAtLeast:1];
+					CALayer *layer = [contentLayers firstObject];
+					layer.frame = CGRectMake(-100, 0, 400, 200);
+				});
 			});
 		});
 		context(@"constraints", ^{
