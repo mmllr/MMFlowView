@@ -47,10 +47,9 @@
 	if (parent) {
 		return NSAccessibilityUnignoredAncestor(parent);
 	}
-	NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
-													 reason:@"No accessibility parent available"
-												   userInfo:nil ];
-	[exception raise];
+	@throw [NSException exceptionWithName:NSInternalInconsistencyException
+								   reason:@"No accessibility parent available"
+								 userInfo:nil];
 	return nil;
 }
 
