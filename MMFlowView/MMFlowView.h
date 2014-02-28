@@ -163,13 +163,13 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 /** indexes of all visible items */
 @property (nonatomic, readonly) NSIndexSet *visibleItemIndexes;
 /** keypath to image representation on item in observed collection, defaults to imageItemRepresentation, see MMFlowViewItem protocol */
-@property (nonatomic,copy) NSString *imageRepresentationKeyPath;
+@property (copy) NSString *imageRepresentationKeyPath;
 /** keypath to image representation type on item in observed collection, defaults to imageItemRepresentationType, see MMFlowViewItem protocol */
-@property (nonatomic,copy) NSString *imageRepresentationTypeKeyPath;
+@property (copy) NSString *imageRepresentationTypeKeyPath;
 /** keypath to image uid on item in observed collection, defaults to imageItemUID, see MMFlowViewItem protocol */
-@property (nonatomic,copy) NSString *imageUIDKeyPath;
+@property (copy) NSString *imageUIDKeyPath;
 /** keypath to image title on item in observed collection, defaults to imageItemTitle, see MMFlowViewItem protocol */
-@property (nonatomic,copy) NSString *imageTitleKeyPath;
+@property (copy) NSString *imageTitleKeyPath;
 
 /** sets the font of the title */
 - (void)setTitleFont:(NSFont*)aFont;

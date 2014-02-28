@@ -9,6 +9,7 @@
 #import "Kiwi.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowView+NSKeyValueObserving.h"
+#import "NSArray+MMAdditions.h"
 #import <objc/runtime.h>
 
 static BOOL testingSuperInvoked = NO;
@@ -75,27 +76,37 @@ describe(@"NSKeyValueObserving", ^{
 		afterEach(^{
 			sut = nil;
 		});
-		context(@"observedItemKeyPaths", ^{
-			it(@"should initally be empty", ^{
-				[[sut.observedItemKeyPaths should] haveCountOf:0];
+		it(@"should initially have the default MMFlowViewItem imageItemRepresentation keypath", ^{
+			[[sut.imageRepresentationKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentation))];
+		});
+		it(@"should initially have the default MMFlowViewItem imageItemRepresentationType keypath", ^{
+			[[sut.imageRepresentationTypeKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentationType))];
+		});
+		it(@"should initially have the default MMFlowViewItem imageItemUID keypath", ^{
+			[[sut.imageUIDKeyPath should] equal:NSStringFromSelector(@selector(imageItemUID))];
+		});
+		context(NSStringFromSelector(@selector(observedItemKeyPaths)), ^{
+			it(@"should initally have the non optional MMFlowViewItem keypaths", ^{
+				[[sut.observedItemKeyPaths should] haveCountOf:3];
+			});
+			it(@"should initially have the non optional MMFlowViewItems selectors", ^{
+				[[sut.observedItemKeyPaths should] containObjectsInArray:@[sut.imageUIDKeyPath, sut.imageRepresentationKeyPath, sut.imageRepresentationTypeKeyPath]];
 			});
 			context(@"when setting itemKeyPaths", ^{
-				beforeEach(^{
-					sut.imageRepresentationKeyPath = @"testImageRepresentation";
-					sut.imageRepresentationTypeKeyPath = @"testImageRepresentationType";
-					sut.imageUIDKeyPath = @"testImageUID";
-					sut.imageTitleKeyPath = @"testTitle";
-				});
 				it(@"should contain the imageRepresentationKeyPath (testImageRepresentation)", ^{
+					sut.imageRepresentationKeyPath = @"testImageRepresentation";
 					[[sut.observedItemKeyPaths should] contain:@"testImageRepresentation"];
 				});
 				it(@"should contain the imageRepresentationTypeKeyPath (testImageRepresentationType)", ^{
+					sut.imageRepresentationTypeKeyPath = @"testImageRepresentationType";
 					[[sut.observedItemKeyPaths should] contain:@"testImageRepresentationType"];
 				});
 				it(@"should contain the imageUIDKeyPath (testImageUID)", ^{
+					sut.imageUIDKeyPath = @"testImageUID";
 					[[sut.observedItemKeyPaths should] contain:@"testImageUID"];
 				});
 				it(@"should contain the imageTitleKeyPath (testTitle)", ^{
+					sut.imageTitleKeyPath = @"testTitle";
 					[[sut.observedItemKeyPaths should] contain:@"testTitle"];
 				});
 			});
@@ -135,7 +146,7 @@ describe(@"NSKeyValueObserving", ^{
 			it(@"should expose kMMFlowViewImageTitleBinding", ^{
 				[[exposedBindings should] contain:kMMFlowViewImageTitleBinding];
 			});
-			context(@"bind:toObject:withKeyPath:options:", ^{
+			context(NSStringFromSelector(@selector(bind:toObject:withKeyPath:options:)), ^{
 				context(@"when binding the NSContentArrayBinding to an NSArrayController", ^{
 					beforeEach(^{
 						[sut bind:NSContentArrayBinding toObject:arrayController withKeyPath:arrangedObjectsKeyPath options:nil];
@@ -191,6 +202,50 @@ describe(@"NSKeyValueObserving", ^{
 						});
 						it(@"should have the -bind:toObject:withKeyPath:options keyPath as NSObservedKeyPathKey", ^{
 							[[contentArrayBinding[NSObservedKeyPathKey] should] equal:arrangedObjectsKeyPath];
+						});
+					});
+					context(@"trigering KVO", ^{
+						beforeAll(^{
+							for (id itemMock in mockedItems) {
+								[itemMock stub:NSSelectorFromString(@"test")];
+							}
+						});
+						context(@"when changing imageRepresentationKeyPath", ^{
+							it(@"should stop observering for the old key path", ^{
+								[[sut.observedItems should] receive:@selector(mm_removeObserver:forKeyPaths:context:)
+													  withArguments:sut, @[sut.imageRepresentationKeyPath], [KWAny any]];
+								sut.imageRepresentationKeyPath = @"test";
+							});
+							it(@"should start observering for the new key path", ^{
+								[[sut.observedItems should] receive:@selector(mm_addObserver:forKeyPaths:context:)
+													  withArguments:sut, @[@"test"], [KWAny any]];
+								sut.imageRepresentationKeyPath = @"test";
+							});
+						});
+						context(@"when changing imageRepresentationTypeKeyPath", ^{
+							it(@"should stop observering for the old key path", ^{
+								[[sut.observedItems should] receive:@selector(mm_removeObserver:forKeyPaths:context:)
+													  withArguments:sut, @[sut.imageRepresentationTypeKeyPath], [KWAny any]];
+								sut.imageRepresentationTypeKeyPath = @"test";
+							});
+							it(@"should start observering for the new key path", ^{
+								[[sut.observedItems should] receive:@selector(mm_addObserver:forKeyPaths:context:)
+													  withArguments:sut, @[@"test"], [KWAny any]];
+								sut.imageRepresentationTypeKeyPath = @"test";
+							});
+						});
+						context(@"when changing imageUIDKeyPath", ^{
+							it(@"should stop observering for the old key path", ^{
+								[[sut.observedItems should] receive:@selector(mm_removeObserver:forKeyPaths:context:)
+													  withArguments:sut, @[sut.imageUIDKeyPath], [KWAny any]];
+								sut.imageUIDKeyPath = @"test";
+							});
+							it(@"should start observering for the new key path", ^{
+								[[sut.observedItems should] receive:@selector(mm_addObserver:forKeyPaths:context:)
+													  withArguments:sut, @[@"test"], [KWAny any]];
+								sut.imageUIDKeyPath = @"test";
+							});
+							
 						});
 					});
 					context(@"selection", ^{

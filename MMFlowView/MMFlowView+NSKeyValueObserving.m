@@ -11,19 +11,17 @@
 #import "MMFlowViewImageCache.h"
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
+#import "NSArray+MMAdditions.h"
 
-/* observation context */
 void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
 void * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
+void *const kMMFlowViewItemKeyPathsObservationContext = @"kMMFlowViewItemKeyPathsObservationContext";
 
-
-/* bindings */
 NSString * const kMMFlowViewImageRepresentationBinding = @"imageRepresentationKeyPath";
 NSString * const kMMFlowViewImageRepresentationTypeBinding = @"imageRepresentationTypeKeyPath";
 NSString * const kMMFlowViewImageUIDBinding = @"imageUIDKeyPath";
 NSString * const kMMFlowViewImageTitleBinding = @"imageTitleKeyPath";
 
-/* default item keys */
 static NSString * const kMMFlowViewItemImageRepresentationKey = @"imageItemRepresentation";
 static NSString * const kMMFlowViewItemImageRepresentationTypeKey = @"imageItemRepresentationType";
 static NSString * const kMMFlowViewItemImageUIDKey = @"imageItemUID";
@@ -31,32 +29,16 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 @implementation MMFlowView (NSKeyValueObserving)
 
-- (void)startObservingCollection:(NSArray*)items atKeyPaths:(NSArray*)keyPaths
++ (NSArray*)observedItemKeyPaths
 {
-	if ( [ items isEqual:[NSNull null] ] || ![items count] ) {
-		return;
-	}
-	NSIndexSet *allItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [items count] )];
-	for ( NSString *keyPath in keyPaths ) {
-		[items addObserver:self
-		toObjectsAtIndexes:allItemIndexes
-				forKeyPath:keyPath
-				   options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial )
-				   context:kMMFlowViewIndividualItemKeyPathsObservationContext];
-	}
-}
-
-- (void)stopObservingCollection:(NSArray*)items atKeyPaths:(NSArray*)keyPaths
-{
-	if ( !items || [items isEqual:[NSNull null]] || ![items count] ) {
-		return;
-	}
-	NSIndexSet *allItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( 0, [items count] )];
-	for ( NSString *keyPath in keyPaths ) {
-		[items removeObserver:self
-		 fromObjectsAtIndexes:allItemIndexes
-				   forKeyPath:keyPath];
-	}
+	static NSArray *keys = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		keys = @[NSStringFromSelector(@selector(imageRepresentationKeyPath)),
+				 NSStringFromSelector(@selector(imageRepresentationTypeKeyPath)),
+				 NSStringFromSelector(@selector(imageUIDKeyPath))];
+	});
+	return keys;
 }
 
 #pragma mark -
@@ -78,7 +60,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	return array ? array : @[];
 }
 
-- (NSSet*)observedItemKeyPaths
+- (NSArray*)observedItemKeyPaths
 {
 	NSMutableSet *observedItemKeyPaths = [NSMutableSet set];
 	if (self.imageRepresentationKeyPath) {
@@ -93,7 +75,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if (self.imageTitleKeyPath) {
 		[observedItemKeyPaths addObject:self.imageTitleKeyPath];
 	}
-	return [observedItemKeyPaths copy];
+	return [observedItemKeyPaths allObjects];
 }
 
 - (BOOL)bindingsEnabled
@@ -124,10 +106,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 									   NSObservedKeyPathKey: [keyPath copy],
 									   NSOptionsKey: options ? [options copy] : @{} };
 
-		[observableController addObserver:self
-							   forKeyPath:keyPath
-								  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
-								  context:kMMFlowViewContentArrayObservationContext];
 		// set keypaths to MMFlowViewItem defaults
 		if ( !self.imageRepresentationKeyPath ) {
 			self.imageRepresentationKeyPath = kMMFlowViewItemImageRepresentationKey;
@@ -138,6 +116,10 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		if ( !self.imageUIDKeyPath ) {
 			self.imageUIDKeyPath = kMMFlowViewItemImageUIDKey;
 		}
+		[observableController addObserver:self
+							   forKeyPath:keyPath
+								  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
+								  context:kMMFlowViewContentArrayObservationContext];
 	}
 	else {
 		[super bind:binding
@@ -150,8 +132,10 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 - (void)unbind:(NSString*)binding
 {
 	if ([binding isEqualToString:NSContentArrayBinding] && [self infoForBinding:NSContentArrayBinding] ) {
-		[self.contentArrayController removeObserver:self forKeyPath:self.contentArrayKeyPath context:kMMFlowViewContentArrayObservationContext];
-		[self stopObservingCollection:self.contentArray atKeyPaths:self.observedItemKeyPaths];
+		[self.contentArrayController
+		 removeObserver:self
+		 forKeyPath:self.contentArrayKeyPath
+		 context:kMMFlowViewContentArrayObservationContext];
 		[self.layer setNeedsDisplay];
 		self.contentArrayBindingInfo = nil;
 	}
@@ -160,16 +144,25 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	}
 }
 
-- (void)setUpBindings
+- (void)setUpObservations
 {
 	[self.layout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
 	[self.layout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
+
+	for (NSString *keyPath in [[self class] observedItemKeyPaths]) {
+		[self addObserver:self
+			   forKeyPath:keyPath options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+				  context:kMMFlowViewItemKeyPathsObservationContext];
+	}
 }
 
-- (void)tearDownBindings
+- (void)tearDownObservations
 {
 	[self.layout unbind:@"stackedAngle"];
 	[self.layout unbind:@"interItemSpacing"];
+	for (NSString *keyPath in [[self class] observedItemKeyPaths]) {
+		[self removeObserver:self forKeyPath:keyPath context:kMMFlowViewItemKeyPathsObservationContext];
+	}
 }
 
 #pragma mark -
@@ -188,11 +181,11 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		
 		NSMutableArray *onlyNew = [NSMutableArray arrayWithArray:newItems];
 		[onlyNew removeObjectsInArray:self.observedItems];
-		[self startObservingCollection:onlyNew atKeyPaths:self.observedItemKeyPaths];
+		[onlyNew mm_addObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		
 		NSMutableArray *removed = [self.observedItems mutableCopy];
 		[removed removeObjectsInArray:newItems];
-		[self stopObservingCollection:removed atKeyPaths:self.observedItemKeyPaths];
+		[removed mm_removeObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		self.observedItems = newItems;
 		
 		[self reloadContent];
@@ -207,6 +200,14 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		else if ( [keyPath isEqualToString:self.imageTitleKeyPath] ) {
 			self.title = [observedObject valueForKeyPath:keyPath];
 		}
+	}
+	else if (context == kMMFlowViewItemKeyPathsObservationContext) {
+		[self.observedItems mm_removeObserver:self
+								  forKeyPaths:@[change[NSKeyValueChangeOldKey]]
+									  context:kMMFlowViewIndividualItemKeyPathsObservationContext];
+		[self.observedItems mm_addObserver:self
+							   forKeyPaths:@[change[NSKeyValueChangeNewKey]]
+								   context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 	}
 	else {
 		[super observeValueForKeyPath:keyPath

@@ -33,6 +33,7 @@
 #import "MMFlowViewImageFactory.h"
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
+#import "NSArray+MMAdditions.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -242,12 +243,15 @@ static NSString * const kLayoutKey = @"layout";
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageFactory.cache = _imageCache;
 		_layout = [[MMCoverFlowLayout alloc] init];
+		_imageRepresentationKeyPath = [NSStringFromSelector(@selector(imageItemRepresentation)) copy];
+		_imageUIDKeyPath = [NSStringFromSelector(@selector(imageItemUID)) copy];
+		_imageRepresentationTypeKeyPath = [NSStringFromSelector(@selector(imageItemRepresentationType)) copy];
 		[self setInitialDefaults];
 		[self setupLayers];
 		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
 		[ self registerForDraggedTypes:@[NSURLPboardType] ];
-		[self setUpBindings];
+		[self setUpObservations];
     }
     return self;
 }
@@ -275,7 +279,7 @@ static NSString * const kLayoutKey = @"layout";
 			[self setInitialDefaults];
 		}
 		[self setupLayers];
-		[self setUpBindings];
+		[self setUpObservations];
 		self.title = @"";
 		[ self setTitleSize:kDefaultTitleSize ];
 	}
@@ -303,7 +307,7 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)dealloc
 {
-	[self tearDownBindings];
+	[self tearDownObservations];
 }
 
 - (void)setInitialDefaults
@@ -510,66 +514,6 @@ static NSString * const kLayoutKey = @"layout";
 	return [self.coverFlowLayer indexOfLayerAtPointInSuperLayer:pointInContainerLayer];
 }
 
-- (void)setImageRepresentationKeyPath:(NSString *)aKeyPath
-{
-	if ( aKeyPath != _imageRepresentationKeyPath ) {
-		if ( _imageRepresentationKeyPath ) {
-			[self stopObservingCollection:self.observedItems
-							   atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
-		}
-		_imageRepresentationKeyPath = [aKeyPath copy];
-		if ( _imageRepresentationKeyPath ) {
-			[self startObservingCollection:self.observedItems
-								atKeyPaths:[NSSet setWithObject:_imageRepresentationKeyPath]];
-		}
-	}
-}
-
-- (void)setImageRepresentationTypeKeyPath:(NSString *)aKeyPath
-{
-	if ( aKeyPath != _imageRepresentationTypeKeyPath ) {
-		if ( _imageRepresentationTypeKeyPath ) {
-			[ self stopObservingCollection:self.observedItems
-								atKeyPaths:[ NSSet setWithObject:_imageRepresentationTypeKeyPath ] ];
-		}
-		_imageRepresentationTypeKeyPath = [ aKeyPath copy ];
-		if ( _imageRepresentationTypeKeyPath ) {
-			[ self startObservingCollection:self.observedItems
-								 atKeyPaths:[ NSSet setWithObject:_imageRepresentationTypeKeyPath ] ];
-		}
-	}
-}
-
-- (void)setImageUIDKeyPath:(NSString *)aKeyPath
-{
-	if ( aKeyPath != _imageUIDKeyPath ) {
-		if ( _imageUIDKeyPath ) {
-			[self stopObservingCollection:self.observedItems
-							   atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
-		}
-		_imageUIDKeyPath = [ aKeyPath copy ];
-		if ( _imageUIDKeyPath ) {
-			[self startObservingCollection:self.observedItems
-								atKeyPaths:[NSSet setWithObject:_imageUIDKeyPath]];
-		}
-	}
-}
-
-- (void)setImageTitleKeyPath:(NSString *)aKeyPath
-{
-	if ( aKeyPath != _imageTitleKeyPath ) {
-		if ( _imageTitleKeyPath ) {
-			[self stopObservingCollection:self.observedItems
-							   atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
-		}
-		_imageTitleKeyPath = [ aKeyPath copy ];
-		if ( _imageTitleKeyPath ) {
-			[self startObservingCollection:self.observedItems
-								atKeyPaths:[NSSet setWithObject:_imageTitleKeyPath]];
-		}
-	}
-}
-
 #pragma mark -
 #pragma mark NSView overrides
 
@@ -611,7 +555,7 @@ static NSString * const kLayoutKey = @"layout";
 	BOOL inView = [ self superview ] != nil;
 
 	if ( inView && !willBeInSuperview ) {
-		[ self stopObservingCollection:self.observedItems atKeyPaths:self.observedItemKeyPaths ];
+		[self.observedItems mm_removeObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		[self unbind:NSContentArrayBinding];
 	}
 	[ super viewWillMoveToSuperview:newSuperview ];

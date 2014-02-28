@@ -10,6 +10,7 @@
 
 void * const kMMFlowViewContentArrayObservationContext;
 void * const kMMFlowViewIndividualItemKeyPathsObservationContext;
+void * const kMMFlowViewItemKeyPathsObservationContext;
 
 @interface MMFlowView (NSKeyValueObserving)
 
@@ -18,13 +19,10 @@ void * const kMMFlowViewIndividualItemKeyPathsObservationContext;
 @property (weak, nonatomic, readonly) NSString *contentArrayKeyPath;
 
 
-@property (weak, nonatomic,readonly) NSSet *observedItemKeyPaths;
+@property (weak, nonatomic,readonly) NSArray *observedItemKeyPaths;
 @property (nonatomic,readonly) BOOL bindingsEnabled;
 
-- (void)startObservingCollection:(NSArray*)aCollection atKeyPaths:(NSSet*)keyPaths;
-- (void)stopObservingCollection:(NSArray*)aCollection atKeyPaths:(NSSet*)keyPaths;
-
-- (void)setUpBindings;
-- (void)tearDownBindings;
+- (void)setUpObservations;
+- (void)tearDownObservations;
 
 @end
