@@ -143,6 +143,26 @@ static const CGFloat kMinimumKnobWidth = 40.;
 									  context:kRelayoutObservationContext];
 }
 
+#pragma mark - dragging
+
+- (void)beginDragAtPoint:(CGPoint)pointInLayerCoordinates
+{
+	if (!CGRectContainsPoint(self.frame, pointInLayerCoordinates)) {
+		self.dragOrigin = CGPointZero;
+		return;
+	}
+	self.dragOrigin = pointInLayerCoordinates;
+}
+
+- (void)mouseDraggedToPoint:(CGPoint)pointInLayerCoordinates
+{
+}
+
+- (void)endDrag
+{
+	self.dragOrigin = CGPointZero;
+}
+
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)observedObject change:(NSDictionary *)change context:(void *)context

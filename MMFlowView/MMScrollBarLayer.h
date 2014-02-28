@@ -11,7 +11,11 @@
 @interface MMScrollBarLayer : CALayer
 
 @property (weak, nonatomic, readonly) CAScrollLayer *scrollLayer;
+@property (nonatomic) CGPoint dragOrigin;
 
 - (id)initWithScrollLayer:(CAScrollLayer*)scrollLayer;
+- (void)beginDragAtPoint:(CGPoint)pointInLayerCoordinates;
+- (void)mouseDraggedToPoint:(CGPoint)pointInLayerCoordinates;
+- (void)endDrag;
 
 @end

@@ -87,7 +87,7 @@ describe(@"MMScrollBarLayer", ^{
 		it(@"should have the scroll layer with it attached", ^{
 			[[sut.scrollLayer should] equal:scrollLayer];
 		});
-		context(@"scroll layer", ^{
+		context(@"scroll layer interaction", ^{
 			it(@"should trigger layoutSublayers when the visible rect of its scroll layer changes", ^{
 				[[sut should] receive:@selector(layoutSublayers)];
 				[scrollLayer scrollRectToVisible:CGRectMake(50, 0, CGRectGetWidth(scrollLayer.bounds), CGRectGetHeight(scrollLayer.bounds))];
@@ -345,6 +345,47 @@ describe(@"MMScrollBarLayer", ^{
 					});
 				});
 				
+			});
+		});
+		context(NSStringFromSelector(@selector(beginDragAtPoint:)), ^{
+			__block CGPoint dragPoint;
+
+			it(@"should respond to beginDragAtPoint:", ^{
+				[[sut should] respondToSelector:@selector(beginDragAtPoint:)];
+			});
+			context(@"mouse point not in layer", ^{
+				beforeEach(^{
+					dragPoint = CGPointMake(CGRectGetMinX(sut.frame) - 10, CGRectGetMinY(sut.frame) - 10);
+				});
+				it(@"should set the dragOrigin to CGPointZero", ^{
+					[[sut should] receive:@selector(setDragOrigin:) withArguments:theValue(CGPointZero)];
+					[sut beginDragAtPoint:dragPoint];
+					[[theValue(sut.dragOrigin) should] equal:theValue(CGPointZero)];
+				});
+			});
+			context(@"mouse point in layer", ^{
+				beforeEach(^{
+					dragPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMinY(sut.frame));
+				});
+				it(@"should set the dragOrigin", ^{
+					[sut beginDragAtPoint:dragPoint];
+					[[theValue(sut.dragOrigin) should] equal:theValue(dragPoint)];
+				});
+			});
+		});
+		context(NSStringFromSelector(@selector(endDrag)), ^{
+			it(@"should respond to endDrag", ^{
+				[[sut should] respondToSelector:@selector(endDrag)];
+			});
+			it(@"should set the dragOrigin to CGPointZero", ^{
+				[[sut should] receive:@selector(setDragOrigin:) withArguments:theValue(CGPointZero)];
+				[sut endDrag];
+				[[theValue(sut.dragOrigin) should] equal:theValue(CGPointZero)];
+			});
+		});
+		context(NSStringFromSelector(@selector(mouseDraggedToPoint:)), ^{
+			it(@"should respond to mouseDraggedToPoint:", ^{
+				[[sut should] respondToSelector:@selector(mouseDraggedToPoint:)];
 			});
 		});
 	});
