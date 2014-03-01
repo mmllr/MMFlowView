@@ -10,6 +10,7 @@
 #import "MMFlowView+NSResponder.h"
 #import "MMFlowView_Private.h"
 #import "NSEvent+MMAdditions.h"
+#import "MMScrollBarLayer.h"
 #import <objc/runtime.h>
 
 static BOOL testingSuperInvoked = NO;
@@ -195,6 +196,38 @@ describe(@"MMFlowView+NSResponder", ^{
 			it(@"should not ask the delegate to handle the click", ^{
 				[[mockedDelegate shouldNot] receive:@selector(flowView:itemWasRightClickedAtIndex:withEvent:)];
 				[sut rightMouseUp:mockedEvent];
+			});
+		});
+	});
+	context(NSStringFromSelector(@selector(mouseDragged:)), ^{
+		context(@"scroll bar layer interaction", ^{
+			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
+			__block CALayer *mockedLayer = nil;
+			__block CGPoint pointInScrollLayer;
+			NSPoint pointInWindow = NSMakePoint(10, 10);
+
+			beforeEach(^{
+				[mockedEvent stub:@selector(locationInWindow) andReturn:theValue(pointInWindow)];
+
+				mockedLayer = [CALayer nullMock];
+				pointInScrollLayer = CGPointMake(30, 7);
+				[mockedLayer stub:@selector(convertPoint:toLayer:) andReturn:theValue(pointInScrollLayer)];
+				[sut stub:@selector(layer) andReturn:mockedLayer];
+
+				mockedScrollBarLayer = [MMScrollBarLayer nullMock];
+				sut.scrollBarLayer = mockedScrollBarLayer;
+			});
+			afterEach(^{
+				mockedScrollBarLayer = nil;
+				mockedLayer = nil;
+			});
+			it(@"should ask the layer to convert the mouse point to the scrollbar layers coordinate space", ^{
+				[[mockedLayer should] receive:@selector(convertPoint:toLayer:) withArguments:[KWAny any], mockedScrollBarLayer];
+				[sut mouseDragged:mockedEvent];
+			});
+			it(@"should notify the scroll bar layer about the drag", ^{
+				[[mockedScrollBarLayer should] receive:@selector(mouseDraggedToPoint:) withArguments:theValue(pointInScrollLayer)];
+				[sut mouseDragged:mockedEvent];
 			});
 		});
 	});

@@ -108,19 +108,12 @@
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-	NSPoint locationInWindow = [ theEvent locationInWindow ];
-	CGPoint mouseInView = NSPointToCGPoint( [ self convertPoint:locationInWindow fromView:nil ] );
-	
-	self.selectedLayer = [ self hitLayerAtPoint:mouseInView ];
-	
-	if ( self.draggingKnob ) {
-		CALayer *knob = (self.scrollBarLayer.sublayers)[0];
-		
-		CGPoint mouseInScrollBar = [ self.layer convertPoint:mouseInView toLayer:self.scrollBarLayer ];
-		CGFloat maxX = self.scrollBarLayer.bounds.size.width - knob.bounds.size.width;
-		CGFloat scrollPoint = CLAMP( mouseInScrollBar.x - self.mouseDownInKnob, 0, maxX );
-		self.selectedIndex = ( scrollPoint / maxX ) * self.numberOfItems;
-	}
+	NSPoint locationInWindow = [theEvent locationInWindow];
+	NSPoint mouseInView = [self convertPoint:locationInWindow fromView:nil];
+
+	CGPoint pointInScrollBarLayer = [self.layer convertPoint:mouseInView toLayer:self.scrollBarLayer];
+
+	[self.scrollBarLayer mouseDraggedToPoint:pointInScrollBarLayer];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
