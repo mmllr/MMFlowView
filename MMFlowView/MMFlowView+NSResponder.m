@@ -99,7 +99,7 @@
 			[ self moveRight:self ];
 		}
 	}
-	else if (hitLayer.modelLayer == self.scrollBarLayer) {
+	else if (hitLayer.superlayer == self.scrollBarLayer) {
 		self.mouseDownInKnob = [ self.layer convertPoint:mouseInView toLayer:knob ].x;
 		self.draggingKnob = YES;
 	}
