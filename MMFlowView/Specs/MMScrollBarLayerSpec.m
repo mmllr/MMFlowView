@@ -87,6 +87,9 @@ describe(@"MMScrollBarLayer", ^{
 		it(@"should have the scroll layer with it attached", ^{
 			[[sut.scrollLayer should] equal:scrollLayer];
 		});
+		it(@"should have a nil scrollBarDelegate", ^{
+			[[(id)sut.scrollBarDelegate should] beNil];
+		});
 		context(@"scroll layer interaction", ^{
 			it(@"should trigger layoutSublayers when the visible rect of its scroll layer changes", ^{
 				[[sut should] receive:@selector(layoutSublayers)];
@@ -386,6 +389,11 @@ describe(@"MMScrollBarLayer", ^{
 		context(NSStringFromSelector(@selector(mouseDraggedToPoint:)), ^{
 			it(@"should respond to mouseDraggedToPoint:", ^{
 				[[sut should] respondToSelector:@selector(mouseDraggedToPoint:)];
+			});
+			context(@"when in drag", ^{
+				beforeEach(^{
+					sut.dragOrigin = CGPointMake(CGRectGetMinX(sut.frame), CGRectGetMidY(sut.frame));
+				});
 			});
 		});
 	});

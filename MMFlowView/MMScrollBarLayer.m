@@ -57,12 +57,13 @@ static const CGFloat kMinimumKnobWidth = 40.;
 
 - (id)init
 {
-	[ NSException raise:NSInternalInconsistencyException format:@"init not allowed, use designated initalizer initWithScrollLayer: instead"];
-	return nil;
+	return [self initWithScrollLayer:nil];
 }
 
 - (id)initWithScrollLayer:(CAScrollLayer*)scrollLayer
 {
+	NSParameterAssert(scrollLayer);
+
     self = [super init];
     if (self) {
 		_scrollLayer = scrollLayer;
@@ -200,13 +201,13 @@ static const CGFloat kMinimumKnobWidth = 40.;
 - (CGSize)scrollAreaSize
 {
 	__block CGRect scrollArea = CGRectZero;
-	
-	[self.scrollLayer.sublayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
+
+	for (CALayer *layer in self.scrollLayer.sublayers) {
 		if (CGRectEqualToRect(scrollArea, CGRectZero)) {
 			scrollArea = layer.frame;
 		}
 		scrollArea = CGRectUnion(scrollArea, layer.frame);
-	}];
+	}
 	return scrollArea.size;
 }
 

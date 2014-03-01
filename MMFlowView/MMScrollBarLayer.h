@@ -8,10 +8,17 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+@protocol MMScrollBarDelegate <NSObject>
+
+@optional
+
+@end
+
 @interface MMScrollBarLayer : CALayer
 
 @property (weak, nonatomic, readonly) CAScrollLayer *scrollLayer;
 @property (nonatomic) CGPoint dragOrigin;
+@property (weak, nonatomic) id<MMScrollBarDelegate> scrollBarDelegate;
 
 - (id)initWithScrollLayer:(CAScrollLayer*)scrollLayer;
 - (void)beginDragAtPoint:(CGPoint)pointInLayerCoordinates;
