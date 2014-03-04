@@ -8,9 +8,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+@class MMScrollBarLayer;
+
 @protocol MMScrollBarDelegate <NSObject>
 
-@optional
+- (void)scrollBarLayer:(MMScrollBarLayer*)scrollBarLayer didScrollToPosition:(CGFloat)positionInPercent;
 
 @end
 

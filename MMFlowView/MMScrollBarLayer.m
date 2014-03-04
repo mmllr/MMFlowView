@@ -29,6 +29,10 @@ static const CGFloat kMinimumKnobWidth = 40.;
 
 @end
 
+#ifndef CLAMP
+#define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
+#endif
+
 @implementation MMScrollBarLayer
 
 #pragma mark - class methods
@@ -157,6 +161,17 @@ static const CGFloat kMinimumKnobWidth = 40.;
 
 - (void)mouseDraggedToPoint:(CGPoint)pointInLayerCoordinates
 {
+	if (CGPointEqualToPoint(self.dragOrigin, CGPointZero) ||
+		![self.scrollBarDelegate respondsToSelector:@selector(scrollBarLayer:didScrollToPosition:)]) {
+		return;
+	}
+	MMScrollKnobLayer *knobLayer = [self.sublayers firstObject];
+	CGFloat minX = kKnobMargin;
+	CGFloat maxX = CGRectGetMaxX(self.bounds) - kKnobMargin - CGRectGetWidth(knobLayer.bounds);
+	CGFloat draggedPosition = CLAMP(pointInLayerCoordinates.x, minX, maxX);
+	CGFloat scrollWidth = maxX - minX;
+	CGFloat position = (draggedPosition - minX) / scrollWidth;
+	[self.scrollBarDelegate scrollBarLayer:self didScrollToPosition:position];
 }
 
 - (void)endDrag
