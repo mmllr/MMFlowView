@@ -50,7 +50,6 @@
 	@throw [NSException exceptionWithName:NSInternalInconsistencyException
 								   reason:@"No accessibility parent available"
 								 userInfo:nil];
-	return nil;
 }
 
 @end
