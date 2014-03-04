@@ -12,10 +12,6 @@
 #import "MMScrollBarLayer.h"
 #import "NSEvent+MMAdditions.h"
 
-#ifndef CLAMP
-#define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
-#endif
-
 @implementation MMFlowView (NSResponder)
 
 + (Class)cellClass

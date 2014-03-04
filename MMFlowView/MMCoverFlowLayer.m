@@ -10,6 +10,7 @@
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayoutAttributes.h"
 #import "CALayer+NSAccessibility.h"
+#import "MMMacros.h"
 
 static const CGFloat kDefaultWidth = 50.;
 static const CGFloat kDefaultHeight = 50.;
@@ -31,10 +32,6 @@ static void* kReloadContentObservationContext = @"reloadContent";
 @property (nonatomic, strong) CAReplicatorLayer *replicatorLayer;
 
 @end
-
-#ifndef CLAMP
-#define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
-#endif
 
 @implementation MMCoverFlowLayer
 

@@ -14,13 +14,11 @@
 //  FlowView
 //
 //  Created by Markus Müller on 13.01.12.
-
-#import "MMFlowView.h"
-#import "MMFlowView_Private.h"
-
 #import <Quartz/Quartz.h>
 #import <QTKit/QTKit.h>
 
+#import "MMFlowView.h"
+#import "MMFlowView_Private.h"
 #import "MMVideoOverlayLayer.h"
 #import "MMButtonLayer.h"
 #import "MMFlowView+NSAccessibility.h"
@@ -35,6 +33,7 @@
 #import "MMCoverFlowLayer.h"
 #import "NSArray+MMAdditions.h"
 #import "MMFlowView+MMScrollBarDelegate.h"
+#import "MMMacros.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -119,10 +118,6 @@ static NSString * const kBoundsKey = @"bounds";
 static NSString * const kStringKey = @"string";
 static NSString * const kContentsKey = @"contents";
 static NSString * const kLayoutKey = @"layout";
-
-#ifndef CLAMP
-#define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
-#endif
 
 @implementation MMFlowView
 

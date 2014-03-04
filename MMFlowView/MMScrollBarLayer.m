@@ -11,6 +11,7 @@
 #import "MMScrollKnobLayer.h"
 #import "CALayer+MMAdditions.h"
 #import "NSArray+MMAdditions.h"
+#import "MMMacros.h"
 
 static void* kRelayoutObservationContext = @"MMRelayoutObservationContext";
 
@@ -28,10 +29,6 @@ static const CGFloat kMinimumKnobWidth = 40.;
 @property (strong) NSArray *observedSublayers;
 
 @end
-
-#ifndef CLAMP
-#define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
-#endif
 
 @implementation MMScrollBarLayer
 
