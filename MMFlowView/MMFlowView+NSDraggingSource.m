@@ -20,7 +20,7 @@
 
 - (void)draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
-	if ((operation & NSDragOperationDelete) && [self.dataSource respondsToSelector:@selector(flowView:removeItemAtIndex:)]) {
+	if ((operation == NSDragOperationDelete) && [self.dataSource respondsToSelector:@selector(flowView:removeItemAtIndex:)]) {
 		[ self.dataSource flowView:self
 				 removeItemAtIndex:self.selectedIndex ];
 	}
