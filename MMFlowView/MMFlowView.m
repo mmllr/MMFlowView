@@ -34,6 +34,7 @@
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
 #import "NSArray+MMAdditions.h"
+#import "MMFlowView+MMScrollBarDelegate.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -791,6 +792,7 @@ static NSString * const kLayoutKey = @"layout";
 		MMFlowView *strongSelf = weakSelf;
 		return @(((double)(strongSelf.selectedIndex)) / (strongSelf.numberOfItems - 1));
 	}];
+	layer.scrollBarDelegate = self;
 	return layer;
 }
 

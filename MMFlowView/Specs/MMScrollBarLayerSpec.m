@@ -409,25 +409,25 @@ describe(@"MMScrollBarLayer", ^{
 				it(@"should invoke the delegate with position zero when dragging beyound the leftmost position", ^{
 					draggedPoint = CGPointMake(CGRectGetMinX(sut.frame) - 10, CGRectGetMidY(sut.frame));
 
-					[[scrollBarDelegateMock should] receive:@selector(scrollBarLayer:didScrollToPosition:) withArguments:sut, theValue(0)];
+					[[scrollBarDelegateMock should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(0)];
 
 					[sut mouseDraggedToPoint:draggedPoint];
 				});
 				it(@"should invoke the delegate with position one when dragging to rightmost position", ^{
 					draggedPoint = CGPointMake(CGRectGetMaxX(sut.frame), CGRectGetMidY(sut.frame));
 
-					[[scrollBarDelegateMock should] receive:@selector(scrollBarLayer:didScrollToPosition:) withArguments:sut, theValue(1)];
+					[[scrollBarDelegateMock should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(1)];
 
 					[sut mouseDraggedToPoint:draggedPoint];
 				});
-				context(@"when scrollBarDelegete does not respond to -scrollBarLayer:didScrollToPosition:", ^{
+				context(@"when scrollBarDelegete does not respond to -scrollBarLayer:knobDraggedToPosition:", ^{
 					beforeEach(^{
 						scrollBarDelegateMock = [KWMock nullMock];
 						sut.scrollBarDelegate = scrollBarDelegateMock;
 						draggedPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMidY(sut.frame));
 					});
-					it(@"should not receive -scrollBarLayer:didScrollToPosition", ^{
-						[[scrollBarDelegateMock shouldNot] receive:@selector(scrollBarLayer:didScrollToPosition:)];
+					it(@"should not receive -scrollBarLayer:knobDraggedToPosition:", ^{
+						[[scrollBarDelegateMock shouldNot] receive:@selector(scrollBarLayer:knobDraggedToPosition:)];
 
 						[sut mouseDraggedToPoint:draggedPoint];
 					});
@@ -439,7 +439,7 @@ describe(@"MMScrollBarLayer", ^{
 				});
 				it(@"should not invoke the scrollbar delegate", ^{
 					CGPoint draggedPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMidY(sut.frame));
-					[[scrollBarDelegateMock shouldNot] receive:@selector(scrollBarLayer:didScrollToPosition:)];
+					[[scrollBarDelegateMock shouldNot] receive:@selector(scrollBarLayer:knobDraggedToPosition:)];
 					[sut mouseDraggedToPoint:draggedPoint];
 				});
 			});

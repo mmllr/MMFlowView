@@ -162,7 +162,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 - (void)mouseDraggedToPoint:(CGPoint)pointInLayerCoordinates
 {
 	if (CGPointEqualToPoint(self.dragOrigin, CGPointZero) ||
-		![self.scrollBarDelegate respondsToSelector:@selector(scrollBarLayer:didScrollToPosition:)]) {
+		![self.scrollBarDelegate respondsToSelector:@selector(scrollBarLayer:knobDraggedToPosition:)]) {
 		return;
 	}
 	MMScrollKnobLayer *knobLayer = [self.sublayers firstObject];
@@ -171,7 +171,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 	CGFloat draggedPosition = CLAMP(pointInLayerCoordinates.x, minX, maxX);
 	CGFloat scrollWidth = maxX - minX;
 	CGFloat position = (draggedPosition - minX) / scrollWidth;
-	[self.scrollBarDelegate scrollBarLayer:self didScrollToPosition:position];
+	[self.scrollBarDelegate scrollBarLayer:self knobDraggedToPosition:position];
 }
 
 - (void)endDrag

@@ -12,7 +12,7 @@
 
 @protocol MMScrollBarDelegate <NSObject>
 
-- (void)scrollBarLayer:(MMScrollBarLayer*)scrollBarLayer didScrollToPosition:(CGFloat)positionInPercent;
+- (void)scrollBarLayer:(MMScrollBarLayer*)scrollBarLayer knobDraggedToPosition:(CGFloat)positionInPercent;
 
 @end
 
