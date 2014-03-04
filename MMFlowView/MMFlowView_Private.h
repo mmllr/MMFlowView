@@ -33,8 +33,6 @@
 @property (strong) MMFlowViewImageFactory *imageFactory;
 @property (strong,nonatomic,readwrite) NSDictionary *contentArrayBindingInfo;
 @property (nonatomic,copy) NSArray *observedItems;
-@property (assign,nonatomic) BOOL draggingKnob;
-@property (assign) CGFloat mouseDownInKnob;
 @property (readwrite,nonatomic) NSUInteger numberOfItems;
 @property (readwrite,strong) id<MMFlowViewImageCache> imageCache;
 @property (nonatomic, readonly) NSRect selectedItemFrame;

@@ -19,4 +19,20 @@
 	self.selectedIndex = draggedIndex;
 }
 
+- (void)decrementClickedInScrollBarLayer:(MMScrollBarLayer *)scrollBarLayer
+{
+	if (scrollBarLayer != self.scrollBarLayer) {
+		return;
+	}
+	[self moveLeft:self];
+}
+
+- (void)incrementClickedInScrollBarLayer:(MMScrollBarLayer *)scrollBarLayer
+{
+	if (scrollBarLayer != self.scrollBarLayer) {
+		return;
+	}
+	[self moveRight:self];
+}
+
 @end

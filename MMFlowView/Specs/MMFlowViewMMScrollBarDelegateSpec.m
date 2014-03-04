@@ -26,6 +26,15 @@ describe(@"MMFlowView+MMScrollBarDelegate", ^{
 	it(@"should conform to MMScrollBarDelegate protocol", ^{
 		[[sut should] conformToProtocol:@protocol(MMScrollBarDelegate)];
 	});
+	it(@"should respond to scrollBarLayer:knobDraggedToPosition:", ^{
+		[[sut should] respondToSelector:@selector(scrollBarLayer:knobDraggedToPosition:)];
+	});
+	it(@"should respond to decrementClickedInScrollBarLayer:", ^{
+		[[sut should] respondToSelector:@selector(decrementClickedInScrollBarLayer:)];
+	});
+	it(@"should respond to incrementClickedInScrollBarLayer:", ^{
+		[[sut should] respondToSelector:@selector(incrementClickedInScrollBarLayer:)];
+	});
 	it(@"should be the scroll bar delegate", ^{
 		[[sut should] equal:sut.scrollBarLayer.scrollBarDelegate];
 	});
@@ -60,6 +69,52 @@ describe(@"MMFlowView+MMScrollBarDelegate", ^{
 				[[sut shouldNot] receive:@selector(setSelectedIndex:)];
 				
 				[sut scrollBarLayer:mockedScrollBarLayer knobDraggedToPosition:.3];
+			});
+		});
+	});
+	context(NSStringFromSelector(@selector(decrementClickedInScrollBarLayer:)), ^{
+		context(@"when delegate method is invoked from flowviews scroll bar layer", ^{
+			it(@"should move the selection one item left", ^{
+				[[sut should] receive:@selector(moveLeft:) withArguments:sut];
+				[sut decrementClickedInScrollBarLayer:sut.scrollBarLayer];
+			});
+		});
+		context(@"when delegate method is not invoked from flowviews scroll bar layer", ^{
+			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
+			
+			beforeEach(^{
+				mockedScrollBarLayer = [MMScrollBarLayer nullMock];
+			});
+			afterEach(^{
+				mockedScrollBarLayer = nil;
+			});
+			it(@"should not change the selection", ^{
+				[[sut shouldNot] receive:@selector(setSelectedIndex:)];
+				
+				[sut decrementClickedInScrollBarLayer:mockedScrollBarLayer];
+			});
+		});
+	});
+	context(NSStringFromSelector(@selector(incrementClickedInScrollBarLayer:)), ^{
+		context(@"when delegate method is invoked from flowviews scroll bar layer", ^{
+			it(@"should move the selection one item right", ^{
+				[[sut should] receive:@selector(moveRight:) withArguments:sut];
+				[sut incrementClickedInScrollBarLayer:sut.scrollBarLayer];
+			});
+		});
+		context(@"when delegate method is not invoked from flowviews scroll bar layer", ^{
+			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
+			
+			beforeEach(^{
+				mockedScrollBarLayer = [MMScrollBarLayer nullMock];
+			});
+			afterEach(^{
+				mockedScrollBarLayer = nil;
+			});
+			it(@"should not change the selection", ^{
+				[[sut shouldNot] receive:@selector(setSelectedIndex:)];
+				
+				[sut incrementClickedInScrollBarLayer:mockedScrollBarLayer];
 			});
 		});
 	});

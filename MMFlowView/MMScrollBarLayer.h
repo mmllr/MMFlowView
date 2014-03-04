@@ -13,6 +13,8 @@
 @protocol MMScrollBarDelegate <NSObject>
 
 - (void)scrollBarLayer:(MMScrollBarLayer*)scrollBarLayer knobDraggedToPosition:(CGFloat)positionInPercent;
+- (void)decrementClickedInScrollBarLayer:(MMScrollBarLayer*)scrollBarLayer;
+- (void)incrementClickedInScrollBarLayer:(MMScrollBarLayer*)scrollBarLayer;
 
 @end
 
@@ -23,6 +25,8 @@
 @property (weak, nonatomic) id<MMScrollBarDelegate> scrollBarDelegate;
 
 - (id)initWithScrollLayer:(CAScrollLayer*)scrollLayer;
+
+- (void)mouseDownAtPoint:(CGPoint)pointInLayerCoordinates;
 - (void)beginDragAtPoint:(CGPoint)pointInLayerCoordinates;
 - (void)mouseDraggedToPoint:(CGPoint)pointInLayerCoordinates;
 - (void)endDrag;

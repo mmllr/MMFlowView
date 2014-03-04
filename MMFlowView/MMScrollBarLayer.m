@@ -145,11 +145,28 @@ static const CGFloat kMinimumKnobWidth = 40.;
 									  context:kRelayoutObservationContext];
 }
 
+- (void)mouseDownAtPoint:(CGPoint)pointInLayerCoordinates
+{
+	MMScrollKnobLayer *knob = [self.sublayers firstObject];
+
+	if (pointInLayerCoordinates.x < CGRectGetMinX(knob.frame) &&
+		[self.scrollBarDelegate respondsToSelector:@selector(decrementClickedInScrollBarLayer:)]) {
+		[self.scrollBarDelegate decrementClickedInScrollBarLayer:self];
+	}
+	else if (pointInLayerCoordinates.x > CGRectGetMaxX(knob.frame) &&
+			 [self.scrollBarDelegate respondsToSelector:@selector(incrementClickedInScrollBarLayer:)]) {
+		[self.scrollBarDelegate incrementClickedInScrollBarLayer:self];
+	}
+	else {
+		[self beginDragAtPoint:pointInLayerCoordinates];
+	}
+}
+
 #pragma mark - dragging
 
 - (void)beginDragAtPoint:(CGPoint)pointInLayerCoordinates
 {
-	if (!CGRectContainsPoint(self.frame, pointInLayerCoordinates)) {
+	if (!CGRectContainsPoint(self.bounds, pointInLayerCoordinates)) {
 		self.dragOrigin = CGPointZero;
 		return;
 	}

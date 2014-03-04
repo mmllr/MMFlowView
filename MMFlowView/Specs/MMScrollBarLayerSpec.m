@@ -29,6 +29,8 @@ describe(@"MMScrollBarLayer", ^{
 	context(@"new instance created by its designated initalizer", ^{
 		__block CAScrollLayer *scrollLayer = nil;
 		__block NSArray *contentLayers = nil;
+		__block id scrollBarDelegateMock = nil;
+
 		const NSUInteger kNumberOfContentLayers = 10;
 		const CGFloat kContentLayerOffset = 40.;
 		const CGFloat kContentLayerSize = 30.;
@@ -46,8 +48,11 @@ describe(@"MMScrollBarLayer", ^{
 			}
 			contentLayers = [layers copy];
 			sut = [[MMScrollBarLayer alloc] initWithScrollLayer:scrollLayer];
+
+			scrollBarDelegateMock = [KWMock nullMockForProtocol:@protocol(MMScrollBarDelegate)];
 		});
 		afterEach(^{
+			scrollBarDelegateMock = nil;
 			scrollLayer = nil;
 			sut = nil;
 		});
@@ -358,7 +363,7 @@ describe(@"MMScrollBarLayer", ^{
 			});
 			context(@"mouse point not in layer", ^{
 				beforeEach(^{
-					dragPoint = CGPointMake(CGRectGetMinX(sut.frame) - 10, CGRectGetMinY(sut.frame) - 10);
+					dragPoint = CGPointMake(CGRectGetMinX(sut.bounds) - 10, CGRectGetMinY(sut.bounds) - 10);
 				});
 				it(@"should set the dragOrigin to CGPointZero", ^{
 					[[sut should] receive:@selector(setDragOrigin:) withArguments:theValue(CGPointZero)];
@@ -368,7 +373,7 @@ describe(@"MMScrollBarLayer", ^{
 			});
 			context(@"mouse point in layer", ^{
 				beforeEach(^{
-					dragPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMinY(sut.frame));
+					dragPoint = CGPointMake(CGRectGetMidX(sut.bounds), CGRectGetMinY(sut.bounds));
 				});
 				it(@"should set the dragOrigin", ^{
 					[sut beginDragAtPoint:dragPoint];
@@ -387,15 +392,10 @@ describe(@"MMScrollBarLayer", ^{
 			});
 		});
 		context(NSStringFromSelector(@selector(mouseDraggedToPoint:)), ^{
-			__block id scrollBarDelegateMock = nil;
-
 			beforeEach(^{
-				scrollBarDelegateMock = [KWMock nullMockForProtocol:@protocol(MMScrollBarDelegate)];
 				sut.scrollBarDelegate = scrollBarDelegateMock;
 			});
-			afterEach(^{
-				scrollBarDelegateMock = nil;
-			});
+
 			it(@"should respond to mouseDraggedToPoint:", ^{
 				[[sut should] respondToSelector:@selector(mouseDraggedToPoint:)];
 			});
@@ -441,6 +441,91 @@ describe(@"MMScrollBarLayer", ^{
 					CGPoint draggedPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMidY(sut.frame));
 					[[scrollBarDelegateMock shouldNot] receive:@selector(scrollBarLayer:knobDraggedToPosition:)];
 					[sut mouseDraggedToPoint:draggedPoint];
+				});
+			});
+		});
+		context(NSStringFromSelector(@selector(mouseDownAtPoint:)), ^{
+			__block CGPoint mousePoint;
+			__block id knobLayerMock = nil;
+
+			beforeEach(^{
+				sut.scrollBarDelegate = scrollBarDelegateMock;
+				knobLayerMock = [MMScrollKnobLayer nullMock];
+
+				CGRect knobFrame = CGRectInset(sut.bounds, 30, 5);
+				[knobLayerMock stub:@selector(frame) andReturn:theValue(knobFrame)];
+				[sut stub:@selector(sublayers) andReturn:@[knobLayerMock]];
+			});
+			afterEach(^{
+				knobLayerMock = nil;
+			});
+
+			it(@"should respond to mouseDownAtPoint:", ^{
+				[[sut should] respondToSelector:@selector(mouseDownAtPoint:)];
+			});
+			context(@"when clicking left to knob in layer", ^{
+				beforeEach(^{
+					mousePoint = CGPointMake(CGRectGetMinX([knobLayerMock frame]) - 10, CGRectGetMidY(sut.bounds));
+				});
+				it(@"should tell the scrollBarDelegate to perform a decrement action", ^{
+					[[scrollBarDelegateMock should] receive:@selector(decrementClickedInScrollBarLayer:) withArguments:sut];
+					[sut mouseDownAtPoint:mousePoint];
+				});
+				it(@"should not start a drag", ^{
+					[[sut shouldNot] receive:@selector(beginDragAtPoint:)];
+					
+					[sut mouseDownAtPoint:mousePoint];
+				});
+				context(@"when the scroll bar delegate does not handle the decrement", ^{
+					beforeEach(^{
+						scrollBarDelegateMock = [KWMock nullMock];
+						sut.scrollBarDelegate = scrollBarDelegateMock;
+					});
+					it(@"should not tell the delegate to perform the decrement", ^{
+						[[scrollBarDelegateMock shouldNot] receive:@selector(decrementClickedInScrollBarLayer:)];
+						
+						[sut mouseDownAtPoint:mousePoint];
+					});
+				});
+			});
+			context(@"when clicking right to knob in layer", ^{
+				beforeEach(^{
+					MMScrollKnobLayer *knob = [sut.sublayers firstObject];
+
+					mousePoint = CGPointMake(CGRectGetMaxX(knob.frame) + 10, CGRectGetMidY(sut.bounds));
+				});
+				it(@"should tell the scrollBarDelegate to perform a increment action", ^{
+					[[scrollBarDelegateMock should] receive:@selector(incrementClickedInScrollBarLayer:) withArguments:sut];
+					
+					[sut mouseDownAtPoint:mousePoint];
+				});
+				it(@"should not start a drag", ^{
+					[[sut shouldNot] receive:@selector(beginDragAtPoint:)];
+					
+					[sut mouseDownAtPoint:mousePoint];
+				});
+				context(@"when the scroll bar delegate does not handle the increment", ^{
+					beforeEach(^{
+						scrollBarDelegateMock = [KWMock nullMock];
+						sut.scrollBarDelegate = scrollBarDelegateMock;
+					});
+					it(@"should not tell the delegate to perform the increment", ^{
+						[[scrollBarDelegateMock shouldNot] receive:@selector(incrementClickedInScrollBarLayer:)];
+
+						[sut mouseDownAtPoint:mousePoint];
+					});
+				});
+			});
+			context(@"when clicking on the knob", ^{
+				beforeEach(^{
+					MMScrollKnobLayer *knob = [sut.sublayers firstObject];
+					
+					mousePoint = CGPointMake(CGRectGetMidX(knob.frame), CGRectGetMidY(sut.bounds));
+				});
+				it(@"should start a drag", ^{
+					[[sut should] receive:@selector(beginDragAtPoint:) withArguments:theValue(mousePoint)];
+
+					[sut mouseDownAtPoint:mousePoint];
 				});
 			});
 		});

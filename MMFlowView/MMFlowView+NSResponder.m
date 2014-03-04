@@ -24,88 +24,25 @@
 	return YES;
 }
 
+- (CGRect)scrollBarFrame
+{
+	return [self.layer convertRect:self.scrollBarLayer.frame fromLayer:self.scrollBarLayer.superlayer];
+}
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	NSPoint locationInWindow = [ theEvent locationInWindow ];
-	CGPoint mouseInView = NSPointToCGPoint( [ self convertPoint:locationInWindow fromView:nil ] );
-	
-	CALayer *hitLayer = [ self hitLayerAtPoint:mouseInView ];
-	CALayer *knob = (self.scrollBarLayer.sublayers)[0];
-	
-	NSUInteger clickedIndex = [ self indexOfItemAtPoint:[ self convertPoint:locationInWindow fromView:nil ] ];
-	
-	// dragging only from selection
-	if ( clickedIndex == self.selectedIndex ) {
-		id item = [ self imageItemForIndex:clickedIndex ];
-		NSString *representationType = [ self imageRepresentationTypeForItem:item ];
-		id representation = [ self imageRepresentationForItem:item ];
-		NSPasteboard *dragPBoard = [ NSPasteboard pasteboardWithName:NSDragPboard ];
-		BOOL isURL = [ [ [ self class ] pathRepresentationTypes ] containsObject:representationType ];
-		
-		// ask imagecache for drag image
-		NSImage *dragImage = [[NSImage alloc] initWithCGImage:[self.imageCache imageForUUID:[self imageUIDForItem:item]] size:NSSizeFromCGSize(hitLayer.bounds.size)];
-		// double click handling
-		if ( [ theEvent clickCount ] > 1 ) {
-			if ( [ self.delegate respondsToSelector:@selector(flowView:itemWasDoubleClickedAtIndex:) ] ) {
-				[ self.delegate flowView:self itemWasDoubleClickedAtIndex:clickedIndex ];
-			}
-			else if ( [ self action ] ) {
-				[ self sendAction:self.action to:self.target ];
-			}
-			else if ( isURL ) {
-				NSString *filePath = [ representation isKindOfClass:[ NSURL class ] ] ? [ representation path ] : representation;
-				[ [ NSWorkspace sharedWorkspace ] openFile:filePath
-												 fromImage:dragImage
-														at:NSPointFromCGPoint(mouseInView)
-													inView:self ];
-			}
-		}
-		else {
-			// dragging
-			if ( [ self.dataSource respondsToSelector:@selector(flowView:writeItemAtIndex:toPasteboard:) ] ) {
-				[ self.dataSource flowView:self
-						  writeItemAtIndex:clickedIndex
-							  toPasteboard:dragPBoard ];
-			}
-			else if ( isURL ) {
-				NSURL *fileURL = [ representation isKindOfClass:[ NSURL class ] ] ? representation : [ NSURL fileURLWithPath:representation ];
-				[ dragPBoard declareTypes:@[NSURLPboardType]
-									owner:nil ];
-				[ fileURL writeToPasteboard:dragPBoard ];
-			}
-			[ self dragImage:dragImage
-						  at:self.selectedItemFrame.origin
-					  offset:NSZeroSize
-					   event:theEvent
-				  pasteboard:dragPBoard
-					  source:self
-				   slideBack:YES ];
-		}
+	NSPoint locationInWindow = [theEvent locationInWindow];
+	CGPoint mouseInView = NSPointToCGPoint([self convertPoint:locationInWindow fromView:nil]);
+
+	if (CGRectContainsPoint([self scrollBarFrame], mouseInView)) {
+		[self scrollBarClicked:mouseInView];
 	}
-	else if ( clickedIndex != NSNotFound ) {
-		self.selectedIndex = clickedIndex;
-	}
-	else if (hitLayer.modelLayer == self.scrollBarLayer) {
-		CGPoint mouseInScrollBar = [ self.layer convertPoint:mouseInView toLayer:self.scrollBarLayer ];
-		
-		if ( mouseInScrollBar.x < knob.frame.origin.x ) {
-			[ self moveLeft:self ];
-		}
-		else {
-			[ self moveRight:self ];
-		}
-	}
-	else if (hitLayer.superlayer == self.scrollBarLayer) {
-		self.mouseDownInKnob = [ self.layer convertPoint:mouseInView toLayer:knob ].x;
-		self.draggingKnob = YES;
-	}
-	self.selectedLayer = hitLayer;
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
 	NSPoint locationInWindow = [theEvent locationInWindow];
-	NSPoint mouseInView = [self convertPoint:locationInWindow fromView:nil];
+	CGPoint mouseInView = NSPointToCGPoint([self convertPoint:locationInWindow fromView:nil]);
 
 	CGPoint pointInScrollBarLayer = [self.layer convertPoint:mouseInView toLayer:self.scrollBarLayer];
 
@@ -114,7 +51,7 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-	self.draggingKnob = NO;
+	[self.scrollBarLayer endDrag];
 }
 
 - (void)rightMouseUp:(NSEvent *)theEvent
@@ -175,6 +112,12 @@
 - (void)changeSelectionFromEvent:(NSEvent *)event
 {
 	self.selectedIndex += event.dominantDeltaInXYSpace;
+}
+
+- (void)scrollBarClicked:(CGPoint)mouseInView
+{
+	CGPoint pointInScrollBarLayer = [[self layer] convertPoint:mouseInView toLayer:self.scrollBarLayer];
+	[self.scrollBarLayer mouseDownAtPoint:pointInScrollBarLayer];
 }
 
 @end

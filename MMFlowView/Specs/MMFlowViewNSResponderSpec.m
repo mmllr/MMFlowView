@@ -35,13 +35,18 @@ SPEC_BEGIN(MMFlowViewNSResponderSpec)
 describe(@"MMFlowView+NSResponder", ^{
 	__block MMFlowView *sut = nil;
 	__block NSEvent *mockedEvent = nil;
+	__block CALayer *mockedLayer = nil;
+
 	beforeEach(^{
 		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
 		mockedEvent = [NSEvent nullMock];
+		mockedLayer = [CALayer nullMock];
+		[sut stub:@selector(layer) andReturn:mockedLayer];
 	});
 	afterEach(^{
 		sut = nil;
 		mockedEvent = nil;
+		mockedLayer = nil;
 	});
 	it(@"should have an action cell class", ^{
 		[[[[sut class] cellClass] should] equal:[NSActionCell class]];
@@ -137,11 +142,8 @@ describe(@"MMFlowView+NSResponder", ^{
 	});
 	context(NSStringFromSelector(@selector(mouseUp:)), ^{
 		it(@"should disable dragging", ^{
-			[[sut should] receive:@selector(setDraggingKnob:) withArguments:theValue(NO)];
+			[[sut.scrollBarLayer should] receive:@selector(endDrag)];
 			[sut mouseUp:mockedEvent];
-		});
-		it(@"should not drag the knob", ^{
-			[[theValue(sut.draggingKnob) should] beNo];
 		});
 	});
 	context(NSStringFromSelector(@selector(rightMouseUp:)), ^{
@@ -202,24 +204,19 @@ describe(@"MMFlowView+NSResponder", ^{
 	context(NSStringFromSelector(@selector(mouseDragged:)), ^{
 		context(@"scroll bar layer interaction", ^{
 			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
-			__block CALayer *mockedLayer = nil;
 			__block CGPoint pointInScrollLayer;
 			NSPoint pointInWindow = NSMakePoint(10, 10);
 
 			beforeEach(^{
 				[mockedEvent stub:@selector(locationInWindow) andReturn:theValue(pointInWindow)];
 
-				mockedLayer = [CALayer nullMock];
 				pointInScrollLayer = CGPointMake(30, 7);
 				[mockedLayer stub:@selector(convertPoint:toLayer:) andReturn:theValue(pointInScrollLayer)];
-				[sut stub:@selector(layer) andReturn:mockedLayer];
-
 				mockedScrollBarLayer = [MMScrollBarLayer nullMock];
 				sut.scrollBarLayer = mockedScrollBarLayer;
 			});
 			afterEach(^{
 				mockedScrollBarLayer = nil;
-				mockedLayer = nil;
 			});
 			it(@"should ask the layer to convert the mouse point to the scrollbar layers coordinate space", ^{
 				[[mockedLayer should] receive:@selector(convertPoint:toLayer:) withArguments:[KWAny any], mockedScrollBarLayer];
@@ -228,6 +225,43 @@ describe(@"MMFlowView+NSResponder", ^{
 			it(@"should notify the scroll bar layer about the drag", ^{
 				[[mockedScrollBarLayer should] receive:@selector(mouseDraggedToPoint:) withArguments:theValue(pointInScrollLayer)];
 				[sut mouseDragged:mockedEvent];
+			});
+		});
+	});
+	context(NSStringFromSelector(@selector(mouseDown:)), ^{
+		context(@"when clicking on scroll bar", ^{
+			__block id mockedScrollBar = nil;
+			CGRect scrollBarRect = CGRectMake(0, 0, 200, 20);
+			CGPoint pointInScrollBar = CGPointMake(CGRectGetMidX(scrollBarRect), CGRectGetMidY(scrollBarRect));
+
+			beforeEach(^{
+				mockedScrollBar = [MMScrollBarLayer nullMock];
+				[mockedScrollBar stub:@selector(frame) andReturn:theValue(scrollBarRect)];
+				sut.scrollBarLayer = mockedScrollBar;
+				[sut stub:@selector(hitLayerAtPoint:) andReturn:mockedScrollBar];
+				[mockedLayer stub:@selector(convertRect:fromLayer:) andReturn:theValue(scrollBarRect)];
+				[mockedLayer stub:@selector(convertPoint:toLayer:) andReturn:theValue(pointInScrollBar)];
+			});
+			afterEach(^{
+				mockedScrollBar = nil;
+			});
+			it(@"should convert the scroll bar rect to view coordinates", ^{
+				CALayer *mockedSuperLayer = [CALayer nullMock];
+				[mockedScrollBar stub:@selector(superlayer) andReturn:mockedSuperLayer];
+
+				[[mockedLayer should] receive:@selector(convertRect:fromLayer:) withArguments:theValue(scrollBarRect), mockedSuperLayer];
+
+				[sut mouseDown:mockedEvent];
+			});
+			it(@"should convert the mouse point to the scroll bars coordinate space", ^{
+				[[mockedLayer should] receive:@selector(convertPoint:toLayer:) withArguments:[KWAny any], mockedScrollBar];
+
+				[sut mouseDown:mockedEvent];
+			});
+			it(@"should pass the click to the scroll bar layer", ^{
+				[[mockedScrollBar should] receive:@selector(mouseDownAtPoint:) withArguments:theValue(pointInScrollBar)];
+
+				[sut mouseDown:mockedEvent];
 			});
 		});
 	});
