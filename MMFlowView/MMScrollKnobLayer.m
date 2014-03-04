@@ -43,7 +43,7 @@ static const CGFloat kCornerRadius = 9.;
 					(__bridge id)[[ NSColor colorWithCalibratedRed:51.f / 255.f green:52.f / 255.f blue:66.f / 255.f alpha:1.f ] CGColor ]];
 	self.locations = @[@0., @.5, @.51, @1.];
 	self.type = kCAGradientLayerAxial;
-	[self disableImplicitPositionAndBoundsAnimations];
+	[self mm_disableImplicitPositionAndBoundsAnimations];
 	[self setupAccessibility];
 }
 

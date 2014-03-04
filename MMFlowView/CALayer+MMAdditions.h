@@ -10,7 +10,7 @@
 
 @interface CALayer (MMAdditions)
 
-- (void)disableImplicitPositionAndBoundsAnimations;
-- (void)enableImplicitPositionAndBoundsAnimations;
+- (void)mm_disableImplicitPositionAndBoundsAnimations;
+- (void)mm_enableImplicitPositionAndBoundsAnimations;
 
 @end

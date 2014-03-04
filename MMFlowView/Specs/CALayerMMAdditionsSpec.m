@@ -25,7 +25,7 @@ describe(@"CALayer+MMAdditions", ^{
 	context(@"Implicit bounds and position animations", ^{
 		context(@"disable animations", ^{
 			beforeEach(^{
-				[sut disableImplicitPositionAndBoundsAnimations];
+				[sut mm_disableImplicitPositionAndBoundsAnimations];
 			});
 			it(@"should have a position action of NSNull", ^{
 				[[sut.actions[@"position"] should] equal:[NSNull null]];
@@ -35,7 +35,7 @@ describe(@"CALayer+MMAdditions", ^{
 			});
 			context(@"reenabling animations", ^{
 				beforeEach(^{
-					[sut enableImplicitPositionAndBoundsAnimations];
+					[sut mm_enableImplicitPositionAndBoundsAnimations];
 				});
 				it(@"should not have a nil position value in its action dictionary", ^{
 					[[sut.actions[@"position"] should] beNil];

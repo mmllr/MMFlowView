@@ -10,7 +10,7 @@
 
 @implementation CALayer (MMAdditions)
 
-- (void)disableImplicitPositionAndBoundsAnimations
+- (void)mm_disableImplicitPositionAndBoundsAnimations
 {
 	NSMutableDictionary *customActions = [NSMutableDictionary dictionaryWithDictionary:self.actions];
 	customActions[@"position"] = [NSNull null];
@@ -18,7 +18,7 @@
 	self.actions = customActions;
 }
 
-- (void)enableImplicitPositionAndBoundsAnimations
+- (void)mm_enableImplicitPositionAndBoundsAnimations
 {
 	NSMutableDictionary *customActions = [NSMutableDictionary dictionaryWithDictionary:self.actions];
 	[customActions removeObjectForKey:@"position"];

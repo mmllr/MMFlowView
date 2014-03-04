@@ -79,7 +79,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 		self.cornerRadius = kCornerRadius;
 		self.frame = CGRectMake(0, 0, 100., kHeight);
 		[self setupConstraints];
-		[self disableImplicitPositionAndBoundsAnimations];
+		[self mm_disableImplicitPositionAndBoundsAnimations];
 		[self setupAccessibility];
 		[self setupSublayers];
 		[self setupObservations];
