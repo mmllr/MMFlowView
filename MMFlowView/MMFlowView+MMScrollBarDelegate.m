@@ -7,6 +7,7 @@
 //
 
 #import "MMFlowView+MMScrollBarDelegate.h"
+#import "MMCoverFlowLayout.h"
 
 @implementation MMFlowView (MMScrollBarDelegate)
 
@@ -33,6 +34,25 @@
 		return;
 	}
 	[self moveRight:self];
+}
+
+- (CGFloat)contentSizeForScrollBarLayer:(MMScrollBarLayer *)scrollBarLayer
+{
+	return self.layout.contentWidth;
+}
+
+- (CGFloat)visibleSizeForScrollBarLayer:(MMScrollBarLayer *)scrollBarLayer
+{
+	return CGRectGetWidth(self.coverFlowLayer.visibleRect);
+}
+
+- (CGFloat)currentKnobPositionInScrollBarLayer:(MMScrollBarLayer *)scrollBarLayer
+{
+	if (self.selectedIndex == NSNotFound) {
+		return 0;
+	}
+	CGFloat position = self.selectedIndex;
+	return position / MAX((self.numberOfItems - 1), 1);
 }
 
 @end

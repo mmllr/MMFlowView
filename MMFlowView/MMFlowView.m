@@ -464,6 +464,7 @@ static NSString * const kLayoutKey = @"layout";
 {
 	self.imageFactory.maxImageSize = self.layout.itemSize;
 	[self updateImages];
+	[self.scrollBarLayer setNeedsLayout];
 }
 
 #pragma mark - other helpers
@@ -769,7 +770,7 @@ static NSString * const kLayoutKey = @"layout";
 
 - (MMScrollBarLayer*)createScrollBarLayer
 {
-	MMScrollBarLayer *layer = [[MMScrollBarLayer alloc] initWithScrollLayer:self.coverFlowLayer];
+	MMScrollBarLayer *layer = [[MMScrollBarLayer alloc] init];
 	__weak MMFlowView *weakSelf = self;
 	[layer setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
 								   readBlock:^id{

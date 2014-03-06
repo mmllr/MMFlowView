@@ -15,16 +15,16 @@
 - (void)scrollBarLayer:(MMScrollBarLayer*)scrollBarLayer knobDraggedToPosition:(CGFloat)positionInPercent;
 - (void)decrementClickedInScrollBarLayer:(MMScrollBarLayer*)scrollBarLayer;
 - (void)incrementClickedInScrollBarLayer:(MMScrollBarLayer*)scrollBarLayer;
+- (CGFloat)contentSizeForScrollBarLayer:(MMScrollBarLayer*)scrollBarLayer;
+- (CGFloat)visibleSizeForScrollBarLayer:(MMScrollBarLayer*)scrollBarLayer;
+- (CGFloat)currentKnobPositionInScrollBarLayer:(MMScrollBarLayer*)scrollBarLayer;
 
 @end
 
 @interface MMScrollBarLayer : CALayer
 
-@property (weak, nonatomic, readonly) CAScrollLayer *scrollLayer;
 @property (nonatomic) CGPoint dragOrigin;
 @property (weak, nonatomic) id<MMScrollBarDelegate> scrollBarDelegate;
-
-- (id)initWithScrollLayer:(CAScrollLayer*)scrollLayer;
 
 - (void)mouseDownAtPoint:(CGPoint)pointInLayerCoordinates;
 - (void)beginDragAtPoint:(CGPoint)pointInLayerCoordinates;

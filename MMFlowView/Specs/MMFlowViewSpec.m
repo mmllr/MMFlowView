@@ -671,23 +671,38 @@ describe(@"MMFlowView", ^{
 							[[sut.coverFlowLayer should] receive:@selector(setNeedsLayout)];
 							sut.selectedIndex = sut.selectedIndex + 1;
 						});
-						context(@"coverFlowLayerDidRelayout:", ^{
-							__block MMCoverFlowLayer *layerMock = nil;
+						context(NSStringFromSelector(@selector(coverFlowLayerDidRelayout:)), ^{
+							__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
 
 							beforeEach(^{
-								layerMock = [MMCoverFlowLayer nullMock];
+								mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
 							});
 							it(@"should invoke updateImages", ^{
 								[[sut should] receive:@selector(updateImages)];
-								[sut coverFlowLayerDidRelayout:layerMock];
+								[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
 							});
 							it(@"should set the maxImageSize of the image factory to the layouts itemSite", ^{
 								MMFlowViewImageFactory *mockedImageFactory = [MMFlowViewImageFactory nullMock];
 								[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(sut.layout.itemSize)];
 								sut.imageFactory = mockedImageFactory;
-								[sut coverFlowLayerDidRelayout:layerMock];
+								[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
 							});
-							
+							context(@"scroll bar interaction", ^{
+								__block MMScrollBarLayer *mockedScrollBarLayer = nil;
+
+								beforeEach(^{
+									mockedScrollBarLayer = [MMScrollBarLayer nullMock];
+									sut.scrollBarLayer = mockedScrollBarLayer;
+								});
+								afterEach(^{
+									mockedScrollBarLayer = nil;
+								});
+								it(@"should tell the scroll bar layer to relayout", ^{
+									[[mockedScrollBarLayer should] receive:@selector(setNeedsLayout)];
+
+									[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
+								});
+							});
 						});
 						context(@"coverFlowLayer:contentLayerForIndex:", ^{
 							__block CALayer *contentLayer = nil;
