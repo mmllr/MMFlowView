@@ -117,12 +117,8 @@ static const CGFloat kMinimumKnobWidth = 40.;
 		![self.scrollBarDelegate respondsToSelector:@selector(scrollBarLayer:knobDraggedToPosition:)]) {
 		return;
 	}
-	MMScrollKnobLayer *knobLayer = [self.sublayers firstObject];
-	CGFloat minX = kHorizontalKnobMargin;
-	CGFloat maxX = CGRectGetMaxX(self.bounds) - kHorizontalKnobMargin - CGRectGetWidth(knobLayer.bounds);
-	CGFloat draggedPosition = CLAMP(pointInLayerCoordinates.x - self.draggingOffset, minX, maxX);
-	CGFloat scrollWidth = maxX - minX;
-	CGFloat position = (draggedPosition - minX) / scrollWidth;
+	CGFloat draggedPosition = CLAMP(pointInLayerCoordinates.x - self.draggingOffset, self.minimumKnobPosition, self.maximumKnobPosition);
+	CGFloat position = (draggedPosition - self.minimumKnobPosition) / self.availabeScrollingSize;
 	[self.scrollBarDelegate scrollBarLayer:self knobDraggedToPosition:position];
 }
 
@@ -132,6 +128,22 @@ static const CGFloat kMinimumKnobWidth = 40.;
 }
 
 #pragma mark - CALayer overrides
+
+- (void)layoutSublayers
+{
+	CGFloat contentToVisibleAspectRatio = [self contentToVisibleAspectRatio];
+	self.hidden = (contentToVisibleAspectRatio == 1);
+
+	CGFloat effectiveScrollerWidth = CGRectGetWidth(self.bounds) - 2*kHorizontalKnobMargin;
+	CGFloat knobWidth = MAX(kMinimumKnobWidth, effectiveScrollerWidth * contentToVisibleAspectRatio);
+	CGFloat currentKnobPosition = [self currentKnobPosition];
+	CGFloat availableScrollingSize = effectiveScrollerWidth - knobWidth;
+	
+	CALayer *knobLayer = [self.sublayers firstObject];
+	knobLayer.frame = CGRectMake(kHorizontalKnobMargin + currentKnobPosition*availableScrollingSize, kVerticalKnobMargin, knobWidth, CGRectGetHeight(self.bounds) - 2*kVerticalKnobMargin);
+}
+
+#pragma mark - helpers
 
 - (CGFloat)contentSize
 {
@@ -155,7 +167,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 {
 	CGFloat contentSize = [self contentSize];
 	CGFloat visibleSize = [self visibleSize];
-
+	
 	return contentSize > visibleSize ? visibleSize / contentSize : 1;
 }
 
@@ -167,18 +179,20 @@ static const CGFloat kMinimumKnobWidth = 40.;
 	return CLAMP([self.scrollBarDelegate currentKnobPositionInScrollBarLayer:self], 0, 1);
 }
 
-- (void)layoutSublayers
+- (CGFloat)minimumKnobPosition
 {
-	CGFloat contentToVisibleAspectRatio = [self contentToVisibleAspectRatio];
-	self.hidden = (contentToVisibleAspectRatio == 1);
+	return kHorizontalKnobMargin;
+}
 
-	CGFloat effectiveScrollerWidth = CGRectGetWidth(self.bounds) - 2*kHorizontalKnobMargin;
-	CGFloat knobWidth = MAX(kMinimumKnobWidth, effectiveScrollerWidth * contentToVisibleAspectRatio);
-	CGFloat currentKnobPosition = [self currentKnobPosition];
-	CGFloat availableScrollingSize = effectiveScrollerWidth - knobWidth;
-	
+- (CGFloat)maximumKnobPosition
+{
 	CALayer *knobLayer = [self.sublayers firstObject];
-	knobLayer.frame = CGRectMake(kHorizontalKnobMargin + currentKnobPosition*availableScrollingSize, kVerticalKnobMargin, knobWidth, CGRectGetHeight(self.bounds) - 2*kVerticalKnobMargin);
+	return CGRectGetMaxX(self.bounds) - kHorizontalKnobMargin - CGRectGetWidth(knobLayer.bounds);
+}
+
+- (CGFloat)availabeScrollingSize
+{
+	return [self maximumKnobPosition] - [self minimumKnobPosition];
 }
 
 @end
