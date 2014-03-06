@@ -468,7 +468,7 @@ describe(@"MMFlowView", ^{
 				pointInCenterOfView = NSMakePoint(NSMidX([sut bounds]), NSMidY([sut bounds]));
 				pointNotInView = NSMakePoint(NSWidth([sut bounds])*2, NSHeight([sut bounds])*2);
 			});
-			context(@"indexForItemAtPoint:", ^{
+			context(NSStringFromSelector(@selector(indexOfItemAtPoint:)), ^{
 				it(@"should return NSNotFound with empty contents for point in view", ^{
 					[[theValue([sut indexOfItemAtPoint:pointInCenterOfView]) should] equal:theValue(NSNotFound)];
 				});

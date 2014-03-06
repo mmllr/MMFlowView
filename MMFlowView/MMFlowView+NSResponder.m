@@ -29,14 +29,28 @@
 	return [self.layer convertRect:self.scrollBarLayer.frame fromLayer:self.scrollBarLayer.superlayer];
 }
 
+- (void)handleItemClick:(CGPoint)mouseInView
+{
+	NSUInteger clickedItemIndex = [self indexOfItemAtPoint:mouseInView];
+	if (clickedItemIndex != NSNotFound) {
+		self.selectedIndex = clickedItemIndex;
+	}
+}
+
+- (void)handleScrollBarClick:(CGPoint)mouseInView
+{
+	if (CGRectContainsPoint([self scrollBarFrame], mouseInView)) {
+		[self scrollBarClicked:mouseInView];
+	}
+}
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	NSPoint locationInWindow = [theEvent locationInWindow];
 	CGPoint mouseInView = NSPointToCGPoint([self convertPoint:locationInWindow fromView:nil]);
 
-	if (CGRectContainsPoint([self scrollBarFrame], mouseInView)) {
-		[self scrollBarClicked:mouseInView];
-	}
+	[self handleScrollBarClick:mouseInView];
+	[self handleItemClick:mouseInView];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent

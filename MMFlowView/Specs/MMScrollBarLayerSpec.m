@@ -16,6 +16,9 @@ describe(@"MMScrollBarLayer", ^{
 	__block MMScrollBarLayer *sut = nil;
 
 	context(@"new instance", ^{
+		const CGFloat horizontalKnobMargin = 5;
+		const CGFloat verticalKnobMargin = 2;
+
 		__block id mockedScrollBarDelegate = nil;
 		__block CALayer *knobLayer = nil;
 		
@@ -69,7 +72,7 @@ describe(@"MMScrollBarLayer", ^{
 			[[knobLayer should] beKindOfClass:[MMScrollKnobLayer class]];
 		});
 		it(@"should have a knob layer at position 5,2", ^{
-			NSValue *expectedPosition = [NSValue valueWithPoint:NSMakePoint(5, 2)];
+			NSValue *expectedPosition = [NSValue valueWithPoint:NSMakePoint(horizontalKnobMargin, verticalKnobMargin)];
 			[[[NSValue valueWithPoint:knobLayer.frame.origin] should] equal:expectedPosition];
 		});
 		context(@"constraints", ^{
@@ -181,8 +184,6 @@ describe(@"MMScrollBarLayer", ^{
 				const CGFloat contentSize = 2000;
 				const CGFloat visibleSize = 500;
 				const CGFloat scrollBarWidth = visibleSize * .75;
-				const CGFloat horizontalKnobMargin = 5;
-				const CGFloat verticalKnobMargin = 2;
 				const CGFloat effectiveScrollBarWidth = scrollBarWidth - 2*horizontalKnobMargin;
 				const CGFloat contentToVisibleAspectRatio = visibleSize / contentSize;
 				const CGFloat expectedKnobWidth = effectiveScrollBarWidth * contentToVisibleAspectRatio;
@@ -454,23 +455,23 @@ describe(@"MMScrollBarLayer", ^{
 			it(@"should respond to beginDragAtPoint:", ^{
 				[[sut should] respondToSelector:@selector(beginDragAtPoint:)];
 			});
-			context(@"mouse point not in layer", ^{
+			context(@"mouse point not in knob layer", ^{
 				beforeEach(^{
-					dragPoint = CGPointMake(CGRectGetMinX(sut.bounds) - 10, CGRectGetMinY(sut.bounds) - 10);
+					dragPoint = CGPointMake(CGRectGetMinX(knobLayer.frame) - 10, CGRectGetMinY(knobLayer.frame) - 10);
 				});
-				it(@"should set the dragOrigin to CGPointZero", ^{
-					[[sut should] receive:@selector(setDragOrigin:) withArguments:theValue(CGPointZero)];
+				it(@"should set the draggingOffset to -1", ^{
 					[sut beginDragAtPoint:dragPoint];
-					[[theValue(sut.dragOrigin) should] equal:theValue(CGPointZero)];
+					[[theValue(sut.draggingOffset) should] equal:-1 withDelta:.0000001];
 				});
 			});
-			context(@"mouse point in layer", ^{
+			context(@"mouse point in knob layer", ^{
 				beforeEach(^{
-					dragPoint = CGPointMake(CGRectGetMidX(sut.bounds), CGRectGetMinY(sut.bounds));
+					dragPoint = CGPointMake(CGRectGetMidX(knobLayer.frame), CGRectGetMinY(knobLayer.frame));
 				});
-				it(@"should set the dragOrigin", ^{
+				it(@"should set the draggingOffset to the position of the click on the knob", ^{
+					CGFloat expectedOffset = dragPoint.x - CGRectGetMinX(knobLayer.frame);
 					[sut beginDragAtPoint:dragPoint];
-					[[theValue(sut.dragOrigin) should] equal:theValue(dragPoint)];
+					[[theValue(sut.draggingOffset) should] equal:expectedOffset withDelta:.0000001];
 				});
 			});
 		});
@@ -478,10 +479,9 @@ describe(@"MMScrollBarLayer", ^{
 			it(@"should respond to endDrag", ^{
 				[[sut should] respondToSelector:@selector(endDrag)];
 			});
-			it(@"should set the dragOrigin to CGPointZero", ^{
-				[[sut should] receive:@selector(setDragOrigin:) withArguments:theValue(CGPointZero)];
+			it(@"should set the draggingOffset to -1", ^{
 				[sut endDrag];
-				[[theValue(sut.dragOrigin) should] equal:theValue(CGPointZero)];
+				[[theValue(sut.draggingOffset) should] equal:-1 withDelta:.0000001];
 			});
 		});
 		context(NSStringFromSelector(@selector(mouseDraggedToPoint:)), ^{
@@ -499,8 +499,7 @@ describe(@"MMScrollBarLayer", ^{
 				__block CGPoint draggedPoint;
 
 				beforeEach(^{
-					sut.dragOrigin = CGPointMake(CGRectGetMinX(sut.frame), CGRectGetMidY(sut.frame));
-					
+					sut.draggingOffset = 15;
 				});
 				it(@"should invoke the delegate with position zero when dragging beyound the leftmost position", ^{
 					draggedPoint = CGPointMake(CGRectGetMinX(sut.frame) - 10, CGRectGetMidY(sut.frame));
@@ -514,6 +513,18 @@ describe(@"MMScrollBarLayer", ^{
 
 					[[mockedScrollBarDelegate should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(1)];
 
+					[sut mouseDraggedToPoint:draggedPoint];
+				});
+				it(@"should invoke the delegate with position adjusted by the draggingOffset when dragging to mid position", ^{
+					draggedPoint = CGPointMake(CGRectGetMidX(sut.frame) + 10, CGRectGetMidY(sut.frame));
+
+					CGFloat dragPointCorrectedByOffset = draggedPoint.x - sut.draggingOffset;
+					CGFloat minX = horizontalKnobMargin;
+					CGFloat maxX = CGRectGetMaxX(sut.bounds) - horizontalKnobMargin - CGRectGetWidth(knobLayer.bounds);
+					CGFloat scrollWidth = maxX - minX;
+					CGFloat expectedPosition = (dragPointCorrectedByOffset - minX) / scrollWidth;
+					[[mockedScrollBarDelegate should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(expectedPosition)];
+					
 					[sut mouseDraggedToPoint:draggedPoint];
 				});
 				context(@"when scrollBarDelegete does not respond to -scrollBarLayer:knobDraggedToPosition:", ^{
@@ -531,7 +542,7 @@ describe(@"MMScrollBarLayer", ^{
 			});
 			context(@"when not in drag", ^{
 				beforeEach(^{
-					sut.dragOrigin = CGPointZero;
+					sut.draggingOffset = -1;
 				});
 				it(@"should not invoke the scrollbar delegate", ^{
 					CGPoint draggedPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMidY(sut.frame));

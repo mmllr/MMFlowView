@@ -25,6 +25,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 @implementation MMScrollBarLayer
 
 @dynamic scrollBarDelegate;
+@dynamic draggingOffset;
 
 #pragma mark - init/cleanup
 
@@ -102,23 +103,24 @@ static const CGFloat kMinimumKnobWidth = 40.;
 
 - (void)beginDragAtPoint:(CGPoint)pointInLayerCoordinates
 {
-	if (!CGRectContainsPoint(self.bounds, pointInLayerCoordinates)) {
-		self.dragOrigin = CGPointZero;
+	CALayer *knobLayer = [self.sublayers firstObject];
+	if (!CGRectContainsPoint(knobLayer.frame, pointInLayerCoordinates)) {
+		self.draggingOffset = -1;
 		return;
 	}
-	self.dragOrigin = pointInLayerCoordinates;
+	self.draggingOffset = pointInLayerCoordinates.x - CGRectGetMinX(knobLayer.frame);
 }
 
 - (void)mouseDraggedToPoint:(CGPoint)pointInLayerCoordinates
 {
-	if (CGPointEqualToPoint(self.dragOrigin, CGPointZero) ||
+	if (self.draggingOffset == -1 ||
 		![self.scrollBarDelegate respondsToSelector:@selector(scrollBarLayer:knobDraggedToPosition:)]) {
 		return;
 	}
 	MMScrollKnobLayer *knobLayer = [self.sublayers firstObject];
 	CGFloat minX = kHorizontalKnobMargin;
 	CGFloat maxX = CGRectGetMaxX(self.bounds) - kHorizontalKnobMargin - CGRectGetWidth(knobLayer.bounds);
-	CGFloat draggedPosition = CLAMP(pointInLayerCoordinates.x, minX, maxX);
+	CGFloat draggedPosition = CLAMP(pointInLayerCoordinates.x - self.draggingOffset, minX, maxX);
 	CGFloat scrollWidth = maxX - minX;
 	CGFloat position = (draggedPosition - minX) / scrollWidth;
 	[self.scrollBarDelegate scrollBarLayer:self knobDraggedToPosition:position];
@@ -126,7 +128,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 
 - (void)endDrag
 {
-	self.dragOrigin = CGPointZero;
+	self.draggingOffset = -1;
 }
 
 #pragma mark - CALayer overrides

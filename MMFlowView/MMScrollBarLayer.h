@@ -23,7 +23,7 @@
 
 @interface MMScrollBarLayer : CALayer
 
-@property (nonatomic) CGPoint dragOrigin;
+@property (nonatomic) CGFloat draggingOffset;
 @property (weak, nonatomic) id<MMScrollBarDelegate> scrollBarDelegate;
 
 - (void)mouseDownAtPoint:(CGPoint)pointInLayerCoordinates;

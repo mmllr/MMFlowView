@@ -264,6 +264,34 @@ describe(@"MMFlowView+NSResponder", ^{
 				[sut mouseDown:mockedEvent];
 			});
 		});
+		context(@"when clicking on item layers", ^{
+			context(@"when clicking on an item", ^{
+				beforeEach(^{
+					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(3)];
+				});
+				it(@"should ask for the index of the item", ^{
+					[[sut should] receive:@selector(indexOfItemAtPoint:)];
+
+					[sut mouseDown:mockedEvent];
+				});
+				it(@"should should change the selection to the clicked layer", ^{
+					[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3)];
+
+					[sut mouseDown:mockedEvent];
+				});
+			});
+			context(@"when not clicking to an item", ^{
+				beforeEach(^{
+					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(NSNotFound)];
+				});
+				it(@"should should mot change the selection", ^{
+					[[sut shouldNot] receive:@selector(setSelectedIndex:)];
+					
+					[sut mouseDown:mockedEvent];
+				});
+			});
+			
+		});
 	});
 });
 
