@@ -16,7 +16,7 @@ describe(@"CALayer+MMAdditions", ^{
 
 	beforeEach(^{
 		sut = [CALayer layer];
-		sut.bounds = CGRectMake(0, 0, 100, 100);
+		sut.frame = CGRectMake(20, 30, 200, 400);
 	});
 	afterEach(^{
 		sut = nil;
@@ -45,7 +45,43 @@ describe(@"CALayer+MMAdditions", ^{
 				});
 			});
 		});
-		
+	});
+	context(NSStringFromSelector(@selector(mm_boundingRect)), ^{
+		it(@"should return the frame for a layer without sublayers", ^{
+			NSValue *expectedRect = [NSValue valueWithRect:sut.frame];
+
+			[[[NSValue valueWithRect:[sut mm_boundingRect]] should] equal:expectedRect];
+		});
+		context(@"when having sublayers exceeding the layers frame", ^{
+			__block NSValue *expectedRect;
+
+			beforeEach(^{
+				CALayer *sublayerA = [CALayer layer];
+				sublayerA.frame = CGRectMake(-100, -100, 1000, 444);
+				CALayer *sublayerB = [CALayer layer];
+				sublayerB.frame = CGRectMake(0, -200, 1100, 300);
+				CALayer *subSubLayerA = [CALayer layer];
+				subSubLayerA.frame = CGRectMake(-100, -100, 999, 445);
+				[sublayerA addSublayer:subSubLayerA];
+				CALayer *subSubLayerB = [CALayer layer];
+				subSubLayerB.frame = CGRectMake(0, -200, 1101, 300);
+				[sublayerB addSublayer:subSubLayerB];
+				[sut addSublayer:sublayerA];
+				[sut addSublayer:sublayerB];
+
+				CGRect unionRect = CGRectUnion(sut.frame, sublayerA.frame);
+				unionRect = CGRectUnion(unionRect, sublayerB.frame);
+				unionRect = CGRectUnion(unionRect, subSubLayerA.frame);
+				unionRect = CGRectUnion(unionRect, subSubLayerB.frame);
+				expectedRect = [NSValue valueWithRect:unionRect];
+			});
+			afterEach(^{
+				expectedRect = nil;
+			});
+			it(@"should have the bounding rect of its frame and its sublayers frame", ^{
+				[[[NSValue valueWithRect:[sut mm_boundingRect]] should] equal:expectedRect];
+			});
+		});
 	});
 });
 

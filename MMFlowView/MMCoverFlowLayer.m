@@ -62,7 +62,6 @@ static void* kReloadContentObservationContext = @"reloadContent";
 {
 	CAReplicatorLayer *layer = [CAReplicatorLayer layer];
 	layer.preservesDepth = YES;
-//	layer.instanceCount = 2;
 	layer.instanceBlueOffset = layer.instanceGreenOffset = layer.instanceRedOffset = kDefaultReflectionOffset;
 	return layer;
 }

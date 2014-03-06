@@ -26,4 +26,14 @@
 	self.actions = customActions;
 }
 
+- (CGRect)mm_boundingRect
+{
+	CGRect boundingRect = self.frame;
+
+	for (CALayer *layer in self.sublayers) {
+		boundingRect = CGRectUnion([layer mm_boundingRect], boundingRect);
+	}
+	return boundingRect;
+}
+
 @end

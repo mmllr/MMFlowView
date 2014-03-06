@@ -12,5 +12,6 @@
 
 - (void)mm_disableImplicitPositionAndBoundsAnimations;
 - (void)mm_enableImplicitPositionAndBoundsAnimations;
+- (CGRect)mm_boundingRect;
 
 @end
