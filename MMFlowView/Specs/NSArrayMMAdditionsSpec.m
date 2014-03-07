@@ -84,7 +84,7 @@ describe(@"NSArray+MMAdditions", ^{
 			});
 			it(@"should remove the observer", ^{
 				for ( NSString *keyPath in observedKeyPaths) {
-					[[sut should] receive:@selector(removeObserver:fromObjectsAtIndexes:forKeyPath:context:) withArguments:testObserver, indexes, @"name", theValue(testingContext)];
+					[[sut should] receive:@selector(removeObserver:fromObjectsAtIndexes:forKeyPath:context:) withArguments:testObserver, indexes, keyPath, theValue(testingContext)];
 				}
 				[sut mm_removeObserver:testObserver forKeyPaths:observedKeyPaths context:testingContext];
 			});

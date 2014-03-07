@@ -21,8 +21,6 @@
 #import <Quartz/Quartz.h>
 #import "MMFlowView.h"
 
-static const NSInteger kMaxPreviewSize = 400;
-
 @implementation Item
 
 + (NSString*)mapRepresentationTypeFromFlowViewItemToImageBrowserItem:(NSString*)aFlowViewItemRepresentationType

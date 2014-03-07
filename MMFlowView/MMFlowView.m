@@ -67,22 +67,15 @@ static const CGFloat kDefaultTitleSize = 18.;
 static const CGFloat kDefaultItemSize = 100.;
 static const CGFloat kDefaultStackedAngle = 70.;
 static const CGFloat kDefaultItemSpacing = 50.;
-static const CGFloat kDefaultCacheCompression = .15;
-static const CGFloat kDefaultCachedImageSizeThreshold = 10.;
 static const CGFloat kDefaultPreviewScale = 0.25;
-static const CGFloat kDefaultSelectedScale = 200.;
 static const CGFloat kDefaultStackedScale = -200.;
 static const CGFloat kDefaultReflectionOffset = -0.4;
 static const CFTimeInterval kDefaultScrollDuration = .4;
-static const NSUInteger kDefaultCacheLimit = 20;
-static const CGFloat kDefaultEyeDistance = 1500.;
 static const CGFloat kDefaultItemScale = 1.;
 static const CGFloat kHighlightedBorderWidth = 2;
 
-static const CGFloat kItemYMargin = 50.;
 static const CGFloat kMinimumItemScale = 0.1;
 static const CGFloat kMaximumItemScale = 1.;
-static const NSUInteger kImageLayerIndex = 0;
 
 static NSString * const kMMFlowViewItemContentLayerPrefix = @"MMFlowViewContentLayer";
 static NSString * const kMMFlowViewTitleLayerName = @"MMFlowViewTitleLayer";

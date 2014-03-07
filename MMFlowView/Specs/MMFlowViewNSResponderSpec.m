@@ -6,12 +6,15 @@
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
+#import <objc/runtime.h>
+
 #import "Kiwi.h"
 #import "MMFlowView+NSResponder.h"
 #import "MMFlowView_Private.h"
 #import "NSEvent+MMAdditions.h"
 #import "MMScrollBarLayer.h"
-#import <objc/runtime.h>
+#import "MMFlowViewImageCache.h"
+#import "MMMacros.h"
 
 static BOOL testingSuperInvoked = NO;
 
@@ -278,6 +281,98 @@ describe(@"MMFlowView+NSResponder", ^{
 					[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(3)];
 
 					[sut mouseDown:mockedEvent];
+				});
+			});
+			context(@"when clicking on the selected item", ^{
+				__block id mockedDatasource = nil;
+				__block NSPasteboard *mockedPasteboard = nil;
+				const NSUInteger selectedIndex = 2;
+
+				beforeEach(^{
+					mockedPasteboard = [NSPasteboard nullMock];
+					[[NSPasteboard stubAndReturn:mockedPasteboard] pasteboardWithName:NSDragPboard];
+
+					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(selectedIndex)];
+					[sut stub:@selector(selectedIndex) andReturn:theValue(selectedIndex)];
+
+					mockedDatasource = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
+					sut.dataSource = mockedDatasource;
+				});
+				afterEach(^{
+					mockedDatasource = nil;
+				});
+				context(@"drag image", ^{
+					__block id imageCacheMock = nil;
+					__block id itemMock = nil;
+					__block id dragImageMock = nil;
+					__block CGImageRef imageRefMock = NULL;
+					NSString *imageUID = @"testImageUID";
+					NSRect stubbedItemFrame = NSMakeRect(10, 10, 300, 200);
+
+					beforeAll(^{
+						NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+						NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
+						imageRefMock = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)(imageURL), CGSizeMake(400, 400), (__bridge CFDictionaryRef)quickLookOptions );
+					});
+					afterAll(^{
+						SAFE_CGIMAGE_RELEASE(imageRefMock);
+					});
+					beforeEach(^{
+						itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
+						[itemMock stub:@selector(imageItemUID) andReturn:imageUID];
+						[mockedDatasource stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
+
+						imageCacheMock = [MMFlowViewImageCache nullMock];
+						
+						[imageCacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)(imageRefMock)];
+						sut.imageCache = imageCacheMock;
+						
+						dragImageMock = [NSImage nullMock];
+						[NSImage stub:@selector(alloc) andReturn:dragImageMock];
+
+						[sut stub:@selector(selectedItemFrame) andReturn:theValue(stubbedItemFrame)];
+					});
+					afterEach(^{
+						dragImageMock = nil;
+						itemMock = nil;
+						imageCacheMock = nil;
+					});
+					it(@"should ask the image cache for an drag image", ^{
+						[[imageCacheMock should] receive:@selector(imageForUUID:) withArguments:@"testImageUID"];
+
+						[sut mouseDown:mockedEvent];
+					});
+					it(@"should create an image from the cached image", ^{
+						[[dragImageMock should] receive:@selector(initWithCGImage:size:) withArguments:theValue(imageRefMock), theValue(stubbedItemFrame.size)];
+
+						[sut mouseDown:mockedEvent];
+					});
+					it(@"should drag the image", ^{
+						[dragImageMock stub:@selector(initWithCGImage:size:) andReturn:dragImageMock];
+
+						[[sut should] receive:@selector(dragImage:at:offset:event:pasteboard:source:slideBack:) withArguments:dragImageMock, theValue(stubbedItemFrame.origin), theValue(NSZeroSize), mockedEvent, mockedPasteboard, sut, theValue(YES)];
+
+						[sut mouseDown:mockedEvent];
+					});
+				});
+				context(@"when the datasource supports writing items to the pasteboard", ^{
+					it(@"should ask the datasource to write the item to the dragging pasteboard", ^{
+						[[mockedDatasource should] receive:@selector(flowView:writeItemAtIndex:toPasteboard:) withArguments:sut, theValue(sut.selectedIndex), mockedPasteboard];
+						
+						[sut mouseDown:mockedEvent];
+					});
+				});
+				
+				context(@"when the datasource does not handle -flowView:writeItemAtIndex:toPasteboard:", ^{
+					beforeEach(^{
+						mockedDatasource = [KWMock nullMock];
+						sut.dataSource = mockedDatasource;
+					});
+					it(@"should not ask the datasource for writing the item to the pasteboard", ^{
+						[[mockedDatasource shouldNot] receive:@selector(flowView:writeItemAtIndex:toPasteboard:)];
+						
+						[sut mouseDown:mockedEvent];
+					});
 				});
 			});
 			context(@"when not clicking to an item", ^{

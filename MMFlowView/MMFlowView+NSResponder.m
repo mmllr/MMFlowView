@@ -14,6 +14,8 @@
 
 @implementation MMFlowView (NSResponder)
 
+#pragma mark - class methods
+
 + (Class)cellClass
 {
     return [NSActionCell class];
@@ -24,33 +26,12 @@
 	return YES;
 }
 
-- (CGRect)scrollBarFrame
-{
-	return [self.layer convertRect:self.scrollBarLayer.frame fromLayer:self.scrollBarLayer.superlayer];
-}
-
-- (void)handleItemClick:(CGPoint)mouseInView
-{
-	NSUInteger clickedItemIndex = [self indexOfItemAtPoint:mouseInView];
-	if (clickedItemIndex != NSNotFound) {
-		self.selectedIndex = clickedItemIndex;
-	}
-}
-
-- (void)handleScrollBarClick:(CGPoint)mouseInView
-{
-	if (CGRectContainsPoint([self scrollBarFrame], mouseInView)) {
-		[self scrollBarClicked:mouseInView];
-	}
-}
+#pragma mark - NSResponder overrides
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	NSPoint locationInWindow = [theEvent locationInWindow];
-	CGPoint mouseInView = NSPointToCGPoint([self convertPoint:locationInWindow fromView:nil]);
-
-	[self handleScrollBarClick:mouseInView];
-	[self handleItemClick:mouseInView];
+	[self handleScrollBarClick:theEvent];
+	[self handleItemClick:theEvent];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
@@ -123,6 +104,8 @@
 	[self changeSelectionFromEvent:event];
 }
 
+#pragma mark - helpers
+
 - (void)changeSelectionFromEvent:(NSEvent *)event
 {
 	self.selectedIndex += event.dominantDeltaInXYSpace;
@@ -132,6 +115,57 @@
 {
 	CGPoint pointInScrollBarLayer = [[self layer] convertPoint:mouseInView toLayer:self.scrollBarLayer];
 	[self.scrollBarLayer mouseDownAtPoint:pointInScrollBarLayer];
+}
+
+- (CGRect)scrollBarFrame
+{
+	return [self.layer convertRect:self.scrollBarLayer.frame fromLayer:self.scrollBarLayer.superlayer];
+}
+
+- (void)handleItemClick:(NSEvent*)theEvent
+{
+	CGPoint mouseInView = NSPointToCGPoint([self convertPoint:[theEvent locationInWindow]
+													 fromView:nil]);
+
+	NSUInteger clickedItemIndex = [self indexOfItemAtPoint:mouseInView];
+	if (clickedItemIndex == NSNotFound) {
+		return;
+	}
+	if (clickedItemIndex == self.selectedIndex) {
+		[self initiateDragFromSelection];
+		[self dragImage:[self dragImageForSelection]
+					 at:self.selectedItemFrame.origin
+				 offset:NSZeroSize
+				  event:theEvent
+			 pasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]
+				 source:self
+			  slideBack:YES];
+	}
+	self.selectedIndex = clickedItemIndex;
+}
+
+- (void)handleScrollBarClick:(NSEvent*)theEvent
+{
+	CGPoint mouseInView =  NSPointToCGPoint([self convertPoint:[theEvent locationInWindow]
+													  fromView:nil]);
+	if (CGRectContainsPoint([self scrollBarFrame], mouseInView)) {
+		[self scrollBarClicked:mouseInView];
+	}
+}
+
+- (NSImage*)dragImageForSelection
+{
+	id item = [self imageItemForIndex:self.selectedIndex];
+	CGImageRef imageRef = [self.imageCache imageForUUID:[self imageUIDForItem:item]];
+	return [[NSImage alloc] initWithCGImage:imageRef
+									   size:self.selectedItemFrame.size];
+}
+
+- (void)initiateDragFromSelection
+{
+	if ([self.dataSource respondsToSelector:@selector(flowView:writeItemAtIndex:toPasteboard:)]) {
+		[self.dataSource flowView:self writeItemAtIndex:self.selectedIndex toPasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]];
+	}
 }
 
 @end

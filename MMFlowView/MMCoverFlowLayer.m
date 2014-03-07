@@ -12,8 +12,6 @@
 #import "CALayer+NSAccessibility.h"
 #import "MMMacros.h"
 
-static const CGFloat kDefaultWidth = 50.;
-static const CGFloat kDefaultHeight = 50.;
 static const CGFloat kDefaultEyeDistance = 1500.;
 static const CFTimeInterval kDefaultScrollDuration = .4;
 static const CGFloat kDefaultReflectionOffset = -.4;
