@@ -435,8 +435,9 @@ static NSString * const kLayoutKey = @"layout";
 	if (CGRectIsEmpty(selectedFrameInCoverFlowLayer)) {
 		return NSZeroRect;
 	}
-	NSRect rectInHostingLayer = NSRectFromCGRect([self.layer convertRect:selectedFrameInCoverFlowLayer fromLayer:self.coverFlowLayer]);
-	return [self convertRectFromBacking:[self convertRectFromLayer:rectInHostingLayer]];
+	CGRect selectedRectInLayerSpace = [self.layer convertRect:selectedFrameInCoverFlowLayer fromLayer:self.coverFlowLayer];
+
+	return NSRectFromCGRect([self convertRectFromLayer:selectedRectInLayerSpace]);
 }
 
 #pragma mark - MMCoverFlowLayerDataSource

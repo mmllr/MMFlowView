@@ -818,8 +818,7 @@ describe(@"MMFlowView", ^{
 				context(@"selectedItemFrame", ^{
 					it(@"should have a selectedItemFrame matching the coverflow layers selectedItemFrame coverted into view space", ^{
 						NSRect rectInHostingLayer = NSRectFromCGRect([sut.layer convertRect:sut.coverFlowLayer.selectedItemFrame fromLayer:sut.coverFlowLayer]);
-						NSRect rectInView = [sut convertRectFromBacking:[sut convertRectFromLayer:rectInHostingLayer]];
-						NSValue *expectedFrame = [NSValue valueWithRect:rectInView];
+						NSValue *expectedFrame = [NSValue valueWithRect:rectInHostingLayer];
 						[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
 					});
 				});
