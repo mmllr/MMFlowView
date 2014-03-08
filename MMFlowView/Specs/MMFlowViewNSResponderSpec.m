@@ -285,8 +285,10 @@ describe(@"MMFlowView+NSResponder", ^{
 			});
 			context(@"when clicking on the selected item", ^{
 				__block id mockedDatasource = nil;
+				__block id itemMock = nil;
 				__block NSPasteboard *mockedPasteboard = nil;
 				const NSUInteger selectedIndex = 2;
+				NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
 
 				beforeEach(^{
 					mockedPasteboard = [NSPasteboard nullMock];
@@ -297,20 +299,21 @@ describe(@"MMFlowView+NSResponder", ^{
 
 					mockedDatasource = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
 					sut.dataSource = mockedDatasource;
+
+					itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
+					[mockedDatasource stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
 				});
 				afterEach(^{
 					mockedDatasource = nil;
 				});
 				context(@"drag image", ^{
 					__block id imageCacheMock = nil;
-					__block id itemMock = nil;
 					__block id dragImageMock = nil;
 					__block CGImageRef imageRefMock = NULL;
 					NSString *imageUID = @"testImageUID";
 					NSRect stubbedItemFrame = NSMakeRect(10, 10, 300, 200);
 
 					beforeAll(^{
-						NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
 						NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
 						imageRefMock = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)(imageURL), CGSizeMake(400, 400), (__bridge CFDictionaryRef)quickLookOptions );
 					});
@@ -318,12 +321,9 @@ describe(@"MMFlowView+NSResponder", ^{
 						SAFE_CGIMAGE_RELEASE(imageRefMock);
 					});
 					beforeEach(^{
-						itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 						[itemMock stub:@selector(imageItemUID) andReturn:imageUID];
-						[mockedDatasource stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
 
 						imageCacheMock = [MMFlowViewImageCache nullMock];
-						
 						[imageCacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)(imageRefMock)];
 						sut.imageCache = imageCacheMock;
 						
@@ -366,20 +366,127 @@ describe(@"MMFlowView+NSResponder", ^{
 				context(@"when the datasource does not handle -flowView:writeItemAtIndex:toPasteboard:", ^{
 					beforeEach(^{
 						mockedDatasource = [KWMock nullMock];
+						[mockedDatasource stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
 						sut.dataSource = mockedDatasource;
+						[sut stub:@selector(imageItemForIndex:) andReturn:itemMock];
 					});
 					it(@"should not ask the datasource for writing the item to the pasteboard", ^{
 						[[mockedDatasource shouldNot] receive:@selector(flowView:writeItemAtIndex:toPasteboard:)];
 						
 						[sut mouseDown:mockedEvent];
 					});
+					context(@"when selected item is an url or path", ^{
+						__block NSURL *urlMock = nil;
+						__block NSArray *representationTypes = nil;
+
+						beforeEach(^{
+							urlMock = [NSURL nullMock];
+							[NSURL stub:@selector(fileURLWithPath:) andReturn:urlMock];
+							representationTypes = @[kMMFlowViewURLRepresentationType,kMMFlowViewPathRepresentationType,kMMFlowViewQTMoviePathRepresentationType,kMMFlowViewQCCompositionPathRepresentationType,kMMFlowViewQuickLookPathRepresentationType,kMMFlowViewIconRefPathRepresentationType];
+						});
+						afterEach(^{
+							urlMock = nil;
+							representationTypes = nil;
+						});
+						context(@"when item is an url", ^{
+							beforeEach(^{
+								[itemMock stub:@selector(imageItemRepresentation) andReturn:urlMock];
+							});
+							it(@"should declare NSURLPboardType to the dragging pasteboard", ^{
+								[[mockedPasteboard should] receive:@selector(declareTypes:owner:)
+														 withCount:[representationTypes count]
+													 arguments:@[NSURLPboardType], [KWNull null]];
+								
+								for (NSString *type in representationTypes) {
+									[itemMock stub:@selector(imageItemRepresentationType) andReturn:type];
+									
+									[sut mouseDown:mockedEvent];
+								}
+							});
+
+							it(@"should drag url to the dragging pasteboard", ^{
+								[[urlMock should] receive:@selector(writeToPasteboard:)
+												withCount:[representationTypes count]];
+
+								for (NSString *type in representationTypes) {
+									[itemMock stub:@selector(imageItemRepresentationType) andReturn:type];
+									
+									[sut mouseDown:mockedEvent];
+								}
+							});
+						});
+						context(@"when item is an path string", ^{
+							__block NSString *pathMock = nil;
+							
+							beforeEach(^{
+								pathMock = [NSString nullMock];
+								[itemMock stub:@selector(imageItemRepresentation) andReturn:pathMock];
+							});
+							afterEach(^{
+								pathMock = nil;
+							});
+							it(@"should create an url from the path", ^{
+								[[NSURL should] receive:@selector(fileURLWithPath:)
+											  withCount:[representationTypes count]
+											  arguments:pathMock];
+
+								for (NSString *type in representationTypes) {
+									[itemMock stub:@selector(imageItemRepresentationType) andReturn:type];
+
+									[sut mouseDown:mockedEvent];
+								}
+							});
+								
+							it(@"should declare NSURLPboardType to the dragging pasteboard", ^{
+								[[mockedPasteboard should] receive:@selector(declareTypes:owner:)
+														 withCount:[representationTypes count]
+														 arguments:@[NSURLPboardType], [KWNull null]];
+								
+								for (NSString *type in representationTypes) {
+									[itemMock stub:@selector(imageItemRepresentationType) andReturn:type];
+									
+									[sut mouseDown:mockedEvent];
+								}
+							});
+						});
+						context(@"whne item is neither url or path", ^{
+							__block id representationMock = nil;
+
+							beforeAll(^{
+								representationMock = [NSImage nullMock];
+								representationTypes = @[kMMFlowViewCGImageRepresentationType,kMMFlowViewPDFPageRepresentationType, kMMFlowViewNSImageRepresentationType, kMMFlowViewCGImageSourceRepresentationType,kMMFlowViewNSDataRepresentationType,kMMFlowViewNSBitmapRepresentationType,kMMFlowViewQTMovieRepresentationType,kMMFlowViewQCCompositionRepresentationType,kMMFlowViewIconRefRepresentationType];
+								[itemMock stub:@selector(imageItemRepresentation) andReturn:representationMock];
+							});
+							beforeEach(^{
+								[NSURL stub:@selector(fileURLWithPath:) andReturn:urlMock];
+							});
+							it(@"should not declare NSURLPboardType to the dragging pasteboard", ^{
+								for (NSString *type in representationTypes ) {
+									[itemMock stub:@selector(imageItemRepresentationType) andReturn:type];
+									
+									[[mockedPasteboard shouldNot] receive:@selector(declareTypes:owner:)];
+									[sut mouseDown:mockedEvent];
+								}
+							});
+							it(@"should not write the item to the pasteboard", ^{
+								[[urlMock shouldNot] receive:@selector(writeToPasteboard:)];
+
+								for (NSString *type in representationTypes ) {
+									[itemMock stub:@selector(imageItemRepresentationType) andReturn:type];
+
+									[sut mouseDown:mockedEvent];
+								}
+							});
+						});
+					});
+					
 				});
 			});
 			context(@"when not clicking to an item", ^{
 				beforeEach(^{
 					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(NSNotFound)];
 				});
-				it(@"should should mot change the selection", ^{
+				it(@"should should not change the selection", ^{
 					[[sut shouldNot] receive:@selector(setSelectedIndex:)];
 					
 					[sut mouseDown:mockedEvent];

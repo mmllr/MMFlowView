@@ -165,6 +165,16 @@
 {
 	if ([self.dataSource respondsToSelector:@selector(flowView:writeItemAtIndex:toPasteboard:)]) {
 		[self.dataSource flowView:self writeItemAtIndex:self.selectedIndex toPasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]];
+		return;
+	}
+	id item = [self imageItemForIndex:self.selectedIndex];
+
+	if ([[self.class pathRepresentationTypes] containsObject:[self imageRepresentationTypeForItem:item]]) {
+		id representation = [self imageRepresentationForItem:item];
+		NSPasteboard *dragBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
+		[dragBoard declareTypes:@[NSURLPboardType] owner:nil];
+		representation = [representation isKindOfClass:[NSURL class]] ? representation : [NSURL fileURLWithPath:representation];
+		[representation writeToPasteboard:dragBoard];
 	}
 }
 
