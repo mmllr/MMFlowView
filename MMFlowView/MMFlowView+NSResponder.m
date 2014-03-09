@@ -131,17 +131,11 @@
 	if (clickedItemIndex == NSNotFound) {
 		return;
 	}
-	if (clickedItemIndex == self.selectedIndex) {
-		[self initiateDragFromSelection];
-		[self dragImage:[self dragImageForSelection]
-					 at:self.selectedItemFrame.origin
-				 offset:NSZeroSize
-				  event:theEvent
-			 pasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]
-				 source:self
-			  slideBack:YES];
+	if (clickedItemIndex != self.selectedIndex) {
+		self.selectedIndex = clickedItemIndex;
+		return;
 	}
-	self.selectedIndex = clickedItemIndex;
+	[self singleClickOnSelectionWithEven:theEvent];
 }
 
 - (void)handleScrollBarClick:(NSEvent*)theEvent
@@ -153,7 +147,20 @@
 	}
 }
 
-- (NSImage*)dragImageForSelection
+- (void)singleClickOnSelectionWithEven:(NSEvent *)theEvent
+{
+	if ([self initiateDragFromSelection]) {
+		[self dragImage:[self draggedImageForSelection]
+					 at:self.selectedItemFrame.origin
+				 offset:NSZeroSize
+				  event:theEvent
+			 pasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]
+				 source:self
+			  slideBack:YES];
+	}
+}
+
+- (NSImage*)draggedImageForSelection
 {
 	id item = [self imageItemForIndex:self.selectedIndex];
 	CGImageRef imageRef = [self.imageCache imageForUUID:[self imageUIDForItem:item]];
@@ -161,21 +168,36 @@
 									   size:self.selectedItemFrame.size];
 }
 
-- (void)initiateDragFromSelection
+- (BOOL)initiateDragFromSelection
 {
 	if ([self.dataSource respondsToSelector:@selector(flowView:writeItemAtIndex:toPasteboard:)]) {
-		[self.dataSource flowView:self writeItemAtIndex:self.selectedIndex toPasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]];
-		return;
+		return [self.dataSource flowView:self writeItemAtIndex:self.selectedIndex toPasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]];
 	}
-	id item = [self imageItemForIndex:self.selectedIndex];
+	return [self dragURLFromSelection];
+}
 
-	if ([[self.class pathRepresentationTypes] containsObject:[self imageRepresentationTypeForItem:item]]) {
-		id representation = [self imageRepresentationForItem:item];
-		NSPasteboard *dragBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
-		[dragBoard declareTypes:@[NSURLPboardType] owner:nil];
-		representation = [representation isKindOfClass:[NSURL class]] ? representation : [NSURL fileURLWithPath:representation];
-		[representation writeToPasteboard:dragBoard];
+- (BOOL)dragURLFromSelection
+{
+	NSURL *url = self.urlFromSelection;
+
+	if (!url) {
+		return NO;
 	}
+	NSPasteboard *dragBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
+	[dragBoard declareTypes:@[NSURLPboardType] owner:nil];
+	[url writeToPasteboard:dragBoard];
+	return YES;
+}
+
+- (NSURL*)urlFromSelection
+{
+	id item = [self imageItemForIndex:self.selectedIndex];
+	
+	if (![[self.class pathRepresentationTypes] containsObject:[self imageRepresentationTypeForItem:item]]) {
+		return nil;
+	}
+	id representation = [self imageRepresentationForItem:item];
+	return [representation isKindOfClass:[NSURL class]] ? representation : [NSURL fileURLWithPath:representation];
 }
 
 @end
