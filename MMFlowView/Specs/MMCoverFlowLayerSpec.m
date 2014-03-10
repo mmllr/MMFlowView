@@ -187,7 +187,7 @@ describe(@"MMCoverFlowLayer", ^{
 				});
 				
 			});
-			context(@"showsReflection", ^{
+			context(NSStringFromSelector(@selector(showsReflection)), ^{
 				context(@"enabling reflections", ^{
 					beforeEach(^{
 						sut.showsReflection = YES;
@@ -314,7 +314,7 @@ describe(@"MMCoverFlowLayer", ^{
 			__block NSArray *sublayers = nil;
 
 			beforeEach(^{
-				datasourceMock = [KWMock mockForProtocol:@protocol(MMCoverFlowLayerDataSource)];
+				datasourceMock = [KWMock nullMockForProtocol:@protocol(MMCoverFlowLayerDataSource)];
 				[datasourceMock stub:@selector(coverFlowLayerWillRelayout:)];
 				[datasourceMock stub:@selector(coverFlowLayerDidRelayout:)];
 				sublayers = @[[CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer]];
@@ -379,7 +379,7 @@ describe(@"MMCoverFlowLayer", ^{
 					});
 				});
 			});
-			context(@"layout", ^{
+			context(NSStringFromSelector(@selector(layoutSublayers)), ^{
 				it(@"should invoke coverFlowLayerWillRelayout when triggering relayout", ^{
 					[[datasourceMock should] receive:@selector(coverFlowLayerWillRelayout:)];
 					[sut layoutSublayers];
@@ -388,12 +388,54 @@ describe(@"MMCoverFlowLayer", ^{
 					[[datasourceMock shouldEventually] receive:@selector(coverFlowLayerDidRelayout:) withCountAtLeast:1];
 					[sut layoutSublayers];
 				});
+				context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
+					CGRect visibleRect = CGRectMake(1, 1, 20, 20);
+					__block CALayer *layerA = nil;
+					__block CALayer *layerB = nil;
+					__block CALayer *layerC = nil;
+					__block CALayer *invisibleLayer = nil;
+					__block NSArray *visibleLayers = nil;
+
+					beforeEach(^{
+						visibleLayers = nil;
+						layerA = [CALayer nullMockWithName:@"layerA"];
+						layerB = [CALayer nullMockWithName:@"layerB"];
+						layerC = [CALayer nullMockWithName:@"layerC"];
+						invisibleLayer = [CALayer nullMockWithName:@"invisibleLayer"];
+						[layerA stub:@selector(visibleRect) andReturn:theValue(visibleRect)];
+						[layerB stub:@selector(visibleRect) andReturn:theValue(visibleRect)];
+						[layerC stub:@selector(visibleRect) andReturn:theValue(visibleRect)];
+						[invisibleLayer stub:@selector(visibleRect) andReturn:theValue(CGRectNull)];
+						[sut stub:@selector(contentLayers) andReturn:@[invisibleLayer, layerA, layerB, layerC]];
+						visibleLayers = @[layerA, layerB, layerC];
+					});
+					afterEach(^{
+						layerA = layerB = layerC = invisibleLayer = nil;
+					});
+					it(@"should invoke coverFlowLayer:willShowLayer:atIndex: for every visible layer", ^{
+						[[datasourceMock should] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
+						 withArguments:sut, layerA, theValue(1)];
+						[[datasourceMock should] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
+										   withArguments:sut, layerB, theValue(2)];
+						[[datasourceMock should] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
+										   withArguments:sut, layerC, theValue(3)];
+
+						[sut layoutSublayers];
+					});
+					it(@"should not invoke coverFlowLayer:willShowLayer:atIndex: for invisible layers", ^{
+						[[datasourceMock shouldNot] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
+										   withArguments:sut, invisibleLayer, theValue(0)];
+						
+						[sut layoutSublayers];
+					});
+				});
 				it(@"should set the CoreAnimation transactions", ^{
 					[[[CATransaction class] should] receive:@selector(begin)];
 					[[[CATransaction class] should] receive:@selector(commit)];
 					[[[CATransaction class] should] receive:@selector(setDisableActions:) withArguments:theValue(sut.inLiveResize)];
 					[[[CATransaction class] should] receive:@selector(setAnimationDuration:) withArguments:theValue(sut.scrollDuration)];
 					[[[CATransaction class] should] receive:@selector(setAnimationTimingFunction:) withArguments:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
+
 					[sut layoutSublayers];
 				});
 				context(@"attributes", ^{

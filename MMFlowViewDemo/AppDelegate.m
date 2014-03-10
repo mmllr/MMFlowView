@@ -241,10 +241,5 @@
 	self.flowView.reflectionOffset = -[ sender floatValue ] / 100.0;
 }
 
-- (IBAction)previewScaleChanged:(NSSlider *)sender
-{
-	self.flowView.previewScale = [ sender floatValue ];
-}
-
 @end
 

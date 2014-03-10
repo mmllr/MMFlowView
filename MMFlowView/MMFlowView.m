@@ -72,7 +72,6 @@ static const CGFloat kDefaultStackedScale = -200.;
 static const CGFloat kDefaultReflectionOffset = -0.4;
 static const CFTimeInterval kDefaultScrollDuration = .4;
 static const CGFloat kDefaultItemScale = 1.;
-static const CGFloat kHighlightedBorderWidth = 2;
 
 static const CGFloat kMinimumItemScale = 0.1;
 static const CGFloat kMaximumItemScale = 1.;
@@ -261,7 +260,6 @@ static NSString * const kLayoutKey = @"layout";
 			self.showsReflection = [ aDecoder decodeBoolForKey:kMMFlowViewShowsReflectionKey ];
 			self.scrollDuration = [ aDecoder decodeDoubleForKey:kMMFlowViewScrollDurationKey ];
 			self.itemScale = [ aDecoder decodeDoubleForKey:kMMFlowViewItemScaleKey ];
-			self.previewScale = [ aDecoder decodeDoubleForKey:kMMFlowViewPreviewScaleKey ];
 			_layout = [aDecoder decodeObjectForKey:kLayoutKey];
 		}
 		else {
@@ -286,7 +284,6 @@ static NSString * const kLayoutKey = @"layout";
 		[ aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey ];
 		[ aCoder encodeDouble:self.scrollDuration forKey:kMMFlowViewScrollDurationKey ];
 		[ aCoder encodeDouble:self.itemScale forKey:kMMFlowViewItemScaleKey ];
-		[ aCoder encodeDouble:self.previewScale forKey:kMMFlowViewPreviewScaleKey ];
 		[aCoder encodeObject:self.layout forKey:kLayoutKey];
 	}
 	else {
@@ -310,7 +307,6 @@ static NSString * const kLayoutKey = @"layout";
 	self.showsReflection = NO;
 	self.scrollDuration = kDefaultScrollDuration;
 	self.itemScale = kDefaultItemScale;
-	self.previewScale = kDefaultPreviewScale;
 }
 
 #pragma mark -
@@ -370,27 +366,6 @@ static NSString * const kLayoutKey = @"layout";
 	if ( _itemScale != newItemScale ) {
 		_itemScale = CLAMP( newItemScale, kMinimumItemScale, kMaximumItemScale );
 	}
-}
-
-- (void)setPreviewScale:(CGFloat)aPreviewScale
-{
-	if ( _previewScale != aPreviewScale ) {
-		_previewScale = CLAMP( aPreviewScale, 0.01, 1. );
-		[self.imageCache reset];
-		[self updateImages];
-	}
-}
-
-- (void)setSelectedLayer:(CALayer *)aLayer
-{
-	if ( aLayer != _selectedLayer ) {
-		// deselect old layer
-		[ _selectedLayer setValue:@NO
-						  forKey:kMMFlowViewHiglightedLayerKey ];
-		_selectedLayer = aLayer;
-	}
-	[ _selectedLayer setValue:@YES
-					  forKey:kMMFlowViewHiglightedLayerKey ];
 }
 
 - (void)setNumberOfItems:(NSUInteger)numberOfItems
@@ -457,8 +432,15 @@ static NSString * const kLayoutKey = @"layout";
 - (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer
 {
 	self.imageFactory.maxImageSize = self.layout.itemSize;
-	[self updateImages];
 	[self.scrollBarLayer setNeedsLayout];
+}
+
+- (void)coverFlowLayer:(MMCoverFlowLayer *)coverFlowLayer willShowLayer:(CALayer *)contentLayer atIndex:(NSUInteger)idx
+{
+	[self.imageFactory createCGImageForItem:[self imageItemForIndex:idx]
+						  completionHandler:^(CGImageRef image) {
+							  contentLayer.contents = (__bridge id)(image);
+						  }];
 }
 
 #pragma mark - other helpers
@@ -562,8 +544,6 @@ static NSString * const kLayoutKey = @"layout";
 {
 	[super viewDidEndLiveResize];
 	self.coverFlowLayer.inLiveResize = NO;
-	//[ self.scrollLayer setNeedsLayout ];
-	//[self updateImages];
 }
 
 - (void)updateTrackingAreas
@@ -571,11 +551,6 @@ static NSString * const kLayoutKey = @"layout";
 	[ super updateTrackingAreas ];
 	[ self setupTrackingAreas ];
 }
-
-#pragma mark -
-#pragma mark NSResponder overrides
-
-
 
 #pragma mark -
 #pragma mark IBActions
@@ -594,9 +569,6 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)reloadContent
 {
-	// clear all layers
-	//[ self.imageCache removeAllObjects ];
-	
 	if ( self.bindingsEnabled ) {
 		self.numberOfItems = [ self.contentArray count ];
 	}
@@ -813,37 +785,11 @@ static NSString * const kLayoutKey = @"layout";
 	return layer;
 }
 
-- (void)highlightLayer:(CALayer*)aLayer highlighted:(BOOL)isHighlighted cornerRadius:(CGFloat)cornerRadius highlightingColor:(CGColorRef)highlightingColor
-{
-	if ( isHighlighted ) {
-		aLayer.cornerRadius = cornerRadius;
-		aLayer.borderWidth = kHighlightedBorderWidth;
-		aLayer.borderColor = highlightingColor;
-	}
-	else {
-		aLayer.cornerRadius = 0;
-		aLayer.borderWidth = 0;
-		aLayer.borderColor = nil;
-	}
-}
-
-#pragma mark -
-#pragma mark Layer updating
-
-- (void)updateImages
-{
-	[self.coverFlowLayer.contentLayers enumerateObjectsAtIndexes:self.visibleItemIndexes options:0 usingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-		[self.imageFactory createCGImageForItem:[self imageItemForIndex:idx]
-							  completionHandler:^(CGImageRef image) {
-			contentLayer.contents = (__bridge id)(image);
-		}];
-	}];
-}
+#pragma mark - selection
 
 - (void)updateSelectionInRange:(NSRange)invalidatedRange
 {
 	self.title = [ self titleAtIndex:self.selectedIndex ];
-	// ax
 	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
 }
 

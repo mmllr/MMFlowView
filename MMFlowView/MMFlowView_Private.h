@@ -55,9 +55,6 @@
 - (CGImageRef)defaultImageForItem:(id)anItem withSize:(CGSize)imageSize;
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex;
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex;
-- (void)highlightLayer:(CALayer*)aLayer highlighted:(BOOL)isHighlighted cornerRadius:(CGFloat)cornerRadius highlightingColor:(CGColorRef)highlightingColor;
-
-- (void)updateImages;
 - (IBAction)togglePreviewPanel:(id)previewPanel;
 
 @end

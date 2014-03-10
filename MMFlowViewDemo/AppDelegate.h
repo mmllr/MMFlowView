@@ -35,6 +35,5 @@
 - (IBAction)toggleAngle:(id)sender;
 - (IBAction)toggleSpacing:(id)sender;
 - (IBAction)reflectionChanged:(NSSlider *)sender;
-- (IBAction)previewScaleChanged:(NSSlider *)sender;
 
 @end

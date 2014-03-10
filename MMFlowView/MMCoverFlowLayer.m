@@ -208,7 +208,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	[CATransaction setAnimationDuration:self.scrollDuration];
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
 	[self applyLayout];
-	[ CATransaction setCompletionBlock:^{
+	[CATransaction setCompletionBlock:^{
 		if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerDidRelayout:)] ) {
 			[self.dataSource coverFlowLayerDidRelayout:self];
 		}
@@ -319,6 +319,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 				firstVisibleItem = idx;
 			}
 			numberOfVisibleItems++;
+			[self.dataSource coverFlowLayer:self willShowLayer:contentLayer atIndex:idx];
 		}
 		if ( idx > (firstVisibleItem + numberOfVisibleItems) ) {
 			*stop = YES;

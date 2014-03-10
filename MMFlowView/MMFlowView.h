@@ -148,8 +148,6 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 @property (nonatomic) CGFloat reflectionOffset;
 /** scaling factor for image-items */
 @property (nonatomic) CGFloat itemScale;
-/** scale value for cached image resolution in the range of 0-1, 0 means smaller cached images, 1 is images in the size of the actual image-tile */
-@property (nonatomic) CGFloat previewScale;
 /** duration of a scroll in changing the selection */
 @property (nonatomic) CFTimeInterval scrollDuration;
 /** flag to indicate wheter reflections are shown or not */

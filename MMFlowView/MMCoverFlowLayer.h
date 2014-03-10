@@ -17,6 +17,7 @@
 @optional
 - (void)coverFlowLayerWillRelayout:(MMCoverFlowLayer*)coverFlowLayer;
 - (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer;
+- (void)coverFlowLayer:(MMCoverFlowLayer*)coverFlowLayer willShowLayer:(CALayer*)contentLayer atIndex:(NSUInteger)index;
 
 @end
 

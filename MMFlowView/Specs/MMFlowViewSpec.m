@@ -177,9 +177,6 @@ describe(@"MMFlowView", ^{
 		it(@"should have a item scale of 1", ^{
 			[[theValue(sut.itemScale) should] equal:theValue(1)];
 		});
-		it(@"should have a preview scale of 0.25", ^{
-			[[theValue(sut.previewScale) should] equal:theValue(.25)];
-		});
 		it(@"should have an empty title", ^{
 			[[sut.title should] equal:@""];
 		});
@@ -303,7 +300,7 @@ describe(@"MMFlowView", ^{
 					[[[NSValue valueWithPoint:sut.backgroundLayer.frame.origin] should] equal:expectedPoint];
 				});
 			});
-			context(@"coverFlowLayer property", ^{
+			context(NSStringFromSelector(@selector(coverFlowLayer)), ^{
 				it(@"should be set", ^{
 					[[sut.coverFlowLayer shouldNot] beNil];
 				});
@@ -576,78 +573,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(sut.numberOfItems) should] equal:theValue(10)];
 						});
 					});
-					context(@"updateImages", ^{
-						__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
-						__block NSArray *contentLayers = nil;
-
-						beforeEach(^{
-							mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
-							contentLayers = @[[CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer], [CALayer layer]];
-							[[mockedCoverFlowLayer stubAndReturn:contentLayers] contentLayers];
-							sut.coverFlowLayer = mockedCoverFlowLayer;
-						});
-						afterEach(^{
-							contentLayers = nil;
-							mockedCoverFlowLayer = nil;
-						});
-						context(@"interaction with the image factory", ^{
-							__block id mockedImageFactory = nil;
-							beforeAll(^{
-								mockedImageFactory = [MMFlowViewImageFactory nullMock];
-							});
-							afterAll(^{
-								mockedImageFactory = nil;
-							});
-							beforeEach(^{
-								sut.imageFactory = mockedImageFactory;
-							});
-							context(@"when all 10 layers are visible", ^{
-								beforeEach(^{
-									[sut stub:@selector(visibleItemIndexes) andReturn:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 10)]];
-								});
-								it(@"should ask the image factory for the images", ^{
-									[[mockedImageFactory should] receive:@selector(createCGImageForItem:completionHandler:) withCount:10];
-									[sut updateImages];
-								});
-								it(@"should update all visible indexes", ^{
-									[[contentLayers should] receive:@selector(enumerateObjectsAtIndexes:options:usingBlock:) withArguments:sut.visibleItemIndexes, [KWAny any], [KWAny any]];
-									[sut updateImages];
-								});
-								context(@"updating the visible indexes", ^{
-									__block CGImageRef testImageRef = NULL;
-									__block NSArray *visibleContent = nil;
-
-									beforeAll(^{
-										NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-										testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL context:NULL hints:nil]);
-									});
-									afterAll(^{
-										SAFE_CGIMAGE_RELEASE(testImageRef);
-									});
-									beforeEach(^{
-										KWCaptureSpy *spy = [contentLayers captureArgument:@selector(enumerateObjectsAtIndexes:options:usingBlock:) atIndex:2];
-										[sut updateImages];
-										void (^enumerationBlock)(CALayer *contentLayer, NSUInteger idx, BOOL *stop) = spy.argument;
-										KWCaptureSpy *factorySpy = nil;
-										
-										for (NSUInteger i = [sut.visibleItemIndexes firstIndex]; i != NSNotFound; i = [sut.visibleItemIndexes indexGreaterThanIndex:i]) {
-											factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageForItem:completionHandler:) atIndex:1];
-											enumerationBlock(contentLayers[i], i, NULL);
-											void (^completionHandler)(CGImageRef image) = factorySpy.argument;
-											completionHandler(testImageRef);
-											[mockedImageFactory removeMessageSpy:factorySpy forMessagePattern:[KWMessagePattern messagePatternWithSelector:@selector(createCGImageForItem:completionHandler:)]];
-										}
-										visibleContent = [contentLayers valueForKey:@"contents"];
-									});
-									it(@"should set image on the contentLayers", ^{
-										id image = (__bridge id)(testImageRef);
-										[[visibleContent should] equal:@[image, image, image, image, image, image, image, image, image, image]];
-									});
-								});
-							});
-						});
-					});
-					context(@"MMCoverFlowLayerDataSource", ^{
+					context(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 						it(@"should conform to the MMCoverFlowLayerDataSource protocol", ^{
 							[[sut should] conformToProtocol:@protocol(MMCoverFlowLayerDataSource)];
 						});
@@ -659,6 +585,9 @@ describe(@"MMFlowView", ^{
 						});
 						it(@"should respond to coverFlowLayerDidRelayout:", ^{
 							[[sut should] respondToSelector:@selector(coverFlowLayerDidRelayout:)];
+						});
+						it(@"should respond to coverFlowLayer:willShowLayer:atIndex:", ^{
+							[[sut should] respondToSelector:@selector(coverFlowLayer:willShowLayer:atIndex:)];
 						});
 						it(@"should be the datasource for the coverflow layer", ^{
 							[[sut should] equal:sut.coverFlowLayer.dataSource];
@@ -676,10 +605,6 @@ describe(@"MMFlowView", ^{
 
 							beforeEach(^{
 								mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
-							});
-							it(@"should invoke updateImages", ^{
-								[[sut should] receive:@selector(updateImages)];
-								[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
 							});
 							it(@"should set the maxImageSize of the image factory to the layouts itemSite", ^{
 								MMFlowViewImageFactory *mockedImageFactory = [MMFlowViewImageFactory nullMock];
@@ -704,7 +629,7 @@ describe(@"MMFlowView", ^{
 								});
 							});
 						});
-						context(@"coverFlowLayer:contentLayerForIndex:", ^{
+						context(NSStringFromSelector(@selector(coverFlowLayer:contentLayerForIndex:)), ^{
 							__block CALayer *contentLayer = nil;
 
 							context(@"when asking for a content layer", ^{
@@ -724,7 +649,46 @@ describe(@"MMFlowView", ^{
 									[[contentLayer.contentsGravity should] equal:kCAGravityResizeAspectFill];
 								});
 							});
-							
+						});
+						context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
+							__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
+							__block CALayer *contentLayer = nil;
+							__block id mockedImageFactory = nil;
+							__block CGImageRef testImageRef = NULL;
+
+							beforeAll(^{
+								NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+								testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL context:NULL hints:nil]);
+							});
+							afterAll(^{
+								SAFE_CGIMAGE_RELEASE(testImageRef);
+							});
+
+							beforeEach(^{
+								mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
+								mockedImageFactory = [MMFlowViewImageFactory nullMock];
+								contentLayer = [CALayer nullMock];
+								sut.coverFlowLayer = mockedCoverFlowLayer;
+								sut.imageFactory = mockedImageFactory;
+							});
+							afterEach(^{
+								contentLayer = nil;
+								mockedCoverFlowLayer = nil;
+								mockedImageFactory = nil;
+							});
+							it(@"should ask the image factory for the images", ^{
+								[[mockedImageFactory should] receive:@selector(createCGImageForItem:completionHandler:)];
+								[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
+							});
+							it(@"it should set the image from the image factory to the layer", ^{
+								[[contentLayer should] receive:@selector(setContents:) withArguments:(__bridge id)(testImageRef)];
+
+								KWCaptureSpy *factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageForItem:completionHandler:) atIndex:1];
+
+								[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
+								void (^completionHandler)(CGImageRef image) = factorySpy.argument;
+								completionHandler(testImageRef);
+							});
 						});
 					});
 				});
