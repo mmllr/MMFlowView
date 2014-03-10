@@ -135,7 +135,11 @@
 		self.selectedIndex = clickedItemIndex;
 		return;
 	}
-	[self singleClickOnSelectionWithEven:theEvent];
+	if ([theEvent clickCount] == 2) {
+		[self doubleClickOnSelection];
+		return;
+	}
+	[self singleClickOnSelectionWithEvent:theEvent];
 }
 
 - (void)handleScrollBarClick:(NSEvent*)theEvent
@@ -147,7 +151,7 @@
 	}
 }
 
-- (void)singleClickOnSelectionWithEven:(NSEvent *)theEvent
+- (void)singleClickOnSelectionWithEvent:(NSEvent *)theEvent
 {
 	if ([self initiateDragFromSelection]) {
 		[self dragImage:[self draggedImageForSelection]
@@ -158,6 +162,19 @@
 				 source:self
 			  slideBack:YES];
 	}
+}
+
+- (void)doubleClickOnSelection
+{
+	if ([self.delegate respondsToSelector:@selector(flowView:itemWasDoubleClickedAtIndex:)]) {
+		[self.delegate flowView:self itemWasDoubleClickedAtIndex:self.selectedIndex];
+		return;
+	}
+	if (self.target && self.action) {
+		[self sendAction:self.action to:self.target];
+		return;
+	}
+	[[NSWorkspace sharedWorkspace] openURL:self.urlFromSelection];
 }
 
 - (NSImage*)draggedImageForSelection
