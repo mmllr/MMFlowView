@@ -201,7 +201,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		[self.dataSource coverFlowLayerWillRelayout:self];
 	}
 	self.layout.contentHeight = CGRectGetHeight(self.bounds);
-	//self.replicatorLayer.frame = CGRectMake(0, 0, self.layout.contentWidth, self.layout.contentHeight);
+	self.replicatorLayer.frame = CGRectMake(0, 0, self.layout.contentWidth, self.layout.contentHeight);
 	self.replicatorLayer.instanceTransform = CATransform3DConcat( CATransform3DMakeScale(1, -1, 1), CATransform3DMakeTranslation(0, -self.layout.itemSize.height, 0));
 	[CATransaction begin];
 	[CATransaction setDisableActions:self.inLiveResize];

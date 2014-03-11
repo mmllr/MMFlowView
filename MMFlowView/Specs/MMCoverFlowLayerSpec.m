@@ -388,6 +388,17 @@ describe(@"MMCoverFlowLayer", ^{
 					[[datasourceMock shouldEventually] receive:@selector(coverFlowLayerDidRelayout:) withCountAtLeast:1];
 					[sut layoutSublayers];
 				});
+				it(@"should set the replicator layers frame to the layouts content rect", ^{
+					CGFloat contentWidth = 4000;
+					CGFloat contentHeight = 200;
+					[layout stub:@selector(contentWidth) andReturn:theValue(contentWidth)];
+					[layout stub:@selector(contentHeight) andReturn:theValue(contentHeight)];
+					CAReplicatorLayer *mockedReplicatorLayer = [CAReplicatorLayer nullMock];
+					[sut setValue:mockedReplicatorLayer forKey:@"replicatorLayer"];
+
+					[[mockedReplicatorLayer should] receive:@selector(setFrame:) withArguments:theValue(CGRectMake(0, 0, contentWidth, contentHeight))];
+					[sut layoutSublayers];
+				});
 				context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
 					CGRect visibleRect = CGRectMake(1, 1, 20, 20);
 					__block CALayer *layerA = nil;
