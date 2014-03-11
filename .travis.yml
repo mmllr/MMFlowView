@@ -1,4 +1,6 @@
-nguage: objective-c
+language: objective-c
+rvm:
+  - "2.1.0"
 env: LC_ALL="en_US.UTF-8"
-script: xcodebuild -project MMFlowViewDemo.xcodeproj -scheme MMFlowViewDemo_CI test
+script: xctool -workspace MMFlowViewDemo.xcworkspace/ -scheme MMFlowViewDemo_CI test 
 
