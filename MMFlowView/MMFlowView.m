@@ -34,6 +34,7 @@
 #import "NSArray+MMAdditions.h"
 #import "MMFlowView+MMScrollBarDelegate.h"
 #import "MMMacros.h"
+#import "MMFlowView+MMCoverFlowLayerDataSource.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -67,7 +68,6 @@ static const CGFloat kDefaultTitleSize = 18.;
 static const CGFloat kDefaultItemSize = 100.;
 static const CGFloat kDefaultStackedAngle = 70.;
 static const CGFloat kDefaultItemSpacing = 50.;
-static const CGFloat kDefaultPreviewScale = 0.25;
 static const CGFloat kDefaultStackedScale = -200.;
 static const CGFloat kDefaultReflectionOffset = -0.4;
 static const CFTimeInterval kDefaultScrollDuration = .4;
@@ -413,34 +413,6 @@ static NSString * const kLayoutKey = @"layout";
 	CGRect selectedRectInLayerSpace = [self.layer convertRect:selectedFrameInCoverFlowLayer fromLayer:self.coverFlowLayer];
 
 	return NSRectFromCGRect([self convertRectFromLayer:selectedRectInLayerSpace]);
-}
-
-#pragma mark - MMCoverFlowLayerDataSource
-
-- (CALayer*)coverFlowLayer:(MMCoverFlowLayer *)layer contentLayerForIndex:(NSUInteger)index
-{
-	CALayer *contentLayer = [CALayer layer];
-	contentLayer.contents = (id)[[self class] defaultImage];
-	contentLayer.contentsGravity = kCAGravityResizeAspectFill;
-	return contentLayer;
-}
-
-- (void)coverFlowLayerWillRelayout:(MMCoverFlowLayer *)coverFlowLayer
-{
-}
-
-- (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer
-{
-	self.imageFactory.maxImageSize = self.layout.itemSize;
-	[self.scrollBarLayer setNeedsLayout];
-}
-
-- (void)coverFlowLayer:(MMCoverFlowLayer *)coverFlowLayer willShowLayer:(CALayer *)contentLayer atIndex:(NSUInteger)idx
-{
-	[self.imageFactory createCGImageForItem:[self imageItemForIndex:idx]
-						  completionHandler:^(CGImageRef image) {
-							  contentLayer.contents = (__bridge id)(image);
-						  }];
 }
 
 #pragma mark - other helpers

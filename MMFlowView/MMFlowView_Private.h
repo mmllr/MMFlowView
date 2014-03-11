@@ -19,7 +19,7 @@
 @class MMFlowViewImageFactory;
 @class MMScrollBarLayer;
 
-@interface MMFlowView () <MMCoverFlowLayerDataSource>
+@interface MMFlowView ()
 
 @property (strong) MMCoverFlowLayout *layout;
 

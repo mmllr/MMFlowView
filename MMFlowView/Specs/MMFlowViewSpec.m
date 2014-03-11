@@ -70,7 +70,7 @@ describe(@"MMFlowView", ^{
 				[[theValue([sut acceptsTouchEvents]) should] beYes];
 			});
 		});
-		context(@"visibleItemIndexes", ^{
+		context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
 			it(@"should not be nil", ^{
 				[[sut.visibleItemIndexes shouldNot] beNil];
 			});
@@ -78,7 +78,7 @@ describe(@"MMFlowView", ^{
 				[[sut.visibleItemIndexes should] haveCountOf:0];
 			});
 		});
-		context(@"stackedAngle property", ^{
+		context(NSStringFromSelector(@selector(stackedAngle)), ^{
 			it(@"should have a default stacked angle of 70", ^{
 				[[theValue(sut.stackedAngle) should] equal:theValue(70)];
 			});
@@ -94,13 +94,13 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
-		context(@"selectedItemFrame", ^{
+		context(NSStringFromSelector(@selector(selectedItemFrame)), ^{
 			it(@"should initially have a selectedItemFrame of NSZeroRect", ^{
 				NSValue *expectedFrame = [NSValue valueWithRect:NSZeroRect];
 				[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
 			});
 		});
-		context(@"spacing property", ^{
+		context(NSStringFromSelector(@selector(spacing)), ^{
 			it(@"should have a default spacing of 50", ^{
 				[[theValue(sut.spacing) should] equal:theValue(50)];
 			});
@@ -116,7 +116,7 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
-		context(@"showsReflection", ^{
+		context(NSStringFromSelector(@selector(showsReflection)), ^{
 			it(@"should not initially show reflections", ^{
 				[[theValue(sut.showsReflection) should] beNo];
 			});
@@ -143,7 +143,7 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
-		context(@"reflectionOffset", ^{
+		context(NSStringFromSelector(@selector(reflectionOffset)), ^{
 			it(@"should have a reflectionOffset of -.4", ^{
 				[[theValue(sut.reflectionOffset) should] equal:-.4 withDelta:.0000001];
 			});
@@ -314,7 +314,7 @@ describe(@"MMFlowView", ^{
 					[[theValue(CGRectGetWidth(sut.coverFlowLayer.bounds)) should] equal:theValue(CGRectGetWidth(sut.bounds))];
 				});
 			});
-			context(@"containerLayer", ^{
+			context(NSStringFromSelector(@selector(containerLayer)), ^{
 				it(@"should exist", ^{
 					[[sut.containerLayer shouldNot] beNil];
 				});
@@ -568,128 +568,16 @@ describe(@"MMFlowView", ^{
 					[[theValue(sut.selectedIndex) should] equal:theValue(0)];
 				});
 				context(@"layers", ^{
-					context(@"item layers", ^{
-						it(@"should have numberOfItems (10) sublayers", ^{
-							[[theValue(sut.numberOfItems) should] equal:theValue(10)];
-						});
+					it(@"should have numberOfItems (10) sublayers", ^{
+						[[theValue(sut.numberOfItems) should] equal:theValue(10)];
 					});
-					context(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
-						it(@"should conform to the MMCoverFlowLayerDataSource protocol", ^{
-							[[sut should] conformToProtocol:@protocol(MMCoverFlowLayerDataSource)];
-						});
-						it(@"should respond to coverFlowLayer:contentLayerForIndex:", ^{
-							[[sut should] respondToSelector:@selector(coverFlowLayer:contentLayerForIndex:)];
-						});
-						it(@"should respond to coverFlowLayerWillRelayout:", ^{
-							[[sut should] respondToSelector:@selector(coverFlowLayerWillRelayout:)];
-						});
-						it(@"should respond to coverFlowLayerDidRelayout:", ^{
-							[[sut should] respondToSelector:@selector(coverFlowLayerDidRelayout:)];
-						});
-						it(@"should respond to coverFlowLayer:willShowLayer:atIndex:", ^{
-							[[sut should] respondToSelector:@selector(coverFlowLayer:willShowLayer:atIndex:)];
-						});
-						it(@"should be the datasource for the coverflow layer", ^{
-							[[sut should] equal:sut.coverFlowLayer.dataSource];
-						});
-						it(@"should reload the cover flow layer when invoking reloadContent", ^{
-							[[sut.coverFlowLayer should] receive:@selector(reloadContent)];
-							[sut reloadContent];
-						});
-						it(@"should relayout the cover flow layer when changing the selection", ^{
-							[[sut.coverFlowLayer should] receive:@selector(setNeedsLayout)];
-							sut.selectedIndex = sut.selectedIndex + 1;
-						});
-						context(NSStringFromSelector(@selector(coverFlowLayerDidRelayout:)), ^{
-							__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
-
-							beforeEach(^{
-								mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
-							});
-							it(@"should set the maxImageSize of the image factory to the layouts itemSite", ^{
-								MMFlowViewImageFactory *mockedImageFactory = [MMFlowViewImageFactory nullMock];
-								[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(sut.layout.itemSize)];
-								sut.imageFactory = mockedImageFactory;
-								[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
-							});
-							context(@"scroll bar interaction", ^{
-								__block MMScrollBarLayer *mockedScrollBarLayer = nil;
-
-								beforeEach(^{
-									mockedScrollBarLayer = [MMScrollBarLayer nullMock];
-									sut.scrollBarLayer = mockedScrollBarLayer;
-								});
-								afterEach(^{
-									mockedScrollBarLayer = nil;
-								});
-								it(@"should tell the scroll bar layer to relayout", ^{
-									[[mockedScrollBarLayer should] receive:@selector(setNeedsLayout)];
-
-									[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
-								});
-							});
-						});
-						context(NSStringFromSelector(@selector(coverFlowLayer:contentLayerForIndex:)), ^{
-							__block CALayer *contentLayer = nil;
-
-							context(@"when asking for a content layer", ^{
-								beforeEach(^{
-									contentLayer = [sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0];
-								});
-								afterEach(^{
-									contentLayer = nil;
-								});
-								it(@"should not return nil when asked for a content layer", ^{
-									[[contentLayer shouldNot] beNil];
-								});
-								it(@"should have set an image", ^{
-									[[contentLayer.contents shouldNot] beNil];
-								});
-								it(@"should have a contentsGravity of kCAGravityResizeAspectFill", ^{
-									[[contentLayer.contentsGravity should] equal:kCAGravityResizeAspectFill];
-								});
-							});
-						});
-						context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
-							__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
-							__block CALayer *contentLayer = nil;
-							__block id mockedImageFactory = nil;
-							__block CGImageRef testImageRef = NULL;
-
-							beforeAll(^{
-								NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-								testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL context:NULL hints:nil]);
-							});
-							afterAll(^{
-								SAFE_CGIMAGE_RELEASE(testImageRef);
-							});
-
-							beforeEach(^{
-								mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
-								mockedImageFactory = [MMFlowViewImageFactory nullMock];
-								contentLayer = [CALayer nullMock];
-								sut.coverFlowLayer = mockedCoverFlowLayer;
-								sut.imageFactory = mockedImageFactory;
-							});
-							afterEach(^{
-								contentLayer = nil;
-								mockedCoverFlowLayer = nil;
-								mockedImageFactory = nil;
-							});
-							it(@"should ask the image factory for the images", ^{
-								[[mockedImageFactory should] receive:@selector(createCGImageForItem:completionHandler:)];
-								[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
-							});
-							it(@"it should set the image from the image factory to the layer", ^{
-								[[contentLayer should] receive:@selector(setContents:) withArguments:(__bridge id)(testImageRef)];
-
-								KWCaptureSpy *factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageForItem:completionHandler:) atIndex:1];
-
-								[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
-								void (^completionHandler)(CGImageRef image) = factorySpy.argument;
-								completionHandler(testImageRef);
-							});
-						});
+					it(@"should reload the cover flow layer when invoking reloadContent", ^{
+						[[sut.coverFlowLayer should] receive:@selector(reloadContent)];
+						[sut reloadContent];
+					});
+					it(@"should relayout the cover flow layer when changing the selection", ^{
+						[[sut.coverFlowLayer should] receive:@selector(setNeedsLayout)];
+						sut.selectedIndex = sut.selectedIndex + 1;
 					});
 				});
 				context(@"visibleItems", ^{
