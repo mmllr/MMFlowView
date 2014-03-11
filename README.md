@@ -8,13 +8,13 @@ MMFlowView uses asynchronous image loading and caches the image content, trying 
 License
 ----------
 
-FreeBSD-license.
+MIT-license.
 
 Supported OS & SDK Versions
 -----------------------------
 
-* Supported build target - Mac OS 10.6 (Xcode 4.3.3, Apple LLVM compiler 3.1)
-* Earliest compatible deployment target - Mac OS 10.6
+* Supported build target - Mac OS 10.7 (Xcode 5, Apple LLVM compiler 3.3)
+* Earliest compatible deployment target - Mac OS 10.7
 
 Installation
 --------------
