@@ -1,4 +1,4 @@
 language: objective-c
-rvm: 2.1.0
+rvm: 1.9.3
 env: LC_ALL="en_US.UTF-8"
 script: xcodebuild -workspace MMFlowViewDemo.xcworkspace -scheme MMFlowViewDemo_CI -sdk macosx10.9 test
