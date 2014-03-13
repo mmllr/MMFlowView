@@ -1,29 +1,25 @@
-Purpose
---------------
+# MMFlowView
+[![Build Status](https://travis-ci.org/mmllr/MMFlowView.png?branch=master)](https://travis-ci.org/mmllr/MMFlowView)
+A full featured cover flow control for Mac OS X.
+
+## Description
 
 MMFlowView is a class designed to support the "CoverFlow" effect and it is intended to use in a similar way like IKImageBrowserView. It supports all the image types (URLs, NSImage, Icons, QuartzComposerCompositions, QTMovie) as IKImageBrowserView. If you are familiar with IKImageBrowserView you can immediately start using MMFlowView.
 
 MMFlowView uses asynchronous image loading and caches the image content, trying to use as little memory as possible. It supports both image loading via a datasource or with Cocoa bindings. It is accessibility conform, features drag&drop und quicklook preview. Its makes use of CoreAnimation to provide smooth and fast animations.
 
-License
-----------
+## License
 
 MIT-license.
 
-Supported OS & SDK Versions
------------------------------
+## Supported OS & SDK Versions
 
-* Supported build target - Mac OS 10.7 (Xcode 5, Apple LLVM compiler 3.3)
+* Supported build target - Mac OS 10.8 (Xcode 5)
 * Earliest compatible deployment target - Mac OS 10.7
 
-Installation
---------------
+## Installation
 
-To use the MMFlowView class in an app, just drag the MMFlowView class files (demo files and assets are not needed) into your project and add the Quartz- and QTKit framework.
-
-Protocols
----------------
-
+## Protocols
 If you are using the datasource-approach for loading the images your data items need to implement the MMFlowViewItem (similar to IKImageBrowserItem):
 
 	- (id)imageItemRepresentation;
@@ -73,8 +69,7 @@ Returns an object for the item in a flow view that corresponds to the specified 
 
 See the comments in the header of MMFlowView.h for more details.
 
-Bindings
------------
+## Bindings
 
 To load the images via Cocoa bindings you have to set the keypaths of the image-items via the following properties:
 
@@ -105,6 +100,4 @@ Then MMFlowView exposes an NSContentArrayBinding, which must be bound to an NSAr
 Then you are done and the MMFlowView automatically observes your datasource.
 
 Have a look in the MMFlowViewDemo-project, which shows how to use drag&drop and the quicklook previewpanel.
-
-
 
