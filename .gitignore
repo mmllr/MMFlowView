@@ -12,3 +12,5 @@ test-reports
 oclint.xml
 compile_commands.json
 xcodebuild.log
+*.xccheckout
+
