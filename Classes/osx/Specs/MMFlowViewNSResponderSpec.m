@@ -338,7 +338,7 @@ describe(@"MMFlowView+NSResponder", ^{
 					[mockedDatasource stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
 
 					mockedPasteboard = [NSPasteboard nullMock];
-					[[NSPasteboard stubAndReturn:mockedPasteboard] pasteboardWithName:NSDragPboard];
+					[NSPasteboard stub:@selector(pasteboardWithName:) andReturn:mockedPasteboard withArguments:NSDragPboard];
 
 					dragImageMock = [NSImage nullMock];
 					[dragImageMock stub:@selector(initWithCGImage:size:) andReturn:dragImageMock];

@@ -70,7 +70,7 @@ describe(@"NSDraggingDestination", ^{
 					NSRect itemRect = sut.selectedItemFrame;
 					NSPoint pointOverSelectedFrame = NSMakePoint(NSMidX(itemRect), NSMidY(itemRect));
 					[dragInfoMock stub:@selector(draggingLocation) andReturn:theValue(pointOverSelectedFrame)];
-					[[sut stubAndReturn:theValue(0)] indexOfItemAtPoint:pointOverSelectedFrame];
+					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(0) withArguments:theValue(pointOverSelectedFrame)];
 				});
 				context(@"when the datasource implents -flowView:acceptDrop:atIndex:", ^{
 					beforeEach(^{
