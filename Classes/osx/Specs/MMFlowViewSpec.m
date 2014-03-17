@@ -113,7 +113,7 @@ describe(@"MMFlowView", ^{
 					[[theValue(sut.stackedAngle) should] equal:theValue(50)];
 				});
 				it(@"should change the cover flow layout", ^{
-					[[theValue(sut.layout.stackedAngle) should] equal:theValue(sut.stackedAngle)];
+					[[theValue(sut.coverFlowLayout.stackedAngle) should] equal:theValue(sut.stackedAngle)];
 				});
 			});
 		});
@@ -135,7 +135,7 @@ describe(@"MMFlowView", ^{
 					[[theValue(sut.spacing) should] equal:theValue(100)];
 				});
 				it(@"should change the underlying layout", ^{
-					[[theValue(sut.layout.interItemSpacing) should] equal:theValue(sut.spacing)];
+					[[theValue(sut.coverFlowLayout.interItemSpacing) should] equal:theValue(sut.spacing)];
 				});
 			});
 		});

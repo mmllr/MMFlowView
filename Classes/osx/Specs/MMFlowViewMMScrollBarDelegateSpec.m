@@ -149,7 +149,7 @@ describe(@"MMFlowView+MMScrollBarDelegate", ^{
 		beforeEach(^{
 			mockedLayout = [MMCoverFlowLayout nullMock];
 			[mockedLayout stub:@selector(contentWidth) andReturn:theValue(1000)];
-			sut.layout = mockedLayout;
+			sut.coverFlowLayout = mockedLayout;
 		});
 		afterEach(^{
 			mockedLayout = nil;

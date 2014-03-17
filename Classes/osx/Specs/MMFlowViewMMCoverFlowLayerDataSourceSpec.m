@@ -77,7 +77,7 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		});
 		it(@"should set the maxImageSize of the image factory to the layouts itemSite", ^{
 			MMFlowViewImageFactory *mockedImageFactory = [MMFlowViewImageFactory nullMock];
-			[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(sut.layout.itemSize)];
+			[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(sut.coverFlowLayout.itemSize)];
 			sut.imageFactory = mockedImageFactory;
 			[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
 		});

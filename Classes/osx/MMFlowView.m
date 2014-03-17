@@ -242,7 +242,7 @@ static NSString * const kLayoutKey = @"layout";
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_imageFactory.cache = _imageCache;
-		_layout = [[MMCoverFlowLayout alloc] init];
+		_coverFlowLayout = [[MMCoverFlowLayout alloc] init];
 		_imageRepresentationKeyPath = [NSStringFromSelector(@selector(imageItemRepresentation)) copy];
 		_imageUIDKeyPath = [NSStringFromSelector(@selector(imageItemUID)) copy];
 		_imageRepresentationTypeKeyPath = [NSStringFromSelector(@selector(imageItemRepresentationType)) copy];
@@ -272,7 +272,7 @@ static NSString * const kLayoutKey = @"layout";
 			self.showsReflection = [ aDecoder decodeBoolForKey:kMMFlowViewShowsReflectionKey ];
 			self.scrollDuration = [ aDecoder decodeDoubleForKey:kMMFlowViewScrollDurationKey ];
 			self.itemScale = [ aDecoder decodeDoubleForKey:kMMFlowViewItemScaleKey ];
-			_layout = [aDecoder decodeObjectForKey:kLayoutKey];
+			_coverFlowLayout = [aDecoder decodeObjectForKey:kLayoutKey];
 		}
 		else {
 			[self setInitialDefaults];
@@ -296,7 +296,7 @@ static NSString * const kLayoutKey = @"layout";
 		[ aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey ];
 		[ aCoder encodeDouble:self.scrollDuration forKey:kMMFlowViewScrollDurationKey ];
 		[ aCoder encodeDouble:self.itemScale forKey:kMMFlowViewItemScaleKey ];
-		[aCoder encodeObject:self.layout forKey:kLayoutKey];
+		[aCoder encodeObject:self.coverFlowLayout forKey:kLayoutKey];
 	}
 	else {
 		[ NSException raise:NSInvalidArchiveOperationException format:@"Only supports NSKeyedArchiver coders" ];
@@ -356,8 +356,8 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)setSelectedIndex:(NSUInteger)index
 {
-	if ( ( self.layout.selectedItemIndex != index ) && ( index < self.numberOfItems ) ) {
-		self.layout.selectedItemIndex = index;
+	if ( ( self.coverFlowLayout.selectedItemIndex != index ) && ( index < self.numberOfItems ) ) {
+		self.coverFlowLayout.selectedItemIndex = index;
 		[self updateSelectionInRange:NSMakeRange(index, 1)];
 		if ( [self.delegate respondsToSelector:@selector(flowViewSelectionDidChange:)] ) {
 			[self.delegate flowViewSelectionDidChange:self];
@@ -370,7 +370,7 @@ static NSString * const kLayoutKey = @"layout";
 
 - (NSUInteger)selectedIndex
 {
-	return self.layout.selectedItemIndex;
+	return self.coverFlowLayout.selectedItemIndex;
 }
 
 - (void)setItemScale:(CGFloat)newItemScale
@@ -382,12 +382,12 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)setNumberOfItems:(NSUInteger)numberOfItems
 {
-	self.layout.numberOfItems = numberOfItems;
+	self.coverFlowLayout.numberOfItems = numberOfItems;
 }
 
 - (NSUInteger)numberOfItems
 {
-	return self.layout.numberOfItems;
+	return self.coverFlowLayout.numberOfItems;
 }
 
 - (BOOL)showsReflection
@@ -657,7 +657,7 @@ static NSString * const kLayoutKey = @"layout";
 	self.containerLayer = [self createContainerLayer];
 	[self.backgroundLayer addSublayer:self.containerLayer];
 	[self.backgroundLayer insertSublayer:self.titleLayer above:self.containerLayer];
-	self.coverFlowLayer = [MMCoverFlowLayer layerWithLayout:self.layout];
+	self.coverFlowLayer = [MMCoverFlowLayer layerWithLayout:self.coverFlowLayout];
 	self.coverFlowLayer.dataSource = self;
 	self.scrollBarLayer = [self createScrollBarLayer];
 	

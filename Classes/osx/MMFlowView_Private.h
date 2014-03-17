@@ -44,7 +44,7 @@
 
 @interface MMFlowView ()
 
-@property (strong) MMCoverFlowLayout *layout;
+@property (strong) MMCoverFlowLayout *coverFlowLayout;
 
 @property (strong,readwrite) CALayer *backgroundLayer;
 @property (strong,readwrite) CATextLayer *titleLayer;

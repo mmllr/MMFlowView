@@ -169,8 +169,8 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)setUpObservations
 {
-	[self.layout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
-	[self.layout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
+	[self.coverFlowLayout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
+	[self.coverFlowLayout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
 
 	for (NSString *keyPath in [[self class] observedItemKeyPaths]) {
 		[self addObserver:self
@@ -181,8 +181,8 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 
 - (void)tearDownObservations
 {
-	[self.layout unbind:@"stackedAngle"];
-	[self.layout unbind:@"interItemSpacing"];
+	[self.coverFlowLayout unbind:@"stackedAngle"];
+	[self.coverFlowLayout unbind:@"interItemSpacing"];
 	for (NSString *keyPath in [[self class] observedItemKeyPaths]) {
 		[self removeObserver:self forKeyPath:keyPath context:kMMFlowViewItemKeyPathsObservationContext];
 	}

@@ -61,7 +61,7 @@
 
 - (CGFloat)contentSizeForScrollBarLayer:(MMScrollBarLayer *)scrollBarLayer
 {
-	return self.layout.contentWidth;
+	return self.coverFlowLayout.contentWidth;
 }
 
 - (CGFloat)visibleSizeForScrollBarLayer:(MMScrollBarLayer *)scrollBarLayer
