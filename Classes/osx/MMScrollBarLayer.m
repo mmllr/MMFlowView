@@ -120,6 +120,7 @@ static const CGFloat kMinimumKnobWidth = 40.;
 	else {
 		[self beginDragAtPoint:pointInLayerCoordinates];
 	}
+	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
 }
 
 #pragma mark - dragging

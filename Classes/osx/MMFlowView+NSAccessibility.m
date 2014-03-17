@@ -62,32 +62,33 @@
 
 - (id)accessibilityAttributeValue:(NSString *)anAttribute
 {
-	if ( [ anAttribute isEqualToString:NSAccessibilityRoleAttribute ] ) {
+	if ([anAttribute isEqualToString:NSAccessibilityRoleAttribute]) {
 		return NSAccessibilityScrollAreaRole;
     }
-	else if ( [ anAttribute isEqualToString:NSAccessibilityRoleDescriptionAttribute ] ) {
+	else if ([anAttribute isEqualToString:NSAccessibilityRoleDescriptionAttribute]) {
 		return NSAccessibilityRoleDescriptionForUIElement(self);
     }
-	else if ( [ anAttribute isEqualToString:NSAccessibilityChildrenAttribute ] ) {
-		return NSAccessibilityUnignoredChildren( @[self.backgroundLayer] );
+	else if ([anAttribute isEqualToString:NSAccessibilityChildrenAttribute ]) {
+		return NSAccessibilityUnignoredChildren(@[self.coverFlowLayer, self.scrollBarLayer]);
     }
-	else if ( [ anAttribute isEqualToString:NSAccessibilityContentsAttribute ] ) {
+	else if ([anAttribute isEqualToString:NSAccessibilityContentsAttribute ]) {
 		return @[self.coverFlowLayer];
 	}
-	else if ( [anAttribute isEqualToString:NSAccessibilityHorizontalScrollBarAttribute] ) {
+	else if ([anAttribute isEqualToString:NSAccessibilityHorizontalScrollBarAttribute]) {
 		return self.scrollBarLayer;
 	}
-	return [ super accessibilityAttributeValue:anAttribute ];
+	return [super accessibilityAttributeValue:anAttribute];
 }
 
 - (id)accessibilityHitTest:(NSPoint)aPoint
 {
-	NSPoint windowPoint = [ [ self window ] convertScreenToBase:aPoint ];
-    CGPoint localPoint = NSPointToCGPoint([ self convertPoint:windowPoint
-													 fromView:nil ] );
+	NSWindow *window = [self window];
+	NSRect windowRect = [window convertRectFromScreen:NSMakeRect(aPoint.x, aPoint.y, 1, 1)];
+    NSPoint localPoint = [[window contentView] convertPoint:windowRect.origin
+													 toView:self];
 
-	CALayer *hitLayer = [ self hitLayerAtPoint:localPoint ];
-	return hitLayer ? NSAccessibilityUnignoredAncestor( hitLayer ) : self;
+	CALayer *hitLayer = [self hitLayerAtPoint:localPoint];
+	return hitLayer ? NSAccessibilityUnignoredAncestor(hitLayer) : self;
 }
 
 @end
