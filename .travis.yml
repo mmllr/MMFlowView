@@ -1,3 +1,5 @@
 language: objective-c
 rvm: 1.9.3
-script: xcodebuild -workspace MMFlowViewDemo.xcworkspace -scheme MMFlowViewDemo_CI CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO test
+env:
+  - XCWORKSPACE="Example/MMFlowViewDemo.xcworkspace"
+script: xcodebuild -workspace Example/MMFlowViewDemo.xcworkspace -scheme MMFlowViewDemo CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO test

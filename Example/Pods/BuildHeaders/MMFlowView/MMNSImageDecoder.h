@@ -1,0 +1,1 @@
+../../../../Classes/osx/Decoders/MMNSImageDecoder.h

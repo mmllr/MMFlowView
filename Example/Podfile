@@ -1,0 +1,9 @@
+platform :osx, "10.8"
+
+target "MMFlowViewDemo" do
+   pod "MMFlowView", :path => "../MMFlowView.podspec"
+end
+
+target :"MMFlowViewDemoTests", :exclusive => true do
+   pod 'Kiwi/XCTest', '2.2.4'
+end

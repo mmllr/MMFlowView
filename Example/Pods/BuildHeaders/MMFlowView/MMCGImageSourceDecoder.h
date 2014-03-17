@@ -1,0 +1,1 @@
+../../../../Classes/osx/Decoders/MMCGImageSourceDecoder.h

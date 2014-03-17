@@ -1,0 +1,5 @@
+#include "Pods-MMFlowViewDemo-MMFlowView.xcconfig"
+GCC_PREPROCESSOR_DEFINITIONS = COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/BuildHeaders" "${PODS_ROOT}/BuildHeaders/MMFlowView" "${PODS_ROOT}/Headers" "${PODS_ROOT}/Headers/Kiwi" "${PODS_ROOT}/Headers/MMFlowView" "${PODS_ROOT}/Headers/MMLayerAccessibility"
+OTHER_LDFLAGS = -ObjC ${PODS_MMFLOWVIEWDEMO_MMFLOWVIEW_OTHER_LDFLAGS}
+PODS_ROOT = ${SRCROOT}
