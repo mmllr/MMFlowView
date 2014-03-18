@@ -80,13 +80,7 @@ static const CGFloat kDefaultTitleSize = 18.;
 static const CGFloat kDefaultItemSize = 100.;
 static const CGFloat kDefaultStackedAngle = 70.;
 static const CGFloat kDefaultItemSpacing = 50.;
-static const CGFloat kDefaultStackedScale = -200.;
 static const CGFloat kDefaultReflectionOffset = -0.4;
-static const CFTimeInterval kDefaultScrollDuration = .4;
-static const CGFloat kDefaultItemScale = 1.;
-
-static const CGFloat kMinimumItemScale = 0.1;
-static const CGFloat kMaximumItemScale = 1.;
 
 static NSString * const kMMFlowViewItemContentLayerPrefix = @"MMFlowViewContentLayer";
 static NSString * const kMMFlowViewTitleLayerName = @"MMFlowViewTitleLayer";
@@ -105,12 +99,9 @@ NSString * const kMMFlowViewSelectedIndexKey = @"selectedIndex";
 static NSString * const kMMFlowViewSpacingKey = @"spacing";
 static NSString * const kMMFlowViewStackedAngleKey = @"stackedAngle";
 static NSString * const kMMFlowViewSelectedScaleKey = @"selectedScale";
-static NSString * const kMMFlowViewStackedScaleKey = @"stackedScale";
 static NSString * const kMMFlowViewReflectionOffsetKey = @"reflectionOffset";
 static NSString * const kMMFlowViewShowsReflectionKey = @"showsReflection";
 static NSString * const kMMFlowViewPerspectiveKey = @"perspective";
-static NSString * const kMMFlowViewScrollDurationKey = @"scrollDuration";
-static NSString * const kMMFlowViewItemScaleKey = @"itemScale";
 static NSString * const kMMFlowViewPreviewScaleKey = @"previewScale";
 static NSString * const kMMFlowViewMouseDownInScrollBarKey = @"mouseDownInScrollBarKey";
 static NSString * const kMMFlowViewInitialKnobDragPositionKey = @"initialKnobDragPositionKey";
@@ -125,6 +116,7 @@ static NSString * const kLayoutKey = @"layout";
 
 @implementation MMFlowView
 
+@dynamic title;
 @dynamic numberOfItems;
 @dynamic selectedIndex;
 @dynamic showsReflection;
@@ -267,11 +259,8 @@ static NSString * const kLayoutKey = @"layout";
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
 			self.spacing = [ aDecoder decodeDoubleForKey:kMMFlowViewSpacingKey ];
-			self.stackedScale = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedScaleKey ];
 			self.reflectionOffset = [ aDecoder decodeDoubleForKey:kMMFlowViewReflectionOffsetKey ];
 			self.showsReflection = [ aDecoder decodeBoolForKey:kMMFlowViewShowsReflectionKey ];
-			self.scrollDuration = [ aDecoder decodeDoubleForKey:kMMFlowViewScrollDurationKey ];
-			self.itemScale = [ aDecoder decodeDoubleForKey:kMMFlowViewItemScaleKey ];
 			_coverFlowLayout = [aDecoder decodeObjectForKey:kLayoutKey];
 		}
 		else {
@@ -291,11 +280,8 @@ static NSString * const kLayoutKey = @"layout";
 	if ([aCoder allowsKeyedCoding]) {
 		[aCoder encodeDouble:self.stackedAngle forKey:kMMFlowViewStackedAngleKey];
 		[aCoder encodeDouble:self.spacing forKey:kMMFlowViewSpacingKey];
-		[aCoder encodeDouble:self.stackedScale forKey:kMMFlowViewStackedScaleKey];
 		[aCoder encodeDouble:self.reflectionOffset forKey:kMMFlowViewReflectionOffsetKey];
 		[aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey];
-		[aCoder encodeDouble:self.scrollDuration forKey:kMMFlowViewScrollDurationKey];
-		[aCoder encodeDouble:self.itemScale forKey:kMMFlowViewItemScaleKey];
 		[aCoder encodeObject:self.coverFlowLayout forKey:kLayoutKey];
 	}
 	else {
@@ -314,12 +300,9 @@ static NSString * const kLayoutKey = @"layout";
 	[self setTranslatesAutoresizingMaskIntoConstraints:NO];
 	self.stackedAngle = kDefaultStackedAngle;
 	self.spacing = kDefaultItemSpacing;
-	self.stackedScale = kDefaultStackedScale;
 	self.reflectionOffset = kDefaultReflectionOffset;
 	self.selectedIndex = NSNotFound;
 	self.showsReflection = NO;
-	self.scrollDuration = kDefaultScrollDuration;
-	self.itemScale = kDefaultItemScale;
 }
 
 #pragma mark -
@@ -372,13 +355,6 @@ static NSString * const kLayoutKey = @"layout";
 - (NSUInteger)selectedIndex
 {
 	return self.coverFlowLayout.selectedItemIndex;
-}
-
-- (void)setItemScale:(CGFloat)newItemScale
-{
-	if ( _itemScale != newItemScale ) {
-		_itemScale = CLAMP( newItemScale, kMinimumItemScale, kMaximumItemScale );
-	}
 }
 
 - (void)setNumberOfItems:(NSUInteger)numberOfItems

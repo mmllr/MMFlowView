@@ -199,15 +199,6 @@ describe(@"MMFlowView", ^{
 		it(@"shoud have no item selected", ^{
 			[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
 		});
-		it(@"should have a stackedScale of -200", ^{
-			[[theValue(sut.stackedScale) should] equal:theValue(-200)];
-		});
-		it(@"should have a scroll duration of .4 seconds", ^{
-			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];
-		});
-		it(@"should have a item scale of 1", ^{
-			[[theValue(sut.itemScale) should] equal:theValue(1)];
-		});
 		it(@"should have an empty title", ^{
 			[[sut.title should] equal:@""];
 		});

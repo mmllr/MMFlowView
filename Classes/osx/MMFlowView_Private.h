@@ -45,7 +45,7 @@
 @interface MMFlowView ()
 
 @property (strong) MMCoverFlowLayout *coverFlowLayout;
-
+@property (readwrite, copy, nonatomic) NSString *title;
 @property (strong,readwrite) CALayer *backgroundLayer;
 @property (strong,readwrite) CATextLayer *titleLayer;
 @property (strong, nonatomic) MMCoverFlowLayer *coverFlowLayer;
