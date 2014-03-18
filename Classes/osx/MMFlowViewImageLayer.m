@@ -59,9 +59,7 @@ static NSString * const kBoundsKey = @"bounds";
 			 [key isEqualToString:kBoundsKey] ) {
 		return nil;
 	}
-	else {
-		return [super defaultActionForKey:key];
-	}
+	return [super defaultActionForKey:key];
 }
 
 #pragma mark - init

@@ -216,7 +216,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 - (QTMovie*)movie
 {
-	if ( [ self.superlayer isKindOfClass:[ QTMovieLayer class ] ] ) {
+	if ([self.superlayer isKindOfClass:[QTMovieLayer class]]) {
 		QTMovieLayer *movieLayer = (QTMovieLayer*)self.superlayer;
 		return movieLayer.movie;
 	}
@@ -228,13 +228,11 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 + (BOOL)needsDisplayForKey:(NSString *)aKey
 {
-	if ( [ aKey isEqualToString:kMMVideoOverlayLayerIndicatorScaleKey ] ||
-		[ aKey isEqualToString:kMMVideoOverlayLayerIndicatorValueKey ] ) {
+	if ([aKey isEqualToString:kMMVideoOverlayLayerIndicatorScaleKey] ||
+		[aKey isEqualToString:kMMVideoOverlayLayerIndicatorValueKey]) {
 		return YES;
 	}
-	else {
-		return [ super needsDisplayForKey:aKey ];
-	}
+	return [super needsDisplayForKey:aKey];
 }
 
 - (void)drawInContext:(CGContextRef)aContext

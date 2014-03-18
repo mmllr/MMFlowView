@@ -75,7 +75,6 @@
 - (NSString*)imageTitleForItem:(id)anItem;
 - (id)imageRepresentationForItem:(id)anItem;
 - (NSString*)titleAtIndex:(NSUInteger)anIndex;
-- (CGImageRef)defaultImageForItem:(id)anItem withSize:(CGSize)imageSize;
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex;
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex;
 - (IBAction)togglePreviewPanel:(id)previewPanel;

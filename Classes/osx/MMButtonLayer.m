@@ -68,9 +68,7 @@ static const CGFloat kMMButtonLayerHighlightedDarkenAlphaValue = 1;
 	if ( [ [ self keysAffectingRedisplay ] containsObject:aKey ] ) {
 		return YES;
 	}
-	else {
-		return [ super needsDisplayForKey:aKey ];
-	}
+	return [ super needsDisplayForKey:aKey ];
 }
 
 + (NSArray*)selectedFilters

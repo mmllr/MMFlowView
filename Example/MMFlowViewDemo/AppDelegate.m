@@ -54,6 +54,37 @@
     return self;
 }
 
+#pragma mark - MMFlowViewDataSource
+
+- (NSUInteger)numberOfItemsInFlowView:(MMFlowView *)aFlowView
+{
+	return [self countOfItems];
+}
+
+- (id<MMFlowViewItem>)flowView:(MMFlowView *)aFlowView itemAtIndex:(NSUInteger)index
+{
+	return [self objectInItemsAtIndex:index];
+}
+
+- (void)flowViewSelectionDidChange:(MMFlowView *)aFlowView
+{
+	[self.imageBrowserView setSelectionIndexes:[NSIndexSet indexSetWithIndex:aFlowView.selectedIndex]
+						  byExtendingSelection:NO ];
+	[self.imageBrowserView scrollIndexToVisible:aFlowView.selectedIndex];
+}
+
+- (NSDragOperation)flowView:(MMFlowView *)aFlowView validateDrop:(id<NSDraggingInfo>)info proposedIndex:(NSUInteger)anIndex
+{
+	return anIndex == NSNotFound ? NSDragOperationNone : NSDragOperationCopy;
+}
+
+- (BOOL)flowView:(MMFlowView *)aFlowView acceptDrop:(id<NSDraggingInfo>)info atIndex:(NSUInteger)anIndex
+{
+	return YES;
+}
+
+#pragma mark - NSApplicationDelegate
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	// Insert code here to initialize your application
@@ -85,24 +116,23 @@
 	return YES;
 }
 
-#pragma mark -
-#pragma mark accesors
+#pragma mark - accesors
 
 - (NSArray*)items
 {
-	return [ _items copy ];
+	return [_items copy];
 }
 
 - (void)setItems:(NSArray *)someItems
 {
-	if ( _items != someItems ) {
-		_items = [ someItems mutableCopy ];
+	if (_items != someItems) {
+		_items = [someItems mutableCopy];
 	}
 }
 
 - (NSUInteger)countOfItems
 {
-	return [ _items count ];
+	return [_items count];
 }
 
 - (id)objectInItemsAtIndex:(NSUInteger)index
@@ -112,41 +142,40 @@
 
 - (NSArray*)itemsAtIndexes:(NSIndexSet *)indexes
 {
-	return [ _items objectsAtIndexes:indexes ];
+	return [_items objectsAtIndexes:indexes];
 }
 
 - (void)insertObject:(id)object inItemsAtIndex:(NSUInteger)index
 {
-	[ _items insertObject:object atIndex:index ];
+	[_items insertObject:object atIndex:index];
 }
 
 - (void)insertItems:(NSArray *)array atIndexes:(NSIndexSet*)indexes
 {
-	[ _items insertObjects:array atIndexes:indexes ];
+	[_items insertObjects:array atIndexes:indexes];
 }
 
 - (void)removeObjectFromItemsAtIndex:(NSUInteger)index
 {
-	[ _items removeObjectAtIndex:index ];
+	[_items removeObjectAtIndex:index];
 }
 
 - (void)removeItemsAtIndexes:(NSIndexSet *)indexes
 {
-	[ _items removeObjectsAtIndexes:indexes ];
+	[_items removeObjectsAtIndexes:indexes];
 }
 
 
-#pragma mark -
-#pragma mark private implementation
+#pragma mark - private implementation
 
 - (void)loadItems:(NSString*)aPath withRepresentationType:(NSString*)aRepresentationType
 {
-	NSFileManager *fileManager = [ NSFileManager defaultManager ];
+	NSFileManager *fileManager = [NSFileManager defaultManager];
 	BOOL isDirectory = NO;
-    BOOL exists = [ fileManager fileExistsAtPath:aPath isDirectory:&isDirectory ];
+    BOOL exists = [fileManager fileExistsAtPath:aPath isDirectory:&isDirectory];
 	
 	if ( exists && isDirectory ) {
-		NSDirectoryEnumerator *dirEnumerator = [ fileManager enumeratorAtURL:[ NSURL fileURLWithPath:aPath ]
+		NSDirectoryEnumerator *dirEnumerator = [fileManager enumeratorAtURL:[NSURL fileURLWithPath:aPath]
 												  includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
 																	 options:NSDirectoryEnumerationSkipsHiddenFiles
 																errorHandler:nil ];
@@ -156,8 +185,8 @@
 							forKey:NSURLIsDirectoryKey
 							 error:NULL];
 			if ( ![isItemDirectory boolValue] ) {
-				[ self insertObject:[ Item itemWithURL:url representationType:aRepresentationType ]
-					 inItemsAtIndex:[ self countOfItems ] ];
+				[ self insertObject:[Item itemWithURL:url representationType:aRepresentationType]
+					 inItemsAtIndex:[self countOfItems]];
 			}
 		}
 	}
@@ -165,46 +194,18 @@
 
 - (void)loadPDFDocument:(NSURL*)anURL
 {
-	PDFDocument *document = [ [ PDFDocument alloc ] initWithURL:anURL ];
-	
-	for ( NSUInteger i = 0; i < document.pageCount; ++i ) {
-		PDFPage *page = [ document pageAtIndex:i ];
-		[ self insertObject:[ Item itemWithPDFPage:page ] inItemsAtIndex:[ self countOfItems ] ];
+	PDFDocument *document = [[PDFDocument alloc] initWithURL:anURL];
+
+	for (NSUInteger i = 0; i < document.pageCount; ++i) {
+		PDFPage *page = [document pageAtIndex:i];
+		[self insertObject:[Item itemWithPDFPage:page]
+			inItemsAtIndex:[self countOfItems]];
 	}
 }
 
-#pragma mark -
-#pragma mark MMFlowViewDataSource
 
-- (NSUInteger)numberOfItemsInFlowView:(MMFlowView *)aFlowView
-{
-	return [ self countOfItems ];
-}
 
-- (id<MMFlowViewItem>)flowView:(MMFlowView *)aFlowView itemAtIndex:(NSUInteger)index
-{
-	return [ self objectInItemsAtIndex:index ];
-}
-
-- (void)flowViewSelectionDidChange:(MMFlowView *)aFlowView
-{
-	[ self.imageBrowserView setSelectionIndexes:[ NSIndexSet indexSetWithIndex:aFlowView.selectedIndex ]
-						   byExtendingSelection:NO ];
-	[ self.imageBrowserView scrollIndexToVisible:aFlowView.selectedIndex ];
-}
-
-- (NSDragOperation)flowView:(MMFlowView *)aFlowView validateDrop:(id<NSDraggingInfo>)info proposedIndex:(NSUInteger)anIndex
-{
-	return anIndex != NSNotFound ? NSDragOperationCopy : NSDragOperationNone;
-}
-
-- (BOOL)flowView:(MMFlowView *)aFlowView acceptDrop:(id<NSDraggingInfo>)info atIndex:(NSUInteger)anIndex
-{
-	return YES;
-}
-
-#pragma mark -
-#pragma mark IKImageBrowserDataSource
+#pragma mark - IKImageBrowserDataSource
 
 - (NSUInteger)numberOfItemsInImageBrowser:(IKImageBrowserView *)view
 {
@@ -216,42 +217,41 @@
 	return [ self objectInItemsAtIndex:index ];
 }
 
-#pragma mark -
-#pragma mark IBActions
+#pragma mark - IBActions
 
 - (IBAction)openDocument:(id)sender
 {
-	NSOpenPanel *panel = [ NSOpenPanel openPanel ];
+	NSOpenPanel *panel = [NSOpenPanel openPanel];
 	
-	[ panel setAllowedFileTypes:@[@"com.adobe.pdf"] ];
-	[ panel beginWithCompletionHandler:^(NSInteger result) {
-		if ( result == NSFileHandlingPanelOKButton ) {
-			[ self loadPDFDocument:[ panel URL ] ];
-			[ self.flowView reloadContent ];
+	[panel setAllowedFileTypes:@[@"com.adobe.pdf"]];
+	[panel beginWithCompletionHandler:^(NSInteger result) {
+		if (result == NSFileHandlingPanelOKButton) {
+			[self loadPDFDocument:[panel URL]];
+			[self.flowView reloadContent];
 		}
-	} ];
+	}];
 }
 
 - (IBAction)toggleReflection:(id)sender
 {
-	BOOL show = [ (NSButton*)sender state ] == NSOnState;
+	BOOL show = [(NSButton*)sender state] == NSOnState;
 	self.flowView.showsReflection = show;
-	[ self.reflectionSlider setHidden:!show ];
+	[self.reflectionSlider setHidden:!show];
 }
 
 - (IBAction)toggleAngle:(id)sender
 {
-	self.flowView.stackedAngle = [ sender selectedTag ];
+	self.flowView.stackedAngle = [sender selectedTag];
 }
 
 - (IBAction)toggleSpacing:(id)sender
 {
-	self.flowView.spacing = [ sender selectedTag ];
+	self.flowView.spacing = [sender selectedTag];
 }
 
 - (IBAction)reflectionChanged:(NSSlider *)sender
 {
-	self.flowView.reflectionOffset = -[ sender floatValue ] / 100.0;
+	self.flowView.reflectionOffset = -[sender floatValue] / 100.0;
 }
 
 @end

@@ -559,98 +559,72 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)reloadContent
 {
-	if ( self.bindingsEnabled ) {
-		self.numberOfItems = [ self.contentArray count ];
+	if (self.bindingsEnabled) {
+		self.numberOfItems = [self.contentArray count];
 	}
-	else if ( [ self.dataSource respondsToSelector:@selector(numberOfItemsInFlowView:) ] &&
-		[ self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:) ] ) {
+	else if ([self.dataSource respondsToSelector:@selector(numberOfItemsInFlowView:)] &&
+		[self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:)]) {
 		self.numberOfItems = [self.dataSource numberOfItemsInFlowView:self];
 	}
 	else {
 		self.numberOfItems = 0;
 	}
-	[ CATransaction begin ];
-	[ CATransaction setDisableActions:YES ];
-	[ CATransaction commit ];
-	if ( self.selectedIndex > self.numberOfItems ) {
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	[CATransaction commit];
+	if (self.selectedIndex > self.numberOfItems) {
 		self.selectedIndex = 0;
 	};
-	[ self updateSelectionInRange:NSMakeRange( 0, self.numberOfItems ) ];
+	[self updateSelectionInRange:NSMakeRange(0, self.numberOfItems)];
 }
 
 - (id)imageItemForIndex:(NSUInteger)anIndex
 {
-	if ( anIndex == NSNotFound ) {
+	if (anIndex == NSNotFound) {
 		return nil;
 	}
-	if ( self.bindingsEnabled &&
-		( anIndex < [ self.contentArray count ] ) ) {
+	if (self.bindingsEnabled &&
+		(anIndex < [self.contentArray count])) {
 		return (self.contentArray)[anIndex];
 	}
-	else {
-		return [ self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:) ] ? [ self.dataSource flowView:self itemAtIndex:anIndex ] : nil;
-	}
+	return [self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:)] ? [self.dataSource flowView:self itemAtIndex:anIndex] : nil;
 }
 
 - (NSString*)imageUIDForItem:(id)anItem
 {
-	if ( self.bindingsEnabled && self.imageUIDKeyPath ) {
-		return [ anItem valueForKeyPath:self.imageUIDKeyPath ];
+	if (self.bindingsEnabled && self.imageUIDKeyPath) {
+		return [anItem valueForKeyPath:self.imageUIDKeyPath];
 	}
-	return [ anItem respondsToSelector:@selector(imageItemUID) ] ? [ anItem imageItemUID ] : nil;
+	return [anItem respondsToSelector:@selector(imageItemUID)] ? [anItem imageItemUID] : nil;
 }
 
 - (NSString*)imageRepresentationTypeForItem:(id)anItem
 {
-	if ( self.bindingsEnabled && self.imageRepresentationTypeKeyPath ) {
-		return [ anItem valueForKeyPath:self.imageRepresentationTypeKeyPath ];
+	if (self.bindingsEnabled && self.imageRepresentationTypeKeyPath) {
+		return [anItem valueForKeyPath:self.imageRepresentationTypeKeyPath];
 	}
-	else {
-		return [ anItem respondsToSelector:@selector(imageItemRepresentationType) ] ? [ anItem imageItemRepresentationType ] : nil;
-	}
-	
+	return [anItem respondsToSelector:@selector(imageItemRepresentationType)] ? [anItem imageItemRepresentationType] : nil;
 }
 
 - (NSString*)imageTitleForItem:(id)anItem
 {
-	if ( self.bindingsEnabled && self.imageTitleKeyPath ) {
-		return [ anItem valueForKeyPath:self.imageTitleKeyPath ];
+	if (self.bindingsEnabled && self.imageTitleKeyPath) {
+		return [anItem valueForKeyPath:self.imageTitleKeyPath];
 	}
-	return [ anItem respondsToSelector:@selector(imageItemTitle) ] ? [ anItem imageItemTitle ] : [ NSString stringWithFormat:NSLocalizedString(@"Untitled item", @"Default item title" ) ];
+	return [anItem respondsToSelector:@selector(imageItemTitle)] ? [anItem imageItemTitle] : [NSString stringWithFormat:NSLocalizedString(@"Untitled item", @"Default item title")];
 }
 
 - (id)imageRepresentationForItem:(id)anItem
 {
-	if ( self.bindingsEnabled && self.imageRepresentationKeyPath ) {
-		return [ anItem valueForKeyPath:self.imageRepresentationKeyPath ];
+	if (self.bindingsEnabled && self.imageRepresentationKeyPath) {
+		return [anItem valueForKeyPath:self.imageRepresentationKeyPath];
 	}
-	return [ anItem respondsToSelector:@selector(imageItemRepresentation) ] ? [ anItem imageItemRepresentation ] : nil;
+	return [anItem respondsToSelector:@selector(imageItemRepresentation)] ? [anItem imageItemRepresentation] : nil;
 }
 
 - (NSString*)titleAtIndex:(NSUInteger)anIndex
 {
-	return [ self imageTitleForItem:[ self imageItemForIndex:anIndex ] ];
-}
-
-- (CGImageRef)defaultImageForItem:(id)anItem withSize:(CGSize)imageSize
-{
-	NSString *imageRepresentationType = [ self imageRepresentationTypeForItem:anItem ];
-
-	CGImageRef defaultImage = NULL;
-
-	if ( [ [ [ self class ] pathRepresentationTypes ] containsObject:imageRepresentationType ] ) {
-		id imageRepresentation = [ self imageRepresentationForItem:anItem ];
-		NSURL *url = [ imageRepresentation isKindOfClass:[ NSURL class ] ] ? imageRepresentation : [ NSURL fileURLWithPath:imageRepresentation ];
-
-		// retrieve icon for filetype
-		NSWorkspace *workspace = [ NSWorkspace sharedWorkspace ];
-		NSImage *anImage = [ workspace iconForFileType:[ url pathExtension ] ];
-		NSRect proposedRect = NSMakeRect(0, 0, imageSize.width, imageSize.height);
-		defaultImage = [ anImage CGImageForProposedRect:&proposedRect
-													   context:nil
-														 hints:nil ];
-	}
-	return defaultImage;
+	return [self imageTitleForItem:[self imageItemForIndex:anIndex]];
 }
 
 #pragma mark -
@@ -779,7 +753,7 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)updateSelectionInRange:(NSRange)invalidatedRange
 {
-	self.title = [ self titleAtIndex:self.selectedIndex ];
+	self.title = [self titleAtIndex:self.selectedIndex];
 	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
 }
 
@@ -788,10 +762,10 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)setupTrackingAreas
 {
-	for ( NSTrackingArea *trackingArea in [self trackingAreas] ) {
+	for (NSTrackingArea *trackingArea in [self trackingAreas]) {
 		[self removeTrackingArea:trackingArea];
 	}
-	if ( self.selectedIndex != NSNotFound ) {
+	if (self.selectedIndex != NSNotFound) {
 		NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.selectedItemFrame
 																		 options:NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside
 																		   owner:self
