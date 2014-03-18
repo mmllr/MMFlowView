@@ -92,6 +92,14 @@ describe(@"MMFlowView", ^{
 			it(@"should accept touch events", ^{
 				[[theValue([sut acceptsTouchEvents]) should] beYes];
 			});
+			it(@"should have no intrinsinc content size", ^{
+				NSSize expectedContentSite = NSMakeSize(NSViewNoInstrinsicMetric, NSViewNoInstrinsicMetric);
+
+				[[theValue(sut.intrinsicContentSize) should] equal:theValue(expectedContentSite)];
+			});
+			it(@"should not translate autoresizing mask into constraints", ^{
+				[[theValue([sut translatesAutoresizingMaskIntoConstraints]) should] beNo];
+			});
 		});
 		context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
 			it(@"should not be nil", ^{

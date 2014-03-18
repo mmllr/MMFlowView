@@ -8,9 +8,13 @@ MMFlowView is a class designed to support the "CoverFlow" effect and it is inten
 
 MMFlowView uses asynchronous image loading and caches the image content, trying to use as little memory as possible. It supports both image loading via a datasource or with Cocoa bindings. It is accessibility conform, features drag&drop und quicklook preview. Its makes use of CoreAnimation to provide smooth and fast animations.
 
+## Author
+
+Markus Mueller, mmlr@gmx.net
+
 ## License
 
-MIT-license.
+MMFlowView is available under the MIT license. See the LICENSE file for more info.
 
 ## Supported OS & SDK Versions
 
@@ -25,16 +29,17 @@ it simply add the following line to your Podfile:
 	pod "MMFlowView"
 
 ## Protocols
-If you are using the datasource-approach for loading the images your data items need to implement the MMFlowViewItem (similar to IKImageBrowserItem):
+To use the datasource-approach for loading the images your data items need to implement the MMFlowViewItem protocol (similar to IKImageBrowserItem):
 
+```objective-c
 	- (id)imageItemRepresentation;
-
+```
 The image to display, can return nil if the item has no image to display. This method is called frequently.
-
+```objective-c
 	- (id)imageItemRepresentationType;
-
+```
 A string that specifies the image representation. The string can be any of the following constants:
- 
+```objective-c
 	kMMFlowViewURLRepresentationType
  	kMMFlowViewCGImageRepresentationType
  	kMMFlowViewPDFPageRepresentationType
@@ -50,59 +55,58 @@ A string that specifies the image representation. The string can be any of the f
 	kMMFlowViewQuickLookPathRepresentationType
 	kMMFlowViewIconRefPathRepresentationType
 	kMMFlowViewIconRefRepresentationType
-
+```
 Describes the type of the datasource item.
-
+```objective-c
 	- (NSString*)imageItemUID;
-
+```
 A string the uniquely identifies the data source item. The flowview uses this identifier to associate the data source item and its cache.
-
+```objective-c
 	- (NSString*)imageItemTitle;
-
+```
 The display title of the image.
 
-
-MMFlowView follows the Apple convention for data-driven views by providing two protocol interfaces, MMFlowViewDataSource and MMFlowViewDelegate. The MMFlowViewDataSource protocol has the following required methods
-
+MMFlowView follows the Apple convention for data-driven views by providing two protocol interfaces, MMFlowViewDataSource and MMFlowViewDelegate. The MMFlowViewDataSource protocol has the following required methods:
+```objective-c
 	- (NSUInteger)numberOfItemsInFlowView:(MMFlowView*)aFlowView;
-
+```
 Returns the number of images in the flow view.
-
+```objective-c
 	- (id<MMFlowViewItem>)flowView:(MMFlowView*)aFlowView itemAtIndex:(NSUInteger)anIndex;
-
+```
 Returns an object for the item in a flow view that corresponds to the specified index. The returned object must implement the required methods of the MMFlowViewItem protocol.
 
 See the comments in the header of MMFlowView.h for more details.
 
 ## Bindings
 
-To load the images via Cocoa bindings you have to set the keypaths of the image-items via the following properties:
-
+To load the images using Cocoa bindings the items in the bound array controller must either
+conform to the MMFlowViewItem protocol or you have to set the keypaths to the required information with the following properties:
+```objective-c
 	@property (nonatomic,copy) NSString *imageRepresentationKeyPath;
-
+```
 Keypath to image representation on item in observed collection, defaults to imageItemRepresentation, see MMFlowViewItem protocol.
-
+```objective-c
 	@property (nonatomic,copy) NSString *imageRepresentationTypeKeyPath;
-
+```
 Keypath to image representation type on item in observed collection, defaults to imageItemRepresentationType, see MMFlowViewItem protocol.
-
+```objective-c
 	@property (nonatomic,copy) NSString *imageUIDKeyPath;
-
+```
 Keypath to image uid on item in observed collection, defaults to imageItemUID, see MMFlowViewItem protocol.
-
+```objective-c
 	@property (nonatomic,copy) NSString *imageTitleKeyPath;
-
+```
 Keypath to image title on item in observed collection, defaults to imageItemTitle, see MMFlowViewItem protocol.
 
 If you don´t set this keypaths, your image-items need to support the MMFlowViewItem protocol. 
 Then MMFlowView exposes an NSContentArrayBinding, which must be bound to an NSArrayControllers arrangedObjects:
-
+```objective-c
 		[ self.flowView bind:NSContentArrayBinding
-			   			toObject:self.itemArrayController
-			  withKeyPath:@"arrangedObjects"
-				 options:nil ];
-
-Then you are done and the MMFlowView automatically observes your datasource.
+		            toObject:self.itemArrayController
+		         withKeyPath:@"arrangedObjects"
+				     options:nil ];
+```
+Then the MMFlowView automatically observes your datasource.
 
 Have a look in the MMFlowViewDemo-project, which shows how to use drag&drop and the quicklook previewpanel.
-

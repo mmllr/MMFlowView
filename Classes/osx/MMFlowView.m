@@ -287,19 +287,19 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-	[ super encodeWithCoder:aCoder ];
-	if ( [ aCoder allowsKeyedCoding ] ) {
-		[ aCoder encodeDouble:self.stackedAngle forKey:kMMFlowViewStackedAngleKey ];
-		[ aCoder encodeDouble:self.spacing forKey:kMMFlowViewSpacingKey ];
-		[ aCoder encodeDouble:self.stackedScale forKey:kMMFlowViewStackedScaleKey ];
-		[ aCoder encodeDouble:self.reflectionOffset forKey:kMMFlowViewReflectionOffsetKey ];
-		[ aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey ];
-		[ aCoder encodeDouble:self.scrollDuration forKey:kMMFlowViewScrollDurationKey ];
-		[ aCoder encodeDouble:self.itemScale forKey:kMMFlowViewItemScaleKey ];
+	[super encodeWithCoder:aCoder];
+	if ([aCoder allowsKeyedCoding]) {
+		[aCoder encodeDouble:self.stackedAngle forKey:kMMFlowViewStackedAngleKey];
+		[aCoder encodeDouble:self.spacing forKey:kMMFlowViewSpacingKey];
+		[aCoder encodeDouble:self.stackedScale forKey:kMMFlowViewStackedScaleKey];
+		[aCoder encodeDouble:self.reflectionOffset forKey:kMMFlowViewReflectionOffsetKey];
+		[aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey];
+		[aCoder encodeDouble:self.scrollDuration forKey:kMMFlowViewScrollDurationKey];
+		[aCoder encodeDouble:self.itemScale forKey:kMMFlowViewItemScaleKey];
 		[aCoder encodeObject:self.coverFlowLayout forKey:kLayoutKey];
 	}
 	else {
-		[ NSException raise:NSInvalidArchiveOperationException format:@"Only supports NSKeyedArchiver coders" ];
+		[NSException raise:NSInvalidArchiveOperationException format:@"Only supports NSKeyedArchiver coders"];
 	}
 }
 
@@ -311,6 +311,7 @@ static NSString * const kLayoutKey = @"layout";
 - (void)setInitialDefaults
 {
 	[self setAcceptsTouchEvents:YES];
+	[self setTranslatesAutoresizingMaskIntoConstraints:NO];
 	self.stackedAngle = kDefaultStackedAngle;
 	self.spacing = kDefaultItemSpacing;
 	self.stackedScale = kDefaultStackedScale;
@@ -491,31 +492,31 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow
 {
-	BOOL inWindow = [ self window ] != nil;
+	BOOL inWindow = [self window] != nil;
 	BOOL willBeInWindow = newWindow != nil;
 	
-	if ( willBeInWindow && !inWindow ) {
-		[ self setupLayers ];
-		[ self setupTrackingAreas ];
-		[ self setupNotifications ];
+	if (willBeInWindow && !inWindow) {
+		[self setupLayers];
+		[self setupTrackingAreas];
+		[self setupNotifications];
 	}
-	else if ( inWindow && !willBeInWindow ) {
-		[ self teardownNotifications ];
+	else if (inWindow && !willBeInWindow) {
+		[self teardownNotifications];
 		self.layer = nil;
 	}
-	[ super viewWillMoveToWindow:newWindow ];
+	[super viewWillMoveToWindow:newWindow];
 }
 
 - (void)viewWillMoveToSuperview:(NSView *)newSuperview
 {
 	BOOL willBeInSuperview = newSuperview != nil;
-	BOOL inView = [ self superview ] != nil;
+	BOOL inView = [self superview] != nil;
 
-	if ( inView && !willBeInSuperview ) {
+	if (inView && !willBeInSuperview) {
 		[self.observedItems mm_removeObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		[self unbind:NSContentArrayBinding];
 	}
-	[ super viewWillMoveToSuperview:newSuperview ];
+	[super viewWillMoveToSuperview:newSuperview];
 }
 
 - (void)viewWillStartLiveResize
@@ -532,8 +533,13 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)updateTrackingAreas
 {
-	[ super updateTrackingAreas ];
-	[ self setupTrackingAreas ];
+	[super updateTrackingAreas];
+	[self setupTrackingAreas];
+}
+
+- (NSSize)intrinsicContentSize
+{
+	return NSMakeSize(NSViewNoInstrinsicMetric, NSViewNoInstrinsicMetric);
 }
 
 #pragma mark -
