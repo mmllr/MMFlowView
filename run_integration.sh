@@ -69,7 +69,7 @@ echo "[*] Performing code quality analysis"
 
 mkdir -p ${WORKSPACE}/build/reports
 
-scripts/objc_dep.py Classes/ -i Specs -i Example > ${WORKSPACE}/build/reports/dependency.dot
+scripts/objc_dep.py Classes/ -i Specs osx/Specs Example > ${WORKSPACE}/build/reports/dependency.dot
 ${DOT} -Tpng -o${WORKSPACE}/build/reports/dependency.png ${WORKSPACE}/build/reports/dependency.dot
 echo "<html><body><img src=\"dependency.png\"></body></html>" > build/reports/index.html
 
