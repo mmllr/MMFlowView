@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "MMFlowView"
-  s.version          = "1.0.2"
+  s.version          = "1.0.3"
   s.summary          = "A full featured CoverFlow view with similar functionality like IKImageBrowserView"
   s.description      = <<-DESC
                        MMFlowView is a class designed to support the "CoverFlow" effect and it is intended to use in a similar way like IKImageBrowserView.
