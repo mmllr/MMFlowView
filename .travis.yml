@@ -2,4 +2,8 @@ language: objective-c
 rvm: 1.9.3
 env:
   - XCWORKSPACE="Example/MMFlowViewDemo.xcworkspace"
-script: xcodebuild -workspace Example/MMFlowViewDemo.xcworkspace -scheme MMFlowViewDemo CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO test
+before_install:
+  - sudo easy_install cpp-coveralls
+script: xcodebuild -workspace Example/MMFlowViewDemo.xcworkspace -scheme MMFlowViewDemo CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES test
+after_success:
+  - coveralls -e Classes/osx/Specs -e Example
