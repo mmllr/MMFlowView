@@ -6,4 +6,4 @@ before_install:
   - sudo easy_install cpp-coveralls
 script: xcodebuild -workspace Example/MMFlowViewDemo.xcworkspace -scheme MMFlowViewDemo CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES test
 after_success:
-  - coveralls -e Classes/osx/Specs -e Example -x m
+  - ./coveralls.rb --extension m --exclude-folder Classes/osx/Specs --exclude-folder Example
