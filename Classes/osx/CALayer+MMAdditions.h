@@ -33,6 +33,8 @@
 
 @interface CALayer (MMAdditions)
 
+- (void)mm_enableImplicitAnimationForKey:(NSString*)key;
+- (void)mm_disableImplicitAnimationForKey:(NSString*)key;
 - (void)mm_disableImplicitPositionAndBoundsAnimations;
 - (void)mm_enableImplicitPositionAndBoundsAnimations;
 - (CGRect)mm_boundingRect;

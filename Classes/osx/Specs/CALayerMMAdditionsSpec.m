@@ -36,6 +36,9 @@ SPEC_BEGIN(CALayerMMAdditionsSpec)
 
 describe(@"CALayer+MMAdditions", ^{
 	__block CALayer *sut = nil;
+	NSDictionary *customActions = @{@"position": [NSNull null],
+									@"anchorPoint": [NSNull null]
+									};
 
 	beforeEach(^{
 		sut = [CALayer layer];
@@ -45,6 +48,48 @@ describe(@"CALayer+MMAdditions", ^{
 		sut = nil;
 	});
 
+	context(NSStringFromSelector(@selector(mm_enableImplicitAnimationForKey:)), ^{
+		it(@"should respond to mm_enableImplicitAnimationForKey:", ^{
+			[[sut should] respondToSelector:@selector(mm_enableImplicitAnimationForKey:)];
+		});
+		context(@"when custom actions are set", ^{
+			NSDictionary *actionsWithoutPosition = @{@"anchorPoint": [NSNull null]};
+
+			beforeEach(^{
+				sut.actions = customActions;
+			});
+			it(@"should remove the key from the custom actions", ^{
+				[[sut should] receive:@selector(setActions:) withArguments:actionsWithoutPosition];
+
+				[sut mm_enableImplicitAnimationForKey:@"position"];
+			});
+		});
+	});
+	context(NSStringFromSelector(@selector(mm_disableImplicitAnimationForKey:)), ^{
+		it(@"should respond to mm_disableImplicitAnimationForKey:", ^{
+			[[sut should] respondToSelector:@selector(mm_disableImplicitAnimationForKey:)];
+		});
+		context(@"with no custom actions", ^{
+			it(@"should set NSNull for the specified action", ^{
+				[[sut should] receive:@selector(setActions:) withArguments:@{@"bounds": [NSNull null]}];
+				
+				[sut mm_disableImplicitAnimationForKey:@"bounds"];
+			});
+		});
+		context(@"with custom actions", ^{
+			beforeEach(^{
+				sut.actions = customActions;
+			});
+			it(@"should set NSNull for the specified action", ^{
+				NSMutableDictionary *expectedDictionary = [customActions mutableCopy];
+
+				expectedDictionary[@"bounds"] = [NSNull null];
+				[[sut should] receive:@selector(setActions:) withArguments:[expectedDictionary copy]];
+
+				[sut mm_disableImplicitAnimationForKey:@"bounds"];
+			});
+		});
+	});
 	context(@"Implicit bounds and position animations", ^{
 		context(@"disable animations", ^{
 			beforeEach(^{

@@ -33,20 +33,30 @@
 
 @implementation CALayer (MMAdditions)
 
-- (void)mm_disableImplicitPositionAndBoundsAnimations
+- (void)mm_enableImplicitAnimationForKey:(NSString *)key
 {
 	NSMutableDictionary *customActions = [NSMutableDictionary dictionaryWithDictionary:self.actions];
-	customActions[@"position"] = [NSNull null];
-	customActions[@"bounds"] = [NSNull null];
-	self.actions = customActions;
+	[customActions removeObjectForKey:key];
+	self.actions = [customActions copy];
+}
+
+- (void)mm_disableImplicitAnimationForKey:(NSString *)key
+{
+	NSMutableDictionary *customActions = [NSMutableDictionary dictionaryWithDictionary:self.actions];
+	customActions[key] = [NSNull null];
+	self.actions = [customActions copy];
+}
+
+- (void)mm_disableImplicitPositionAndBoundsAnimations
+{
+	[self mm_disableImplicitAnimationForKey:@"bounds"];
+	[self mm_disableImplicitAnimationForKey:@"position"];
 }
 
 - (void)mm_enableImplicitPositionAndBoundsAnimations
 {
-	NSMutableDictionary *customActions = [NSMutableDictionary dictionaryWithDictionary:self.actions];
-	[customActions removeObjectForKey:@"position"];
-	[customActions removeObjectForKey:@"bounds"];
-	self.actions = customActions;
+	[self mm_enableImplicitAnimationForKey:@"position"];
+	[self mm_enableImplicitAnimationForKey:@"bounds"];
 }
 
 - (CGRect)mm_boundingRect

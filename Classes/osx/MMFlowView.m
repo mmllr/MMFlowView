@@ -47,6 +47,7 @@
 #import "MMFlowView+MMScrollBarDelegate.h"
 #import "MMMacros.h"
 #import "MMFlowView+MMCoverFlowLayerDataSource.h"
+#import "CALayer+MMAdditions.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -626,9 +627,9 @@ static NSString * const kLayoutKey = @"layout";
 
 - (CALayer*)createBackgroundLayer
 {
-	CAGradientLayer *layer = [ CAGradientLayer layer ];
+	CAGradientLayer *layer = [CAGradientLayer layer];
 	layer.position = CGPointMake( 0, 0 );
-	layer.bounds = CGRectMake( 0, 0, NSWidth([self bounds]), NSHeight([self bounds]) );
+	layer.bounds = CGRectMake( 0, 0, NSWidth([self bounds]), NSHeight([self bounds]));
 
 	layer.colors = [[ self class ] backgroundGradientColors ];
 	layer.locations = [ [ self class ] backgroundGradientLocations ];
@@ -639,38 +640,41 @@ static NSString * const kLayoutKey = @"layout";
 
 - (CATextLayer*)createTitleLayer
 {
-	CATextLayer *layer = [ CATextLayer layer ];
+	CATextLayer *layer = [CATextLayer layer];
 	layer.name = kMMFlowViewTitleLayerName;
 	layer.alignmentMode = kCAAlignmentCenter;
 	layer.fontSize = kDefaultTitleSize;
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:kSuperlayerKey attribute:kCAConstraintMinY offset:kTitleOffset ] ];
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMidX relativeTo:kSuperlayerKey attribute:kCAConstraintMidX ] ];
-	// disable animation for position
-	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ layer actions ] ];
-	// add the new action for sublayers
-	customActions[kPositionKey] = [NSNull null];
-	customActions[kBoundsKey] = [NSNull null];
-	customActions[kStringKey] = [NSNull null];
-	// set theLayer actions to the updated dictionary
-	layer.actions = customActions;
+	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMinY
+													relativeTo:kSuperlayerKey
+													 attribute:kCAConstraintMinY
+														offset:kTitleOffset]];
+	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMidX
+													relativeTo:kSuperlayerKey
+													 attribute:kCAConstraintMidX]];
+	[layer mm_disableImplicitAnimationForKey:kStringKey];
+	[layer mm_disableImplicitAnimationForKey:kPositionKey];
+	[layer mm_disableImplicitAnimationForKey:kBoundsKey];
 	return layer;
 }
 
 - (CALayer*)createContainerLayer
 {
-	CALayer *layer = [ CALayer layer ];
+	CALayer *layer = [CALayer layer];
 	layer.name = kMMFlowViewContainerLayerName;
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMidX relativeTo:kSuperlayerKey attribute:kCAConstraintMidX ] ];
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMaxY relativeTo:kSuperlayerKey attribute:kCAConstraintMaxY ] ];
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintWidth relativeTo:kSuperlayerKey attribute:kCAConstraintWidth ] ];
-	[ layer addConstraint:[ CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:kMMFlowViewTitleLayerName attribute:kCAConstraintMaxY ] ];
-	// disable animation for position
-	NSMutableDictionary *customActions = [ NSMutableDictionary dictionaryWithDictionary:[ layer actions ] ];
-	// add the new action for sublayers
-	customActions[kPositionKey] = [NSNull null];
-	customActions[kBoundsKey] = [NSNull null];
-	// set theLayer actions to the updated dictionary
-	layer.actions = customActions;
+	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMidX
+													relativeTo:kSuperlayerKey
+													 attribute:kCAConstraintMidX]];
+	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMaxY
+													relativeTo:kSuperlayerKey
+													 attribute:kCAConstraintMaxY]];
+	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintWidth
+													relativeTo:kSuperlayerKey
+													 attribute:kCAConstraintWidth]];
+	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMinY
+													relativeTo:kMMFlowViewTitleLayerName
+													 attribute:kCAConstraintMaxY]];
+	[layer mm_disableImplicitAnimationForKey:kPositionKey];
+	[layer mm_disableImplicitAnimationForKey:kBoundsKey];
 	return layer;
 }
 
