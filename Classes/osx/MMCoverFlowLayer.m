@@ -39,9 +39,6 @@ static const CGFloat kDefaultEyeDistance = 1500.;
 static const CFTimeInterval kDefaultScrollDuration = .4;
 static const CGFloat kDefaultReflectionOffset = -.4;
 
-
-static NSString * const kMMCoverFlowLayerIndexAttributeKey = @"mmCoverFlowLayerIndex";
-
 static void* kLayoutObservationContext = @"layoutContext";
 static void* kReloadContentObservationContext = @"reloadContent";
 
@@ -200,7 +197,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 - (NSUInteger)indexOfLayerAtPointInSuperLayer:(CGPoint)pointInLayer
 {
 	CALayer *hitLayer = [[self hitTest:pointInLayer] modelLayer];
-	NSNumber *indexOfLayer = [hitLayer valueForKey:kMMCoverFlowLayerIndexAttributeKey];
+	NSNumber *indexOfLayer = [hitLayer valueForKey:kMMCoverFlowLayoutAttributesIndexAttributeKey];
 	return indexOfLayer ? [indexOfLayer unsignedIntegerValue] :  NSNotFound;
 }
 
@@ -245,21 +242,10 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	self.layout.contentHeight = CGRectGetHeight(self.bounds);
 	[self.contentLayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
 		MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:idx];
-		[self applyAttributes:attributes toContentLayer:contentLayer];
+		[attributes applyToLayer:contentLayer];
 	}];
 	[self scrollPoint:self.selectedScrollPoint];
 	[self updateVisibleItems];
-}
-
-- (void)applyAttributes:(MMCoverFlowLayoutAttributes*)attributes toContentLayer:(CALayer*)contentLayer
-{
-	contentLayer.anchorPoint = attributes.anchorPoint;
-	contentLayer.zPosition = attributes.zPosition;
-	contentLayer.transform = attributes.transform;
-	contentLayer.bounds = attributes.bounds;
-	CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(attributes.anchorPoint.x*CGRectGetWidth(attributes.bounds), attributes.anchorPoint.y*CGRectGetHeight(attributes.bounds));
-	contentLayer.position = CGPointApplyAffineTransform(attributes.position, anchorTransform);
-	[contentLayer setValue:@(attributes.index) forKey:kMMCoverFlowLayerIndexAttributeKey];
 }
 
 - (void)setupObservations

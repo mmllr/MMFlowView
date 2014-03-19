@@ -30,13 +30,15 @@
 //
 
 #import "MMCoverFlowLayoutAttributes.h"
+#import "MMMacros.h"
+
+NSString * const kMMCoverFlowLayoutAttributesIndexAttributeKey = @"mmCoverFlowLayerIndex";
 
 @implementation MMCoverFlowLayoutAttributes
 
 - (id)init
 {
-	[NSException raise:NSInternalInconsistencyException format:@"init not allowed, use designated initalizer initWithIndex:position:size:anchorPoint:transfrom:zPosition: instead"];
-	return nil;
+	@throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"init not allowed, use designated initalizer initWithIndex:position:size:anchorPoint:transfrom:zPosition: instead" userInfo:nil];
 }
 
 - (id)initWithIndex:(NSUInteger)anIndex position:(CGPoint)aPosition size:(CGSize)aSize anchorPoint:(CGPoint)anAnchorPoint transfrom:(CATransform3D)aTransform zPosition:(CGFloat)aZPosition
@@ -51,6 +53,69 @@
 		_zPosition = aZPosition;
     }
     return self;
+}
+
+- (BOOL)isEqual:(id)object
+{
+	if (self == object) {
+		return YES;
+	}
+	if (![object isKindOfClass:[MMCoverFlowLayoutAttributes class]]) {
+		return NO;
+	}
+	return [self isEqualToCoverFlowLayoutAttribute:(MMCoverFlowLayoutAttributes*)object];
+}
+
+- (BOOL)isEqualToCoverFlowLayoutAttribute:(MMCoverFlowLayoutAttributes*)other
+{
+	if (self.index != other.index ) {
+		return NO;
+	}
+	if (!CATransform3DEqualToTransform(self.transform, other.transform)) {
+		return NO;
+	}
+	if (!CGPointEqualToPoint(self.anchorPoint, other.anchorPoint)) {
+		return NO;
+	}
+	if (!CGPointEqualToPoint(self.position, other.position)) {
+		return NO;
+	}
+	if (!CGRectEqualToRect(self.bounds, other.bounds)) {
+		return NO;
+	}
+	if (self.zPosition != other.zPosition) {
+		return NO;
+	}
+	return YES;
+}
+
+- (NSUInteger)hash
+{
+	NSUInteger hashValue = _index;
+
+	hashValue = NSUINTROTATE(hashValue, NSUINT_BIT / 2) ^ (NSUInteger)_zPosition;
+	hashValue = NSUINTROTATE(hashValue, NSUINT_BIT / 2) ^ (NSUInteger)_bounds.size.width;
+	hashValue = NSUINTROTATE(hashValue, NSUINT_BIT / 2) ^ (NSUInteger)_bounds.size.height;
+	hashValue = NSUINTROTATE(hashValue, NSUINT_BIT / 2) ^ (NSUInteger)_anchorPoint.x;
+	hashValue = NSUINTROTATE(hashValue, NSUINT_BIT / 2) ^ (NSUInteger)_anchorPoint.y;
+	hashValue = NSUINTROTATE(hashValue, NSUINT_BIT / 2) ^ (NSUInteger)_position.x;
+	hashValue = NSUINTROTATE(hashValue, NSUINT_BIT / 2) ^ (NSUInteger)_position.y;
+	return NSUINTROTATE([[NSValue valueWithCATransform3D:_transform] hash], NSUINT_BIT / 2) ^ hashValue;
+}
+
+- (CGAffineTransform)anchorPointTransform
+{
+	return CGAffineTransformMakeTranslation(self.anchorPoint.x*CGRectGetWidth(self.bounds), self.anchorPoint.y*CGRectGetHeight(self.bounds));
+}
+
+- (void)applyToLayer:(CALayer *)aLayer
+{
+	aLayer.anchorPoint = self.anchorPoint;
+	aLayer.zPosition = self.zPosition;
+	aLayer.transform = self.transform;
+	aLayer.bounds = self.bounds;
+	aLayer.position = CGPointApplyAffineTransform(self.position, [self anchorPointTransform]);
+	[aLayer setValue:@(self.index) forKey:kMMCoverFlowLayoutAttributesIndexAttributeKey];
 }
 
 @end

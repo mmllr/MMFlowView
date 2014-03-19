@@ -31,6 +31,8 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString * const kMMCoverFlowLayoutAttributesIndexAttributeKey;
+
 @interface MMCoverFlowLayoutAttributes : NSObject
 
 @property (readonly) NSUInteger index;
@@ -41,5 +43,6 @@
 @property (readonly) CGFloat zPosition;
 
 - (id)initWithIndex:(NSUInteger)anIndex position:(CGPoint)aPosition size:(CGSize)aSize anchorPoint:(CGPoint)anAnchorPoint transfrom:(CATransform3D)aTransform zPosition:(CGFloat)aZPosition;
+- (void)applyToLayer:(CALayer*)aLayer;
 
 @end
