@@ -43,11 +43,18 @@ SPEC_BEGIN(MMFlowViewMMCoverFlowLayerDataSourceSpec)
 
 describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 	__block MMFlowView *sut = nil;
-	
+	__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
+	__block id mockedImageFactory = nil;
+
 	beforeEach(^{
 		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+
+		mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
+		mockedImageFactory = [MMFlowViewImageFactory nullMock];
 	});
 	afterEach(^{
+		mockedCoverFlowLayer = nil;
+		mockedImageFactory = nil;
 		sut = nil;
 	});
 	
@@ -70,15 +77,13 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		[[sut should] equal:sut.coverFlowLayer.dataSource];
 	});
 	context(NSStringFromSelector(@selector(coverFlowLayerDidRelayout:)), ^{
-		__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
-		
 		beforeEach(^{
-			mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
+			sut.coverFlowLayer = mockedCoverFlowLayer;
+			sut.imageFactory = mockedImageFactory;
 		});
 		it(@"should set the maxImageSize of the image factory to the layouts itemSite", ^{
-			MMFlowViewImageFactory *mockedImageFactory = [MMFlowViewImageFactory nullMock];
 			[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(sut.coverFlowLayout.itemSize)];
-			sut.imageFactory = mockedImageFactory;
+
 			[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
 		});
 		context(@"scroll bar interaction", ^{
@@ -103,6 +108,9 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		
 		context(@"when asking for a content layer", ^{
 			beforeEach(^{
+				sut.coverFlowLayer = mockedCoverFlowLayer;
+				sut.imageFactory = mockedImageFactory;
+
 				contentLayer = [sut coverFlowLayer:sut.coverFlowLayer contentLayerForIndex:0];
 			});
 			afterEach(^{
@@ -120,9 +128,7 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		});
 	});
 	context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
-		__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
 		__block CALayer *contentLayer = nil;
-		__block id mockedImageFactory = nil;
 		__block CGImageRef testImageRef = NULL;
 		
 		beforeAll(^{
@@ -134,29 +140,44 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		});
 		
 		beforeEach(^{
-			mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
-			mockedImageFactory = [MMFlowViewImageFactory nullMock];
 			contentLayer = [CALayer nullMock];
 			sut.coverFlowLayer = mockedCoverFlowLayer;
 			sut.imageFactory = mockedImageFactory;
 		});
 		afterEach(^{
 			contentLayer = nil;
-			mockedCoverFlowLayer = nil;
-			mockedImageFactory = nil;
 		});
 		it(@"should ask the image factory for the images", ^{
 			[[mockedImageFactory should] receive:@selector(createCGImageForItem:completionHandler:)];
 			[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
 		});
-		it(@"it should set the image from the image factory to the layer", ^{
-			[[contentLayer should] receive:@selector(setContents:) withArguments:(__bridge id)(testImageRef)];
-			
-			KWCaptureSpy *factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageForItem:completionHandler:) atIndex:1];
-			
-			[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
-			void (^completionHandler)(CGImageRef image) = factorySpy.argument;
-			completionHandler(testImageRef);
+		context(@"setting the content on the layer", ^{
+			__block KWCaptureSpy *factorySpy = nil;
+			beforeEach(^{
+				factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageForItem:completionHandler:) atIndex:1];
+			});
+			it(@"it should set the image from the image factory to the layer", ^{
+				[[contentLayer should] receive:@selector(setContents:) withArguments:(__bridge id)(testImageRef)];
+
+				[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
+				void (^completionHandler)(CGImageRef image) = factorySpy.argument;
+				completionHandler(testImageRef);
+			});
+			it(@"should set the image's aspect ratio to the content layer", ^{
+				CGFloat width = CGImageGetWidth(testImageRef);
+				CGFloat height = CGImageGetHeight(testImageRef);
+				CGFloat aspectRatio = width / height;
+
+				CGFloat scaleX = aspectRatio > 1 ? 1 : aspectRatio;
+				CGFloat scaleY = aspectRatio > 1 ? 1 / aspectRatio : 1;
+				CGAffineTransform aspectTransform = CGAffineTransformMakeScale(scaleX, scaleY);
+				CGSize imageSize = CGSizeApplyAffineTransform(sut.coverFlowLayout.itemSize, aspectTransform);
+				[[contentLayer should] receive:@selector(setBounds:) withArguments:theValue(CGRectMake(0, 0, imageSize.width, imageSize.height))];
+
+				[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
+				void (^completionHandler)(CGImageRef image) = factorySpy.argument;
+				completionHandler(testImageRef);
+			});
 		});
 	});
 });

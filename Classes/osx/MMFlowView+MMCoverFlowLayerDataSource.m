@@ -60,6 +60,16 @@
 	[self.imageFactory createCGImageForItem:[self imageItemForIndex:idx]
 						  completionHandler:^(CGImageRef image) {
 							  contentLayer.contents = (__bridge id)(image);
+
+							  CGFloat width = CGImageGetWidth(image);
+							  CGFloat height = CGImageGetHeight(image);
+							  CGFloat aspectRatio = width / height;
+							  
+							  CGFloat scaleX = aspectRatio > 1 ? 1 : aspectRatio;
+							  CGFloat scaleY = aspectRatio > 1 ? 1 / aspectRatio : 1;
+							  CGAffineTransform aspectTransform = CGAffineTransformMakeScale(scaleX, scaleY);
+							  CGSize imageSize = CGSizeApplyAffineTransform(self.coverFlowLayout.itemSize, aspectTransform);
+							  contentLayer.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
 						  }];
 }
 
