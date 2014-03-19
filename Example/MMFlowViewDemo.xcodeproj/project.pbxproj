@@ -632,6 +632,7 @@
 			baseConfigurationReference = 6828D05556D049169608CC5A /* Pods-MMFlowViewDemo.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
@@ -647,6 +648,7 @@
 			baseConfigurationReference = 6828D05556D049169608CC5A /* Pods-MMFlowViewDemo.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
