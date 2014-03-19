@@ -47,6 +47,7 @@
 
 - (void)coverFlowLayerWillRelayout:(MMCoverFlowLayer *)coverFlowLayer
 {
+	[self.imageFactory stop];
 }
 
 - (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer

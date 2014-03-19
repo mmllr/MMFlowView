@@ -76,6 +76,16 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 	it(@"should be the datasource for the coverflow layer", ^{
 		[[sut should] equal:sut.coverFlowLayer.dataSource];
 	});
+	context(NSStringFromSelector(@selector(coverFlowLayerWillRelayout:)), ^{
+		beforeEach(^{
+			sut.imageFactory = mockedImageFactory;
+		});
+		it(@"should cancel all pending operations on the image factory", ^{
+			[[mockedImageFactory should] receive:@selector(stop)];
+
+			[sut coverFlowLayerWillRelayout:mockedCoverFlowLayer];
+		});
+	});
 	context(NSStringFromSelector(@selector(coverFlowLayerDidRelayout:)), ^{
 		beforeEach(^{
 			sut.coverFlowLayer = mockedCoverFlowLayer;
