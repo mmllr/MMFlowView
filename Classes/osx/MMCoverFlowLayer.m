@@ -133,8 +133,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 {
 	if ( self.layout.selectedItemIndex != NSNotFound ) {
 		CALayer *selectedLayer = self.contentLayers[self.layout.selectedItemIndex];
-		CGRect selectedBounds = selectedLayer.bounds;
-		return CGRectMake(CGRectGetMidX(self.bounds) - CGRectGetMidX(selectedBounds), CGRectGetMidY(self.bounds) - CGRectGetMidY(selectedBounds), CGRectGetWidth(selectedBounds), CGRectGetHeight(selectedBounds));
+		return [self convertRect:selectedLayer.bounds fromLayer:selectedLayer];
 	}
 	return CGRectZero;
 }
