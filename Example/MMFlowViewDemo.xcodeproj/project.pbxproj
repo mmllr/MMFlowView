@@ -41,6 +41,8 @@
 		2801F64E18D70F1A00075E15 /* NSEventMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62F18D70F1A00075E15 /* NSEventMMAdditionsSpec.m */; };
 		2801F64F18D70F1A00075E15 /* NSValueMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */; };
 		2801F65218D70F2F00075E15 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F65118D70F2F00075E15 /* Item.m */; };
+		287AF70E18D9852F00FEDAA9 /* MMCodeCoverageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */; };
+		287AF70F18D9853400FEDAA9 /* NSApplication+MMCodeCoverageFixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 287AF70D18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.m */; };
 		289C9C8C18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */; };
 		28DDDE6718D70B1E007B5664 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DDDE6618D70B1E007B5664 /* Cocoa.framework */; };
 		28DDDE7118D70B1E007B5664 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DDDE6F18D70B1E007B5664 /* InfoPlist.strings */; };
@@ -103,6 +105,10 @@
 		2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSValueMMAdditionsSpec.m; sourceTree = "<group>"; };
 		2801F65018D70F2F00075E15 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
 		2801F65118D70F2F00075E15 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
+		287AF70A18D9852300FEDAA9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MMCodeCoverageTests.m; sourceTree = "<group>"; };
+		287AF70C18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSApplication+MMCodeCoverageFixer.h"; sourceTree = "<group>"; };
+		287AF70D18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+MMCodeCoverageFixer.m"; sourceTree = "<group>"; };
 		289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewNSAccessibilitySpec.m; sourceTree = "<group>"; };
 		28DDDE6318D70B1E007B5664 /* MMFlowViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MMFlowViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28DDDE6618D70B1E007B5664 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -190,6 +196,17 @@
 			path = ../../Classes/osx/Specs;
 			sourceTree = "<group>";
 		};
+		287AF70918D9852300FEDAA9 /* MMTestingHelper */ = {
+			isa = PBXGroup;
+			children = (
+				287AF70A18D9852300FEDAA9 /* LICENSE */,
+				287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */,
+				287AF70C18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.h */,
+				287AF70D18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.m */,
+			);
+			path = MMTestingHelper;
+			sourceTree = SOURCE_ROOT;
+		};
 		28DDDE5A18D70B1E007B5664 = {
 			isa = PBXGroup;
 			children = (
@@ -262,6 +279,7 @@
 		28DDDE8A18D70B1E007B5664 /* MMFlowViewDemoTests */ = {
 			isa = PBXGroup;
 			children = (
+				287AF70918D9852300FEDAA9 /* MMTestingHelper */,
 				2801F61118D70F1A00075E15 /* Specs */,
 				28DDDE8B18D70B1E007B5664 /* Supporting Files */,
 			);
@@ -447,6 +465,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2801F65218D70F2F00075E15 /* Item.m in Sources */,
+				287AF70F18D9853400FEDAA9 /* NSApplication+MMCodeCoverageFixer.m in Sources */,
 				28DDDE7A18D70B1E007B5664 /* AppDelegate.m in Sources */,
 				28DDDE7318D70B1E007B5664 /* main.m in Sources */,
 			);
@@ -457,6 +476,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2801F63D18D70F1A00075E15 /* MMFlowViewNSDraggingDestinationSpec.m in Sources */,
+				287AF70E18D9852F00FEDAA9 /* MMCodeCoverageTests.m in Sources */,
 				2801F64918D70F1A00075E15 /* MMQuickLookImageDecoderSpec.m in Sources */,
 				2801F64E18D70F1A00075E15 /* NSEventMMAdditionsSpec.m in Sources */,
 				2801F63518D70F1A00075E15 /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
