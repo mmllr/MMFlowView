@@ -39,11 +39,14 @@
 
 @property (nonatomic) CGSize maxImageSize;
 @property (strong) id<MMFlowViewImageCache> cache;
+@property (strong) NSOperationQueue *operationQueue;
 
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType;
 - (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType;
 - (void)setDecoder:(id<MMImageDecoderProtocol>)aDecoder forRepresentationType:(NSString*)representationType;
 - (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef))completionHandler;
 - (void)imageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(NSImage*))completionHandler;
+
+- (void)stop;
 
 @end

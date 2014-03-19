@@ -44,7 +44,6 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 @interface MMFlowViewImageFactory ()
 
 @property (strong) NSMutableDictionary *imageDecoders;
-@property (strong) NSOperationQueue *operationQueue;
 
 @end
 
@@ -167,6 +166,11 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 			}
 		}];
 	}
+}
+
+- (void)stop
+{
+	[self.operationQueue cancelAllOperations];
 }
 
 @end

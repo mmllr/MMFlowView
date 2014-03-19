@@ -92,11 +92,23 @@ describe(@"MMFlowViewImageFactory", ^{
 	it(@"should respond to setDecoder:forRepresentationType:", ^{
 		[[sut should] respondToSelector:@selector(setDecoder:forRepresentationType:)];
 	});
-	
 	it(@"should not have an image cache", ^{
 		[[(id)sut.cache should] beNil];
 	});
-	context(@"maxImageSize", ^{
+	context(NSStringFromSelector(@selector(stop)), ^{
+		it(@"should respond to the stop selector", ^{
+			[[sut should] respondToSelector:@selector(stop)];
+		});
+		it(@"should cancel all operations on its operation queue when stop is invoked", ^{
+			NSOperationQueue *mockedOperationQueue = [NSOperationQueue nullMock];
+			sut.operationQueue = mockedOperationQueue;
+
+			[[mockedOperationQueue should] receive:@selector(cancelAllOperations)];
+
+			[sut stop];
+		});
+	});
+	context(@"maxImageSize property", ^{
 		it(@"should respond to maxImageSize", ^{
 			[[sut should] respondToSelector:@selector(maxImageSize)];
 		});
