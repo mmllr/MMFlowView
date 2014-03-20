@@ -206,7 +206,6 @@ static void* kReloadContentObservationContext = @"reloadContent";
 - (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
 {
 	if ( self.inLiveResize ) {
-		// disable implicit animations for scrolllayer in live resize
 		return (id<CAAction>)[NSNull null];
 	}
 	return nil;
