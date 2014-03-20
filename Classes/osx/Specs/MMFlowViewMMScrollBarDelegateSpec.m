@@ -148,7 +148,7 @@ describe(@"MMFlowView+MMScrollBarDelegate", ^{
 
 		beforeEach(^{
 			mockedLayout = [MMCoverFlowLayout nullMock];
-			[mockedLayout stub:@selector(contentWidth) andReturn:theValue(1000)];
+			[mockedLayout stub:@selector(contentSize) andReturn:theValue(CGSizeMake(1000, 100))];
 			sut.coverFlowLayout = mockedLayout;
 		});
 		afterEach(^{
@@ -161,8 +161,8 @@ describe(@"MMFlowView+MMScrollBarDelegate", ^{
 			CGFloat expectedSize = 1000;
 			[[theValue([sut contentSizeForScrollBarLayer:sut.scrollBarLayer]) should] equal:theValue(expectedSize)];
 		});
-		it(@"should ask the layout for the content width", ^{
-			[[mockedLayout should] receive:@selector(contentWidth)];
+		it(@"should ask the layout for the content size", ^{
+			[[mockedLayout should] receive:@selector(contentSize)];
 
 			[sut contentSizeForScrollBarLayer:sut.scrollBarLayer];
 		});

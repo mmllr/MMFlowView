@@ -30,6 +30,10 @@
 #define SAFE_CGIMAGE_RELEASE(image) if (image) { CGImageRelease(image); image = NULL; }
 #endif // SAFE_CGIMAGE_RELEASE
 
+#ifndef DEGREES2RADIANS
+#define DEGREES2RADIANS(angle) ((angle) * M_PI / 180.)
+#endif
+
 #ifndef CLAMP
 #define CLAMP(value, lowerBound, upperbound) MAX( lowerBound, MIN( upperbound, value ))
 #endif

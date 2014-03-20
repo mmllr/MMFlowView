@@ -218,8 +218,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	if ( [self.dataSource respondsToSelector:@selector(coverFlowLayerWillRelayout:)] ) {
 		[self.dataSource coverFlowLayerWillRelayout:self];
 	}
-	self.layout.contentHeight = CGRectGetHeight(self.bounds);
-	self.replicatorLayer.frame = CGRectMake(0, 0, self.layout.contentWidth, self.layout.contentHeight);
+	self.layout.visibleSize = self.bounds.size;
 	self.replicatorLayer.instanceTransform = CATransform3DConcat( CATransform3DMakeScale(1, -1, 1), CATransform3DMakeTranslation(0, -self.layout.itemSize.height, 0));
 	[CATransaction begin];
 	[CATransaction setDisableActions:self.inLiveResize];
@@ -238,7 +237,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 
 - (void)applyLayout
 {
-	self.layout.contentHeight = CGRectGetHeight(self.bounds);
+	self.layout.visibleSize = self.bounds.size;
 	[self.contentLayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
 		MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:idx];
 		[attributes applyToLayer:contentLayer];

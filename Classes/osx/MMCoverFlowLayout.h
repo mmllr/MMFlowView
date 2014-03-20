@@ -35,9 +35,9 @@
 
 @interface MMCoverFlowLayout : NSObject<NSCoding>
 
-@property (nonatomic, readonly) CGFloat contentWidth;
+@property (nonatomic) CGSize visibleSize;
+@property (nonatomic, readonly) CGSize contentSize;
 @property (nonatomic, readonly) CGSize itemSize;
-@property (nonatomic) CGFloat contentHeight;
 @property (nonatomic) CGFloat interItemSpacing;
 @property (nonatomic) CGFloat stackedAngle;
 @property (nonatomic) NSUInteger selectedItemIndex;
@@ -45,7 +45,7 @@
 @property (nonatomic) CGFloat stackedDistance;
 @property (nonatomic) CGFloat verticalMargin;
 
-- (id)initWithContentHeight:(CGFloat)contentHeight;
+- (id)initWithVisibleSize:(CGSize)visisbleSize;
 - (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex;
 
 @end

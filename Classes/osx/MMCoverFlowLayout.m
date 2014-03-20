@@ -31,6 +31,7 @@
 
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayoutAttributes.h"
+#import "MMMacros.h"
 
 static const CGFloat kDefaultContentHeight = 100;
 static const CGFloat kDefaultInterItemSpacing = 10.;
@@ -39,7 +40,7 @@ static const CGFloat kDefaultStackedDistance = 300;
 static const CGFloat kDefaultVerticalMargin = 10.;
 static const CGFloat kMinimumContentHeight = 1;
 
-static NSString * const kContentHeightKey = @"contentHeight";
+static NSString * const kVisibleSizeKey = @"visibleSize";
 static NSString * const kInterItemSpacingKey = @"interItemSpacing";
 static NSString * const kStackedAngleKey = @"stackedAngle";
 static NSString * const kSelectedItemIndexKey = @"selectedItemIndex";
@@ -47,31 +48,27 @@ static NSString * const kNumberOfItemsKey = @"numberOfItems";
 static NSString * const kStackedDistanceKey = @"stackedDistance";
 static NSString * const kVerticalMarginKey = @"verticalMargin";
 
-#ifndef DEGREES2RADIANS
-#define DEGREES2RADIANS(angle) ((angle) * M_PI / 180.)
-#endif
-
 @interface MMCoverFlowLayout ()
 
 @end
 
 @implementation MMCoverFlowLayout
 
-@dynamic contentWidth;
+@dynamic contentSize;
 @dynamic itemSize;
 
 #pragma mark - init/cleanup
 
 - (id)init
 {
-	return [self initWithContentHeight:kDefaultContentHeight];
+	return [self initWithVisibleSize:CGSizeMake(kDefaultContentHeight, kDefaultContentHeight)];
 }
 
-- (id)initWithContentHeight:(CGFloat)contentHeight
+- (id)initWithVisibleSize:(CGSize)visisbleSize
 {
     self = [super init];
     if (self) {
-		_contentHeight = contentHeight < kMinimumContentHeight ? kMinimumContentHeight : contentHeight;
+		_visibleSize = CGSizeMake(MAX(kMinimumContentHeight, visisbleSize.width), MAX(kMinimumContentHeight, visisbleSize.height));
 		_interItemSpacing = kDefaultInterItemSpacing;
 		_stackedAngle = kDefaultStackedAngle;
 		_selectedItemIndex = NSNotFound;
@@ -85,7 +82,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 {
     self = [super init];
     if (self) {
-		_contentHeight = [coder decodeDoubleForKey:kContentHeightKey];
+		_visibleSize = [coder decodeSizeForKey:kVisibleSizeKey];
 		_interItemSpacing = [coder decodeDoubleForKey:kInterItemSpacingKey];
 		_stackedAngle = [coder decodeDoubleForKey:kStackedAngleKey];
 		_selectedItemIndex = [coder decodeIntegerForKey:kSelectedItemIndexKey];
@@ -99,7 +96,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
 	if ( [aCoder isKindOfClass:[NSKeyedArchiver class]] ) {
-		[aCoder encodeDouble:self.contentHeight forKey:kContentHeightKey];
+		[aCoder encodeSize:self.visibleSize forKey:kVisibleSizeKey];
 		[aCoder encodeDouble:self.interItemSpacing forKey:kInterItemSpacingKey];
 		[aCoder encodeDouble:self.stackedAngle forKey:kStackedAngleKey];
 		[aCoder encodeInteger:self.selectedItemIndex forKey:kSelectedItemIndexKey];
@@ -172,26 +169,25 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 
 - (void)setVerticalMargin:(CGFloat)verticalMargin
 {
-	_verticalMargin = MAX( 0, MIN( verticalMargin, self.contentHeight) );
+	_verticalMargin = CLAMP(verticalMargin, 0, self.visibleSize.height);
 }
 
-- (void)setContentHeight:(CGFloat)contentHeight
+- (void)setVisibleSize:(CGSize)visibleSize
 {
-	if ( contentHeight >= kMinimumContentHeight ) {
-		_contentHeight = contentHeight;
-	}
+	_visibleSize.width = MAX(kMinimumContentHeight, visibleSize.width);
+	_visibleSize.height = MAX(kMinimumContentHeight, visibleSize.height);
 }
 
 - (CGSize)itemSize
 {
-	CGFloat height = self.contentHeight - self.verticalMargin * 2;
+	CGFloat height = self.visibleSize.height - self.verticalMargin * 2;
 	return CGSizeMake(height, height);
 }
 
-- (CGFloat)contentWidth
+- (CGSize)contentSize
 {
 	if ( !self.numberOfItems ) {
-		return 0;
+		return CGSizeZero;
 	}
 	CGFloat itemWidth = self.itemSize.width;
 	CGFloat stackedWidth = (itemWidth * cos(DEGREES2RADIANS(self.stackedAngle))) + self.interItemSpacing;
@@ -204,7 +200,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 	else {
 		width += itemWidth*2;
 	}
-	return width;
+	return CGSizeMake(width, self.visibleSize.height - 2*self.verticalMargin);
 }
 
 #pragma mark - public interface
@@ -229,7 +225,7 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 
 - (CGPoint)originForItem:(NSUInteger)itemIndex
 {
-	return CGPointMake( [self horizontalOffsetForItem:itemIndex], self.contentHeight/2 - self.itemSize.height / 2 );
+	return CGPointMake( [self horizontalOffsetForItem:itemIndex], self.visibleSize.height/2 - self.itemSize.height / 2 );
 }
 
 - (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex
