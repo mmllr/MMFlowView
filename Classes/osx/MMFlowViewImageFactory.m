@@ -168,7 +168,7 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 	}
 }
 
-- (void)stop
+- (void)cancelPendingDecodings
 {
 	[self.operationQueue cancelAllOperations];
 }

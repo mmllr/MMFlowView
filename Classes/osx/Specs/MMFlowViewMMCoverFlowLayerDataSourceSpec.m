@@ -81,7 +81,7 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 			sut.imageFactory = mockedImageFactory;
 		});
 		it(@"should cancel all pending operations on the image factory", ^{
-			[[mockedImageFactory should] receive:@selector(stop)];
+			[[mockedImageFactory should] receive:@selector(cancelPendingDecodings)];
 
 			[sut coverFlowLayerWillRelayout:mockedCoverFlowLayer];
 		});

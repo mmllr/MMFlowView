@@ -47,6 +47,6 @@
 - (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef))completionHandler;
 - (void)imageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(NSImage*))completionHandler;
 
-- (void)stop;
+- (void)cancelPendingDecodings;
 
 @end

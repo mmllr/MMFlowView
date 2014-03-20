@@ -95,9 +95,9 @@ describe(@"MMFlowViewImageFactory", ^{
 	it(@"should not have an image cache", ^{
 		[[(id)sut.cache should] beNil];
 	});
-	context(NSStringFromSelector(@selector(stop)), ^{
+	context(NSStringFromSelector(@selector(cancelPendingDecodings)), ^{
 		it(@"should respond to the stop selector", ^{
-			[[sut should] respondToSelector:@selector(stop)];
+			[[sut should] respondToSelector:@selector(cancelPendingDecodings)];
 		});
 		it(@"should cancel all operations on its operation queue when stop is invoked", ^{
 			NSOperationQueue *mockedOperationQueue = [NSOperationQueue nullMock];
@@ -105,7 +105,7 @@ describe(@"MMFlowViewImageFactory", ^{
 
 			[[mockedOperationQueue should] receive:@selector(cancelAllOperations)];
 
-			[sut stop];
+			[sut cancelPendingDecodings];
 		});
 	});
 	context(@"maxImageSize property", ^{
