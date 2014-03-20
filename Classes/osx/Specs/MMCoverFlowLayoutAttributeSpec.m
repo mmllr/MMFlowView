@@ -239,6 +239,13 @@ describe(@"MMCoverFlowLayoutAttributes", ^{
 				[sut applyToLayer:mockedLayer];
 			});
 		});
+		context(NSStringFromSelector(@selector(description)), ^{
+			it(@"should return the expected description string", ^{
+				NSString *expectedDescription = [NSString stringWithFormat:@"MMCoverFlowLayoutAttributes: %p, index: %@, position: %@, anchorPoint: %@, bounds: %@, zPosition: %@, transform: %@", sut, @(sut.index), [NSValue valueWithPoint:sut.position], [NSValue valueWithPoint:sut.anchorPoint], [NSValue valueWithRect:sut.bounds], @(sut.zPosition), [NSValue valueWithCATransform3D:sut.transform]];
+
+				[[[sut description] should] equal:expectedDescription];
+			});
+		});
 	});
 });
 

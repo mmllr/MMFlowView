@@ -118,4 +118,9 @@ NSString * const kMMCoverFlowLayoutAttributesIndexAttributeKey = @"mmCoverFlowLa
 	[aLayer setValue:@(self.index) forKey:kMMCoverFlowLayoutAttributesIndexAttributeKey];
 }
 
+-(NSString *)description
+{
+	return [NSString stringWithFormat:@"MMCoverFlowLayoutAttributes: %p, index: %@, position: %@, anchorPoint: %@, bounds: %@, zPosition: %@, transform: %@", self, @(self.index), [NSValue valueWithPoint:self.position], [NSValue valueWithPoint:self.anchorPoint], [NSValue valueWithRect:self.bounds], @(self.zPosition), [NSValue valueWithCATransform3D:self.transform]];
+}
+
 @end
