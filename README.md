@@ -1,5 +1,5 @@
 # MMFlowView
-[![Build Status](https://travis-ci.org/mmllr/MMFlowView.png?branch=master)](https://travis-ci.org/mmllr/MMFlowView) [![Coverage Status](https://coveralls.io/repos/mmllr/MMFlowView/badge.png)](https://coveralls.io/r/mmllr/MMFlowView) [![Cocoapods Version](https://cocoapod-badges.herokuapp.com/v/MMFlowView/badge.png)]
+[![Build Status](https://travis-ci.org/mmllr/MMFlowView.png?branch=master)](https://travis-ci.org/mmllr/MMFlowView) [![Coverage Status](https://coveralls.io/repos/mmllr/MMFlowView/badge.png)](https://coveralls.io/r/mmllr/MMFlowView) [![Cocoapods Version](https://cocoapod-badges.herokuapp.com/v/MMFlowView/badge.png)](https://cocoapod-badges.herokuapp.com/v/MMFlowView/badge.png)
 A full featured cover flow control for Mac OS X.
 ![Screenshot](https://raw.github.com/mmllr/MMFlowView/master/Resources/FlowView.png)
 ## Description
