@@ -517,7 +517,7 @@ describe(@"MMFlowView", ^{
 						[sut indexOfItemAtPoint:pointInCenterOfView];
 					});
 					it(@"should ask the coverFlowLayer for the index", ^{
-						[[mockedCoverFlowLayer should] receive:@selector(indexOfLayerAtPointInSuperLayer:) withArguments:theValue(expectedPoint)];
+						[[mockedCoverFlowLayer should] receive:@selector(indexOfLayerAtPoint:) withArguments:theValue(expectedPoint)];
 						[sut indexOfItemAtPoint:pointInCenterOfView];
 					});
 				});

@@ -48,6 +48,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 @property (nonatomic, readwrite) NSIndexSet *visibleItemIndexes;
 @property (nonatomic, readonly) CGPoint selectedScrollPoint;
 @property (nonatomic, strong) CAReplicatorLayer *replicatorLayer;
+@property (nonatomic, strong) CATransformLayer *transformLayer;
 
 @end
 
@@ -81,6 +82,14 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	CAReplicatorLayer *layer = [CAReplicatorLayer layer];
 	layer.preservesDepth = YES;
 	layer.instanceBlueOffset = layer.instanceGreenOffset = layer.instanceRedOffset = kDefaultReflectionOffset;
+	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+	return layer;
+}
+
++ (CATransformLayer*)createTransformLayer
+{
+	CATransformLayer *layer = [CATransformLayer layer];
+	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	return layer;
 }
 
@@ -101,9 +110,10 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		_inLiveResize = NO;
 		_visibleItemIndexes = [NSIndexSet indexSet];
 		_scrollDuration = kDefaultScrollDuration;
+		_transformLayer = [[self class] createTransformLayer];
 		_replicatorLayer = [[self class] createReplicatorLayer];
-		[self addSublayer:_replicatorLayer];
-        self.scrollMode = kCAScrollHorizontally;
+		[_transformLayer addSublayer:_replicatorLayer];
+		[self addSublayer:_transformLayer];
 		self.masksToBounds = NO;
 		self.eyeDistance = kDefaultEyeDistance;
 		self.delegate = self;
@@ -140,13 +150,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	_eyeDistance = eyeDistance;
 	CATransform3D transform = CATransform3DIdentity;
 	transform.m34 = 1. / - eyeDistance;
-	self.sublayerTransform = transform;
-}
-
-- (CGPoint)selectedScrollPoint
-{
-	MMCoverFlowLayoutAttributes *attr = [self.layout layoutAttributesForItemAtIndex:self.layout.selectedItemIndex];
-	return CGPointMake(attr.position.x - (CGRectGetWidth(self.bounds) / 2.) + self.layout.itemSize.width /2., 0);
+	self.transformLayer.sublayerTransform = transform;
 }
 
 - (NSArray*)contentLayers
@@ -194,9 +198,11 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	[self layoutSublayers];
 }
 
-- (NSUInteger)indexOfLayerAtPointInSuperLayer:(CGPoint)pointInLayer
+- (NSUInteger)indexOfLayerAtPoint:(CGPoint)pointInLayer
 {
-	CALayer *hitLayer = [[self hitTest:pointInLayer] modelLayer];
+	CGPoint pointInSuperLayer =[self convertPoint:pointInLayer
+										  toLayer:self.superlayer];
+	CALayer *hitLayer = [[self hitTest:pointInSuperLayer ] modelLayer];
 	NSNumber *indexOfLayer = [hitLayer valueForKey:kMMCoverFlowLayoutAttributesIndexAttributeKey];
 	return indexOfLayer ? [indexOfLayer unsignedIntegerValue] :  NSNotFound;
 }
@@ -242,8 +248,42 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		MMCoverFlowLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndex:idx];
 		[attributes applyToLayer:contentLayer];
 	}];
-	[self scrollPoint:self.selectedScrollPoint];
 	[self updateVisibleItems];
+}
+
+- (void)updateVisibleItems
+{
+	__block NSUInteger firstVisibleItem = NSNotFound;
+	__block NSUInteger numberOfVisibleItems = 0;
+
+	[self.contentLayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
+		if (CGRectIntersectsRect(self.bounds, contentLayer.frame)) {
+			if ( firstVisibleItem == NSNotFound ) {
+				firstVisibleItem = idx;
+			}
+			numberOfVisibleItems++;
+			[self.dataSource coverFlowLayer:self willShowLayer:contentLayer atIndex:idx];
+		}
+		if ( idx > (firstVisibleItem + numberOfVisibleItems) ) {
+			*stop = YES;
+		}
+	}];
+	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems )] : [NSIndexSet indexSet];
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == kLayoutObservationContext) {
+        [self setNeedsLayout];
+    }
+	else if (context == kReloadContentObservationContext) {
+		[self reloadContent];
+	}
+	else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)setupObservations
@@ -276,10 +316,12 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	}
 }
 
+#pragma mark - accessibility
+
 - (void)setupAccessibility
 {
 	__weak typeof(self) weakSelf = self;
-
+	
 	[self setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
 		return NSAccessibilityListRole;
 	}];
@@ -291,62 +333,28 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	}];
 	[self setReadableAccessibilityAttribute:NSAccessibilityVisibleChildrenAttribute withBlock:^id{
 		MMCoverFlowLayer *strongSelf = weakSelf;
-
+		
 		NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
 		return children ? [children objectsAtIndexes:strongSelf.visibleItemIndexes] : @[];
 	}];
 	[self setWritableAccessibilityAttribute:NSAccessibilitySelectedChildrenAttribute
-								   readBlock:^id{
-									   MMCoverFlowLayer *strongSelf = weakSelf;
-									   NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
-									   return children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : @[];
-								   }
-								  writeBlock:^(id value) {
+								  readBlock:^id{
 									  MMCoverFlowLayer *strongSelf = weakSelf;
-
-									  if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
-										  CALayer *layer = [value firstObject];
-										  if ( [layer isKindOfClass:[CALayer class]] ) {
-											  NSUInteger index = [strongSelf.contentLayers indexOfObject:layer];
-											  strongSelf.layout.selectedItemIndex = index;
-										  }
-									  }
-								  }];
+									  NSArray *children = NSAccessibilityUnignoredChildren(strongSelf.contentLayers);
+									  return children ? [children subarrayWithRange:NSMakeRange(strongSelf.layout.selectedItemIndex, 1)] : @[];
+								  }
+								 writeBlock:^(id value) {
+									 MMCoverFlowLayer *strongSelf = weakSelf;
+									 
+									 if ( [value isKindOfClass:[NSArray class]] && [value count] ) {
+										 CALayer *layer = [value firstObject];
+										 if ( [layer isKindOfClass:[CALayer class]] ) {
+											 NSUInteger index = [strongSelf.contentLayers indexOfObject:layer];
+											 strongSelf.layout.selectedItemIndex = index;
+										 }
+									 }
+								 }];
 }
 
-- (void)updateVisibleItems
-{
-	__block NSUInteger firstVisibleItem = NSNotFound;
-	__block NSUInteger numberOfVisibleItems = 0;
-
-	[self.contentLayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
-		if ( !CGRectIsNull(contentLayer.visibleRect) ) {
-			if ( firstVisibleItem == NSNotFound ) {
-				firstVisibleItem = idx;
-			}
-			numberOfVisibleItems++;
-			[self.dataSource coverFlowLayer:self willShowLayer:contentLayer atIndex:idx];
-		}
-		if ( idx > (firstVisibleItem + numberOfVisibleItems) ) {
-			*stop = YES;
-		}
-	}];
-	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems )] : [NSIndexSet indexSet];
-}
-
-#pragma mark - KVO
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == kLayoutObservationContext) {
-        [self setNeedsLayout];
-    }
-	else if (context == kReloadContentObservationContext) {
-		[self reloadContent];
-	}
-	else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
 
 @end

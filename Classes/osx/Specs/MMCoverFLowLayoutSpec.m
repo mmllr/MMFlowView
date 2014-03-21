@@ -244,33 +244,38 @@ describe(@"MMCoverFlowLayout", ^{
 				__block MMCoverFlowLayoutAttributes *expectedAttributes = nil;
 				__block CGFloat expectedStackedItemWidth = 0;
 				__block CGSize expectedItemSize = CGSizeZero;
-				__block CGFloat expectedY = 0;
+				__block CGFloat expectedHorizonzalPosition = 0;
+				__block CGFloat expectedVerticalPosition = 0;
 				__block CATransform3D leftTransform = CATransform3DIdentity;
 				__block CATransform3D rightTransform = CATransform3DIdentity;
 				__block NSUInteger testedItemIndex = 0;
-
+				__block CGRect visibleRect = CGRectZero;
+				__block CGFloat selectedItemLeftEdge = 0;
+				__block CGFloat selectedItemRightEdge = 0;
+				
 				beforeEach(^{
 					CGFloat itemHeight = sut.visibleSize.height - sut.verticalMargin*2;
 					expectedItemSize = CGSizeMake(itemHeight, itemHeight);
 
-					expectedY = sut.visibleSize.height / 2 - sut.itemSize.height / 2;
+					expectedVerticalPosition = sut.visibleSize.height / 2 - sut.itemSize.height / 2;
 
 					leftTransform = CATransform3DMakeRotation(DEGREES2RADIANS(sut.stackedAngle), 0, 1, 0);
 					rightTransform = CATransform3DMakeRotation(-DEGREES2RADIANS(sut.stackedAngle), 0, 1, 0);
 					
 					sut.selectedItemIndex = sut.numberOfItems / 2;
-					attributes = [sut layoutAttributesForItemAtIndex:sut.selectedItemIndex];
 					expectedStackedItemWidth = cos(DEGREES2RADIANS(sut.stackedAngle))*sut.itemSize.width + sut.interItemSpacing;
+
+					visibleRect = CGRectMake(0, 0, sut.visibleSize.width, sut.visibleSize.height);
+					selectedItemLeftEdge = CGRectGetMidX(visibleRect) - sut.itemSize.width / 2;
+					selectedItemRightEdge = CGRectGetMidX(visibleRect) + sut.itemSize.width / 2;
+
 				});
 				afterEach(^{
 					expectedAttributes = nil;
 					attributes = nil;
 				});
-				it(@"should have the items vertically centered", ^{
-					CGFloat expectecY = sut.visibleSize.height / 2 - sut.itemSize.height / 2;
-					[[theValue(attributes.position.y) should] equal:theValue(expectecY)];
-				});
-				context(@"contentWidth", ^{
+
+				context(NSStringFromSelector(@selector(contentSize)), ^{
 					__block CGFloat expectedContentWidth;
 					
 					context(@"selection on both ends of stack", ^{
@@ -303,7 +308,8 @@ describe(@"MMCoverFlowLayout", ^{
 						});
 					});
 				});
-				context(@"index bound checking", ^{
+
+				context(NSStringFromSelector(@selector(layoutAttributesForItemAtIndex:)), ^{
 					it(@"should return attributes for first item", ^{
 						[[[sut layoutAttributesForItemAtIndex:0] shouldNot] beNil];
 					});
@@ -314,53 +320,38 @@ describe(@"MMCoverFlowLayout", ^{
 						[[[sut layoutAttributesForItemAtIndex:sut.numberOfItems + 1] should] beNil];
 					});
 				});
-				context(@"left stack", ^{
-					context(@"first item", ^{
-						beforeEach(^{
-							testedItemIndex = 0;
-							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
-						});
 
-						it(@"should have the correct attributes", ^{
-							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(0, expectedY)
-																															size:expectedItemSize
-																													 anchorPoint:CGPointMake(0.5, 0)
-																													   transfrom:leftTransform
-																													   zPosition:-sut.stackedDistance];
-							
-							[[[sut layoutAttributesForItemAtIndex:testedItemIndex] should] equal:expectedAttributes];
-						});
-						
-						it(@"should have a distance of cos(stackedAngle*itemWidth) plus interItemSpacing to its neighbor", ^{
-							MMCoverFlowLayoutAttributes *nextItemAttributes = [sut layoutAttributesForItemAtIndex:attributes.index+1];
-							CGFloat distance = nextItemAttributes.position.x - attributes.position.x;
-							[[theValue(distance) should] equal:expectedStackedItemWidth withDelta:0.000001];
-						});
-					});
-					context(@"left item before the selected item", ^{
-						beforeEach(^{
-							testedItemIndex = sut.selectedItemIndex - 1;
-							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
-						});
-						it(@"should have the correct attributes", ^{
-							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(expectedStackedItemWidth*testedItemIndex, expectedY)
-																															size:expectedItemSize
-																													 anchorPoint:CGPointMake(0.5, 0)
-																													   transfrom:leftTransform
-																													   zPosition:-sut.stackedDistance];
-							[[[sut layoutAttributesForItemAtIndex:testedItemIndex] should] equal:expectedAttributes];
-						});
-					});
-				});
-				context(@"when the first item is not selected", ^{
+				context(@"selected item", ^{
 					beforeEach(^{
-						sut.selectedItemIndex = sut.numberOfItems / 2;
+						expectedHorizonzalPosition = selectedItemLeftEdge;
 					});
-					it(@"should have the correct attributes", ^{
+					
+					it(@"should be centered in the horizontally centered visible area for a selected item between the left and the right stack", ^{
+						sut.selectedItemIndex = sut.numberOfItems / 2;
 						MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
-																													position:CGPointMake(expectedStackedItemWidth * sut.selectedItemIndex + sut.itemSize.width, expectedY)
+																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																														size:expectedItemSize
+																												 anchorPoint:CGPointMake(0.5, 0)
+																												   transfrom:CATransform3DIdentity
+																												   zPosition:0];
+						
+						[[[sut layoutAttributesForItemAtIndex:sut.selectedItemIndex] should] equal:expectedAttributes];
+					});
+					it(@"should be centered in the horizontally centered visible area for the first selected item", ^{
+						sut.selectedItemIndex = 0;
+						MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
+																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																														size:expectedItemSize
+																												 anchorPoint:CGPointMake(0.5, 0)
+																												   transfrom:CATransform3DIdentity
+																												   zPosition:0];
+						
+						[[[sut layoutAttributesForItemAtIndex:sut.selectedItemIndex] should] equal:expectedAttributes];
+					});
+					it(@"should be centered in the horizontally centered visible area for the last selected item", ^{
+						sut.selectedItemIndex = sut.numberOfItems - 1;
+						MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
+																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																														size:expectedItemSize
 																												 anchorPoint:CGPointMake(0.5, 0)
 																												   transfrom:CATransform3DIdentity
@@ -369,35 +360,60 @@ describe(@"MMCoverFlowLayout", ^{
 						[[[sut layoutAttributesForItemAtIndex:sut.selectedItemIndex] should] equal:expectedAttributes];
 					});
 				});
-				context(@"first item selected", ^{
-					beforeEach(^{
-						testedItemIndex = 0;
-						sut.selectedItemIndex = testedItemIndex;
-						attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
-					});
-					it(@"should have the ", ^{
-						[[theValue(attributes.position.x) should] beZero];
-					});
-					it(@"should have a zero x position", ^{
-						MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
-																													position:CGPointMake(0, expectedY)
-																														size:expectedItemSize
-																												 anchorPoint:CGPointMake(0.5, 0)
-																												   transfrom:CATransform3DIdentity
-																												   zPosition:0];
+				
+				context(@"left item stack", ^{
+					context(@"first item", ^{
+						beforeEach(^{
+							testedItemIndex = 0;
+							expectedHorizonzalPosition = selectedItemLeftEdge - expectedStackedItemWidth * (sut.selectedItemIndex - testedItemIndex)  - sut.itemSize.width;
+							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
+						});
+
+						it(@"should have the correct attributes", ^{
+							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
+																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																															size:expectedItemSize
+																													 anchorPoint:CGPointMake(0.5, 0)
+																													   transfrom:leftTransform
+																													   zPosition:-sut.stackedDistance];
+							
+							[[attributes should] equal:expectedAttributes];
+						});
 						
-						[[attributes should] equal:expectedAttributes];
+						it(@"should have a distance of cos(stackedAngle*itemWidth) plus interItemSpacing to its neighbor", ^{
+							MMCoverFlowLayoutAttributes *nextItemAttributes = [sut layoutAttributesForItemAtIndex:testedItemIndex+1];
+							CGFloat distance = nextItemAttributes.position.x - attributes.position.x;
+							[[theValue(distance) should] equal:expectedStackedItemWidth withDelta:0.000001];
+						});
+					});
+					context(@"left item before the selected item", ^{
+						beforeEach(^{
+							testedItemIndex = sut.selectedItemIndex - 1;
+							expectedHorizonzalPosition = selectedItemLeftEdge - expectedStackedItemWidth * (sut.selectedItemIndex - testedItemIndex) - sut.itemSize.width;
+						});
+						it(@"should have the correct attributes", ^{
+							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
+																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																															size:expectedItemSize
+																													 anchorPoint:CGPointMake(0.5, 0)
+																													   transfrom:leftTransform
+																													   zPosition:-sut.stackedDistance];
+							[[[sut layoutAttributesForItemAtIndex:testedItemIndex] should] equal:expectedAttributes];
+						});
 					});
 				});
-				context(@"right stack", ^{
+				
+				
+				context(@"right item stack", ^{
 					context(@"item right from the selected item", ^{
 						beforeEach(^{
 							testedItemIndex = sut.selectedItemIndex + 1;
+							expectedHorizonzalPosition = selectedItemRightEdge + expectedStackedItemWidth * (testedItemIndex - sut.selectedItemIndex);
 							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
 						});
 						it(@"should have the correct attributes with the x position of itemIndex*expectedStackedItemWidth plus two times the item width if the first item is not selected", ^{
 							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(expectedStackedItemWidth*testedItemIndex + sut.itemSize.width*2, expectedY)
+																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																															size:expectedItemSize
 																													 anchorPoint:CGPointMake(0.5, 0)
 																													   transfrom:rightTransform
@@ -408,27 +424,12 @@ describe(@"MMCoverFlowLayout", ^{
 					context(@"last item selected", ^{
 						beforeEach(^{
 							testedItemIndex = sut.numberOfItems-1;
+							expectedHorizonzalPosition = selectedItemRightEdge + expectedStackedItemWidth * (testedItemIndex - sut.selectedItemIndex);
 							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
 						});
 						it(@"should have the correct attributes with the x position of itemIndex*expectedStackedItemWidth plus two times the item width if the first item is not selected", ^{
 							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(expectedStackedItemWidth*testedItemIndex + sut.itemSize.width*2, expectedY)
-																															size:expectedItemSize
-																													 anchorPoint:CGPointMake(0.5, 0)
-																													   transfrom:rightTransform
-																													   zPosition:-sut.stackedDistance];
-							[[attributes should] equal:expectedAttributes];
-						});
-					});
-					context(@"when the first item is selected", ^{
-						beforeEach(^{
-							sut.selectedItemIndex = 0;
-							testedItemIndex = sut.selectedItemIndex + 1;
-							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
-						});
-						it(@"should have the correct attributes with the x position of itemIndex*expectedStackedItemWidth plus two times the item width if the first item is not selected", ^{
-							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(testedItemIndex*expectedStackedItemWidth + sut.itemSize.width, expectedY)
+																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																															size:expectedItemSize
 																													 anchorPoint:CGPointMake(0.5, 0)
 																													   transfrom:rightTransform

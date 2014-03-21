@@ -44,7 +44,7 @@
 
 @end
 
-@interface MMCoverFlowLayer : CAScrollLayer
+@interface MMCoverFlowLayer : CALayer
 
 @property (nonatomic) CGFloat eyeDistance;
 @property (nonatomic) BOOL inLiveResize;
@@ -61,6 +61,6 @@
 + (instancetype)layerWithLayout:(MMCoverFlowLayout*)layout;
 - (id)initWithLayout:(MMCoverFlowLayout*)layout;
 - (void)reloadContent;
-- (NSUInteger)indexOfLayerAtPointInSuperLayer:(CGPoint)pointInLayer;
+- (NSUInteger)indexOfLayerAtPoint:(CGPoint)pointInLayer;
 
 @end

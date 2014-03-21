@@ -66,11 +66,8 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
 		});
-		it(@"should be a CAScrollLayer", ^{
-			[[sut should] beKindOfClass:[CAScrollLayer class]];
-		});
-		it(@"should have a horizontal scroll mode", ^{
-			[[sut.scrollMode should] equal:kCAScrollHorizontally];
+		it(@"should be a CALayer", ^{
+			[[sut should] beKindOfClass:[CALayer class]];
 		});
 		it(@"should be horizontally resizable", ^{
 			[[theValue(sut.autoresizingMask & kCALayerWidthSizable) should] beYes];
@@ -84,17 +81,41 @@ describe(@"MMCoverFlowLayer", ^{
 		it(@"should not mask to bounds", ^{
 			[[theValue(sut.masksToBounds) should] beNo];
 		});
-		it(@"should have a default height of 0", ^{
-			[[theValue(CGRectGetHeight(sut.bounds)) should] beZero];
-		});
-		it(@"should have a default width of 0", ^{
-			[[theValue(CGRectGetWidth(sut.bounds)) should] beZero];
+		it(@"should have default bounds of CGRectZero", ^{
+			[[theValue(sut.bounds) should] equal:theValue(CGRectZero)];
 		});
 		it(@"should have empty visible item indexes", ^{
 			[[sut.visibleItemIndexes should] equal:[NSIndexSet indexSet]];
 		});
 		it(@"should have one sublayer", ^{
 			[[[sut should] have:1] sublayers];
+		});
+		context(@"transformLayer", ^{
+			__block CALayer *transformLayer = nil;
+
+			beforeEach(^{
+				transformLayer = [sut.sublayers firstObject];
+			});
+			afterEach(^{
+				transformLayer = nil;
+			});
+			it(@"should have a CATransformLayer as its only sublayer", ^{
+				[[transformLayer should] beKindOfClass:[CATransformLayer class]];
+			});
+			it(@"should have a sublayerTransform with m34 equal to one divided by -eyeDistance", ^{
+				CATransform3D expectedTransform = CATransform3DIdentity;
+				expectedTransform.m34 = 1. / -sut.eyeDistance;
+				[[[NSValue valueWithCATransform3D:transformLayer.sublayerTransform] should] equal:[NSValue valueWithCATransform3D:expectedTransform]];
+			});
+			it(@"should have one sublayer", ^{
+				[[[transformLayer should] have:1] sublayers];
+			});
+			it(@"should be horizontally resizable", ^{
+				[[theValue(transformLayer.autoresizingMask & kCALayerWidthSizable) should] beYes];
+			});
+			it(@"should be vertically resizable", ^{
+				[[theValue(transformLayer.autoresizingMask & kCALayerHeightSizable) should] beYes];
+			});
 		});
 		it(@"should have a scroll duration of .4 seconds", ^{
 			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];
@@ -103,17 +124,11 @@ describe(@"MMCoverFlowLayer", ^{
 			NSValue *expectedPoint = [NSValue valueWithPoint:NSMakePoint(.5, .5)];
 			[[[NSValue valueWithPoint:sut.anchorPoint] should] equal:expectedPoint];
 		});
-		it(@"should have a frame position of 0,0", ^{
-			NSValue *expectedPoint = [NSValue valueWithPoint:NSMakePoint(0, 0)];
-			[[[NSValue valueWithPoint:sut.frame.origin] should] equal:expectedPoint];
+		it(@"should have a position of 0,0", ^{
+			[[theValue(sut.frame.origin) should] equal:theValue(CGPointZero)];
 		});
 		it(@"should have a default eye distance of 1500", ^{
 			[[theValue(sut.eyeDistance) should] equal:theValue(1500.)];
-		});
-		it(@"should have a sublayerTransform with m34 equal to one divided by -eyeDistance", ^{
-			CATransform3D expectedTransform = CATransform3DIdentity;
-			expectedTransform.m34 = 1. / -sut.eyeDistance;
-			[[[NSValue valueWithCATransform3D:sut.sublayerTransform] should] equal:[NSValue valueWithCATransform3D:expectedTransform]];
 		});
 		it(@"should not initiallly be in resizing", ^{
 			[[theValue(sut.inLiveResize) should] beNo];
@@ -134,7 +149,8 @@ describe(@"MMCoverFlowLayer", ^{
 		context(@"replicatorLayer", ^{
 			__block CAReplicatorLayer *replicatorLayer = nil;
 			beforeEach(^{
-				replicatorLayer = [sut.sublayers firstObject];
+				CALayer *transformLayer = [sut.sublayers firstObject];
+				replicatorLayer = [transformLayer.sublayers firstObject];
 			});
 			afterEach(^{
 				replicatorLayer = nil;
@@ -144,6 +160,15 @@ describe(@"MMCoverFlowLayer", ^{
 			});
 			it(@"should be from kind CAReplicatorLayer", ^{
 				[[replicatorLayer should] beKindOfClass:[CAReplicatorLayer class]];
+			});
+			it(@"should match the suts bounds", ^{
+				[[theValue(replicatorLayer.frame) should] equal:theValue(sut.bounds)];
+			});
+			it(@"should have a width sizeable autoResizingMask", ^{
+				[[theValue(replicatorLayer.autoresizingMask & kCALayerWidthSizable) should] beYes];
+			});
+			it(@"should have a height sizeable autoResizingMask", ^{
+				[[theValue(replicatorLayer.autoresizingMask & kCALayerHeightSizable) should] beYes];
 			});
 			it(@"should preserve depth", ^{
 				[[theValue(replicatorLayer.preservesDepth) should] beYes];
@@ -272,10 +297,16 @@ describe(@"MMCoverFlowLayer", ^{
 			it(@"should set the eyeDistance", ^{
 				[[theValue(sut.eyeDistance) should] equal:theValue(1000)];
 			});
-			it(@"should have a sublayerTransform with m34 equal to one divided by -eyeDistance", ^{
+			it(@"should set a sublayerTransform with m34 equal to one divided by -eyeDistance to the transformLayer", ^{
+				CATransformLayer *mockedTransformLayer = [CATransformLayer nullMock];
+				[sut setValue:mockedTransformLayer forKeyPath:@"transformLayer"];
+
+				CGFloat newEyeDistance = 1100;
 				CATransform3D expectedTransform = CATransform3DIdentity;
-				expectedTransform.m34 = 1. / -sut.eyeDistance;
-				[[[NSValue valueWithCATransform3D:sut.sublayerTransform] should] equal:[NSValue valueWithCATransform3D:expectedTransform]];
+				expectedTransform.m34 = 1. / -newEyeDistance;
+				[[mockedTransformLayer should] receive:@selector(setSublayerTransform:) withArguments:theValue(expectedTransform)];
+
+				sut.eyeDistance = newEyeDistance;
 			});
 		});
 		context(@"reloadContent", ^{
@@ -425,10 +456,10 @@ describe(@"MMCoverFlowLayer", ^{
 						layerB = [CALayer nullMockWithName:@"layerB"];
 						layerC = [CALayer nullMockWithName:@"layerC"];
 						invisibleLayer = [CALayer nullMockWithName:@"invisibleLayer"];
-						[layerA stub:@selector(visibleRect) andReturn:theValue(visibleRect)];
-						[layerB stub:@selector(visibleRect) andReturn:theValue(visibleRect)];
-						[layerC stub:@selector(visibleRect) andReturn:theValue(visibleRect)];
-						[invisibleLayer stub:@selector(visibleRect) andReturn:theValue(CGRectNull)];
+						[layerA stub:@selector(frame) andReturn:theValue(visibleRect)];
+						[layerB stub:@selector(frame) andReturn:theValue(visibleRect)];
+						[layerC stub:@selector(frame) andReturn:theValue(visibleRect)];
+						[invisibleLayer stub:@selector(frame) andReturn:theValue(CGRectNull)];
 						[sut stub:@selector(contentLayers) andReturn:@[invisibleLayer, layerA, layerB, layerC]];
 						visibleLayers = @[layerA, layerB, layerC];
 					});
@@ -633,7 +664,7 @@ describe(@"MMCoverFlowLayer", ^{
 							[[[layer valueForKey:@"mmCoverFlowLayerIndex"] should] equal:theValue(expectedAttributes.index)];
 						});
 					});
-					context(@"indexOfItemAtPoint:", ^{
+					context(NSStringFromSelector(@selector(indexOfLayerAtPoint:)), ^{
 						__block CGPoint pointInLayer;
 						__block NSUInteger expectedIndex;
 
@@ -641,28 +672,27 @@ describe(@"MMCoverFlowLayer", ^{
 							beforeEach(^{
 								pointInLayer =  [sut convertPoint:CGPointMake(-1000, -1000) toLayer:sut.superlayer];
 							});
-							it(@"should return NSNotFount", ^{
-								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(NSNotFound)];
+							it(@"should return NSNotFound", ^{
+								[[theValue([sut indexOfLayerAtPoint:pointInLayer]) should] equal:theValue(NSNotFound)];
 							});
-
 						});
 						context(@"when point is over the selected layer", ^{
 							beforeEach(^{
-								pointInLayer =  [sut convertPoint:CGPointMake(CGRectGetMidX(sut.selectedItemFrame), CGRectGetMidY(sut.selectedItemFrame)) toLayer:sut.superlayer];
+								pointInLayer =  [sut convertPoint:CGPointMake(CGRectGetMidX(sut.selectedItemFrame), CGRectGetMidY(sut.selectedItemFrame)) toLayer:sut];
 							});
 							it(@"should return the index of the selected layer", ^{
-								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(sut.layout.selectedItemIndex)];
+								[[theValue([sut indexOfLayerAtPoint:pointInLayer]) should] equal:theValue(sut.layout.selectedItemIndex)];
 							});
 						});
 						context(@"when point is over first visible layer", ^{
 							beforeEach(^{
 								expectedIndex = sut.visibleItemIndexes.firstIndex;
 								CALayer *layer = sublayers[expectedIndex];
-								pointInLayer = [sut convertPoint:CGPointMake(CGRectGetMaxX(layer.frame), CGRectGetMidY(layer.frame))
-														 toLayer:sut.superlayer];
+								pointInLayer = [layer.superlayer convertPoint:CGPointMake(CGRectGetMidX(layer.frame), CGRectGetMidY(layer.frame))
+														 toLayer:sut];
 							});
 							it(@"should return the index of the first visible layer", ^{
-								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(expectedIndex)];
+								[[theValue([sut indexOfLayerAtPoint:pointInLayer]) should] equal:theValue(expectedIndex)];
 							});
 						});
 						context(@"when point is over last visible layer", ^{
@@ -670,10 +700,10 @@ describe(@"MMCoverFlowLayer", ^{
 								expectedIndex = sut.visibleItemIndexes.lastIndex;
 								CALayer *layer = sublayers[expectedIndex];
 								pointInLayer = [sut convertPoint:CGPointMake(CGRectGetMinX(layer.frame), CGRectGetMidY(layer.frame))
-														 toLayer:sut.superlayer];
+														 toLayer:sut];
 							});
 							it(@"should return the index of the last visible layer", ^{
-								[[theValue([sut indexOfLayerAtPointInSuperLayer:pointInLayer]) should] equal:theValue(expectedIndex)];
+								[[theValue([sut indexOfLayerAtPoint:pointInLayer]) should] equal:theValue(expectedIndex)];
 							});
 						});
 					});

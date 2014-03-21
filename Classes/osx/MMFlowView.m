@@ -446,7 +446,7 @@ static NSString * const kLayoutKey = @"layout";
 {
 	CGPoint pointInContainerLayer = [[self layer] convertPoint:[self convertPointToLayer:aPoint]
 													   toLayer:self.containerLayer];
-	return [self.coverFlowLayer indexOfLayerAtPointInSuperLayer:pointInContainerLayer];
+	return [self.coverFlowLayer indexOfLayerAtPoint:pointInContainerLayer];
 }
 
 #pragma mark -

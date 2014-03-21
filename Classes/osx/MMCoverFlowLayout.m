@@ -211,38 +211,59 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		return nil;
 	}
 	BOOL isSelectedItem = (itemIndex == self.selectedItemIndex);
-	CATransform3D transform = isSelectedItem ? CATransform3DIdentity :
-	CATransform3DMakeRotation( DEGREES2RADIANS(itemIndex < self.selectedItemIndex ? self.stackedAngle : -self.stackedAngle), 0, 1, 0);
 	return [[MMCoverFlowLayoutAttributes alloc] initWithIndex:itemIndex
 													 position:[self originForItem:itemIndex]
 														 size:self.itemSize
 												  anchorPoint:CGPointMake(0.5, 0)
-													transfrom:transform
+													transfrom:[self transformForItem:itemIndex]
 													zPosition:isSelectedItem ? 0 : -self.stackedDistance];
 }
 
 #pragma mark - layout logic
+
+- (CATransform3D)transformForItem:(NSUInteger)item
+{
+	if (item == self.selectedItemIndex) {
+		return CATransform3DIdentity;
+	}
+	else if (item < self.selectedItemIndex) {
+		return CATransform3DMakeRotation(DEGREES2RADIANS(self.stackedAngle), 0, 1, 0);
+	}
+	return CATransform3DMakeRotation(-DEGREES2RADIANS(self.stackedAngle), 0, 1, 0);
+}
 
 - (CGPoint)originForItem:(NSUInteger)itemIndex
 {
 	return CGPointMake( [self horizontalOffsetForItem:itemIndex], self.visibleSize.height/2 - self.itemSize.height / 2 );
 }
 
+- (NSUInteger)distanceForItemFormSelection:(NSUInteger)anIndex
+{
+	if (anIndex < self.selectedItemIndex) {
+		return self.selectedItemIndex - anIndex;
+	}
+	else if (anIndex > self.selectedItemIndex) {
+		return anIndex - self.selectedItemIndex;
+	}
+	return 0;
+}
+
 - (CGFloat)horizontalOffsetForItem:(NSUInteger)anIndex
 {
 	CGFloat itemWidth = self.itemSize.width;
+	CGFloat halfItemWidth = itemWidth / 2;
 	CGFloat stackedWidth = (itemWidth * cos(DEGREES2RADIANS(self.stackedAngle))) + self.interItemSpacing;
-
-	if ( anIndex < self.selectedItemIndex || anIndex == 0 ) {
-		return stackedWidth*anIndex;
+	CGRect visibleRect = {CGPointZero, self.visibleSize };
+	CGFloat selectedLeftEdge = CGRectGetMidX(visibleRect) - halfItemWidth;
+	CGFloat selectedRightEdge = CGRectGetMidX(visibleRect) + halfItemWidth;
+	
+	if (anIndex < self.selectedItemIndex) {
+		return selectedLeftEdge - [self distanceForItemFormSelection:anIndex] * stackedWidth - itemWidth;
 	}
-	else if ( anIndex == self.selectedItemIndex ) {
-		return stackedWidth*anIndex + itemWidth;
+	else if (anIndex > self.selectedItemIndex) {
+		return selectedRightEdge + [self distanceForItemFormSelection:anIndex] * stackedWidth;
 	}
-	if ( self.selectedItemIndex == 0 ) {
-		return stackedWidth*anIndex + itemWidth;
-	}
-	return stackedWidth*anIndex + itemWidth*2;
+	return selectedLeftEdge;
 }
 
 @end
