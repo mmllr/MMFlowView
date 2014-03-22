@@ -77,7 +77,7 @@ describe(@"MMQuickLookImageDecoder", ^{
 	context(@"newCGImageFromItem:", ^{
 		it(@"should raise when invoked with nil item", ^{
 			[[theBlock(^{
-				[sut newCGImageFromItem:nil];
+				imageRef = [sut newCGImageFromItem:nil];
 			}) should] raiseWithName:NSInternalInconsistencyException];
 		});
 		context(@"when created with NSURL and maxPixelSize of 100", ^{

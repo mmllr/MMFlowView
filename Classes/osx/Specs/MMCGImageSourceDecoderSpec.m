@@ -39,6 +39,7 @@ describe(@"MMCGImageSourceDecoder", ^{
 	__block MMCGImageSourceDecoder *sut = nil;
 	__block CGImageSourceRef imageSource = NULL;
 	__block CGImageRef imageRef = NULL;
+	__block CGImageRef testImageRef = NULL;
 
 	beforeAll(^{
 		NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
@@ -56,6 +57,7 @@ describe(@"MMCGImageSourceDecoder", ^{
 		});
 		afterEach(^{
 			sut = nil;
+			SAFE_CGIMAGE_RELEASE(testImageRef)
 		});
 		afterAll(^{
 			SAFE_CGIMAGE_RELEASE(imageRef)
@@ -102,10 +104,12 @@ describe(@"MMCGImageSourceDecoder", ^{
 			});
 			context(@"when asking for an image with an invalid item", ^{
 				it(@"should not return an image for nil", ^{
-					[[theValue([sut newCGImageFromItem:nil] == NULL) should] beTrue];
+					testImageRef = [sut newCGImageFromItem:nil];
+					[[theValue(testImageRef == NULL) should] beTrue];
 				});
 				it(@"should not return an image for an item from wrong type", ^{
-					[[theValue([sut newCGImageFromItem:@"Test"] == NULL) should] beTrue];
+					testImageRef = [sut newCGImageFromItem:@"Test"];
+					[[theValue(testImageRef == NULL) should] beTrue];
 				});
 			});
 			context(@"when asking for an image with zero image size", ^{

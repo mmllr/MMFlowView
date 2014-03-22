@@ -677,9 +677,9 @@ describe(@"MMFlowView", ^{
 							[[sut.title should] equal:@"0"];
 						});
 					});
-					context(@"selecting a negative item index", ^{
+					context(@"selecting NSNotFound item index", ^{
 						beforeEach(^{
-							sut.selectedIndex = -1;
+							sut.selectedIndex = NSNotFound;
 						});
 						it(@"should do nothing", ^{
 							[[theValue(sut.selectedIndex) should] equal:theValue(0)];

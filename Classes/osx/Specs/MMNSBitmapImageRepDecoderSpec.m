@@ -39,6 +39,7 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 	__block MMNSBitmapImageRepDecoder *sut = nil;
 	__block CGImageRef imageRef = NULL;
 	__block NSBitmapImageRep *imageRep = nil;
+	__block CGImageRef testImageRef = NULL;
 
 	beforeAll(^{
 		NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
@@ -60,6 +61,7 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 		});
 		afterEach(^{
 			sut = nil;
+			SAFE_CGIMAGE_RELEASE(testImageRef)
 		});
 		afterAll(^{
 			SAFE_CGIMAGE_RELEASE(imageRef)
@@ -106,10 +108,12 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 			});
 			context(@"asking for image with an invalid item", ^{
 				it(@"should not return an image from nil", ^{
-					[[theValue([sut newCGImageFromItem:nil] == NULL) should] beTrue];
+					testImageRef = [sut newCGImageFromItem:nil];
+					[[theValue(testImageRef == NULL) should] beTrue];
 				});
 				it(@"should not return an image from a non NSBitmapImageRep", ^{
-					[[theValue([sut newCGImageFromItem:@"String"] == NULL) should] beTrue];
+					testImageRef = [sut newCGImageFromItem:@"String"];
+					[[theValue(testImageRef == NULL) should] beTrue];
 				});
 			});
 			context(@"when asking for an image with zero image size", ^{

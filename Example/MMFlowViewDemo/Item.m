@@ -95,7 +95,6 @@
     return self;
 }
 
-
 #pragma mark -
 #pragma mark IKImageBrowserItem protocol
 

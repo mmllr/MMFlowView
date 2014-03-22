@@ -70,7 +70,7 @@
 {
 	[self.imageBrowserView setSelectionIndexes:[NSIndexSet indexSetWithIndex:aFlowView.selectedIndex]
 						  byExtendingSelection:NO ];
-	[self.imageBrowserView scrollIndexToVisible:aFlowView.selectedIndex];
+	[self.imageBrowserView scrollIndexToVisible:(NSInteger)aFlowView.selectedIndex];
 }
 
 - (NSDragOperation)flowView:(MMFlowView *)aFlowView validateDrop:(id<NSDraggingInfo>)info proposedIndex:(NSUInteger)anIndex

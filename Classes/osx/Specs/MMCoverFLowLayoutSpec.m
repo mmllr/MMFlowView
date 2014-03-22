@@ -183,7 +183,7 @@ describe(@"MMCoverFlowLayout", ^{
 			});
 			context(@"when selecting items", ^{
 				it(@"should select a random item", ^{
-					NSUInteger expectedIndex = arc4random_uniform((int32_t)sut.numberOfItems);
+					NSUInteger expectedIndex = arc4random_uniform((u_int32_t)sut.numberOfItems);
 					sut.selectedItemIndex = expectedIndex;
 					
 					[[theValue(sut.selectedItemIndex) should] equal:theValue(expectedIndex)];
@@ -328,7 +328,7 @@ describe(@"MMCoverFlowLayout", ^{
 					
 					it(@"should be centered in the horizontally centered visible area for a selected item between the left and the right stack", ^{
 						sut.selectedItemIndex = sut.numberOfItems / 2;
-						MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
+						expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
 																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																														size:expectedItemSize
 																												 anchorPoint:CGPointMake(0.5, 0)
@@ -339,7 +339,7 @@ describe(@"MMCoverFlowLayout", ^{
 					});
 					it(@"should be centered in the horizontally centered visible area for the first selected item", ^{
 						sut.selectedItemIndex = 0;
-						MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
+						expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
 																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																														size:expectedItemSize
 																												 anchorPoint:CGPointMake(0.5, 0)
@@ -350,7 +350,7 @@ describe(@"MMCoverFlowLayout", ^{
 					});
 					it(@"should be centered in the horizontally centered visible area for the last selected item", ^{
 						sut.selectedItemIndex = sut.numberOfItems - 1;
-						MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
+						expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
 																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																														size:expectedItemSize
 																												 anchorPoint:CGPointMake(0.5, 0)
@@ -370,7 +370,7 @@ describe(@"MMCoverFlowLayout", ^{
 						});
 
 						it(@"should have the correct attributes", ^{
-							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
+							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
 																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																															size:expectedItemSize
 																													 anchorPoint:CGPointMake(0.5, 0)
@@ -392,7 +392,7 @@ describe(@"MMCoverFlowLayout", ^{
 							expectedHorizonzalPosition = selectedItemLeftEdge - expectedStackedItemWidth * (sut.selectedItemIndex - testedItemIndex) - sut.itemSize.width;
 						});
 						it(@"should have the correct attributes", ^{
-							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
+							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
 																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																															size:expectedItemSize
 																													 anchorPoint:CGPointMake(0.5, 0)
@@ -412,7 +412,7 @@ describe(@"MMCoverFlowLayout", ^{
 							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
 						});
 						it(@"should have the correct attributes with the x position of itemIndex*expectedStackedItemWidth plus two times the item width if the first item is not selected", ^{
-							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
+							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
 																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																															size:expectedItemSize
 																													 anchorPoint:CGPointMake(0.5, 0)
@@ -428,7 +428,7 @@ describe(@"MMCoverFlowLayout", ^{
 							attributes = [sut layoutAttributesForItemAtIndex:testedItemIndex];
 						});
 						it(@"should have the correct attributes with the x position of itemIndex*expectedStackedItemWidth plus two times the item width if the first item is not selected", ^{
-							MMCoverFlowLayoutAttributes *expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
+							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
 																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
 																															size:expectedItemSize
 																													 anchorPoint:CGPointMake(0.5, 0)

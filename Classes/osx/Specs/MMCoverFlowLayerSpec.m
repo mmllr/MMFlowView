@@ -579,7 +579,7 @@ describe(@"MMCoverFlowLayer", ^{
 							[[[NSValue valueWithRect:layer.bounds] should] equal:expectedBounds];
 						});
 						it(@"should have the correct position", ^{
-							NSValue *expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
+							expectedPosition = [NSValue valueWithPoint:expectedAttributes.position];
 							[[[NSValue valueWithPoint:layer.frame.origin] should] equal:expectedPosition];
 						});
 						it(@"should have the correct anchorPoint", ^{
@@ -687,7 +687,7 @@ describe(@"MMCoverFlowLayer", ^{
 						context(@"when point is over first visible layer", ^{
 							beforeEach(^{
 								expectedIndex = sut.visibleItemIndexes.firstIndex;
-								CALayer *layer = sublayers[expectedIndex];
+								layer = sublayers[expectedIndex];
 								pointInLayer = [layer.superlayer convertPoint:CGPointMake(CGRectGetMidX(layer.frame), CGRectGetMidY(layer.frame))
 														 toLayer:sut];
 							});
@@ -698,7 +698,7 @@ describe(@"MMCoverFlowLayer", ^{
 						context(@"when point is over last visible layer", ^{
 							beforeEach(^{
 								expectedIndex = sut.visibleItemIndexes.lastIndex;
-								CALayer *layer = sublayers[expectedIndex];
+								layer = sublayers[expectedIndex];
 								pointInLayer = [sut convertPoint:CGPointMake(CGRectGetMinX(layer.frame), CGRectGetMidY(layer.frame))
 														 toLayer:sut];
 							});
