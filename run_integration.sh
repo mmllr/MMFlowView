@@ -38,6 +38,8 @@ if [ -z "${WORKSPACE}" ]; then
 	WORKSPACE=$(cd $(dirname $REALPATH); pwd)
 fi
 
+GCOVCMD=`xcrun -f gcov-4.2`
+
 echo "[*] Cleaning workspace"
 
 if [ -f compile_commands.json ]; then
@@ -57,13 +59,13 @@ DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build \
 SHARED_PRECOMPS_DIR=${WORKSPACE}/build/Intermediates/PrecompiledHeaders \
+GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES \
 MM_IS_COVERAGE_BUILD=YES \
 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-GCC_GENERATE_TEST_COVERAGE_FILES=YES GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES \
 clean test
 
 echo "[*] Generating code-coverage results"
-scripts/gcovr -x -o ${WORKSPACE}/build/test-reports/coverage.xml --root=. --exclude='(.*Spec\.m)|(Pods/*)|(.*Test\.m)|(.*.h)|Example/*'
+scripts/gcovr --gcov-executable=${GCOVCMD} -x -o ${WORKSPACE}/build/test-reports/coverage.xml --root=. --exclude='(.*Spec\.m)|(Pods/*)|(.*Test\.m)|(.*.h)|(Example/*)'
 
 echo "[*] Performing code quality analysis"
 
