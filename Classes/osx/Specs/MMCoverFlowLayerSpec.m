@@ -185,7 +185,7 @@ describe(@"MMCoverFlowLayer", ^{
 			it(@"should have an instanceBlueOffset equal to reflectionOffset", ^{
 				[[theValue(replicatorLayer.instanceBlueOffset) should] equal:sut.reflectionOffset withDelta:.000001];
 			});
-			context(@"instanceTransform", ^{
+			context(NSStringFromSelector(@selector(instanceTransform)), ^{
 				__block NSValue *expectedTransform = nil;
 				beforeEach(^{
 					[sut layoutSublayers];
@@ -198,7 +198,7 @@ describe(@"MMCoverFlowLayer", ^{
 					[[[NSValue valueWithCATransform3D:replicatorLayer.instanceTransform] should] equal:expectedTransform];
 				});
 			});
-			context(@"reflectionOffset", ^{
+			context(NSStringFromSelector(@selector(reflectionOffset)), ^{
 				it(@"should have a reflectionOffset of -.4", ^{
 					const CGFloat expectedOffset = -.4;
 
