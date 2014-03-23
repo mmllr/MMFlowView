@@ -140,7 +140,9 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 	context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
 		__block CALayer *contentLayer = nil;
 		__block CGImageRef testImageRef = NULL;
-		
+		__block KWCaptureSpy *factorySpy = nil;
+		__block void (^completionHandler)(CGImageRef image);
+
 		beforeAll(^{
 			NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
 			testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL context:NULL hints:nil]);
@@ -151,26 +153,28 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		
 		beforeEach(^{
 			contentLayer = [CALayer nullMock];
-			sut.coverFlowLayer = mockedCoverFlowLayer;
 			sut.imageFactory = mockedImageFactory;
+			factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageForItem:completionHandler:) atIndex:1];
+
 		});
 		afterEach(^{
 			contentLayer = nil;
+			factorySpy = nil;
+			completionHandler = nil;
 		});
 		it(@"should ask the image factory for the images", ^{
 			[[mockedImageFactory should] receive:@selector(createCGImageForItem:completionHandler:)];
 			[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
 		});
-		context(@"setting the content on the layer", ^{
-			__block KWCaptureSpy *factorySpy = nil;
+		context(@"setting the content on the layer with the image factories completion block", ^{
 			beforeEach(^{
-				factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageForItem:completionHandler:) atIndex:1];
+				[sut stub:@selector(selectedIndex) andReturn:theValue(0)];
+				[sut coverFlowLayer:sut.coverFlowLayer willShowLayer:contentLayer atIndex:0];
+				completionHandler = factorySpy.argument;
 			});
 			it(@"it should set the image from the image factory to the layer", ^{
 				[[contentLayer should] receive:@selector(setContents:) withArguments:(__bridge id)(testImageRef)];
 
-				[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
-				void (^completionHandler)(CGImageRef image) = factorySpy.argument;
 				completionHandler(testImageRef);
 			});
 			it(@"should set the image's aspect ratio to the content layer", ^{
@@ -184,12 +188,38 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 				CGSize imageSize = CGSizeApplyAffineTransform(sut.coverFlowLayout.itemSize, aspectTransform);
 				[[contentLayer should] receive:@selector(setBounds:) withArguments:theValue(CGRectMake(0, 0, imageSize.width, imageSize.height))];
 
-				[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
-				void (^completionHandler)(CGImageRef image) = factorySpy.argument;
 				completionHandler(testImageRef);
 			});
 		});
+		context(@"tracking areas", ^{
+			context(@"when invoking the completion block for the selected index", ^{
+				beforeEach(^{
+					[sut coverFlowLayer:sut.coverFlowLayer willShowLayer:contentLayer atIndex:sut.selectedIndex];
+					completionHandler = factorySpy.argument;
+					
+				});
+				it(@"should reset the tracking area for the selected item", ^{
+					[[sut should] receive:@selector(setupTrackingAreas)];
+					
+					completionHandler(testImageRef);
+				});
+			});
+			
+			context(@"when invoking the completion block for an unselected index", ^{
+				beforeEach(^{
+					[sut coverFlowLayer:sut.coverFlowLayer willShowLayer:contentLayer atIndex:sut.selectedIndex+1];
+					completionHandler = factorySpy.argument;
+					
+				});
+				it(@"should not reset the tracking area for an unselected item", ^{
+					[[sut shouldNot] receive:@selector(setupTrackingAreas)];
+					
+					completionHandler(testImageRef);
+				});
+			});
+			
+		});
 	});
 });
-		 
+
 SPEC_END

@@ -553,6 +553,7 @@ static NSString * const kLayoutKey = @"layout";
 		self.selectedIndex = 0;
 	};
 	[self updateSelectionInRange:NSMakeRange(0, self.numberOfItems)];
+	[self setupTrackingAreas];
 }
 
 - (id)imageItemForIndex:(NSUInteger)anIndex

@@ -570,7 +570,30 @@ describe(@"MMFlowView", ^{
 				it(@"should have one visibile item", ^{
 					[[sut.visibleItemIndexes should] haveCountOf:1];
 				});
+				context(@"tracking areas", ^{
+					__block NSTrackingArea *trackingArea = nil;
+
+					beforeEach(^{
+						trackingArea = [[sut trackingAreas] firstObject];
+					});
+					afterEach(^{
+						trackingArea = nil;
+					});
+					it(@"should have one tracking area", ^{
+						[[[sut trackingAreas] should] haveCountOf:1];
+					});
+					it(@"should have the selected item rect", ^{
+						[[theValue([trackingArea rect]) should] equal:theValue(sut.selectedItemFrame)];
+					});
+					it(@"should have the correct options", ^{
+						[[theValue([trackingArea options]) should] equal:theValue(NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside)];
+					});
+					it(@"should be the owner of the tracking area", ^{
+						[[[trackingArea owner] should] equal:sut];
+					});
+				});
 			});
+			
 			context(@"many items", ^{
 				beforeAll(^{
 					
@@ -589,6 +612,32 @@ describe(@"MMFlowView", ^{
 				it(@"should have the first item selected", ^{
 					[[theValue(sut.selectedIndex) should] equal:theValue(0)];
 				});
+
+				context(@"tracking areas", ^{
+					context(@"tracking areas", ^{
+						__block NSTrackingArea *trackingArea = nil;
+						
+						beforeEach(^{
+							trackingArea = [[sut trackingAreas] firstObject];
+						});
+						afterEach(^{
+							trackingArea = nil;
+						});
+						it(@"should have one tracking area", ^{
+							[[[sut trackingAreas] should] haveCountOf:1];
+						});
+						it(@"should have the selected item rect", ^{
+							[[theValue([trackingArea rect]) should] equal:theValue(sut.selectedItemFrame)];
+						});
+						it(@"should have the correct options", ^{
+							[[theValue([trackingArea options]) should] equal:theValue(NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside)];
+						});
+						it(@"should be the owner of the tracking area", ^{
+							[[[trackingArea owner] should] equal:sut];
+						});
+					});
+				});
+
 				context(@"layers", ^{
 					it(@"should have numberOfItems (10) sublayers", ^{
 						[[theValue(sut.numberOfItems) should] equal:theValue(10)];
@@ -696,39 +745,44 @@ describe(@"MMFlowView", ^{
 						[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
 					});
 				});
-				context(@"tracking areas", ^{
-					__block NSTrackingArea *trackingArea = nil;
-					
-					beforeEach(^{
-						[sut updateTrackingAreas];
-						trackingArea = [[sut trackingAreas] firstObject];
-					});
-					afterEach(^{
-						trackingArea = nil;
-					});
-					it(@"should have one tracking area", ^{
-						[[[sut trackingAreas] should] haveCountOf:1];
-					});
-					it(@"should have the selected item rect", ^{
-						NSValue *expectedRect = [NSValue valueWithRect:sut.selectedItemFrame];
-						[[[NSValue valueWithRect:[trackingArea rect]] should] equal:expectedRect];
-					});
-					it(@"should have the NSTrackingActiveInActiveApp option", ^{
-						[[theValue([trackingArea options] & NSTrackingActiveInActiveApp) should] beTrue];
-					});
-					it(@"should have the NSTrackingActiveWhenFirstResponder option", ^{
-						[[theValue([trackingArea options] & NSTrackingActiveWhenFirstResponder) should] beTrue];
-					});
-					it(@"should have the NSTrackingMouseEnteredAndExited option", ^{
-						[[theValue([trackingArea options] & NSTrackingMouseEnteredAndExited) should] beTrue];
-					});
-					it(@"should have the NSTrackingAssumeInside option", ^{
-						[[theValue([trackingArea options] & NSTrackingAssumeInside) should] beTrue];
-					});
-					it(@"should be the owner of the tracking area", ^{
-						[[[trackingArea owner] should] equal:sut];
-					});
+			});
+		});
+		context(NSStringFromSelector(@selector(updateTrackingAreas)), ^{
+			context(@"When an item is selected", ^{
+				NSRect expectedRect = NSMakeRect(40, 40, 400, 400);
+				__block NSTrackingArea *trackingArea = nil;
+
+				beforeEach(^{
+					[sut stub:@selector(selectedIndex) andReturn:0];
+					[sut stub:@selector(selectedItemFrame)
+					andReturn:theValue(expectedRect)];
+
+					[sut updateTrackingAreas];
+					trackingArea = [[sut trackingAreas] firstObject];
 				});
+				afterEach(^{
+					trackingArea = nil;
+				});
+				it(@"should have one tracking area", ^{
+					[[[sut trackingAreas] should] haveCountOf:1];
+				});
+				it(@"should have the selected item rect", ^{
+					[[theValue([trackingArea rect]) should] equal:theValue(sut.selectedItemFrame)];
+				});
+				it(@"should have the correct options", ^{
+					[[theValue([trackingArea options]) should] equal:theValue(NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside)];
+				});
+				it(@"should be the owner of the tracking area", ^{
+					[[[trackingArea owner] should] equal:sut];
+				});
+			});
+		});
+		context(@"when no item is selected", ^{
+			beforeEach(^{
+				[sut stub:@selector(selectedIndex) andReturn:theValue(NSNotFound)];
+			});
+			it(@"should not have any tracking areas", ^{
+				[[[sut trackingAreas] should] beEmpty];
 			});
 		});
 	});

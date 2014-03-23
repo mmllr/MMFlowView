@@ -78,5 +78,6 @@
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex;
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex;
 - (IBAction)togglePreviewPanel:(id)previewPanel;
+- (void)setupTrackingAreas;
 
 @end

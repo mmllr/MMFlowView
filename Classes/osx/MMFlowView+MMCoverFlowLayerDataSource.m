@@ -56,9 +56,9 @@
 	[self.scrollBarLayer setNeedsLayout];
 }
 
-- (void)coverFlowLayer:(MMCoverFlowLayer *)coverFlowLayer willShowLayer:(CALayer *)contentLayer atIndex:(NSUInteger)idx
+- (void)coverFlowLayer:(MMCoverFlowLayer *)coverFlowLayer willShowLayer:(CALayer *)contentLayer atIndex:(NSUInteger)itemIndex
 {
-	[self.imageFactory createCGImageForItem:[self imageItemForIndex:idx]
+	[self.imageFactory createCGImageForItem:[self imageItemForIndex:itemIndex]
 						  completionHandler:^(CGImageRef image) {
 							  contentLayer.contents = (__bridge id)(image);
 
@@ -71,6 +71,9 @@
 							  CGAffineTransform aspectTransform = CGAffineTransformMakeScale(scaleX, scaleY);
 							  CGSize imageSize = CGSizeApplyAffineTransform(self.coverFlowLayout.itemSize, aspectTransform);
 							  contentLayer.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
+							  if (itemIndex == self.selectedIndex) {
+								  [self setupTrackingAreas];
+							  }
 						  }];
 }
 
