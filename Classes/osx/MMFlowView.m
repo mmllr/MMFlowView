@@ -28,7 +28,6 @@
 //
 //  Created by Markus Müller on 13.01.12.
 #import <Quartz/Quartz.h>
-#import <QTKit/QTKit.h>
 
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
@@ -48,6 +47,12 @@
 #import "MMMacros.h"
 #import "MMFlowView+MMCoverFlowLayerDataSource.h"
 #import "CALayer+MMAdditions.h"
+#import "MMCGImageSourceDecoder.h"
+#import "MMQuickLookImageDecoder.h"
+#import "MMPDFPageDecoder.h"
+#import "MMNSBitmapImageRepDecoder.h"
+#import "MMNSDataImageDecoder.h"
+#import "MMNSImageDecoder.h"
 
 /* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
@@ -63,8 +68,6 @@ NSString * const kMMFlowViewQTMoviePathRepresentationType = @"MMFlowViewQTMovieP
 NSString * const kMMFlowViewQCCompositionRepresentationType = @"MMFlowViewQCCompositionRepresentationType";
 NSString * const kMMFlowViewQCCompositionPathRepresentationType = @"MMFlowViewQCCompositionPathRepresentationType";
 NSString * const kMMFlowViewQuickLookPathRepresentationType = @"MMFlowViewQuickLookPathRepresentationType";
-NSString * const kMMFlowViewIconRefPathRepresentationType = @"MMFlowViewIconRefPathRepresentationType";
-NSString * const kMMFlowViewIconRefRepresentationType = @"MMFlowViewIconRefRepresentationType";
 
 /* layer names */
 static NSString * const kMMFlowViewScrollLayerName = @"MMFlowViewScrollLayerName";
@@ -187,8 +190,7 @@ static NSString * const kLayoutKey = @"layout";
 								   kMMFlowViewPathRepresentationType,
 								   kMMFlowViewQTMoviePathRepresentationType,
 								   kMMFlowViewQCCompositionPathRepresentationType,
-								   kMMFlowViewQuickLookPathRepresentationType,
-								   kMMFlowViewIconRefPathRepresentationType, nil ];
+								   kMMFlowViewQuickLookPathRepresentationType, nil ];
 	});
 	return pathRepresentationTypes;
 }
@@ -204,7 +206,6 @@ static NSString * const kLayoutKey = @"layout";
 						 (NSString*)kUTTypeImage: kMMFlowViewNSBitmapRepresentationType,
 						 (NSString*)kUTTypeMovie: kMMFlowViewQTMovieRepresentationType,
 						 (NSString*)kUTTypeQuartzComposerComposition: kMMFlowViewQCCompositionRepresentationType,
-						 (NSString*)kUTTypeImage: kMMFlowViewIconRefRepresentationType,
 						 (NSString*)kUTTypePDF: kMMFlowViewPDFPageRepresentationType};
 	});
 	return utiDictionary;
@@ -234,7 +235,6 @@ static NSString * const kLayoutKey = @"layout";
         // Initialization code here.
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
-		_imageFactory.cache = _imageCache;
 		_coverFlowLayout = [[MMCoverFlowLayout alloc] init];
 		_imageRepresentationKeyPath = [NSStringFromSelector(@selector(imageItemRepresentation)) copy];
 		_imageUIDKeyPath = [NSStringFromSelector(@selector(imageItemUID)) copy];
@@ -255,7 +255,6 @@ static NSString * const kLayoutKey = @"layout";
 	if ( self ) {
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
-		_imageFactory.cache = _imageCache;
 		[self setAcceptsTouchEvents:YES];
 		if ( [ aDecoder allowsKeyedCoding ] ) {
 			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
@@ -299,11 +298,33 @@ static NSString * const kLayoutKey = @"layout";
 {
 	[self setAcceptsTouchEvents:YES];
 	[self setTranslatesAutoresizingMaskIntoConstraints:NO];
+	[self initImageFactory];
 	self.stackedAngle = kDefaultStackedAngle;
 	self.spacing = kDefaultItemSpacing;
 	self.reflectionOffset = kDefaultReflectionOffset;
 	self.selectedIndex = NSNotFound;
 	self.showsReflection = NO;
+}
+
+- (void)initImageFactory
+{
+	NSDictionary *representationMappings = @{
+											 kMMFlowViewURLRepresentationType: [MMQuickLookImageDecoder class],
+											 kMMFlowViewPDFPageRepresentationType: [MMPDFPageDecoder class],
+											 kMMFlowViewPathRepresentationType: [MMQuickLookImageDecoder class],
+											 kMMFlowViewNSImageRepresentationType: [MMNSImageDecoder class],
+											 kMMFlowViewCGImageSourceRepresentationType: [MMCGImageSourceDecoder class],
+											 kMMFlowViewNSDataRepresentationType: [MMNSDataImageDecoder class],
+											 kMMFlowViewNSBitmapRepresentationType: [MMNSBitmapImageRepDecoder class],
+											 kMMFlowViewQTMoviePathRepresentationType: [MMQuickLookImageDecoder class],
+											 kMMFlowViewQCCompositionPathRepresentationType: [MMQuickLookImageDecoder class],
+											 kMMFlowViewQuickLookPathRepresentationType: [MMQuickLookImageDecoder class]
+											 };
+
+	[representationMappings enumerateKeysAndObjectsUsingBlock:^(NSString *representationType, Class aClass, BOOL *stop) {
+		[self.imageFactory registerClass:aClass
+			   forItemRepresentationType:representationType];
+	}];
 }
 
 #pragma mark -
@@ -700,33 +721,6 @@ static NSString * const kLayoutKey = @"layout";
 		return @(((double)(strongSelf.selectedIndex)) / (strongSelf.numberOfItems - 1));
 	}];
 	layer.scrollBarDelegate = self;
-	return layer;
-}
-
-- (MMVideoOverlayLayer*)createMovieOverlayLayerWithIndex:(NSUInteger)anIndex
-{
-	MMVideoOverlayLayer *layer = [ MMVideoOverlayLayer layer ];
-	// hosting layer
-	layer.name = kMMFlowViewOverlayLayerName;
-	[ layer setValue:@(anIndex)
-					 forKey:kMMFlowViewItemIndexKey ];
-	layer.frame = CGRectMake( 0., 0., kMovieOverlayPlayingRadius * 2, kMovieOverlayPlayingRadius * 2 );
-	// initially hidden
-	layer.hidden = YES;
-
-	MMButtonLayer *buttonLayer = layer.buttonLayer;
-	__weak MMButtonLayer *weakLayer = buttonLayer;
-	[buttonLayer setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
-		return NSAccessibilityCheckBoxRole;
-	}];
-	[buttonLayer setReadableAccessibilityAttribute:NSAccessibilityTitleAttribute withBlock:^id{
-		return [ weakLayer state ] == NSOnState ? NSLocalizedString(@"Stop movie playback", @"Stop movie playback") : NSLocalizedString(@"Start movie playback", @"Start movie playback");
-	}];
-	[buttonLayer setWritableAccessibilityAttribute:NSAccessibilityValueAttribute readBlock:^id{
-		return [ weakLayer valueForKey:kMMButtonLayerStateKey ];
-	} writeBlock:^(id value) {
-		[ weakLayer setValue:value forKey:kMMButtonLayerStateKey ];
-	}];
 	return layer;
 }
 

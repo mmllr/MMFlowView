@@ -33,9 +33,8 @@
 
 @protocol MMImageDecoderProtocol <NSObject>
 
-@property (nonatomic) NSUInteger maxPixelSize;
-
-- (CGImageRef)newCGImageFromItem:(id)anItem;
-- (NSImage*)imageFromItem:(id)anItem;
+- (id<MMImageDecoderProtocol>)initWithItem:(id)anItem maxPixelSize:(NSUInteger)maxPixelSize;
+- (CGImageRef)CGImage;
+- (NSImage*)image;
 
 @end

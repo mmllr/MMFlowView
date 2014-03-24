@@ -30,7 +30,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
-#import <QuartzCore/QuartzCore.h>
 
 @class MMFlowView;
 
@@ -55,8 +54,6 @@
  kMMFlowViewQCCompositionRepresentationType
  kMMFlowViewQCCompositionPathRepresentationType
  kMMFlowViewQuickLookPathRepresentationType
- kMMFlowViewIconRefPathRepresentationType
- kMMFlowViewIconRefRepresentationType
  @endcode
 */
 
@@ -152,20 +149,6 @@ extern NSString * const kMMFlowViewQCCompositionPathRepresentationType;
  A path (NSString) or URL (NSURL) to load data using QuickLook.
  */
 extern NSString * const kMMFlowViewQuickLookPathRepresentationType;
-
-/**
- kMMFlowViewIconRefPathRepresentationType
-
- A path (NSString) or URL (NSURL) to an icon.
- */
-extern NSString * const kMMFlowViewIconRefPathRepresentationType;
-
-/**
- kMMFlowViewIconRefRepresentationType
-
- An icon.
- */
-extern NSString * const kMMFlowViewIconRefRepresentationType;
 
 /**
  A binding for keypath to the image representation.

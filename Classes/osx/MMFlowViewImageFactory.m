@@ -30,14 +30,7 @@
 //
 
 #import "MMFlowViewImageFactory.h"
-#import "MMFlowView.h"
-#import "MMQuickLookImageDecoder.h"
-#import "MMPDFPageDecoder.h"
-#import "MMNSImageDecoder.h"
-#import "MMNSBitmapImageRepDecoder.h"
-#import "MMCGImageSourceDecoder.h"
-#import "MMNSDataImageDecoder.h"
-#import "MMFlowViewImageCache.h"
+#import "MMImageDecoderProtocol.h"
 
 static CGFloat const kDefaultMaxImageDimension = 100;
 
@@ -49,23 +42,6 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 
 @implementation MMFlowViewImageFactory
 
-#pragma mark - class methods
-
-+ (NSDictionary*)createImageDecoders
-{
-	MMQuickLookImageDecoder *quickLookDecoder = [MMQuickLookImageDecoder new];
-
-	return @{kMMFlowViewQuickLookPathRepresentationType: quickLookDecoder,
-			 kMMFlowViewPathRepresentationType: quickLookDecoder,
-			 kMMFlowViewURLRepresentationType: quickLookDecoder,
-			 kMMFlowViewPDFPageRepresentationType: [MMPDFPageDecoder new],
-			 kMMFlowViewNSImageRepresentationType: [MMNSImageDecoder new],
-			 kMMFlowViewNSBitmapRepresentationType: [MMNSBitmapImageRepDecoder new],
-			 kMMFlowViewCGImageSourceRepresentationType: [MMCGImageSourceDecoder new],
-			 kMMFlowViewNSDataRepresentationType: [MMNSDataImageDecoder new]
-			 };
-}
-
 #pragma mark - init/cleanup
 
 - (id)init
@@ -73,8 +49,8 @@ static CGFloat const kDefaultMaxImageDimension = 100;
     self = [super init];
     if (self) {
 		_operationQueue = [[NSOperationQueue alloc] init];
-        _imageDecoders = [NSMutableDictionary dictionaryWithDictionary:[[self class] createImageDecoders]];
 		_maxImageSize = CGSizeMake(kDefaultMaxImageDimension, kDefaultMaxImageDimension);
+		_imageDecoders = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -86,6 +62,14 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 
 #pragma mark - public API
 
+- (void)registerClass:(Class)aClass forItemRepresentationType:(NSString*)representationType
+{
+	if (![aClass conformsToProtocol:@protocol(MMImageDecoderProtocol)]) {
+		return;
+	}
+	self.imageDecoders[representationType] = aClass;
+}
+
 - (void)setMaxImageSize:(CGSize)maxImageSize
 {
 	if (CGSizeEqualToSize(_maxImageSize, CGSizeZero) ||
@@ -95,73 +79,40 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 		return;
 	}
 	_maxImageSize = maxImageSize;
-	[self.cache reset];
-	
 }
 
-- (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType
+- (id<MMImageDecoderProtocol>)decoderforItem:(id)anItem withRepresentationType:(NSString *)representationType
 {
-	return self.imageDecoders[representationType];
-}
+	Class decoderClass = self.imageDecoders[representationType];
 
-- (void)setDecoder:(id<MMImageDecoderProtocol>)aDecoder forRepresentationType:(NSString*)representationType
-{
-	NSParameterAssert([aDecoder conformsToProtocol:@protocol(MMImageDecoderProtocol)]);
-	NSParameterAssert(representationType);
-
-	if ([representationType length] > 0) {
-		self.imageDecoders[representationType] = aDecoder;
-	}
+	return [[decoderClass alloc] initWithItem:anItem
+								 maxPixelSize:self.maxImageSize.width];
 }
 
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType
 {
-	return [self decoderforRepresentationType:representationType] != nil;
+	return self.imageDecoders[representationType] != nil;
 }
 
-- (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef))completionHandler
+
+- (void)createCGImageFromRepresentation:(id)anItem withType:(NSString *)representationType completionHandler:(void (^)(CGImageRef))completionHandler
 {
+	NSParameterAssert(anItem);
+	NSParameterAssert(representationType);
 	NSParameterAssert(completionHandler != NULL);
 
-	NSString *representationType = anItem.imageItemRepresentationType;
-	NSString *itemUUID = anItem.imageItemUID;
-
-	CGImageRef cachedImage = [self.cache imageForUUID:itemUUID];
-
-	if (cachedImage) {
-		completionHandler(cachedImage);
-		return;
-	}
 	if ([self canDecodeRepresentationType:representationType]) {
-		id<MMImageDecoderProtocol> decoder = [self decoderforRepresentationType:representationType];
-		decoder.maxPixelSize = MAX(self.maxImageSize.width, self.maxImageSize.height);
+		id<MMImageDecoderProtocol> decoder = [self decoderforItem:anItem
+										   withRepresentationType:representationType];
+
 		NSOperationQueue *callingQueue = [NSOperationQueue currentQueue];
 		[self.operationQueue addOperationWithBlock:^{
-			CGImageRef image = [decoder newCGImageFromItem:anItem.imageItemRepresentation];
+			CGImageRef image = decoder.CGImage;
 
 			if (image) {
-				[self.cache cacheImage:image withUUID:itemUUID];
 				[callingQueue addOperationWithBlock:^{
 					completionHandler(image);
 					CGImageRelease(image);
-				}];
-			}
-		}];
-	}
-}
-
-- (void)imageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void (^)(NSImage *))completionHandler
-{
-	NSParameterAssert(completionHandler != NULL);
-	if ([self canDecodeRepresentationType:anItem.imageItemRepresentationType]) {
-		id<MMImageDecoderProtocol> decoder = [self decoderforRepresentationType:anItem.imageItemRepresentationType];
-
-		[self.operationQueue addOperationWithBlock:^{
-			NSImage *image = [decoder imageFromItem:anItem.imageItemRepresentation];
-
-			if (image) {
-				[[NSOperationQueue mainQueue] addOperationWithBlock:^{
-					completionHandler(image);
 				}];
 			}
 		}];

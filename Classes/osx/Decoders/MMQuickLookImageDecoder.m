@@ -6,41 +6,64 @@
 //  Copyright (c) 2013 www.isnotnil.com. All rights reserved.
 //
 
-#import "MMQuickLookImageDecoder.h"
 #import <QuickLook/QuickLook.h>
+
+#import "MMQuickLookImageDecoder.h"
 
 const CGFloat kDefaultMaxPixelSize = 4000;
 
+@interface MMQuickLookImageDecoder ()
+
+@property (nonatomic, strong) NSURL *url;
+@property NSUInteger maxPixelSize;
+
+@end
+
 @implementation MMQuickLookImageDecoder
 
-@synthesize maxPixelSize;
-
-- (CGImageRef)newCGImageFromItem:(id)anItem
+- (instancetype)init
 {
-	NSParameterAssert(anItem);
-	CFURLRef itemURL = NULL;
-	if ( [anItem isKindOfClass:[NSURL class]] ||
-		CFURLGetTypeID() == CFGetTypeID((CFTypeRef)anItem) ) {
-		itemURL = (__bridge CFURLRef)anItem;
-	}
-	else if ( [anItem isKindOfClass:[NSString class]] ) {
-		itemURL = (__bridge CFURLRef)[NSURL fileURLWithPath:anItem];
-	}
-	NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
-	return QLThumbnailImageCreate(NULL, itemURL, self.maxPixelSize ? CGSizeMake(self.maxPixelSize, self.maxPixelSize) : CGSizeMake(kDefaultMaxPixelSize, kDefaultMaxPixelSize), (__bridge CFDictionaryRef)quickLookOptions );
+    return [self initWithItem:nil maxPixelSize:0];
 }
 
-- (NSImage*)imageFromItem:(id)anItem
++ (NSURL*)urlForItem:(id)anItem
 {
-	NSURL *url = nil;
-	if ( [anItem isKindOfClass:[NSURL class]] ) {
-		url = anItem;
+	if ([anItem isKindOfClass:[NSURL class]]) {
+		return anItem;
 	}
-	else if ( [anItem isKindOfClass:[NSString class]] ) {
-		url = [[NSFileManager defaultManager] fileExistsAtPath:anItem] ? [NSURL fileURLWithPath:anItem] : [NSURL URLWithString:anItem];
+	NSURL *url = [NSURL fileURLWithPath:anItem];
+	if ([url isFileURL]) {
+		return url;
 	}
-	NSImage *image = url ? [[NSImage alloc] initWithContentsOfURL:url] : nil;
-	return image;
+	return nil;
+}
+
+- (id<MMImageDecoderProtocol>)initWithItem:(id)anItem maxPixelSize:(NSUInteger)maxPixelSize
+{
+	NSParameterAssert(anItem);
+	NSParameterAssert(maxPixelSize > 0);
+	NSParameterAssert([anItem isKindOfClass:[NSURL class]] || [anItem isKindOfClass:[NSString class]]);
+
+	self = [super init];
+	if (self) {
+		NSURL *url = [[self class] urlForItem:anItem];
+		NSAssert(url != nil, @"anItem must be a url or string path");
+
+		_url = url;
+		_maxPixelSize = maxPixelSize;
+	}
+	return self;
+}
+
+- (CGImageRef)CGImage
+{
+	NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
+	return QLThumbnailImageCreate(NULL, (__bridge CFURLRef)self.url, self.maxPixelSize ? CGSizeMake(self.maxPixelSize, self.maxPixelSize) : CGSizeMake(kDefaultMaxPixelSize, kDefaultMaxPixelSize), (__bridge CFDictionaryRef)quickLookOptions );
+}
+
+- (NSImage*)image
+{
+	return [[NSImage alloc] initWithContentsOfURL:self.url];
 }
 
 @end

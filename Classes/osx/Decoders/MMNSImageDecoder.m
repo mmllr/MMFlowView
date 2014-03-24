@@ -9,24 +9,44 @@
 #import "MMNSImageDecoder.h"
 #import "MMNSDataImageDecoder.h"
 
+@interface MMNSImageDecoder ()
+
+@property (nonatomic, strong) id item;
+@property NSUInteger maxPixelSize;
+
+@end
+
 @implementation MMNSImageDecoder
 
-@synthesize maxPixelSize;
-
-- (CGImageRef)newCGImageFromItem:(id)anItem
+- (instancetype)init
 {
-	if ([anItem isKindOfClass:[NSImage class]]) {
-		NSImage *image = (NSImage*)anItem;
-		MMNSDataImageDecoder *dataDecoder = [[MMNSDataImageDecoder alloc] init];
-		dataDecoder.maxPixelSize = self.maxPixelSize;
-		return [dataDecoder newCGImageFromItem:[image TIFFRepresentation]];
-	}
-	return NULL;
+    return [self initWithItem:nil maxPixelSize:0];
 }
 
-- (NSImage*)imageFromItem:(id)anItem
+- (id<MMImageDecoderProtocol>)initWithItem:(id)anItem maxPixelSize:(NSUInteger)maxPixelSize
 {
-	return [anItem isKindOfClass:[NSImage class]] ? anItem : nil;
+	NSParameterAssert(anItem);
+	NSParameterAssert([anItem isKindOfClass:[NSImage class]]);
+	NSParameterAssert(maxPixelSize > 0);
+
+	self = [super init];
+	if (self) {
+		_item = anItem;
+		_maxPixelSize = maxPixelSize;
+	}
+	return self;
+}
+
+- (CGImageRef)CGImage
+{
+	MMNSDataImageDecoder *dataDecoder = [[MMNSDataImageDecoder alloc] initWithItem:[self.item TIFFRepresentation]
+																	  maxPixelSize:self.maxPixelSize];
+	return dataDecoder.CGImage;
+}
+
+- (NSImage*)image
+{
+	return self.item;
 }
 
 @end

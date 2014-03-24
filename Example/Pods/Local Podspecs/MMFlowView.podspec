@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "MMFlowView"
-  s.version          = "1.0.0"
+  s.version          = "1.0.4"
   s.summary          = "A full featured CoverFlow view with similar functionality like IKImageBrowserView"
   s.description      = <<-DESC
                        MMFlowView is a class designed to support the "CoverFlow" effect and it is intended to use in a similar way like IKImageBrowserView.
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
                        features drag&drop und quicklook preview. Its makes use of CoreAnimation to provide smooth and fast animations.
                        DESC
   s.homepage         = "https://github.com/mmllr/MMFlowView"
-  s.screenshots      = "https://github.com/mmllr/MMFlowView.git/Resources/FlowView.png"
+  s.screenshots      = "https://raw.github.com/mmllr/MMFlowView/master/Resources/FlowView.png"
   s.license          = 'MIT'
   s.author           = { "Markus Mueller" => "mmlr@gmx.net" }
   s.source           = { :git => "https://github.com/mmllr/MMFlowView.git", :tag => s.version.to_s }
@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.ios.exclude_files = 'Classes/osx'
   s.osx.exclude_files = 'Classes/ios'
   s.exclude_files = 'Classes/**/*Spec.{h,m}'
-  s.public_header_files = 'Classes/MMFlowView.h'
+  s.public_header_files = 'Classes/**/*.h'
   s.frameworks = 'Quartz', 'QuartzCore', 'QTKit'
   s.dependency 'MMLayerAccessibility', '~> 0.1'
 end

@@ -38,7 +38,7 @@ if [ -z "${WORKSPACE}" ]; then
 	WORKSPACE=$(cd $(dirname $REALPATH); pwd)
 fi
 
-GCOVCMD=`xcrun -f gcov-4.2`
+GCOVCMD=`xcrun -f gcov`
 
 echo "[*] Cleaning workspace"
 
@@ -55,6 +55,7 @@ ${XCTOOL} -workspace ${XCWORKSPACE} \
 -scheme ${XCSCHEME} \
 -reporter junit:${WORKSPACE}/build/test-reports/junit-report.xml \
 -reporter plain \
+-configuration Debug \
 DSTROOT=${WORKSPACE}/build/Products \
 OBJROOT=${WORKSPACE}/build/Intermediates \
 SYMROOT=${WORKSPACE}/build \
@@ -65,7 +66,7 @@ CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
 clean test
 
 echo "[*] Generating code-coverage results"
-scripts/gcovr --gcov-executable=${GCOVCMD} -x -o ${WORKSPACE}/build/test-reports/coverage.xml --root=. --exclude='(.*Spec\.m)|(Pods/*)|(.*Test\.m)|(.*.h)|(Example/*)'
+scripts/gcovr --gcov-executable=${GCOVCMD} -x -o ${WORKSPACE}/build/test-reports/coverage.xml --root=. --exclude='(.*Spec\.m)|(.*.h)|(Example/*)'
 
 echo "[*] Performing code quality analysis"
 

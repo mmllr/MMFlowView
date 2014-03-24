@@ -34,6 +34,7 @@
 #import "MMFlowViewImageFactory.h"
 #import "MMCoverFlowLayout.h"
 #import "MMScrollBarLayer.h"
+#import "MMFlowViewImageCache.h"
 
 @implementation MMFlowView (MMCoverFlowLayerDataSource)
 
@@ -58,23 +59,40 @@
 
 - (void)coverFlowLayer:(MMCoverFlowLayer *)coverFlowLayer willShowLayer:(CALayer *)contentLayer atIndex:(NSUInteger)itemIndex
 {
-	[self.imageFactory createCGImageForItem:[self imageItemForIndex:itemIndex]
-						  completionHandler:^(CGImageRef image) {
-							  contentLayer.contents = (__bridge id)(image);
+	id item = [self imageItemForIndex:itemIndex];
+	NSString *itemUID = [self imageUIDForItem:item];
 
-							  CGFloat width = CGImageGetWidth(image);
-							  CGFloat height = CGImageGetHeight(image);
-							  CGFloat aspectRatio = width / height;
-							  
-							  CGFloat scaleX = aspectRatio > 1 ? 1 : aspectRatio;
-							  CGFloat scaleY = aspectRatio > 1 ? 1 / aspectRatio : 1;
-							  CGAffineTransform aspectTransform = CGAffineTransformMakeScale(scaleX, scaleY);
-							  CGSize imageSize = CGSizeApplyAffineTransform(self.coverFlowLayout.itemSize, aspectTransform);
-							  contentLayer.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
-							  if (itemIndex == self.selectedIndex) {
-								  [self setupTrackingAreas];
-							  }
-						  }];
+	CGImageRef cachedImage = [self.imageCache imageForUUID:itemUID];
+
+	if (cachedImage != NULL) {
+		[self setImage:cachedImage forContentLayer:contentLayer];
+		return;
+	}
+
+	[self.imageFactory createCGImageFromRepresentation:[self imageRepresentationForItem:item]
+											  withType:[self imageRepresentationTypeForItem:item]
+									 completionHandler:^(CGImageRef anImage) {
+										 [self setImage:anImage forContentLayer:contentLayer];
+										 [self.imageCache cacheImage:anImage withUUID:itemUID];
+										 if (itemIndex == self.selectedIndex) {
+											 [self setupTrackingAreas];
+										 }
+	}];
+}
+
+- (void)setImage:(CGImageRef)image forContentLayer:(CALayer*)contentLayer
+{
+	contentLayer.contents = (__bridge id)(image);
+
+	CGFloat width = CGImageGetWidth(image);
+	CGFloat height = CGImageGetHeight(image);
+	CGFloat aspectRatio = width / height;
+	
+	CGFloat scaleX = aspectRatio > 1 ? 1 : aspectRatio;
+	CGFloat scaleY = aspectRatio > 1 ? 1 / aspectRatio : 1;
+	CGAffineTransform aspectTransform = CGAffineTransformMakeScale(scaleX, scaleY);
+	CGSize imageSize = CGSizeApplyAffineTransform(self.coverFlowLayout.itemSize, aspectTransform);
+	contentLayer.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
 }
 
 @end

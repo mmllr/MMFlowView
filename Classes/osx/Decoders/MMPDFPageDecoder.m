@@ -10,40 +10,53 @@
 #import "MMPDFPageDecoder.h"
 #import "MMPDFPageRenderer.h"
 
+@interface MMPDFPageDecoder ()
+
+@property (nonatomic, strong) id item;
+@property NSUInteger maxPixelSize;
+@property (nonatomic, strong) MMPDFPageRenderer *pdfPageRenderer;
+
+@end
+
 @implementation MMPDFPageDecoder
 
-@synthesize maxPixelSize;
-
-- (MMPDFPageRenderer*)renderForItem:(id)anItem
+- (instancetype)init
 {
-	if ([anItem isKindOfClass:[PDFPage class]]) {
-		return [[MMPDFPageRenderer alloc] initWithPDFPage:[((PDFPage*)anItem) pageRef]];
-	}
-	if (CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID()) {
-		return [[MMPDFPageRenderer alloc] initWithPDFPage:(__bridge CGPDFPageRef)(anItem)];
-	}
-	return nil;
+    return [self initWithItem:nil maxPixelSize:0];
 }
 
-- (CGImageRef)newCGImageFromItem:(id)anItem
+- (id<MMImageDecoderProtocol>)initWithItem:(id)anItem maxPixelSize:(NSUInteger)maxPixelSize
 {
-	MMPDFPageRenderer *renderer = [self renderForItem:anItem];
-	if (!renderer) {
-		return NULL;
+	NSParameterAssert(anItem);
+	NSParameterAssert(maxPixelSize > 0);
+	NSParameterAssert([anItem isKindOfClass:[PDFPage class]] ||
+					  CFGetTypeID((__bridge CFTypeRef)(anItem)) == CGPDFPageGetTypeID());
+
+	self = [super init];
+	if (self) {
+		_item = anItem;
+		_maxPixelSize = maxPixelSize;
+		_pdfPageRenderer = [anItem isKindOfClass:[PDFPage class]] ? [[MMPDFPageRenderer alloc] initWithPDFPage:[((PDFPage*)anItem) pageRef]] : [[MMPDFPageRenderer alloc] initWithPDFPage:(__bridge CGPDFPageRef)anItem];
 	}
-	renderer.imageSize = CGSizeMake(self.maxPixelSize, self.maxPixelSize);
-	return CGImageRetain([renderer.imageRepresentation CGImage]);
+	return self;
 }
 
-- (NSImage*)imageFromItem:(id)anItem
+- (CGImageRef)CGImage
 {
-	CGImageRef imageRef = [self newCGImageFromItem:anItem];
+	self.pdfPageRenderer.imageSize = CGSizeMake(self.maxPixelSize, self.maxPixelSize);
+	return CGImageRetain([self.pdfPageRenderer.imageRepresentation CGImage]);
+}
+
+- (NSImage*)image
+{
+	CGImageRef imageRef = self.CGImage;
+	NSImage *image = nil;
+
 	if (imageRef) {
-		NSImage *image = [[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(CGImageGetWidth(imageRef), CGImageGetHeight(imageRef))];
+		image =[[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(CGImageGetWidth(imageRef), CGImageGetHeight(imageRef))];
 		CGImageRelease(imageRef);
-		return image;
 	}
-	return nil;
+	return image;
 }
 
 @end

@@ -41,6 +41,7 @@
 		2801F64E18D70F1A00075E15 /* NSEventMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62F18D70F1A00075E15 /* NSEventMMAdditionsSpec.m */; };
 		2801F64F18D70F1A00075E15 /* NSValueMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */; };
 		2801F65218D70F2F00075E15 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F65118D70F2F00075E15 /* Item.m */; };
+		2832C8F318E064F7008849B9 /* MMBaseImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */; };
 		287AF70E18D9852F00FEDAA9 /* MMCodeCoverageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */; };
 		287AF70F18D9853400FEDAA9 /* NSApplication+MMCodeCoverageFixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 287AF70D18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.m */; };
 		289C9C8C18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */; };
@@ -105,6 +106,7 @@
 		2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSValueMMAdditionsSpec.m; sourceTree = "<group>"; };
 		2801F65018D70F2F00075E15 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
 		2801F65118D70F2F00075E15 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
+		2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMBaseImageDecoderSpec.m; sourceTree = "<group>"; };
 		287AF70A18D9852300FEDAA9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MMCodeCoverageTests.m; sourceTree = "<group>"; };
 		287AF70C18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSApplication+MMCodeCoverageFixer.h"; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 		2801F61118D70F1A00075E15 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */,
 				289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */,
 				2801F61218D70F1A00075E15 /* CALayerMMAdditionsSpec.m */,
 				2801F61318D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m */,
@@ -495,6 +498,7 @@
 				2801F63A18D70F1A00075E15 /* MMFlowViewKeyValueObservingSpec.m in Sources */,
 				2801F63218D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m in Sources */,
 				2801F64C18D70F1A00075E15 /* NSAffineTransformMMAdditionsSpec.m in Sources */,
+				2832C8F318E064F7008849B9 /* MMBaseImageDecoderSpec.m in Sources */,
 				2801F64818D70F1A00075E15 /* MMPDFPageRendererSpec.m in Sources */,
 				2801F63C18D70F1A00075E15 /* MMFlowViewMMScrollBarDelegateSpec.m in Sources */,
 				2801F63718D70F1A00075E15 /* MMFlowViewImageCacheSpec.m in Sources */,

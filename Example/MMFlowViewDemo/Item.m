@@ -54,9 +54,7 @@
 					   kMMFlowViewQTMoviePathRepresentationType: IKImageBrowserQTMoviePathRepresentationType,
 					   kMMFlowViewQCCompositionRepresentationType: IKImageBrowserQCCompositionRepresentationType,
 					   kMMFlowViewQCCompositionPathRepresentationType: IKImageBrowserQCCompositionPathRepresentationType,
-					   kMMFlowViewQuickLookPathRepresentationType: IKImageBrowserQuickLookPathRepresentationType,
-					   kMMFlowViewIconRefPathRepresentationType: IKImageBrowserIconRefPathRepresentationType,
-					   kMMFlowViewIconRefRepresentationType: IKImageBrowserIconRefRepresentationType};
+						kMMFlowViewQuickLookPathRepresentationType: IKImageBrowserQuickLookPathRepresentationType };
 	});
 	return mappingDict[aFlowViewItemRepresentationType];
 }

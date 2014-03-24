@@ -424,7 +424,7 @@ describe(@"MMFlowView+NSResponder", ^{
 						beforeEach(^{
 							urlMock = [NSURL nullMock];
 							[NSURL stub:@selector(fileURLWithPath:) andReturn:urlMock];
-							representationTypes = @[kMMFlowViewURLRepresentationType,kMMFlowViewPathRepresentationType,kMMFlowViewQTMoviePathRepresentationType,kMMFlowViewQCCompositionPathRepresentationType,kMMFlowViewQuickLookPathRepresentationType,kMMFlowViewIconRefPathRepresentationType];
+							representationTypes = @[kMMFlowViewURLRepresentationType,kMMFlowViewPathRepresentationType,kMMFlowViewQTMoviePathRepresentationType,kMMFlowViewQCCompositionPathRepresentationType,kMMFlowViewQuickLookPathRepresentationType];
 						});
 						afterEach(^{
 							urlMock = nil;
@@ -530,7 +530,7 @@ describe(@"MMFlowView+NSResponder", ^{
 							
 							beforeAll(^{
 								representationMock = [NSImage nullMock];
-								representationTypes = @[kMMFlowViewCGImageRepresentationType,kMMFlowViewPDFPageRepresentationType, kMMFlowViewNSImageRepresentationType, kMMFlowViewCGImageSourceRepresentationType,kMMFlowViewNSDataRepresentationType,kMMFlowViewNSBitmapRepresentationType,kMMFlowViewQTMovieRepresentationType,kMMFlowViewQCCompositionRepresentationType,kMMFlowViewIconRefRepresentationType];
+								representationTypes = @[kMMFlowViewCGImageRepresentationType,kMMFlowViewPDFPageRepresentationType, kMMFlowViewNSImageRepresentationType, kMMFlowViewCGImageSourceRepresentationType,kMMFlowViewNSDataRepresentationType,kMMFlowViewNSBitmapRepresentationType,kMMFlowViewQTMovieRepresentationType,kMMFlowViewQCCompositionRepresentationType];
 								[itemMock stub:@selector(imageItemRepresentation) andReturn:representationMock];
 							});
 							beforeEach(^{

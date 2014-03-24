@@ -31,21 +31,18 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol MMFlowViewItem;
 @protocol MMImageDecoderProtocol;
-@protocol MMFlowViewImageCache;
 
 @interface MMFlowViewImageFactory : NSObject
 
 @property (nonatomic) CGSize maxImageSize;
-@property (strong) id<MMFlowViewImageCache> cache;
 @property (strong) NSOperationQueue *operationQueue;
 
+- (void)registerClass:(Class)aClass forItemRepresentationType:(NSString*)representationType;
+
 - (BOOL)canDecodeRepresentationType:(NSString*)representationType;
-- (id<MMImageDecoderProtocol>)decoderforRepresentationType:(NSString*)representationType;
-- (void)setDecoder:(id<MMImageDecoderProtocol>)aDecoder forRepresentationType:(NSString*)representationType;
-- (void)createCGImageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(CGImageRef))completionHandler;
-- (void)imageForItem:(id<MMFlowViewItem>)anItem completionHandler:(void(^)(NSImage*))completionHandler;
+- (id<MMImageDecoderProtocol>)decoderforItem:(id)anItem withRepresentationType:(NSString*)aRepresentationType;
+- (void)createCGImageFromRepresentation:(id)anItem withType:(NSString*)aRepresentationType completionHandler:(void(^)(CGImageRef))completionHandler;
 
 - (void)cancelPendingDecodings;
 

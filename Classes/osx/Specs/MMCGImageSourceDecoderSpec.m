@@ -29,7 +29,7 @@
 //  Copyright 2013 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <Kiwi.h>
 #import "MMCGImageSourceDecoder.h"
 #import "MMMacros.h"
 
@@ -39,7 +39,7 @@ describe(@"MMCGImageSourceDecoder", ^{
 	__block MMCGImageSourceDecoder *sut = nil;
 	__block CGImageSourceRef imageSource = NULL;
 	__block CGImageRef imageRef = NULL;
-	__block CGImageRef testImageRef = NULL;
+	const NSUInteger expectedPixelSize = 100;
 
 	beforeAll(^{
 		NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
@@ -51,16 +51,17 @@ describe(@"MMCGImageSourceDecoder", ^{
 			imageSource = NULL;
 		}
 	});
-	context(@"a new instance", ^{
-		beforeEach(^{
+	it(@"should throw an NSInternalInconsistencyException when not created with designated initalizer", ^{
+		[[theBlock(^{
 			sut = [[MMCGImageSourceDecoder alloc] init];
+		}) should] raiseWithName:NSInternalInconsistencyException];
+	});
+	context(@"when created with designated initalizer from NSURL and non-zero size", ^{
+		beforeEach(^{
+			sut = [[MMCGImageSourceDecoder alloc] initWithItem:(__bridge id)imageSource maxPixelSize:expectedPixelSize];
 		});
 		afterEach(^{
 			sut = nil;
-			SAFE_CGIMAGE_RELEASE(testImageRef)
-		});
-		afterAll(^{
-			SAFE_CGIMAGE_RELEASE(imageRef)
 		});
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
@@ -68,89 +69,55 @@ describe(@"MMCGImageSourceDecoder", ^{
 		it(@"should conform to MMImageDecoderProtocol", ^{
 			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
 		});
-		it(@"should respond to newCGImageFromItem:", ^{
-			[[sut should] respondToSelector:@selector(newCGImageFromItem:)];
+		it(@"should respond to initWithItem:maxPixelSize:", ^{
+			[[sut should] respondToSelector:@selector(initWithItem:maxPixelSize:)];
 		});
-		it(@"should respond to imageFromItem:", ^{
-			[[sut should] respondToSelector:@selector(imageFromItem:)];
+		it(@"should respond to CGImage", ^{
+			[[sut should] respondToSelector:@selector(CGImage)];
 		});
-		context(@"maxPixelSize", ^{
-			it(@"should have a maxPixelSize of zero", ^{
-				[[theValue(sut.maxPixelSize) should] beZero];
-			});
-			it(@"should set a positive size", ^{
-				sut.maxPixelSize = 100;
-				[[theValue(sut.maxPixelSize) should] equal:theValue(100)];
-			});
+		it(@"should respond to image", ^{
+			[[sut should] respondToSelector:@selector(image)];
 		});
-		context(@"newCGImageFromItem:", ^{
-			context(@"when created with NSURL and non-zero size", ^{
-				beforeAll(^{
-					sut.maxPixelSize = 100;
-					imageRef = [sut newCGImageFromItem:(__bridge id)imageSource];
-				});
-				afterAll(^{
-					SAFE_CGIMAGE_RELEASE(imageRef)
-				});
-				it(@"should load an image", ^{
-					[[theValue(imageRef != NULL) should] beTrue];
-				});
-				it(@"should have a width less or equal 100", ^{
-					[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-				});
-				it(@"should have a height less or equal 100", ^{
-					[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-				});
+		context(NSStringFromSelector(@selector(CGImage)), ^{
+			beforeAll(^{
+				imageRef = sut.CGImage;
 			});
-			context(@"when asking for an image with an invalid item", ^{
-				it(@"should not return an image for nil", ^{
-					testImageRef = [sut newCGImageFromItem:nil];
-					[[theValue(testImageRef == NULL) should] beTrue];
-				});
-				it(@"should not return an image for an item from wrong type", ^{
-					testImageRef = [sut newCGImageFromItem:@"Test"];
-					[[theValue(testImageRef == NULL) should] beTrue];
-				});
+			afterAll(^{
+				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
-			context(@"when asking for an image with zero image size", ^{
-				beforeAll(^{
-					sut.maxPixelSize = 0;
-					imageRef = [sut newCGImageFromItem:(__bridge id)imageSource];
-				});
-				afterAll(^{
-					SAFE_CGIMAGE_RELEASE(imageRef)
-				});
-				it(@"should return an image", ^{
-					[[theValue(imageRef != NULL) should] beTrue];
-				});
+			it(@"should load an image", ^{
+				[[theValue(imageRef != NULL) should] beTrue];
+			});
+			it(@"should have a width less or equal 100", ^{
+				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+			});
+			it(@"should have a height less or equal 100", ^{
+				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
 			});
 		});
-		context(@"imageFromItem:", ^{
-			context(@"creating an image from a CGImageSourceRef", ^{
-				__block NSImage *image = nil;
-				
-				beforeAll(^{
-					image = [sut imageFromItem:(__bridge id)imageSource];
-				});
-				afterAll(^{
-					image = nil;
-				});
-				it(@"should return an image", ^{
-					[[image shouldNot] beNil];
-				});
-				it(@"should return an NSImage", ^{
-					[[image should] beKindOfClass:[NSImage class]];
-				});
+		context(NSStringFromSelector(@selector(image)), ^{
+			it(@"should return an image", ^{
+				[[sut.image shouldNot] beNil];
 			});
-			context(@"when asking for an image with an invalid item", ^{
-				it(@"should not return an image for nil", ^{
-					[[[sut imageFromItem:nil] should] beNil];
-				});
-				it(@"should not return an image for an item from wrong type", ^{
-					[[[sut imageFromItem:@"Test"] should] beNil];
-				});
+			it(@"should return an NSImage", ^{
+				[[sut.image should] beKindOfClass:[NSImage class]];
 			});
 		});
+	});
+	it(@"should raise an NSInternalInconsistencyException when created with designated initalizer from an nil item", ^{
+		[[theBlock(^{
+			sut = [[MMCGImageSourceDecoder alloc] initWithItem:nil maxPixelSize:expectedPixelSize];
+		}) should] raiseWithName:NSInternalInconsistencyException];
+	});
+	it(@"should raise an NSInternalInconsistencyException when created with designated initalizer from an nil item", ^{
+		[[theBlock(^{
+			sut = [[MMCGImageSourceDecoder alloc] initWithItem:@"test" maxPixelSize:expectedPixelSize];
+		}) should] raiseWithName:NSInternalInconsistencyException];
+	});
+	it(@"should raise an NSInternalInconsistencyException when created with designated initalizer with a valid item but a zero maxPixelSize", ^{
+		[[theBlock(^{
+			sut = [[MMCGImageSourceDecoder alloc] initWithItem:(__bridge id)imageSource maxPixelSize:0];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
 });
 

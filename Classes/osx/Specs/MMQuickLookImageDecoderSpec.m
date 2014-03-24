@@ -36,54 +36,62 @@
 SPEC_BEGIN(MMQuickLookImageDecoderSpec)
 
 describe(@"MMQuickLookImageDecoder", ^{
-	const NSUInteger desiredSize = 50;
 	NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-	NSString *testImageString = [testImageURL path];
+	NSString *testImagePath = [testImageURL path];
 	__block MMQuickLookImageDecoder *sut = nil;
 	__block CGImageRef imageRef = NULL;
 	__block NSImage *image = nil;
+	const NSUInteger expectedImageSize = 100;
 
-	beforeEach(^{
-		sut = [[MMQuickLookImageDecoder alloc] init];
-	});
-	afterEach(^{
-		sut = nil;
-	});
 	afterAll(^{
 		SAFE_CGIMAGE_RELEASE(imageRef)
 		image = nil;
 	});
-	it(@"should exist", ^{
-		[[sut shouldNot] beNil];
+	
+	it(@"should throw an NSInternalInconsistencyException when not created with designated initalizer", ^{
+		[[theBlock(^{
+			sut = [[MMQuickLookImageDecoder alloc] init];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	it(@"should conform to MMImageDecoderProtocol", ^{
-		[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
+	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a nil item", ^{
+		[[theBlock(^{
+			sut = [[MMQuickLookImageDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	it(@"should respond to newCGImageFromItem", ^{
-		[[sut should] respondToSelector:@selector(newCGImageFromItem:)];
+	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a valid item with a zero maxiumum pixel size", ^{
+		[[theBlock(^{
+			sut = [[MMQuickLookImageDecoder alloc] initWithItem:testImageURL maxPixelSize:0];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	it(@"should respond to imageFromItem:", ^{
-		[[sut should] respondToSelector:@selector(imageFromItem:)];
+	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from an invalid item", ^{
+		[[theBlock(^{
+			sut = [[MMQuickLookImageDecoder alloc] initWithItem:[NSColor blueColor] maxPixelSize:expectedImageSize];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	context(@"maxPixelSize", ^{
-		it(@"should have a maxPixelSize of zero", ^{
-			[[theValue(sut.maxPixelSize) should] beZero];
+	
+	context(@"when created with designated initializer from an url and a valid image size", ^{
+		beforeEach(^{
+			sut = [[MMQuickLookImageDecoder alloc] initWithItem:testImageURL maxPixelSize:expectedImageSize];
 		});
-		it(@"should set a size", ^{
-			sut.maxPixelSize = 100;
-			[[theValue(sut.maxPixelSize) should] equal:theValue(100)];
+		afterEach(^{
+			sut = nil;
 		});
-	});
-	context(@"newCGImageFromItem:", ^{
-		it(@"should raise when invoked with nil item", ^{
-			[[theBlock(^{
-				imageRef = [sut newCGImageFromItem:nil];
-			}) should] raiseWithName:NSInternalInconsistencyException];
+
+		it(@"should exist", ^{
+			[[sut shouldNot] beNil];
 		});
-		context(@"when created with NSURL and maxPixelSize of 100", ^{
+		it(@"should conform to MMImageDecoderProtocol", ^{
+			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
+		});
+		it(@"should respond to CGImage", ^{
+			[[sut should] respondToSelector:@selector(CGImage)];
+		});
+		it(@"should respond to image", ^{
+			[[sut should] respondToSelector:@selector(image)];
+		});
+		context(NSStringFromSelector(@selector(CGImage)), ^{
 			beforeAll(^{
-				sut.maxPixelSize = desiredSize;
-				imageRef = [sut newCGImageFromItem:testImageURL];
+				imageRef = sut.CGImage;
 			});
 			afterAll(^{
 				SAFE_CGIMAGE_RELEASE(imageRef)
@@ -98,58 +106,53 @@ describe(@"MMQuickLookImageDecoder", ^{
 				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
 			});
 		});
-		context(@"when asking for an image with zero pixel size", ^{
+		context(NSStringFromSelector(@selector(image)), ^{
+			it(@"should load an image", ^{
+				[[sut.image shouldNot] beNil];
+			});
+		});
+	});
+
+	context(@"when created with designated initializer from a file path and a valid image size", ^{
+		beforeEach(^{
+			sut = [[MMQuickLookImageDecoder alloc] initWithItem:testImagePath maxPixelSize:expectedImageSize];
+		});
+		afterEach(^{
+			sut = nil;
+		});
+
+		it(@"should exist", ^{
+			[[sut shouldNot] beNil];
+		});
+		it(@"should conform to MMImageDecoderProtocol", ^{
+			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
+		});
+		it(@"should respond to CGImage", ^{
+			[[sut should] respondToSelector:@selector(CGImage)];
+		});
+		it(@"should respond to image", ^{
+			[[sut should] respondToSelector:@selector(image)];
+		});
+		context(NSStringFromSelector(@selector(CGImage)), ^{
 			beforeAll(^{
-				sut.maxPixelSize = 0;
-				imageRef = [sut newCGImageFromItem:testImageURL];
+				imageRef = sut.CGImage;
 			});
 			afterAll(^{
 				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
-			it(@"should return an image", ^{
+			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
 			});
-			it(@"should have a width less or equal than 4000 points", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(4000)];
+			it(@"should have a width less or equal 100", ^{
+				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
 			});
-			it(@"should have a height less or equal than 4000 points", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(4000)];
-			});
-		});
-		context(@"when asking for an image from a string item", ^{
-			beforeEach(^{
-				sut.maxPixelSize = desiredSize;
-				imageRef = [sut newCGImageFromItem:testImageString];
-			});
-			it(@"should return an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
+			it(@"should have a height less or equal 100", ^{
+				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
 			});
 		});
-	});
-	context(@"imageFromItem:", ^{
-		context(@"when created with NSURL", ^{
-			beforeAll(^{
-				image = [sut imageFromItem:testImageURL];
-			});
+		context(NSStringFromSelector(@selector(image)), ^{
 			it(@"should load an image", ^{
-				[[image shouldNot] beNil];
-			});
-			afterAll(^{
-				image = nil;
-			});
-		});
-		context(@"when created with NSString", ^{
-			beforeAll(^{
-				image = [sut imageFromItem:testImageString];
-			});
-			afterAll(^{
-				image = nil;
-			});
-			it(@"should load an image", ^{
-				[[image shouldNot] beNil];
-			});
-			it(@"should return an NSImage", ^{
-				[[image should] beKindOfClass:[NSImage class]];
+				[[sut.image shouldNot] beNil];
 			});
 		});
 	});

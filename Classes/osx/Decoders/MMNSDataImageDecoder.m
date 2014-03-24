@@ -8,16 +8,37 @@
 
 #import "MMNSDataImageDecoder.h"
 
+@interface MMNSDataImageDecoder ()
+
+@property (nonatomic, strong) id item;
+@property NSUInteger maxPixelSize;
+
+@end
+
 @implementation MMNSDataImageDecoder
 
-@synthesize maxPixelSize;
-
-- (CGImageRef)newCGImageFromItem:(id)anItem
+- (instancetype)init
 {
-	if (![ anItem isKindOfClass:[NSData class]] ) {
-		return NULL;
+    return [self initWithItem:nil maxPixelSize:0];
+}
+
+- (id<MMImageDecoderProtocol>)initWithItem:(id)anItem maxPixelSize:(NSUInteger)maxPixelSize
+{
+	NSParameterAssert(anItem);
+	NSParameterAssert(maxPixelSize > 0);
+	NSParameterAssert([anItem isKindOfClass:[NSData class]]);
+
+	self = [super init];
+	if (self) {
+		_item = anItem;
+		_maxPixelSize = maxPixelSize;
 	}
-	CFDataRef dataRef = (__bridge CFDataRef)(anItem);
+	return self;
+}
+
+- (CGImageRef)CGImage
+{
+	CFDataRef dataRef = (__bridge CFDataRef)(self.item);
 
 	NSDictionary *options = self.maxPixelSize ? @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
 												  (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(self.maxPixelSize)} :
@@ -33,12 +54,9 @@
 	return image;
 }
 
-- (NSImage*)imageFromItem:(id)anItem
+- (NSImage*)image
 {
-	if ([anItem isKindOfClass:[NSData class]]) {
-		return [[NSImage alloc] initWithData:anItem];
-	}
-	return nil;
+	return [[NSImage alloc] initWithData:self.item];
 }
 
 @end

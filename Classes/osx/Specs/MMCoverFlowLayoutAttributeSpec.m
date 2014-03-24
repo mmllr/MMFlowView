@@ -29,9 +29,10 @@
 //  Copyright 2013 www.isnotnil.com. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "Kiwi.h"
 #import "MMCoverFLowLayoutAttributes.h"
-#import <QuartzCore/QuartzCore.h>
 
 @interface TestingMMCoverFlowLayoutAttributesSubclass : MMCoverFlowLayoutAttributes
 

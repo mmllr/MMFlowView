@@ -40,16 +40,32 @@
 #import "MMCoverFlowLayout.h"
 #import "MMScrollBarLayer.h"
 
+#import "MMCGImageSourceDecoder.h"
+#import "MMNSBitmapImageRepDecoder.h"
+#import "MMNSDataImageDecoder.h"
+#import "MMNSImageDecoder.h"
+#import "MMPDFPageDecoder.h"
+#import "MMQuickLookImageDecoder.h"
+
 SPEC_BEGIN(MMFlowViewSpec)
 
 describe(@"MMFlowView", ^{
 	context(@"a new instance", ^{
 		__block MMFlowView *sut = nil;
 		__block NSArray *mockedItems = nil;
+		__block CGImageRef testImageRef = NULL;
+		__block NSURL *testImageURL = nil;
+
 		const NSInteger numberOfItems = 10;
 		const NSRect initialFrame = NSMakeRect(0, 0, 400, 300);
 
 		beforeAll(^{
+			testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+			
+			testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL
+																											  context:NULL
+																												hints:nil]);
+
 			NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:numberOfItems];
 			for ( NSInteger i = 0; i < numberOfItems; ++i) {
 				NSString *titleString = [NSString stringWithFormat:@"%ld", (long)i];
@@ -65,6 +81,8 @@ describe(@"MMFlowView", ^{
 			mockedItems = [itemArray copy];
 		});
 		afterAll(^{
+			testImageURL = nil;
+			SAFE_CGIMAGE_RELEASE(testImageRef);
 			mockedItems = nil;
 		});
 		beforeEach(^{
@@ -226,11 +244,72 @@ describe(@"MMFlowView", ^{
 			it(@"should be a MMFlowViewImageFactory class", ^{
 				[[sut.imageFactory should] beKindOfClass:[MMFlowViewImageFactory class]];
 			});
-			it(@"should have a cache", ^{
-				[[(id)sut.imageFactory.cache shouldNot] beNil];
-			});
-			it(@"should have the flowviews image cache", ^{
-				[[(id)sut.imageFactory.cache should] equal:sut.imageCache];
+			context(@"decoders", ^{
+				__block CGImageSourceRef imageSource = NULL;
+				__block NSDictionary *testRepresentations = nil;
+				__block CGPDFPageRef testPDFPageRef = NULL;
+
+				NSDictionary *expectedRepresentationMappings = @{
+														 kMMFlowViewURLRepresentationType: [MMQuickLookImageDecoder class],
+														 //kMMFlowViewCGImageRepresentationType: [MMNSImageDecoder class],
+														 kMMFlowViewPDFPageRepresentationType: [MMPDFPageDecoder class],
+														 kMMFlowViewPathRepresentationType: [MMQuickLookImageDecoder class],
+														 kMMFlowViewNSImageRepresentationType: [MMNSImageDecoder class],
+														 kMMFlowViewCGImageSourceRepresentationType: [MMCGImageSourceDecoder class],
+														 kMMFlowViewNSDataRepresentationType: [MMNSDataImageDecoder class],
+														 kMMFlowViewNSBitmapRepresentationType: [MMNSBitmapImageRepDecoder class],
+														 //kMMFlowViewQTMovieRepresentationType: [MMQuickLookImageDecoder class],
+														 kMMFlowViewQTMoviePathRepresentationType: [MMQuickLookImageDecoder class],
+														// kMMFlowViewQCCompositionRepresentationType: [MMQuickLookImageDecoder class],
+														 kMMFlowViewQCCompositionPathRepresentationType: [MMQuickLookImageDecoder class],
+														 kMMFlowViewQuickLookPathRepresentationType: [MMQuickLookImageDecoder class]
+														 };
+
+				beforeAll(^{
+					imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)(testImageURL), NULL);
+
+					PDFDocument *document = [[PDFDocument alloc] initWithURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"Test" withExtension:@"pdf"]];
+					testPDFPageRef = CGPDFPageRetain([[document pageAtIndex:0] pageRef]);
+
+					testRepresentations = @{
+											kMMFlowViewURLRepresentationType: testImageURL,
+											//kMMFlowViewCGImageRepresentationType: (__bridge id)testImageRef,
+											kMMFlowViewPDFPageRepresentationType: (__bridge id)testPDFPageRef,
+											kMMFlowViewPathRepresentationType: [testImageURL absoluteString],
+											kMMFlowViewNSImageRepresentationType: [NSImage nullMock],
+											kMMFlowViewCGImageSourceRepresentationType: (__bridge id)imageSource,
+											kMMFlowViewNSDataRepresentationType: [NSData nullMock],
+											kMMFlowViewNSBitmapRepresentationType: [NSBitmapImageRep nullMock],
+											//kMMFlowViewQTMovieRepresentationType: [QTMovie nullMock],
+											kMMFlowViewQTMoviePathRepresentationType: testImageURL,
+											//kMMFlowViewQCCompositionRepresentationType: [QCComposition nullMock],
+											kMMFlowViewQCCompositionPathRepresentationType: testImageURL,
+											kMMFlowViewQuickLookPathRepresentationType: testImageURL
+											};
+				});
+				afterAll(^{
+					if (imageSource) {
+						CFRelease(imageSource);
+						imageSource = NULL;
+					}
+					if (testPDFPageRef) {
+						CGPDFPageRelease(testPDFPageRef);
+						testPDFPageRef = NULL;
+					}
+					testRepresentations = nil;
+				});
+								
+				it(@"should be able to decode the expected types", ^{
+					[expectedRepresentationMappings enumerateKeysAndObjectsUsingBlock:^(NSString *type, Class decoderClass, BOOL *stop) {
+						[[theValue([sut.imageFactory canDecodeRepresentationType:type]) should] beYes];
+					}];
+				});
+				it(@"should provide a decoder for the expected types", ^{
+					[testRepresentations enumerateKeysAndObjectsUsingBlock:^(NSString *representationType, id representation, BOOL *stop) {
+						[[(id)[sut.imageFactory decoderforItem:representation
+										withRepresentationType:representationType] shouldNot] beNil];
+					}];
+				});
 			});
 		});
 		context(@"live resizing", ^{
@@ -529,6 +608,11 @@ describe(@"MMFlowView", ^{
 			__block id datasourceMock = nil;
 
 			beforeEach(^{
+				id imageDecoderMock = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
+				[imageDecoderMock stub:@selector(initWithItem:maxPixelSize:) andReturn:imageDecoderMock];
+				[imageDecoderMock stub:@selector(CGImage) andReturn:(__bridge id)(testImageRef)];
+				[[MMNSImageDecoder class] stub:@selector(alloc) andReturn:imageDecoderMock];
+
 				datasourceMock = [KWMock mockForProtocol:@protocol(MMFlowViewDataSource)];
 				[mockedItems enumerateObjectsUsingBlock:^(id itemMock, NSUInteger idx, BOOL *stop) {
 					[[datasourceMock stubAndReturn:itemMock] flowView:sut itemAtIndex:idx];

@@ -39,6 +39,7 @@ describe(@"MMNSDataImageDecoder", ^{
 	__block NSData *imageData = nil;
 	__block MMNSDataImageDecoder *sut = nil;
 	__block CGImageRef imageRef = NULL;
+	const NSUInteger expectedImageSize = 100;
 
 	beforeAll(^{
 		imageData = [NSData dataWithContentsOfURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"]];
@@ -46,104 +47,80 @@ describe(@"MMNSDataImageDecoder", ^{
 	afterAll(^{
 		imageData = nil;
 	});
-	beforeEach(^{
-		sut = [[MMNSDataImageDecoder alloc] init];
+	
+	it(@"should throw an NSInternalInconsistencyException when not created with designated initalizer", ^{
+		[[theBlock(^{
+			sut = [[MMNSDataImageDecoder alloc] init];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	afterEach(^{
-		sut = nil;
+	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a nil item", ^{
+		[[theBlock(^{
+			sut = [[MMNSDataImageDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	afterAll(^{
-		SAFE_CGIMAGE_RELEASE(imageRef)
+	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a valid item with a zero maxiumum pixel size", ^{
+		[[theBlock(^{
+			sut = [[MMNSDataImageDecoder alloc] initWithItem:imageData maxPixelSize:0];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	it(@"should exist", ^{
-		[[sut shouldNot] beNil];
+	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from an invalid item", ^{
+		[[theBlock(^{
+			sut = [[MMNSDataImageDecoder alloc] initWithItem:@"Test" maxPixelSize:expectedImageSize];
+		}) should] raiseWithName:NSInternalInconsistencyException];
 	});
-	it(@"should conform to MMImageDecoderProtocol", ^{
-		[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
-	});
-	it(@"should respond to newCGImageFromItem:", ^{
-		[[sut should] respondToSelector:@selector(newCGImageFromItem:)];
-	});
-	it(@"should respond to imageFromItem:", ^{
-		[[sut should] respondToSelector:@selector(imageFromItem:)];
-	});
-	context(@"maxPixelSize", ^{
-		it(@"should have a maxPixelSize of zero", ^{
-			[[theValue(sut.maxPixelSize) should] beZero];
+
+	context(@"when created with designated initializer from a valid item and image size", ^{
+		beforeEach(^{
+			sut = [[MMNSDataImageDecoder alloc] initWithItem:imageData maxPixelSize:expectedImageSize];
 		});
-		it(@"should set a size", ^{
-			sut.maxPixelSize = 100;
-			[[theValue(sut.maxPixelSize) should] equal:theValue(100)];
+		afterEach(^{
+			sut = nil;
 		});
-	});
-	context(@"newCGImageFromItem:", ^{
-		context(@"with maxPixelSize of 100", ^{
-			beforeEach(^{
-				sut.maxPixelSize = 100;
-			});
-			context(@"when created from NSData", ^{
-				beforeAll(^{
-					imageRef = [sut newCGImageFromItem:imageData];
-				});
-				afterAll(^{
-					SAFE_CGIMAGE_RELEASE(imageRef)
-				});
-				it(@"should load an image", ^{
-					[[theValue(imageRef != NULL) should] beTrue];
-				});
-				it(@"should have a width less or equal 100", ^{
-					[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-				});
-				it(@"should have a height less or equal 100", ^{
-					[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-				});
-			});
-			context(@"when trying to create an image from non NSData", ^{
-				it(@"should return NULL", ^{
-					imageRef = [sut newCGImageFromItem:@"a string, not a NSData instance"];
-					[[theValue(imageRef==NULL) should] beTrue];
-				});
-			});
+
+		it(@"should exist", ^{
+			[[sut shouldNot] beNil];
 		});
-		context(@"when asking for an image with zero image size", ^{
+		it(@"should conform to MMImageDecoderProtocol", ^{
+			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
+		});
+		it(@"should respond to initWithItem:maxPixelSize:", ^{
+			[[sut should] respondToSelector:@selector(initWithItem:maxPixelSize:)];
+		});
+		it(@"should respond to CGImage", ^{
+			[[sut should] respondToSelector:@selector(CGImage)];
+		});
+		it(@"should respond to image", ^{
+			[[sut should] respondToSelector:@selector(image)];
+		});
+
+		context(NSStringFromSelector(@selector(CGImage)), ^{
 			beforeAll(^{
-				sut.maxPixelSize = 0;
-				imageRef = [sut newCGImageFromItem:imageData];
+				imageRef = sut.CGImage;
 			});
 			afterAll(^{
 				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
-			it(@"should return an image", ^{
+			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
 			});
+			it(@"should have a width less or equal 100", ^{
+				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+			});
+			it(@"should have a height less or equal 100", ^{
+				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
+			});
 		});
-	});
-	context(@"imageFromItem:", ^{
-		__block NSImage *image = nil;
 
-		context(@"loading from an NSData object", ^{
-			beforeAll(^{
-				image = [sut imageFromItem:imageData];
-			});
-			afterAll(^{
-				image = nil;
-			});
+		context(NSStringFromSelector(@selector(image)), ^{
 			it(@"should load an image", ^{
-				[[image shouldNot] beNil];
+				[[sut.image shouldNot] beNil];
 			});
 			it(@"should return an NSImage", ^{
-				[[image should] beKindOfClass:[NSImage class]];
-			});
-		});
-		context(@"when asking for an image with an invalid item", ^{
-			it(@"should not return an image for nil", ^{
-				[[[sut imageFromItem:nil] should] beNil];
-			});
-			it(@"should not return an image for an item from wrong type", ^{
-				[[[sut imageFromItem:@"Test"] should] beNil];
+				[[sut.image should] beKindOfClass:[NSImage class]];
 			});
 		});
 	});
+
 });
 
 SPEC_END

@@ -70,8 +70,7 @@ describe(@"MMFlowView+QLPreviewPanelDataSource", ^{
 													 kMMFlowViewPathRepresentationType,
 													 kMMFlowViewQTMoviePathRepresentationType,
 													 kMMFlowViewQCCompositionPathRepresentationType,
-													 kMMFlowViewQuickLookPathRepresentationType,
-													 kMMFlowViewIconRefPathRepresentationType];
+													 kMMFlowViewQuickLookPathRepresentationType];
 					[mockedItem stub:@selector(imageItemRepresentation) andReturn:testImageURL];
 				});
  

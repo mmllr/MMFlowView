@@ -64,8 +64,7 @@ describe(@"MMFlowView+QLPreviewPanelController", ^{
 												 kMMFlowViewPathRepresentationType,
 												 kMMFlowViewQTMoviePathRepresentationType,
 												 kMMFlowViewQCCompositionPathRepresentationType,
-												 kMMFlowViewQuickLookPathRepresentationType,
-												 kMMFlowViewIconRefPathRepresentationType];
+												 kMMFlowViewQuickLookPathRepresentationType];
 			});
 			it(@"should accept preview panel control", ^{
 				for ( NSString *representationType in supportedRepresentationTypes ) {
@@ -83,7 +82,6 @@ describe(@"MMFlowView+QLPreviewPanelController", ^{
 												 kMMFlowViewCGImageSourceRepresentationType,
 												 kMMFlowViewNSBitmapRepresentationType,
 												 kMMFlowViewQCCompositionRepresentationType,
-												   kMMFlowViewIconRefRepresentationType,
 												   kMMFlowViewNSDataRepresentationType,
 												   kMMFlowViewQTMovieRepresentationType];
 			});
