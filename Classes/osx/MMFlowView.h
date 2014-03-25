@@ -30,8 +30,6 @@
 #import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
 
-@class MMFlowView;
-
 /**
  The MMFlowViewItem protocol which the image items need to implement if datasource is used or no respective keypaths in bindings are set.
  */
@@ -76,120 +74,8 @@
 
 @end
 
-
-/**
- The MMFlowViewDataSource protocol declares methods that an MMFLowView uses to access the contents of its datasource object.
- */
-@protocol MMFlowViewDataSource <NSObject>
-
-/** @name Getting Values */
-
-/**
- Returns the number of images in the flow view. (required)
- 
- @param aFlowView The flow view that sent the message.
- @return The number of images in `aFlowView`
- */
-- (NSUInteger)numberOfItemsInFlowView:(MMFlowView*)aFlowView;
-
-/**
- Returns an object for the item in a flow view that corresponds to the specified index. (required)
-
- The returned object must implement the required methods of the MMFlowViewItem protocol
-
- @param aFlowView The flow view that sent the message.
- @param anIndex   The zero based item index in aFlowView
- @return An item in the data source which must conform to the MMFLowViewItem protocol.
- @warning This method is mandatory unless your application is using Cocoa bindings for providing data to the flow view.
- */
-- (id<MMFlowViewItem>)flowView:(MMFlowView*)aFlowView itemAtIndex:(NSUInteger)anIndex;
-
-/** @name Drag and Drop */
-
-@optional
-/**
- Invoked the flow view when the mouse button is released over the specified index if the datasource validated the drop. (optional)
- 
- The datasource should read the data from the dragging pasteboard provided through the NSDraggingInfo object
- @param aFlowView The flow view that sent the message.
- @param info      An object that contains more information about this dragging operation.
- @param anIndex   The index of the proposed target image item.
-
- @return YES if the drop operation was successful, otherwise NO.
- */
-- (BOOL)flowView:(MMFlowView*)aFlowView acceptDrop:(id < NSDraggingInfo >)info atIndex:(NSUInteger)anIndex;
-
-/**
- Used by `aFlowView` to determine a valid drop target. (optional)
-
- @param aFlowView The flow view that sent the message.
- @param info      An object that contains more information about this dragging operation.
- @param anIndex   The index of the proposed target image item.
- @return The dragging operation the data source will perform.
- */
-- (NSDragOperation)flowView:(MMFlowView*)aFlowView validateDrop:(id < NSDraggingInfo >)info proposedIndex:(NSUInteger)anIndex;
-
-/**
- Returns a Boolean value that indicates whether a drag operation is allowed. (optional)
- 
- Invoked by the flow view when drag should begin. Return NO to abort the drag, otherwise write the data to the pasteboard.
- @param aFlowViev The flow view that sent the message.
- @param anIndex   The index of the image item.
- @param pboard    The pasteboard to which to write the drag data.
-
- @return YES if the drag operation is allowed, NO otherwise.
- */
-- (BOOL)flowView:(MMFlowView*)aFlowViev writeItemAtIndex:(NSUInteger)anIndex toPasteboard:(NSPasteboard *)pboard;
-
-/**
- Indicates that the specified index should be removed after a drop to the trash.
-
- @param aFlowView The flow view that sent the message.
- @param anIndex   The index of the item to be removed.
- */
-- (void)flowView:(MMFlowView*)aFlowView removeItemAtIndex:(NSUInteger)anIndex;
-
-@end
-
-/**
- The MMFlowViewDelegate protocol defines the optional methods implemented by delegates of MMFlowView objects. Using a delegate allows you to customize a flow view’s behavior without creating a flow view subclass.
-  */
-@protocol MMFlowViewDelegate <NSObject>
-@optional
-/**
- Tells the delegate that the mouse button was double clicked on the specified item.
-
- @param aFlowView The flow view that sent the message.
- @param anIndex   The index of the image item which was double clicked.
- */
-- (void)flowView:(MMFlowView *)aFlowView itemWasDoubleClickedAtIndex:(NSUInteger)anIndex;
-
-/**
- Tells the delegate that a right click was performed on a specified item.
- 
- @param aFlowView The flow view that sent the message.
- @param anIndex   The index of the image item which was right clicked. This is always the selected item.
- @param theEvent  The NSEvent from the click. Use it for example to ask which modifier keys where additionally pressed.
- */
-- (void)flowView:(MMFlowView *)aFlowView itemWasRightClickedAtIndex:(NSUInteger)anIndex withEvent:(NSEvent *)theEvent;
-
-/**
- Tells the delegate that the flow view’s selection has changed.
- @param aFlowView The flow view that sent the message.
- */
-- (void)flowViewSelectionDidChange:(MMFlowView *)aFlowView;
-
-/**
- Declares the types of operations the flow view allows to be performed.
- 
- @param aFlowView The flow view that sent the message.
- @param session   The dragging session.
- @param context   The dragging context. @see NSDraggingContext for the supported values.
- @return The appropriate dragging operation as defined in NSDraggingContext.
- */
-- (NSDragOperation)flowView:(MMFlowView *)aFlowView draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
-@end
-
+@protocol MMFlowViewDataSource;
+@protocol MMFlowViewDelegate;
 
 /**
  The MMFlowView us a view for displaying images with the so called "CoverFlow" effect, as in the Finder.
@@ -401,6 +287,120 @@
 - (void)reloadContent;
 
 @end
+
+/**
+ The MMFlowViewDataSource protocol declares methods that an MMFLowView uses to access the contents of its datasource object.
+ */
+@protocol MMFlowViewDataSource <NSObject>
+
+/** @name Getting Values */
+
+/**
+ Returns the number of images in the flow view. (required)
+ 
+ @param aFlowView The flow view that sent the message.
+ @return The number of images in `aFlowView`
+ */
+- (NSUInteger)numberOfItemsInFlowView:(MMFlowView*)aFlowView;
+
+/**
+ Returns an object for the item in a flow view that corresponds to the specified index. (required)
+ 
+ The returned object must implement the required methods of the MMFlowViewItem protocol
+ 
+ @param aFlowView The flow view that sent the message.
+ @param anIndex   The zero based item index in aFlowView
+ @return An item in the data source which must conform to the MMFLowViewItem protocol.
+ @warning This method is mandatory unless your application is using Cocoa bindings for providing data to the flow view.
+ */
+- (id<MMFlowViewItem>)flowView:(MMFlowView*)aFlowView itemAtIndex:(NSUInteger)anIndex;
+
+/** @name Drag and Drop */
+
+@optional
+/**
+ Invoked the flow view when the mouse button is released over the specified index if the datasource validated the drop. (optional)
+ 
+ The datasource should read the data from the dragging pasteboard provided through the NSDraggingInfo object
+ @param aFlowView The flow view that sent the message.
+ @param info      An object that contains more information about this dragging operation.
+ @param anIndex   The index of the proposed target image item.
+ 
+ @return YES if the drop operation was successful, otherwise NO.
+ */
+- (BOOL)flowView:(MMFlowView*)aFlowView acceptDrop:(id < NSDraggingInfo >)info atIndex:(NSUInteger)anIndex;
+
+/**
+ Used by `aFlowView` to determine a valid drop target. (optional)
+ 
+ @param aFlowView The flow view that sent the message.
+ @param info      An object that contains more information about this dragging operation.
+ @param anIndex   The index of the proposed target image item.
+ @return The dragging operation the data source will perform.
+ */
+- (NSDragOperation)flowView:(MMFlowView*)aFlowView validateDrop:(id < NSDraggingInfo >)info proposedIndex:(NSUInteger)anIndex;
+
+/**
+ Returns a Boolean value that indicates whether a drag operation is allowed. (optional)
+ 
+ Invoked by the flow view when drag should begin. Return NO to abort the drag, otherwise write the data to the pasteboard.
+ @param aFlowViev The flow view that sent the message.
+ @param anIndex   The index of the image item.
+ @param pboard    The pasteboard to which to write the drag data.
+ 
+ @return YES if the drag operation is allowed, NO otherwise.
+ */
+- (BOOL)flowView:(MMFlowView*)aFlowViev writeItemAtIndex:(NSUInteger)anIndex toPasteboard:(NSPasteboard *)pboard;
+
+/**
+ Indicates that the specified index should be removed after a drop to the trash.
+ 
+ @param aFlowView The flow view that sent the message.
+ @param anIndex   The index of the item to be removed.
+ */
+- (void)flowView:(MMFlowView*)aFlowView removeItemAtIndex:(NSUInteger)anIndex;
+
+@end
+
+/**
+ The MMFlowViewDelegate protocol defines the optional methods implemented by delegates of MMFlowView objects. Using a delegate allows you to customize a flow view’s behavior without creating a flow view subclass.
+ */
+@protocol MMFlowViewDelegate <NSObject>
+@optional
+/**
+ Tells the delegate that the mouse button was double clicked on the specified item.
+ 
+ @param aFlowView The flow view that sent the message.
+ @param anIndex   The index of the image item which was double clicked.
+ */
+- (void)flowView:(MMFlowView *)aFlowView itemWasDoubleClickedAtIndex:(NSUInteger)anIndex;
+
+/**
+ Tells the delegate that a right click was performed on a specified item.
+ 
+ @param aFlowView The flow view that sent the message.
+ @param anIndex   The index of the image item which was right clicked. This is always the selected item.
+ @param theEvent  The NSEvent from the click. Use it for example to ask which modifier keys where additionally pressed.
+ */
+- (void)flowView:(MMFlowView *)aFlowView itemWasRightClickedAtIndex:(NSUInteger)anIndex withEvent:(NSEvent *)theEvent;
+
+/**
+ Tells the delegate that the flow view’s selection has changed.
+ @param aFlowView The flow view that sent the message.
+ */
+- (void)flowViewSelectionDidChange:(MMFlowView *)aFlowView;
+
+/**
+ Declares the types of operations the flow view allows to be performed.
+ 
+ @param aFlowView The flow view that sent the message.
+ @param session   The dragging session.
+ @param context   The dragging context. @see NSDraggingContext for the supported values.
+ @return The appropriate dragging operation as defined in NSDraggingContext.
+ */
+- (NSDragOperation)flowView:(MMFlowView *)aFlowView draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
+@end
+
 
 /// @name Image Representation Types
 
