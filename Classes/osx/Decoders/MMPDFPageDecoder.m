@@ -44,7 +44,7 @@
 - (CGImageRef)CGImage
 {
 	self.pdfPageRenderer.imageSize = CGSizeMake(self.maxPixelSize, self.maxPixelSize);
-	return CGImageRetain([self.pdfPageRenderer.imageRepresentation CGImage]);
+	return [self.pdfPageRenderer.imageRepresentation CGImage];
 }
 
 - (NSImage*)image
@@ -54,7 +54,6 @@
 
 	if (imageRef) {
 		image =[[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(CGImageGetWidth(imageRef), CGImageGetHeight(imageRef))];
-		CGImageRelease(imageRef);
 	}
 	return image;
 }

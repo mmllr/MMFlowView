@@ -94,12 +94,10 @@ describe(@"MMNSDataImageDecoder", ^{
 		});
 
 		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeAll(^{
+			beforeEach(^{
 				imageRef = sut.CGImage;
 			});
-			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef)
-			});
+
 			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
 			});

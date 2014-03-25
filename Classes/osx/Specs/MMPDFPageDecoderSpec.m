@@ -67,9 +67,7 @@ describe(@"MMPDFPageDecoder", ^{
 		afterEach(^{
 			sut = nil;
 		});
-		afterAll(^{
-			SAFE_CGIMAGE_RELEASE(imageRef)
-		});
+
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
 		});
@@ -86,11 +84,8 @@ describe(@"MMPDFPageDecoder", ^{
 			[[sut should] respondToSelector:@selector(image)];
 		});
 		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeAll(^{
+			beforeEach(^{
 				imageRef = sut.CGImage;
-			});
-			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
 			it(@"should return an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
@@ -129,11 +124,8 @@ describe(@"MMPDFPageDecoder", ^{
 			sut = nil;
 		});
 		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeAll(^{
+			beforeEach(^{
 				imageRef = sut.CGImage;
-			});
-			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
 			it(@"should return an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];

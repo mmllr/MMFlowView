@@ -107,7 +107,7 @@ static CGFloat const kDefaultMaxImageDimension = 100;
 
 		NSOperationQueue *callingQueue = [NSOperationQueue currentQueue];
 		[self.operationQueue addOperationWithBlock:^{
-			CGImageRef image = decoder.CGImage;
+			CGImageRef image = CGImageRetain(decoder.CGImage);
 
 			if (image) {
 				[callingQueue addOperationWithBlock:^{

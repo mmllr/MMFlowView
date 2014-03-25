@@ -27,8 +27,6 @@
 //  FlowView
 //
 //  Created by Markus Müller on 13.01.12.
-#import <Quartz/Quartz.h>
-
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMVideoOverlayLayer.h"

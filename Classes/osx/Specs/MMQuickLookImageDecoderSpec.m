@@ -44,7 +44,6 @@ describe(@"MMQuickLookImageDecoder", ^{
 	const NSUInteger expectedImageSize = 100;
 
 	afterAll(^{
-		SAFE_CGIMAGE_RELEASE(imageRef)
 		image = nil;
 	});
 	
@@ -90,12 +89,10 @@ describe(@"MMQuickLookImageDecoder", ^{
 			[[sut should] respondToSelector:@selector(image)];
 		});
 		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeAll(^{
+			beforeEach(^{
 				imageRef = sut.CGImage;
 			});
-			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef)
-			});
+
 			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
 			});
@@ -134,12 +131,10 @@ describe(@"MMQuickLookImageDecoder", ^{
 			[[sut should] respondToSelector:@selector(image)];
 		});
 		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeAll(^{
+			beforeEach(^{
 				imageRef = sut.CGImage;
 			});
-			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef)
-			});
+
 			it(@"should load an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];
 			});

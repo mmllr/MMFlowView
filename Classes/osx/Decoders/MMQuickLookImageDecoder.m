@@ -20,10 +20,8 @@ const CGFloat kDefaultMaxPixelSize = 4000;
 @end
 
 @implementation MMQuickLookImageDecoder
-
-- (instancetype)init
 {
-    return [self initWithItem:nil maxPixelSize:0];
+	CGImageRef _imageRef;
 }
 
 + (NSURL*)urlForItem:(id)anItem
@@ -38,6 +36,11 @@ const CGFloat kDefaultMaxPixelSize = 4000;
 	return nil;
 }
 
+- (instancetype)init
+{
+    return [self initWithItem:nil maxPixelSize:0];
+}
+
 - (id<MMImageDecoderProtocol>)initWithItem:(id)anItem maxPixelSize:(NSUInteger)maxPixelSize
 {
 	NSParameterAssert(anItem);
@@ -46,6 +49,7 @@ const CGFloat kDefaultMaxPixelSize = 4000;
 
 	self = [super init];
 	if (self) {
+		_imageRef = NULL;
 		NSURL *url = [[self class] urlForItem:anItem];
 		NSAssert(url != nil, @"anItem must be a url or string path");
 
@@ -55,10 +59,21 @@ const CGFloat kDefaultMaxPixelSize = 4000;
 	return self;
 }
 
+- (void)dealloc
+{
+    if (_imageRef) {
+		CGImageRelease(_imageRef);
+	}
+}
+
 - (CGImageRef)CGImage
 {
+	if (_imageRef) {
+		return _imageRef;
+	}
 	NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
-	return QLThumbnailImageCreate(NULL, (__bridge CFURLRef)self.url, self.maxPixelSize ? CGSizeMake(self.maxPixelSize, self.maxPixelSize) : CGSizeMake(kDefaultMaxPixelSize, kDefaultMaxPixelSize), (__bridge CFDictionaryRef)quickLookOptions );
+	_imageRef = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)self.url, self.maxPixelSize ? CGSizeMake(self.maxPixelSize, self.maxPixelSize) : CGSizeMake(kDefaultMaxPixelSize, kDefaultMaxPixelSize), (__bridge CFDictionaryRef)quickLookOptions );
+	return _imageRef;
 }
 
 - (NSImage*)image

@@ -16,6 +16,9 @@
 @end
 
 @implementation MMCGImageSourceDecoder
+{
+	CGImageRef _imageRef;
+}
 
 - (instancetype)init
 {
@@ -32,21 +35,33 @@
 	if (self) {
 		_item = anItem;
 		_maxPixelSize = maxPixelSize;
+		_imageRef = NULL;
 	}
 	return self;
 }
 
+- (void)dealloc
+{
+    if (_imageRef) {
+		CGImageRelease(_imageRef);
+	}
+}
+
 - (CGImageRef)CGImage
 {
+	if (_imageRef != NULL) {
+		return _imageRef;
+	}
+
 	CFStringRef imageSourceType = CGImageSourceGetType((__bridge CGImageSourceRef)(self.item));
-	CGImageRef image = NULL;
+
 	if (imageSourceType) {
 		NSDictionary *options = self.maxPixelSize ? @{(id)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
 													  (id)kCGImageSourceThumbnailMaxPixelSize: @(self.maxPixelSize)
 													  } : @{(id)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES};
-		image = CGImageSourceCreateThumbnailAtIndex((__bridge CGImageSourceRef)(self.item), 0, (__bridge CFDictionaryRef)options);
+		_imageRef = CGImageSourceCreateThumbnailAtIndex((__bridge CGImageSourceRef)(self.item), 0, (__bridge CFDictionaryRef)options);
 	}
-	return image;
+	return _imageRef;
 }
 
 - (NSImage*)image

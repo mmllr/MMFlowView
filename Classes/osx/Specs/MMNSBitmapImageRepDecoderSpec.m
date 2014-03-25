@@ -86,9 +86,6 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 			sut = nil;
 			SAFE_CGIMAGE_RELEASE(testImageRef)
 		});
-		afterAll(^{
-			SAFE_CGIMAGE_RELEASE(imageRef)
-		});
 		it(@"should exist", ^{
 			[[sut shouldNot] beNil];
 		});
@@ -103,11 +100,8 @@ describe(@"MMNSBitmapImageRepDecoder", ^{
 		});
 		
 		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeAll(^{
+			beforeEach(^{
 				imageRef = sut.CGImage;
-			});
-			afterAll(^{
-				SAFE_CGIMAGE_RELEASE(imageRef)
 			});
 			it(@"should create an image", ^{
 				[[theValue(imageRef != NULL) should] beTrue];

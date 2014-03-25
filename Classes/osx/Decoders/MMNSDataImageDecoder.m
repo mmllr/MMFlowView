@@ -16,6 +16,9 @@
 @end
 
 @implementation MMNSDataImageDecoder
+{
+	CGImageRef _imageRef;
+}
 
 - (instancetype)init
 {
@@ -30,28 +33,35 @@
 
 	self = [super init];
 	if (self) {
+		_imageRef = NULL;
 		_item = anItem;
 		_maxPixelSize = maxPixelSize;
 	}
 	return self;
 }
 
+- (void)dealloc
+{
+    if (_imageRef) {
+		CGImageRelease(_imageRef);
+	}
+}
+
 - (CGImageRef)CGImage
 {
-	CFDataRef dataRef = (__bridge CFDataRef)(self.item);
-
+	if (_imageRef) {
+		return _imageRef;
+	}
 	NSDictionary *options = self.maxPixelSize ? @{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES,
 												  (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(self.maxPixelSize)} :
 												@{(NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @YES};
 	
-	CGImageSourceRef imageSource = CGImageSourceCreateWithData(dataRef, (__bridge CFDictionaryRef)options);
-	CGImageRef image = NULL;
+	CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self.item, (__bridge CFDictionaryRef)options);
 	if (imageSource) {
-		image = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (__bridge CFDictionaryRef)options );
+		_imageRef = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (__bridge CFDictionaryRef)options );
 		CFRelease(imageSource);
-		imageSource = NULL;
 	}
-	return image;
+	return _imageRef;
 }
 
 - (NSImage*)image

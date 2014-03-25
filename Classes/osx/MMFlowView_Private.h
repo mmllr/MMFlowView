@@ -30,10 +30,6 @@
 //
 
 #import <Quartz/Quartz.h>
-#import <QTKit/QTKit.h>
-
-#import "MMFlowView.h"
-#import "MMCoverFlowLayer.h"
 
 @protocol MMFlowViewImageCache;
 
@@ -41,6 +37,7 @@
 @class MMScrollBarLayer;
 @class MMFlowViewImageFactory;
 @class MMScrollBarLayer;
+@class MMCoverFlowLayer;
 
 @interface MMFlowView ()
 

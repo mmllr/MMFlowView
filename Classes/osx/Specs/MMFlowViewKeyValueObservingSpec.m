@@ -29,11 +29,13 @@
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
+#import <objc/runtime.h>
+
 #import "Kiwi.h"
+#import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowView+NSKeyValueObserving.h"
 #import "NSArray+MMAdditions.h"
-#import <objc/runtime.h>
 
 static BOOL testingSuperInvoked = NO;
 
