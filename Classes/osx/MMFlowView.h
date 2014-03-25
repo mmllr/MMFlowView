@@ -24,7 +24,6 @@
 
 //
 //  MMFlowView.h
-//  FlowView
 //
 //  Created by Markus Müller on 13.01.12.
 
@@ -32,157 +31,6 @@
 #import <Quartz/Quartz.h>
 
 @class MMFlowView;
-
-/// @name Image Representation Types
-
-/**
- * Representation types for images
-
- @code
- kMMFlowViewURLRepresentationType
- kMMFlowViewCGImageRepresentationType
- kMMFlowViewPDFPageRepresentationType
- kMMFlowViewPathRepresentationType
- kMMFlowViewNSImageRepresentationType
- kMMFlowViewCGImageSourceRepresentationType
- kMMFlowViewNSDataRepresentationType
- kMMFlowViewNSBitmapRepresentationType
- kMMFlowViewQTMovieRepresentationType
- kMMFlowViewQTMoviePathRepresentationType
- kMMFlowViewQCCompositionRepresentationType
- kMMFlowViewQCCompositionPathRepresentationType
- kMMFlowViewQuickLookPathRepresentationType
- @endcode
-*/
-
-/**
- kMMFlowViewURLRepresentationType
-
- An NSURL object.
- */
-extern NSString * const kMMFlowViewURLRepresentationType;
-
-/**
- kMMFlowViewCGImageRepresentationType
-
- A CGImageRef object.
- */
-extern NSString * const kMMFlowViewCGImageRepresentationType;
-
-/**
- kMMFlowViewPDFPageRepresentationType
-
- A PDFPage instance or a CGPDFPageRef.
- */
-extern NSString * const kMMFlowViewPDFPageRepresentationType;
-
-/**
- kMMFlowViewPathRepresentationType
-
- A path representation (NSString).
- */
-extern NSString * const kMMFlowViewPathRepresentationType;
-
-/**
- kMMFlowViewNSImageRepresentationType
-
- An NSImage object.
- */
-extern NSString * const kMMFlowViewNSImageRepresentationType;
-
-/**
- kMMFlowViewCGImageSourceRepresentationType
-
- A CGImageSourceRef object.
- */
-extern NSString * const kMMFlowViewCGImageSourceRepresentationType;
-
-/**
- kMMFlowViewNSDataRepresentationType
-
- An NSData object.
- */
-extern NSString * const kMMFlowViewNSDataRepresentationType;
-
-/**
- kMMFlowViewNSBitmapRepresentationType
-
- An NSBitmapImageRep object.
- */
-extern NSString * const kMMFlowViewNSBitmapRepresentationType;
-
-/**
- kMMFlowViewQTMovieRepresentationType
-
- A QTMovie object.
- @deprecated Deprecated in OS X 10.9, will be removed in a future version of MMFlowView.
- */
-extern NSString * const kMMFlowViewQTMovieRepresentationType;
-
-/**
- kMMFlowViewQTMoviePathRepresentationType
-
- A path (NSString) or URL (NSURL) to a QuickTime movie.
- @deprecated Deprecated in OS X 10.9, will be removed in a future version of MMFlowView.
- */
-extern NSString * const kMMFlowViewQTMoviePathRepresentationType;
-
-/**
- kMMFlowViewQCCompositionRepresentationType
-
- A QCComposition object.
- */
-extern NSString * const kMMFlowViewQCCompositionRepresentationType;
-
-/**
- kMMFlowViewQCCompositionPathRepresentationType
-
- A path (NSString) or URL (NSURL) to a Quartz Composer composition.
- */
-extern NSString * const kMMFlowViewQCCompositionPathRepresentationType;
-
-/**
- kMMFlowViewQuickLookPathRepresentationType
-
- A path (NSString) or URL (NSURL) to load data using QuickLook.
- */
-extern NSString * const kMMFlowViewQuickLookPathRepresentationType;
-
-/**
- A binding for keypath to the image representation.
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageRepresentationBinding;
-
-/**
- A binding for keypath to the image-representationtype
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageRepresentationTypeBinding;
-
-/**
- A binding for keypath to the image uid.
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageUIDBinding;
-
-/**
- A binding for keypath to the image title.
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageTitleBinding;
-
-/**
- A notification posted after the selection did change.
- 
- Get the current selection with the kMMFlowViewSelectedIndexKey from the notifcations userInfo dictionary.
- */
-extern NSString * const kMMFlowViewSelectionDidChangeNotification;
-
-/**
- The key for accessing selection changes in notifications or for setting up bindings.
- */
-extern NSString * const kMMFlowViewSelectedIndexKey;
 
 /**
  The MMFlowViewItem protocol which the image items need to implement if datasource is used or no respective keypaths in bindings are set.
@@ -553,3 +401,155 @@ extern NSString * const kMMFlowViewSelectedIndexKey;
 - (void)reloadContent;
 
 @end
+
+/// @name Image Representation Types
+
+/**
+ * Representation types for images
+ 
+ @code
+ kMMFlowViewURLRepresentationType
+ kMMFlowViewCGImageRepresentationType
+ kMMFlowViewPDFPageRepresentationType
+ kMMFlowViewPathRepresentationType
+ kMMFlowViewNSImageRepresentationType
+ kMMFlowViewCGImageSourceRepresentationType
+ kMMFlowViewNSDataRepresentationType
+ kMMFlowViewNSBitmapRepresentationType
+ kMMFlowViewQTMovieRepresentationType
+ kMMFlowViewQTMoviePathRepresentationType
+ kMMFlowViewQCCompositionRepresentationType
+ kMMFlowViewQCCompositionPathRepresentationType
+ kMMFlowViewQuickLookPathRepresentationType
+ @endcode
+ */
+
+/**
+ kMMFlowViewURLRepresentationType
+ 
+ An NSURL object.
+ */
+extern NSString * const kMMFlowViewURLRepresentationType;
+
+/**
+ kMMFlowViewCGImageRepresentationType
+ 
+ A CGImageRef object.
+ */
+extern NSString * const kMMFlowViewCGImageRepresentationType;
+
+/**
+ kMMFlowViewPDFPageRepresentationType
+ 
+ A PDFPage instance or a CGPDFPageRef.
+ */
+extern NSString * const kMMFlowViewPDFPageRepresentationType;
+
+/**
+ kMMFlowViewPathRepresentationType
+ 
+ A path representation (NSString).
+ */
+extern NSString * const kMMFlowViewPathRepresentationType;
+
+/**
+ kMMFlowViewNSImageRepresentationType
+ 
+ An NSImage object.
+ */
+extern NSString * const kMMFlowViewNSImageRepresentationType;
+
+/**
+ kMMFlowViewCGImageSourceRepresentationType
+ 
+ A CGImageSourceRef object.
+ */
+extern NSString * const kMMFlowViewCGImageSourceRepresentationType;
+
+/**
+ kMMFlowViewNSDataRepresentationType
+ 
+ An NSData object.
+ */
+extern NSString * const kMMFlowViewNSDataRepresentationType;
+
+/**
+ kMMFlowViewNSBitmapRepresentationType
+ 
+ An NSBitmapImageRep object.
+ */
+extern NSString * const kMMFlowViewNSBitmapRepresentationType;
+
+/**
+ kMMFlowViewQTMovieRepresentationType
+ 
+ A QTMovie object.
+ @deprecated Deprecated in OS X 10.9, will be removed in a future version of MMFlowView.
+ */
+extern NSString * const kMMFlowViewQTMovieRepresentationType;
+
+/**
+ kMMFlowViewQTMoviePathRepresentationType
+ 
+ A path (NSString) or URL (NSURL) to a QuickTime movie.
+ @deprecated Deprecated in OS X 10.9, will be removed in a future version of MMFlowView.
+ */
+extern NSString * const kMMFlowViewQTMoviePathRepresentationType;
+
+/**
+ kMMFlowViewQCCompositionRepresentationType
+ 
+ A QCComposition object.
+ */
+extern NSString * const kMMFlowViewQCCompositionRepresentationType;
+
+/**
+ kMMFlowViewQCCompositionPathRepresentationType
+ 
+ A path (NSString) or URL (NSURL) to a Quartz Composer composition.
+ */
+extern NSString * const kMMFlowViewQCCompositionPathRepresentationType;
+
+/**
+ kMMFlowViewQuickLookPathRepresentationType
+ 
+ A path (NSString) or URL (NSURL) to load data using QuickLook.
+ */
+extern NSString * const kMMFlowViewQuickLookPathRepresentationType;
+
+/**
+ A binding for keypath to the image representation.
+ @see MMFlowViewItem protocol.
+ */
+extern NSString * const kMMFlowViewImageRepresentationBinding;
+
+/**
+ A binding for keypath to the image-representationtype
+ @see MMFlowViewItem protocol.
+ */
+extern NSString * const kMMFlowViewImageRepresentationTypeBinding;
+
+/**
+ A binding for keypath to the image uid.
+ @see MMFlowViewItem protocol.
+ */
+extern NSString * const kMMFlowViewImageUIDBinding;
+
+/**
+ A binding for keypath to the image title.
+ @see MMFlowViewItem protocol.
+ */
+extern NSString * const kMMFlowViewImageTitleBinding;
+
+/**
+ A notification posted after the selection did change.
+ 
+ Get the current selection with the kMMFlowViewSelectedIndexKey from the notifcations userInfo dictionary.
+ */
+extern NSString * const kMMFlowViewSelectionDidChangeNotification;
+
+/**
+ The key for accessing selection changes in notifications or for setting up bindings.
+ */
+extern NSString * const kMMFlowViewSelectedIndexKey;
+

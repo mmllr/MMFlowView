@@ -23,7 +23,6 @@
  */
 //
 //  CALayer+MMLayerAccessibilityDefaultHandlers.h
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 14.01.14.
 //  Copyright (c) 2014 www.isnotnil.com. All rights reserved.

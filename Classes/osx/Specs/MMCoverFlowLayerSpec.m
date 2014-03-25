@@ -23,7 +23,6 @@
  */
 //
 //  MMCoverFlowLayerSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 31.10.13.
 //  Copyright 2013 www.isnotnil.com. All rights reserved.

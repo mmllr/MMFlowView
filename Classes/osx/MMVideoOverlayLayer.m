@@ -23,7 +23,6 @@
  */
 //
 //  MMVideoOverlayLayer.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 07.05.13.
 //  Copyright (c) 2013 www.isnotnil.com. All rights reserved.

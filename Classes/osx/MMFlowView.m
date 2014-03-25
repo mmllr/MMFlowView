@@ -24,16 +24,13 @@
 
 //
 //  MMFlowView.m
-//  FlowView
 //
 //  Created by Markus Müller on 13.01.12.
+
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
-#import "MMVideoOverlayLayer.h"
-#import "MMButtonLayer.h"
 #import "MMFlowView+NSAccessibility.h"
 #import "CALayer+NSAccessibility.h"
-#import "MMCoverFlowLayoutAttributes.h"
 #import "MMScrollBarLayer.h"
 #import "MMFlowViewImageCache.h"
 #import "MMFlowView+NSKeyValueObserving.h"
@@ -42,7 +39,6 @@
 #import "MMCoverFlowLayer.h"
 #import "NSArray+MMAdditions.h"
 #import "MMFlowView+MMScrollBarDelegate.h"
-#import "MMMacros.h"
 #import "MMFlowView+MMCoverFlowLayerDataSource.h"
 #import "CALayer+MMAdditions.h"
 #import "MMCGImageSourceDecoder.h"
@@ -52,7 +48,6 @@
 #import "MMNSDataImageDecoder.h"
 #import "MMNSImageDecoder.h"
 
-/* representation types */
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
 NSString * const kMMFlowViewCGImageRepresentationType = @"MMFlowViewCGImageRepresentationType";
 NSString * const kMMFlowViewPDFPageRepresentationType = @"MMFlowViewPDFPageRepresentationType";
@@ -67,16 +62,9 @@ NSString * const kMMFlowViewQCCompositionRepresentationType = @"MMFlowViewQCComp
 NSString * const kMMFlowViewQCCompositionPathRepresentationType = @"MMFlowViewQCCompositionPathRepresentationType";
 NSString * const kMMFlowViewQuickLookPathRepresentationType = @"MMFlowViewQuickLookPathRepresentationType";
 
-/* layer names */
-static NSString * const kMMFlowViewScrollLayerName = @"MMFlowViewScrollLayerName";
-static NSString * const kMMFlowViewScrollKnobLayerName = @"MMFlowViewScrollKnobLayerName";
-static NSString * const kMMFlowViewScrollBarLayerName = @"MMFlowViewScrollBarLayerName";
-static NSString * const kMMFlowViewOverlayLayerName = @"MMFlowViewOverlayLayerName";
-/* custom layer keys */
-static NSString * const kMMFlowViewItemIndexKey = @"index";
-static NSString * const kMMFlowViewSelectedLayerKey = @"selected";
-static NSString * const kMMFlowViewHiglightedLayerKey = @"highlighted";
-/* default values */
+NSString * const kMMFlowViewSelectionDidChangeNotification = @"MMFlowViewSelectionDidChangeNotification";
+NSString * const kMMFlowViewSelectedIndexKey = @"selectedIndex";
+
 static const CGFloat kTitleOffset = 50.;
 static const CGFloat kDefaultTitleSize = 18.;
 static const CGFloat kDefaultItemSize = 100.;
@@ -84,37 +72,20 @@ static const CGFloat kDefaultStackedAngle = 70.;
 static const CGFloat kDefaultItemSpacing = 50.;
 static const CGFloat kDefaultReflectionOffset = -0.4;
 
-static NSString * const kMMFlowViewItemContentLayerPrefix = @"MMFlowViewContentLayer";
 static NSString * const kMMFlowViewTitleLayerName = @"MMFlowViewTitleLayer";
 static NSString * const kMMFlowViewContainerLayerName = @"MMFlowViewContainerLayer";
-static NSString * const kMMFlowViewItemLayerSuffix = @"Item";
-static NSString * const kMMFlowViewImageLayerSuffix = @"Image";
-static NSString * const kMMFlowViewMovieLayerSuffix = @"Movie";
-static NSString * const kMMFlowViewQCCompositionLayerSuffix = @"QCComposition";
 static NSString * const kUTTypeQuartzComposerComposition = @"com.apple.quartz-composer-composition";
-
-/* notifications */
-NSString * const kMMFlowViewSelectionDidChangeNotification = @"MMFlowViewSelectionDidChangeNotification";
-/* key for accessing selection changes in notifications or for setting up bindings */
-NSString * const kMMFlowViewSelectedIndexKey = @"selectedIndex";
-
 static NSString * const kMMFlowViewSpacingKey = @"spacing";
 static NSString * const kMMFlowViewStackedAngleKey = @"stackedAngle";
 static NSString * const kMMFlowViewSelectedScaleKey = @"selectedScale";
 static NSString * const kMMFlowViewReflectionOffsetKey = @"reflectionOffset";
 static NSString * const kMMFlowViewShowsReflectionKey = @"showsReflection";
-static NSString * const kMMFlowViewPerspectiveKey = @"perspective";
-static NSString * const kMMFlowViewPreviewScaleKey = @"previewScale";
-static NSString * const kMMFlowViewMouseDownInScrollBarKey = @"mouseDownInScrollBarKey";
-static NSString * const kMMFlowViewInitialKnobDragPositionKey = @"initialKnobDragPositionKey";
-static NSString * const kMMFlowViewOverlayLayerKey = @"overlayLayerKey";
-static NSString * const kMMFlowViewItemAspectRatioKey = @"aspectRatioKey";
 static NSString * const kSuperlayerKey = @"superlayer";
 static NSString * const kPositionKey = @"position";
 static NSString * const kBoundsKey = @"bounds";
 static NSString * const kStringKey = @"string";
-static NSString * const kContentsKey = @"contents";
 static NSString * const kLayoutKey = @"layout";
+
 
 @implementation MMFlowView
 
@@ -126,16 +97,14 @@ static NSString * const kLayoutKey = @"layout";
 @dynamic visibleItemIndexes;
 @dynamic selectedItemFrame;
 
-#pragma mark -
-#pragma mark Class methods
+#pragma mark - Class methods
 
 + (id)defaultAnimationForKey:(NSString *)key
 {
-	if ( [ key isEqualToString:kMMFlowViewSpacingKey ] ||
-		[ key isEqualToString:kMMFlowViewStackedAngleKey ] ) {
-		return [ CABasicAnimation animation ];
+	if ([key isEqualToString:kMMFlowViewSpacingKey] || [key isEqualToString:kMMFlowViewStackedAngleKey] ) {
+		return [CABasicAnimation animation];
 	}
-	return [ super defaultAnimationForKey:key ];
+	return [super defaultAnimationForKey:key];
 }
 
 + (CGImageRef)defaultImage

@@ -23,7 +23,6 @@
  */
 //
 //  MMFlowViewImageLayer.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 29.10.13.
 //  Copyright (c) 2013 www.isnotnil.com. All rights reserved.

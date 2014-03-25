@@ -23,7 +23,6 @@
  */
 //
 //  MMNSDataImageDecoderSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 19.12.13.
 //  Copyright 2013 www.isnotnil.com. All rights reserved.

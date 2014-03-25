@@ -23,7 +23,6 @@
  */
 //
 //  MMFlowViewNSAccessibilitySpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 17.03.14.
 //  Copyright 2014 Markus Müller. All rights reserved.

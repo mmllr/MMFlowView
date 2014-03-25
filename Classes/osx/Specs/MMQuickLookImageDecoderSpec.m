@@ -23,7 +23,6 @@
  */
 //
 //  MMQuickLookImageDecoderSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 17.12.13.
 //  Copyright 2013 www.isnotnil.com. All rights reserved.

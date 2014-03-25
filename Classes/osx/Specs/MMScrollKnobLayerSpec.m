@@ -23,7 +23,6 @@
  */
 //
 //  MMScrollKnobLayerSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 18.11.13.
 //  Copyright 2013 www.isnotnil.com. All rights reserved.

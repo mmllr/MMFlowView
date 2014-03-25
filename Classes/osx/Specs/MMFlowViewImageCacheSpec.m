@@ -23,7 +23,6 @@
  */
 //
 //  MMFlowViewImageCacheSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 02.01.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.

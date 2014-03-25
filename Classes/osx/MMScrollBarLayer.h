@@ -23,7 +23,6 @@
  */
 //
 //  MMScrollBarLayer.h
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 14.11.13.
 //  Copyright (c) 2013 www.isnotnil.com. All rights reserved.

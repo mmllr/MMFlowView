@@ -23,7 +23,6 @@
  */
 //
 //  MMFlowViewSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 17.10.13.
 //  Copyright 2013 www.isnotnil.com. All rights reserved.

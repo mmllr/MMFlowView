@@ -23,7 +23,6 @@
  */
 //
 //  MMFlowViewQLPreviewPanelControllerSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 16.02.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.

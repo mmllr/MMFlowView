@@ -23,7 +23,6 @@
  */
 //
 //  MMCGImageSourceDecoderSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 18.12.13.
 //  Copyright 2013 www.isnotnil.com. All rights reserved.
