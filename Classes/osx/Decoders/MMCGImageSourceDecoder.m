@@ -89,18 +89,7 @@
 
 - (NSImage*)image
 {
-	NSImage *image = nil;
-	if (self.item && (CGImageSourceGetTypeID() == CFGetTypeID((__bridge CFTypeRef)(self.item))) ) {
-		CFStringRef imageSourceType = CGImageSourceGetType((__bridge CGImageSourceRef)(self.item));
-		if ( imageSourceType != NULL ) {
-			CGImageRef imageRef = self.CGImage;
-			if (imageRef) {
-				image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
-				CGImageRelease(imageRef);
-			}
-		}
-	}
-	return image;
+	return [[NSImage alloc] initWithCGImage:self.CGImage size:NSZeroSize];
 }
 
 @end
