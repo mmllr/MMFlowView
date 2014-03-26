@@ -202,6 +202,24 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 	return CGSizeMake(width, self.visibleSize.height - 2*self.verticalMargin);
 }
 
+- (CGFloat)aspectRatioForItem:(NSUInteger)itemIndex
+{
+	if ([self.delegate respondsToSelector:@selector(coverFLowLayout:aspectRatioForItem:)]) {
+		return [self.delegate coverFLowLayout:self aspectRatioForItem:itemIndex];
+	}
+	return 1;
+}
+
+- (CGAffineTransform)aspectTransformForItem:(NSUInteger)itemIndex
+{
+	CGFloat aspectRatio = [self aspectRatioForItem:itemIndex];
+
+	if (aspectRatio > 1) {
+		return CGAffineTransformMakeScale(1, 1/aspectRatio);
+	}
+	return CGAffineTransformMakeScale(aspectRatio, 1);
+}
+
 #pragma mark - public interface
 
 - (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex
@@ -210,9 +228,12 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 		return nil;
 	}
 	BOOL isSelectedItem = (itemIndex == self.selectedItemIndex);
+	
+	CGSize itemSize = CGSizeApplyAffineTransform(self.itemSize, [self aspectTransformForItem:itemIndex]);
+
 	return [[MMCoverFlowLayoutAttributes alloc] initWithIndex:itemIndex
 													 position:[self originForItem:itemIndex]
-														 size:self.itemSize
+														 size:itemSize
 												  anchorPoint:CGPointMake(0.5, 0)
 													transfrom:[self transformForItem:itemIndex]
 													zPosition:isSelectedItem ? 0 : -self.stackedDistance];

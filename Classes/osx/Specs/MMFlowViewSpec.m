@@ -118,6 +118,17 @@ describe(@"MMFlowView", ^{
 				[[theValue([sut translatesAutoresizingMaskIntoConstraints]) should] beNo];
 			});
 		});
+		context(NSStringFromSelector(@selector(coverFlowLayout)), ^{
+			it(@"should have a coverFlowLayout", ^{
+				[[sut.coverFlowLayout shouldNot] beNil];
+			});
+			it(@"should be a MMCoverFlowLayout class", ^{
+				[[sut.coverFlowLayout should] beKindOfClass:[MMCoverFlowLayout class]];
+			});
+			it(@"should be the delegate of the layout", ^{
+				[[(id)sut.coverFlowLayout.delegate should] equal:sut];
+			});
+		});
 		context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
 			it(@"should not be nil", ^{
 				[[sut.visibleItemIndexes shouldNot] beNil];
@@ -311,8 +322,8 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
-		context(@"live resizing", ^{
-			context(@"coverflow layer related", ^{
+		context(NSStringFromSelector(@selector(viewDidEndLiveResize)), ^{
+			context(@"coverflow layer interaction", ^{
 				beforeEach(^{
 					[sut viewWillStartLiveResize];
 				});
@@ -324,9 +335,49 @@ describe(@"MMFlowView", ^{
 					[[theValue(sut.coverFlowLayer.inLiveResize) should] beNo];
 				});
 			});
+			context(@"image cache interaction", ^{
+				__block MMFlowViewImageCache *imageCacheMock = nil;
+				
+
+				beforeEach(^{
+					imageCacheMock = [MMFlowViewImageCache nullMock];
+					sut.imageCache = imageCacheMock;
+				});
+				afterEach(^{
+					imageCacheMock = nil;
+				});
+				it(@"should reset the image cache", ^{
+					[[imageCacheMock should] receive:@selector(reset)];
+
+					[sut viewDidEndLiveResize];
+				});
+			});
+			context(@"image factory interaction", ^{
+				__block MMCoverFlowLayout *layoutMock = nil;
+				__block MMFlowViewImageFactory *imageFactoryMock = nil;
+				CGSize itemSize = CGSizeMake(300, 300);
+
+				beforeEach(^{
+					layoutMock = [MMCoverFlowLayout nullMock];
+					[layoutMock stub:@selector(itemSize) andReturn:theValue(itemSize)];
+					sut.coverFlowLayout = layoutMock;
+					
+					imageFactoryMock = [MMFlowViewImageFactory nullMock];
+					sut.imageFactory = imageFactoryMock;
+				});
+				afterEach(^{
+					layoutMock = nil;
+					imageFactoryMock = nil;
+				});
+				it(@"should set the layout itemSize to the image factory", ^{
+					[[imageFactoryMock should] receive:@selector(setMaxImageSize:) withArguments:theValue(itemSize)];
+
+					[sut viewDidEndLiveResize];
+				});
+			});
 		});
 		
-		context(@"delegate", ^{
+		context(NSStringFromSelector(@selector(delegate)), ^{
 			it(@"should have an empty delegate", ^{
 				[[(id)sut.delegate should] beNil];
 			});
@@ -353,7 +404,7 @@ describe(@"MMFlowView", ^{
 			it(@"should have a layer attached", ^{
 				[[[sut layer] shouldNot] beNil];
 			});
-			context(@"backgroundLayer property", ^{
+			context(NSStringFromSelector(@selector(backgroundLayer)), ^{
 				it(@"should have a background layer", ^{
 					[[sut.backgroundLayer shouldNot] beNil];
 				});
@@ -544,7 +595,7 @@ describe(@"MMFlowView", ^{
 					});
 				});
 			});
-			context(@"scrollBarLayer property", ^{
+			context(NSStringFromSelector(@selector(scrollBarLayer)), ^{
 				it(@"should not be nil", ^{
 					[[sut.scrollBarLayer shouldNot] beNil];
 				});

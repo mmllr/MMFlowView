@@ -22,15 +22,28 @@
  
  */
 //
-//  MMFlowView+MMScrollBarDelegate.h
+//  MMFlowView+MMCoverFlowLayoutDelegate.m
 //
-//  Created by Markus Müller on 04.03.14.
+//  Created by Markus Müller on 26.03.14.
 //  Copyright (c) 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "MMFlowView.h"
-#import "MMScrollBarLayer.h"
+#import "MMFlowView+MMCoverFlowLayoutDelegate.h"
+#import "MMFlowView_Private.h"
+#import "MMFlowViewImageCache.h"
 
-@interface MMFlowView (MMScrollBarDelegate) <MMScrollBarDelegate>
+@implementation MMFlowView (MMCoverFlowLayoutDelegate)
+
+- (CGFloat)coverFLowLayout:(MMCoverFlowLayout *)theLayout aspectRatioForItem:(NSUInteger)itemIndex
+{
+	id item = [self imageItemForIndex:itemIndex];
+	NSString *imageUID = [self imageUIDForItem:item];
+
+	CGImageRef cachedImage = [self.imageCache imageForUUID:imageUID];
+	if (cachedImage != NULL) {
+		return (CGFloat)CGImageGetWidth(cachedImage) / (CGFloat)CGImageGetHeight(cachedImage);
+	}
+	return 1;
+}
 
 @end

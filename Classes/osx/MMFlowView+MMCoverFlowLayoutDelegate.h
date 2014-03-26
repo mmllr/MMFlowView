@@ -22,15 +22,15 @@
  
  */
 //
-//  MMFlowView+MMScrollBarDelegate.h
+//  MMFlowView+MMCoverFlowLayoutDelegate.h
 //
-//  Created by Markus Müller on 04.03.14.
+//  Created by Markus Müller on 26.03.14.
 //  Copyright (c) 2014 www.isnotnil.com. All rights reserved.
 //
 
 #import "MMFlowView.h"
-#import "MMScrollBarLayer.h"
+#import "MMCoverFlowLayout.h"
 
-@interface MMFlowView (MMScrollBarDelegate) <MMScrollBarDelegate>
+@interface MMFlowView (MMCoverFlowLayoutDelegate) <MMCoverFlowLayoutDelegate>
 
 @end

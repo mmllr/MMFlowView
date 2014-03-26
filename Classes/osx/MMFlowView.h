@@ -30,50 +30,6 @@
 #import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
 
-/**
- The MMFlowViewItem protocol which the image items need to implement if datasource is used or no respective keypaths in bindings are set.
- */
-@protocol MMFlowViewItem <NSObject>
-
-/**
- The image to display, can return nil if the item has no image to display. This method is called frequently. (required)
- 
- Your image item must implement this method.
- 
- @return The image representation in one of the supported types @see -imageItemRepresentationType
- */
-- (id)imageItemRepresentation;
-
-/**
- A string that specifies the image representation.
- 
- Your image item must implement this method. The string must be any of the following constants:
- 
- @return A string that specifies the image representation type. The string can be any of the constants defined in “Image Representation Types”.
- */
-- (NSString*)imageItemRepresentationType;
-/**
- A string the uniquely identifies the data source item. (required)
- 
- Your image item must implement this method. The flowview uses this identifier to associate the data source item and its cache.
- 
- @return The string that idenitifies the image item.
- */
-- (NSString*)imageItemUID;
-
-@optional
-
-/**
- Returns the display title of the image.
-
- This method is optional.
- 
- @return The string with the display title of the image.
- */
-- (NSString*)imageItemTitle;
-
-@end
-
 @protocol MMFlowViewDataSource;
 @protocol MMFlowViewDelegate;
 
@@ -287,6 +243,51 @@
 - (void)reloadContent;
 
 @end
+
+/**
+ The MMFlowViewItem protocol which the image items need to implement if datasource is used or no respective keypaths in bindings are set.
+ */
+@protocol MMFlowViewItem <NSObject>
+
+/**
+ The image to display, can return nil if the item has no image to display. This method is called frequently. (required)
+ 
+ Your image item must implement this method.
+ 
+ @return The image representation in one of the supported types @see -imageItemRepresentationType
+ */
+- (id)imageItemRepresentation;
+
+/**
+ A string that specifies the image representation.
+ 
+ Your image item must implement this method. The string must be any of the following constants:
+ 
+ @return A string that specifies the image representation type. The string can be any of the constants defined in “Image Representation Types”.
+ */
+- (NSString*)imageItemRepresentationType;
+/**
+ A string the uniquely identifies the data source item. (required)
+ 
+ Your image item must implement this method. The flowview uses this identifier to associate the data source item and its cache.
+ 
+ @return The string that idenitifies the image item.
+ */
+- (NSString*)imageItemUID;
+
+@optional
+
+/**
+ Returns the display title of the image.
+ 
+ This method is optional.
+ 
+ @return The string with the display title of the image.
+ */
+- (NSString*)imageItemTitle;
+
+@end
+
 
 /**
  The MMFlowViewDataSource protocol declares methods that an MMFLowView uses to access the contents of its datasource object.

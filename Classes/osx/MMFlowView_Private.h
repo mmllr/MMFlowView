@@ -30,6 +30,8 @@
 
 #import <Quartz/Quartz.h>
 
+#import "MMFlowView.h"
+
 @protocol MMFlowViewImageCache;
 
 @class MMCoverFlowLayout;

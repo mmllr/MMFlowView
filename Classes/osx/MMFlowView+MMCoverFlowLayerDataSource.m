@@ -52,7 +52,6 @@
 
 - (void)coverFlowLayerDidRelayout:(MMCoverFlowLayer *)coverFlowLayer
 {
-	self.imageFactory.maxImageSize = self.coverFlowLayout.itemSize;
 	[self.scrollBarLayer setNeedsLayout];
 }
 

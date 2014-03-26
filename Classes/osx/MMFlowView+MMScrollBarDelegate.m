@@ -31,6 +31,7 @@
 #import "MMFlowView+MMScrollBarDelegate.h"
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
+#import "MMFlowView_Private.h"
 
 @implementation MMFlowView (MMScrollBarDelegate)
 

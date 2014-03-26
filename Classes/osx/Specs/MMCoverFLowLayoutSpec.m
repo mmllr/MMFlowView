@@ -31,8 +31,7 @@
 #import "Kiwi.h"
 #import "MMCoverFLowLayout.h"
 #import "MMCoverFlowLayoutAttributes.h"
-
-#define DEGREES2RADIANS(angleInDegrees) ((angleInDegrees) * M_PI / 180.)
+#import "MMMacros.h"
 
 SPEC_BEGIN(MMCoverFLowLayoutSpec)
 
@@ -98,6 +97,9 @@ describe(@"MMCoverFlowLayout", ^{
 		});
 		it(@"should return nil for layoutAttributesForItemAtIndex", ^{
 			[[[sut layoutAttributesForItemAtIndex:0] should] beNil];
+		});
+		it(@"should have a nil delegate", ^{
+			[[(id)sut.delegate should] beNil];
 		});
 		context(NSStringFromSelector(@selector(itemSize)), ^{
 			it(@"should have an itemHeight of visible height minus two times the vertical margin", ^{
@@ -318,6 +320,83 @@ describe(@"MMCoverFlowLayout", ^{
 					it(@"should return nil when asking for attributes outside bounds", ^{
 						[[[sut layoutAttributesForItemAtIndex:sut.numberOfItems + 1] should] beNil];
 					});
+					context(@"layout delegate interaction", ^{
+						__block id delegateMock = nil;
+
+						afterEach(^{
+							delegateMock = nil;
+						});
+						context(@"when the delegate responds to coverFLowLayout:aspectRatioForItem:", ^{
+							__block CGSize itemSize = CGSizeZero;
+							__block CGFloat testAspectRatio = 1;
+
+							beforeEach(^{
+								delegateMock = [KWMock nullMockForProtocol:@protocol(MMCoverFlowLayoutDelegate)];
+								sut.delegate = delegateMock;
+							});
+							it(@"should ask the delegate for the aspect ratio of the item", ^{
+								[[delegateMock should] receive:@selector(coverFLowLayout:aspectRatioForItem:) withArguments:sut, theValue(0)];
+
+								[sut layoutAttributesForItemAtIndex:0];
+							});
+							context(@"when the items height is greater than its width", ^{
+								beforeEach(^{
+									itemSize = CGSizeMake(200, 100);
+									testAspectRatio = itemSize.width/itemSize.height;
+
+									[delegateMock stub:@selector(coverFLowLayout:aspectRatioForItem:) andReturn:theValue(testAspectRatio)];
+								});
+								it(@"should set the item size according to the aspect ratio from the delegate", ^{
+									CGAffineTransform aspectTransform = CGAffineTransformMakeScale(1, 1/testAspectRatio);
+									expectedItemSize = CGSizeApplyAffineTransform(expectedItemSize, aspectTransform);
+
+									attributes = [sut layoutAttributesForItemAtIndex:0];
+									[[theValue(attributes.bounds.size) should] equal:theValue(expectedItemSize)];
+								});
+							});
+							context(@"when the items height is greater than its width", ^{
+								beforeEach(^{
+									itemSize = CGSizeMake(100, 200);
+									testAspectRatio = itemSize.width/itemSize.height;
+
+									[delegateMock stub:@selector(coverFLowLayout:aspectRatioForItem:) andReturn:theValue(testAspectRatio)];
+								});
+								it(@"should set the item size according to the aspect ratio from the delegate", ^{
+									CGAffineTransform aspectTransform = CGAffineTransformMakeScale(testAspectRatio, 1);
+									expectedItemSize = CGSizeApplyAffineTransform(expectedItemSize, aspectTransform);
+									
+									attributes = [sut layoutAttributesForItemAtIndex:0];
+									[[theValue(attributes.bounds.size) should] equal:theValue(expectedItemSize)];
+								});
+							});
+							context(@"when the items height is equal to its width", ^{
+								beforeEach(^{
+									testAspectRatio = 1;
+									
+									[delegateMock stub:@selector(coverFLowLayout:aspectRatioForItem:) andReturn:theValue(testAspectRatio)];
+								});
+								it(@"should have an attribute item size of the layouts itemSize", ^{
+									attributes = [sut layoutAttributesForItemAtIndex:0];
+									[[theValue(attributes.bounds.size) should] equal:theValue(sut.itemSize)];
+								});
+							});
+						});
+						context(@"when the delegate does not respond to coverFLowLayout:aspectRatioForItem:", ^{
+							beforeEach(^{
+								delegateMock = [KWMock nullMock];
+								sut.delegate = delegateMock;
+							});
+							it(@"should not ask the delegate for the aspect ratio", ^{
+								[[delegateMock shouldNot] receive:@selector(coverFLowLayout:aspectRatioForItem:)];
+
+								[sut layoutAttributesForItemAtIndex:0];
+							});
+							it(@"should have an attribute item size of the layouts itemSize", ^{
+								attributes = [sut layoutAttributesForItemAtIndex:0];
+								[[theValue(attributes.bounds.size) should] equal:theValue(sut.itemSize)];
+							});
+						});
+					});
 				});
 
 				context(@"selected item", ^{
@@ -328,33 +407,33 @@ describe(@"MMCoverFlowLayout", ^{
 					it(@"should be centered in the horizontally centered visible area for a selected item between the left and the right stack", ^{
 						sut.selectedItemIndex = sut.numberOfItems / 2;
 						expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
-																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
-																														size:expectedItemSize
-																												 anchorPoint:CGPointMake(0.5, 0)
-																												   transfrom:CATransform3DIdentity
-																												   zPosition:0];
+																					   position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																						   size:expectedItemSize
+																					anchorPoint:CGPointMake(0.5, 0)
+																					  transfrom:CATransform3DIdentity
+																					  zPosition:0];
 						
 						[[[sut layoutAttributesForItemAtIndex:sut.selectedItemIndex] should] equal:expectedAttributes];
 					});
 					it(@"should be centered in the horizontally centered visible area for the first selected item", ^{
 						sut.selectedItemIndex = 0;
 						expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
-																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
-																														size:expectedItemSize
-																												 anchorPoint:CGPointMake(0.5, 0)
-																												   transfrom:CATransform3DIdentity
-																												   zPosition:0];
+																					   position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																						   size:expectedItemSize
+																					anchorPoint:CGPointMake(0.5, 0)
+																					  transfrom:CATransform3DIdentity
+																					  zPosition:0];
 						
 						[[[sut layoutAttributesForItemAtIndex:sut.selectedItemIndex] should] equal:expectedAttributes];
 					});
 					it(@"should be centered in the horizontally centered visible area for the last selected item", ^{
 						sut.selectedItemIndex = sut.numberOfItems - 1;
 						expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.selectedItemIndex
-																													position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
-																														size:expectedItemSize
-																												 anchorPoint:CGPointMake(0.5, 0)
-																												   transfrom:CATransform3DIdentity
-																												   zPosition:0];
+																					   position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																						   size:expectedItemSize
+																					anchorPoint:CGPointMake(0.5, 0)
+																					  transfrom:CATransform3DIdentity
+																					  zPosition:0];
 						
 						[[[sut layoutAttributesForItemAtIndex:sut.selectedItemIndex] should] equal:expectedAttributes];
 					});
@@ -370,10 +449,10 @@ describe(@"MMCoverFlowLayout", ^{
 
 						it(@"should have the correct attributes", ^{
 							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
-																															size:expectedItemSize
-																													 anchorPoint:CGPointMake(0.5, 0)
-																													   transfrom:leftTransform
+																						   position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																							   size:expectedItemSize
+																						anchorPoint:CGPointMake(0.5, 0)
+																						  transfrom:leftTransform
 																													   zPosition:-sut.stackedDistance];
 							
 							[[attributes should] equal:expectedAttributes];
@@ -392,11 +471,11 @@ describe(@"MMCoverFlowLayout", ^{
 						});
 						it(@"should have the correct attributes", ^{
 							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
-																															size:expectedItemSize
-																													 anchorPoint:CGPointMake(0.5, 0)
-																													   transfrom:leftTransform
-																													   zPosition:-sut.stackedDistance];
+																						   position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																							   size:expectedItemSize
+																						anchorPoint:CGPointMake(0.5, 0)
+																						  transfrom:leftTransform
+																						  zPosition:-sut.stackedDistance];
 							[[[sut layoutAttributesForItemAtIndex:testedItemIndex] should] equal:expectedAttributes];
 						});
 					});
@@ -412,11 +491,11 @@ describe(@"MMCoverFlowLayout", ^{
 						});
 						it(@"should have the correct attributes with the x position of itemIndex*expectedStackedItemWidth plus two times the item width if the first item is not selected", ^{
 							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
-																															size:expectedItemSize
-																													 anchorPoint:CGPointMake(0.5, 0)
-																													   transfrom:rightTransform
-																													   zPosition:-sut.stackedDistance];
+																						   position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																							   size:expectedItemSize
+																						anchorPoint:CGPointMake(0.5, 0)
+																						  transfrom:rightTransform
+																						  zPosition:-sut.stackedDistance];
 							[[attributes should] equal:expectedAttributes];
 						});
 					});
@@ -428,11 +507,11 @@ describe(@"MMCoverFlowLayout", ^{
 						});
 						it(@"should have the correct attributes with the x position of itemIndex*expectedStackedItemWidth plus two times the item width if the first item is not selected", ^{
 							expectedAttributes = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:testedItemIndex
-																														position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
-																															size:expectedItemSize
-																													 anchorPoint:CGPointMake(0.5, 0)
-																													   transfrom:rightTransform
-																													   zPosition:-sut.stackedDistance];
+																						   position:CGPointMake(expectedHorizonzalPosition, expectedVerticalPosition)
+																							   size:expectedItemSize
+																						anchorPoint:CGPointMake(0.5, 0)
+																						  transfrom:rightTransform
+																						  zPosition:-sut.stackedDistance];
 							[[attributes should] equal:expectedAttributes];
 						});
 					});

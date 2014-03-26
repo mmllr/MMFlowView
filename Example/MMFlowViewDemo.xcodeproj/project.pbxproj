@@ -55,6 +55,7 @@
 		28DDDE8618D70B1E007B5664 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DDDE8518D70B1E007B5664 /* XCTest.framework */; };
 		28DDDE8718D70B1E007B5664 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DDDE6618D70B1E007B5664 /* Cocoa.framework */; };
 		28DDDE8F18D70B1E007B5664 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DDDE8D18D70B1E007B5664 /* InfoPlist.strings */; };
+		28E1CF5118E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */; };
 		4A92B4B49A91486FA8852B74 /* libPods-MMFlowViewDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B578C80D8F1488BA1F66E61 /* libPods-MMFlowViewDemo.a */; };
 		AAD466973B93441CA82A701E /* libPods-MMFlowViewDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 175FB78536EA43E8B12137D9 /* libPods-MMFlowViewDemoTests.a */; };
 /* End PBXBuildFile section */
@@ -130,6 +131,7 @@
 		28DDDE8518D70B1E007B5664 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		28DDDE8C18D70B1E007B5664 /* MMFlowViewDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewDemoTests-Info.plist"; sourceTree = "<group>"; };
 		28DDDE8E18D70B1E007B5664 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewCoverFlowLayoutDelegateSpec.m; sourceTree = "<group>"; };
 		3B578C80D8F1488BA1F66E61 /* libPods-MMFlowViewDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E4A91415B0F4B4FA8D2F1BD /* Pods-MMFlowViewDemoTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemoTests.xcconfig"; path = "Pods/Pods-MMFlowViewDemoTests.xcconfig"; sourceTree = "<group>"; };
 		6828D05556D049169608CC5A /* Pods-MMFlowViewDemo.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemo.xcconfig"; path = "Pods/Pods-MMFlowViewDemo.xcconfig"; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 		2801F61118D70F1A00075E15 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */,
 				2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */,
 				289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */,
 				2801F61218D70F1A00075E15 /* CALayerMMAdditionsSpec.m */,
@@ -494,6 +497,7 @@
 				2801F63818D70F1A00075E15 /* MMFlowViewImageFactorySpec.m in Sources */,
 				2801F63618D70F1A00075E15 /* MMCoverFLowLayoutSpec.m in Sources */,
 				2801F63E18D70F1A00075E15 /* MMFlowViewNSDraggingSourceSpec.m in Sources */,
+				28E1CF5118E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m in Sources */,
 				2801F64418D70F1A00075E15 /* MMNSBitmapImageRepDecoderSpec.m in Sources */,
 				2801F63A18D70F1A00075E15 /* MMFlowViewKeyValueObservingSpec.m in Sources */,
 				2801F63218D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m in Sources */,
@@ -565,6 +569,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -626,6 +631,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;

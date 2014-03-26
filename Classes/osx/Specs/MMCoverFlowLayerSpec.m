@@ -289,7 +289,7 @@ describe(@"MMCoverFlowLayer", ^{
 				sut.layout.numberOfItems = 5;
 			});
 		});
-		context(@"eyeDistance", ^{
+		context(NSStringFromSelector(@selector(eyeDistance)), ^{
 			beforeEach(^{
 				sut.eyeDistance = 1000;
 			});
@@ -308,10 +308,20 @@ describe(@"MMCoverFlowLayer", ^{
 				sut.eyeDistance = newEyeDistance;
 			});
 		});
-		context(@"reloadContent", ^{
+		context(NSStringFromSelector(@selector(reloadContent)), ^{
 			it(@"should trigger a relayout", ^{
 				[[sut should] receive:@selector(layoutSublayers)];
 				[sut reloadContent];
+			});
+		});
+		context(NSStringFromSelector(@selector(setInLiveResize:)), ^{
+			it(@"should trigger a relayout when set to NO", ^{
+				[[sut should] receive:@selector(setNeedsLayout)];
+				[sut setInLiveResize:NO];
+			});
+			it(@"should not trigger a relayout when set to YES", ^{
+				[[sut shouldNot] receive:@selector(setNeedsLayout)];
+				[sut setInLiveResize:YES];
 			});
 		});
 		context(@"NSAccessibility", ^{
@@ -347,9 +357,6 @@ describe(@"MMCoverFlowLayer", ^{
 				beforeEach(^{
 					sut.inLiveResize = YES;
 				});
-				afterEach(^{
-					sut.inLiveResize = NO;
-				});
 				it(@"should have disabled the bounds action", ^{
 					[[(id)[sut.delegate actionForLayer:sut forKey:@"bounds"] should] equal:[NSNull null]];
 				});
@@ -359,7 +366,6 @@ describe(@"MMCoverFlowLayer", ^{
 					sut.inLiveResize = NO;
 					[[(id)[sut.delegate actionForLayer:sut forKey:@"bounds"] should] beNil];
 				});
-
 			});
 		});
 		context(@"datasource", ^{

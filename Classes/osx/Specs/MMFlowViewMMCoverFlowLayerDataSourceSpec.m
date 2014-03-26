@@ -87,15 +87,6 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		});
 	});
 	context(NSStringFromSelector(@selector(coverFlowLayerDidRelayout:)), ^{
-		beforeEach(^{
-			sut.coverFlowLayer = mockedCoverFlowLayer;
-			sut.imageFactory = mockedImageFactory;
-		});
-		it(@"should set the maxImageSize of the image factory to the layouts itemSite", ^{
-			[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(sut.coverFlowLayout.itemSize)];
-
-			[sut coverFlowLayerDidRelayout:mockedCoverFlowLayer];
-		});
 		context(@"scroll bar interaction", ^{
 			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
 			

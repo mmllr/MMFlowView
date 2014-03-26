@@ -31,6 +31,7 @@
 #import <Foundation/Foundation.h>
 
 @class MMCoverFlowLayoutAttributes;
+@protocol MMCoverFlowLayoutDelegate;
 
 @interface MMCoverFlowLayout : NSObject<NSCoding>
 
@@ -43,8 +44,15 @@
 @property (nonatomic) NSUInteger numberOfItems;
 @property (nonatomic) CGFloat stackedDistance;
 @property (nonatomic) CGFloat verticalMargin;
+@property (nonatomic, weak) id<MMCoverFlowLayoutDelegate> delegate;
 
 - (id)initWithVisibleSize:(CGSize)visisbleSize;
 - (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex;
+
+@end
+
+@protocol MMCoverFlowLayoutDelegate <NSObject>
+
+- (CGFloat)coverFLowLayout:(MMCoverFlowLayout*)theLayout aspectRatioForItem:(NSUInteger)itemIndex;
 
 @end

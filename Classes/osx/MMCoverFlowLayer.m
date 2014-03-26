@@ -181,6 +181,14 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	self.replicatorLayer.instanceRedOffset = validOffset;
 }
 
+- (void)setInLiveResize:(BOOL)inLiveResize
+{
+	_inLiveResize = inLiveResize;
+	if (inLiveResize == NO) {
+		[self setNeedsLayout];
+	}
+}
+
 
 #pragma mark - class logic
 

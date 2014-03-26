@@ -47,6 +47,7 @@
 #import "MMNSBitmapImageRepDecoder.h"
 #import "MMNSDataImageDecoder.h"
 #import "MMNSImageDecoder.h"
+#import "MMFlowView+MMCoverFlowLayoutDelegate.h"
 
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
 NSString * const kMMFlowViewCGImageRepresentationType = @"MMFlowViewCGImageRepresentationType";
@@ -203,6 +204,7 @@ static NSString * const kLayoutKey = @"layout";
 		_imageCache = [[MMFlowViewImageCache alloc] init];
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_coverFlowLayout = [[MMCoverFlowLayout alloc] init];
+		_coverFlowLayout.delegate = self;
 		_imageRepresentationKeyPath = [NSStringFromSelector(@selector(imageItemRepresentation)) copy];
 		_imageUIDKeyPath = [NSStringFromSelector(@selector(imageItemUID)) copy];
 		_imageRepresentationTypeKeyPath = [NSStringFromSelector(@selector(imageItemRepresentationType)) copy];
@@ -229,6 +231,7 @@ static NSString * const kLayoutKey = @"layout";
 			self.reflectionOffset = [ aDecoder decodeDoubleForKey:kMMFlowViewReflectionOffsetKey ];
 			self.showsReflection = [ aDecoder decodeBoolForKey:kMMFlowViewShowsReflectionKey ];
 			_coverFlowLayout = [aDecoder decodeObjectForKey:kLayoutKey];
+			_coverFlowLayout.delegate = self;
 		}
 		else {
 			[self setInitialDefaults];
@@ -494,6 +497,8 @@ static NSString * const kLayoutKey = @"layout";
 {
 	[super viewDidEndLiveResize];
 	self.coverFlowLayer.inLiveResize = NO;
+	self.imageFactory.maxImageSize = self.coverFlowLayout.itemSize;
+	[self.imageCache reset];
 }
 
 - (void)updateTrackingAreas
