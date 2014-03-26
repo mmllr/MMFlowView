@@ -498,7 +498,6 @@ static NSString * const kLayoutKey = @"layout";
 	[super viewDidEndLiveResize];
 	self.coverFlowLayer.inLiveResize = NO;
 	self.imageFactory.maxImageSize = self.coverFlowLayout.itemSize;
-	[self.imageCache reset];
 }
 
 - (void)updateTrackingAreas

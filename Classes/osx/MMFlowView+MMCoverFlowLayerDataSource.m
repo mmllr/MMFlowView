@@ -62,11 +62,12 @@
 
 	CGImageRef cachedImage = [self.imageCache imageForUUID:itemUID];
 
-	if (cachedImage != NULL) {
+	if (cachedImage != NULL && itemIndex != self.selectedIndex) {
 		[self setImage:cachedImage forContentLayer:contentLayer];
 		return;
 	}
 
+	self.imageFactory.maxImageSize = self.coverFlowLayout.itemSize;
 	[self.imageFactory createCGImageFromRepresentation:[self imageRepresentationForItem:item]
 											  withType:[self imageRepresentationTypeForItem:item]
 									 completionHandler:^(CGImageRef anImage) {

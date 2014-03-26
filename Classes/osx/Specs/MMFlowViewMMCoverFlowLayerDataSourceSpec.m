@@ -44,13 +44,15 @@ SPEC_BEGIN(MMFlowViewMMCoverFlowLayerDataSourceSpec)
 describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 	__block MMFlowView *sut = nil;
 	__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
-	__block id mockedImageFactory = nil;
+	__block MMFlowViewImageFactory *mockedImageFactory = nil;
+	__block MMCoverFlowLayout *mockedLayout = nil;
 
 	beforeEach(^{
 		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
 
 		mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
 		mockedImageFactory = [MMFlowViewImageFactory nullMock];
+		mockedLayout = [MMCoverFlowLayout nullMock];
 	});
 	afterEach(^{
 		mockedCoverFlowLayer = nil;
@@ -147,19 +149,19 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		});
 		afterAll(^{
 			testImage = nil;
-			SAFE_CGIMAGE_RELEASE(testImageRef);
+			SAFE_CGIMAGE_RELEASE(testImageRef)
 		});
 
 		beforeEach(^{
 			contentLayer = [CALayer nullMock];
 			sut.imageFactory = mockedImageFactory;
 			factorySpy = [mockedImageFactory captureArgument:@selector(createCGImageFromRepresentation:withType:completionHandler:) atIndex:2];
+
 			itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 			[itemMock stub:@selector(imageItemUID) andReturn:testUID];
 			[itemMock stub:@selector(imageItemRepresentationType) andReturn:testRepresentationType];
 			[itemMock stub:@selector(imageItemRepresentation) andReturn:testImage];
 			[sut stub:@selector(imageItemForIndex:) andReturn:itemMock];
-
 		});
 		afterEach(^{
 			contentLayer = nil;
@@ -168,11 +170,15 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 			itemMock = nil;
 		});
 		context(@"image cache", ^{
+			const CGSize expectedItemSize = CGSizeMake(300, 300);
 			__block MMFlowViewImageCache *cacheMock = nil;
 
 			beforeEach(^{
 				cacheMock = [MMFlowViewImageCache nullMock];
 				sut.imageCache = cacheMock;
+
+				[mockedLayout stub:@selector(itemSize) andReturn:theValue(expectedItemSize)];
+				sut.coverFlowLayout = mockedLayout;
 			});
 			afterEach(^{
 				cacheMock = nil;
@@ -185,15 +191,46 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 					[[mockedImageFactory should] receive:@selector(createCGImageFromRepresentation:withType:completionHandler:)];
 					[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
 				});
+				it(@"should set the maxImageSize on the image factory", ^{
+					[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(expectedItemSize)];
+
+					[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
+				});
 			});
 			context(@"when the image is in the cache", ^{
 				beforeEach(^{
-					[cacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)testImageRef withArguments:testUID];
+					[sut stub:@selector(selectedIndex) andReturn:0];
 				});
-				it(@"should not ask the image factory for the images", ^{
-					[[mockedImageFactory shouldNot] receive:@selector(createCGImageFromRepresentation:withType:completionHandler:)];
+				context(@"when setting the selected image", ^{
+					context(@"when the image in the cache is too small", ^{
+						beforeEach(^{
+							NSImage *smallImage = [NSImage imageWithSize:NSMakeSize(5, 5) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+								return YES;
+							}];
+							CGImageRef smallImageRef = [smallImage CGImageForProposedRect:NULL context:NULL hints:nil];
+							[cacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)(smallImageRef)];
+						});
+						it(@"should ask the image factory for the images", ^{
+							[[mockedImageFactory should] receive:@selector(createCGImageFromRepresentation:withType:completionHandler:)];
+							[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:sut.selectedIndex];
+						});
+						it(@"should set the maxImageSize on the image factory", ^{
+							[[mockedImageFactory should] receive:@selector(setMaxImageSize:) withArguments:theValue(expectedItemSize)];
+							
+							[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:sut.selectedIndex];
+						});
+					});
+				});
+				context(@"when not setting the selected index", ^{
+					beforeEach(^{
+						[cacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)testImageRef withArguments:testUID];
+					});
+					it(@"should not ask the image factory for the images", ^{
+						[[mockedImageFactory shouldNot] receive:@selector(createCGImageFromRepresentation:withType:completionHandler:)];
+						
+						[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:sut.selectedIndex+1];
+					});
 
-					[sut coverFlowLayer:mockedCoverFlowLayer willShowLayer:contentLayer atIndex:0];
 				});
 			});
 		});

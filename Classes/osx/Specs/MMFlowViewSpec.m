@@ -335,23 +335,6 @@ describe(@"MMFlowView", ^{
 					[[theValue(sut.coverFlowLayer.inLiveResize) should] beNo];
 				});
 			});
-			context(@"image cache interaction", ^{
-				__block MMFlowViewImageCache *imageCacheMock = nil;
-				
-
-				beforeEach(^{
-					imageCacheMock = [MMFlowViewImageCache nullMock];
-					sut.imageCache = imageCacheMock;
-				});
-				afterEach(^{
-					imageCacheMock = nil;
-				});
-				it(@"should reset the image cache", ^{
-					[[imageCacheMock should] receive:@selector(reset)];
-
-					[sut viewDidEndLiveResize];
-				});
-			});
 			context(@"image factory interaction", ^{
 				__block MMCoverFlowLayout *layoutMock = nil;
 				__block MMFlowViewImageFactory *imageFactoryMock = nil;
