@@ -114,32 +114,32 @@ describe(@"MMCoverFlowLayoutAttributes", ^{
 					[[theValue([sut hash]) should] equal:theValue([attribute hash])];
 				});
 				it(@"should not be equal with a differing index", ^{
-					[attribute setValue:@(20) forKey:@"index"];
+					[attribute setValue:@(20) forKey:NSStringFromSelector(@selector(index))];
 					
 					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
 				});
 				it(@"should not have the same hash with a differing transform", ^{
-					[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:@"transform"];
+					[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:NSStringFromSelector(@selector(transform))];
 					
 					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
 				});
 				it(@"should not have the same hash with a differing bounds", ^{
-					[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:@"bounds"];
+					[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:NSStringFromSelector(@selector(bounds))];
 					
 					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
 				});
 				it(@"should not have the same hash with a differing zPosition", ^{
-					[attribute setValue:@200 forKey:@"zPosition"];
+					[attribute setValue:@200 forKey:NSStringFromSelector(@selector(zPosition))];
 					
 					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
 				});
 				it(@"should not have the same hash with a differing position", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:@"position"];
+					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(position))];
 					
 					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
 				});
 				it(@"should not have the same hash with a differing anchorPoint", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:@"anchorPoint"];
+					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(anchorPoint))];
 					
 					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
 				});
@@ -152,32 +152,32 @@ describe(@"MMCoverFlowLayoutAttributes", ^{
 					[[sut should] equal:attribute];
 				});
 				it(@"should not be equal with a differing index", ^{
-					[attribute setValue:@(20) forKey:@"index"];
+					[attribute setValue:@(20) forKey:NSStringFromSelector(@selector(index))];
 					
 					[[sut shouldNot] equal:attribute];
 				});
 				it(@"should not be equal with a differing transform", ^{
-					[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:@"transform"];
+					[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:NSStringFromSelector(@selector(transform))];
 					
 					[[sut shouldNot] equal:attribute];
 				});
 				it(@"should not be equal with a differing bounds", ^{
-					[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:@"bounds"];
+					[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:NSStringFromSelector(@selector(bounds))];
 					
 					[[sut shouldNot] equal:attribute];
 				});
 				it(@"should not be equal with a differing zPosition", ^{
-					[attribute setValue:@200 forKey:@"zPosition"];
+					[attribute setValue:@200 forKey:NSStringFromSelector(@selector(zPosition))];
 					
 					[[sut shouldNot] equal:attribute];
 				});
 				it(@"should not be equal with a differing position", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:@"position"];
+					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(position))];
 					
 					[[sut shouldNot] equal:attribute];
 				});
 				it(@"should not be equal with a differing anchorPoint", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:@"anchorPoint"];
+					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(anchorPoint))];
 					
 					[[sut shouldNot] equal:attribute];
 				});

@@ -260,8 +260,8 @@ describe(@"MMCoverFlowLayout", ^{
 
 					expectedVerticalPosition = sut.visibleSize.height / 2 - sut.itemSize.height / 2;
 
-					leftTransform = CATransform3DMakeRotation(DEGREES2RADIANS(sut.stackedAngle), 0, 1, 0);
-					rightTransform = CATransform3DMakeRotation(-DEGREES2RADIANS(sut.stackedAngle), 0, 1, 0);
+					leftTransform = CATransform3DConcat(CATransform3DMakeRotation(DEGREES2RADIANS(sut.stackedAngle), 0, 1, 0), CATransform3DMakeTranslation(0, 0, -sut.stackedDistance));
+					rightTransform = CATransform3DConcat(CATransform3DMakeRotation(-DEGREES2RADIANS(sut.stackedAngle), 0, 1, 0), CATransform3DMakeTranslation(0, 0, -sut.stackedDistance));;
 					
 					sut.selectedItemIndex = sut.numberOfItems / 2;
 					expectedStackedItemWidth = cos(DEGREES2RADIANS(sut.stackedAngle))*sut.itemSize.width + sut.interItemSpacing;
@@ -438,7 +438,7 @@ describe(@"MMCoverFlowLayout", ^{
 						[[[sut layoutAttributesForItemAtIndex:sut.selectedItemIndex] should] equal:expectedAttributes];
 					});
 				});
-				
+
 				context(@"left item stack", ^{
 					context(@"first item", ^{
 						beforeEach(^{
@@ -453,7 +453,7 @@ describe(@"MMCoverFlowLayout", ^{
 																							   size:expectedItemSize
 																						anchorPoint:CGPointMake(0.5, 0)
 																						  transfrom:leftTransform
-																													   zPosition:-sut.stackedDistance];
+																						  zPosition:0];
 							
 							[[attributes should] equal:expectedAttributes];
 						});
@@ -475,7 +475,7 @@ describe(@"MMCoverFlowLayout", ^{
 																							   size:expectedItemSize
 																						anchorPoint:CGPointMake(0.5, 0)
 																						  transfrom:leftTransform
-																						  zPosition:-sut.stackedDistance];
+																						  zPosition:0];
 							[[[sut layoutAttributesForItemAtIndex:testedItemIndex] should] equal:expectedAttributes];
 						});
 					});
@@ -495,7 +495,7 @@ describe(@"MMCoverFlowLayout", ^{
 																							   size:expectedItemSize
 																						anchorPoint:CGPointMake(0.5, 0)
 																						  transfrom:rightTransform
-																						  zPosition:-sut.stackedDistance];
+																						  zPosition:0];
 							[[attributes should] equal:expectedAttributes];
 						});
 					});
@@ -511,7 +511,7 @@ describe(@"MMCoverFlowLayout", ^{
 																							   size:expectedItemSize
 																						anchorPoint:CGPointMake(0.5, 0)
 																						  transfrom:rightTransform
-																						  zPosition:-sut.stackedDistance];
+																						  zPosition:0];
 							[[attributes should] equal:expectedAttributes];
 						});
 					});

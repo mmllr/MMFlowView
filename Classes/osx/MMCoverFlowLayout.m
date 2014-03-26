@@ -227,29 +227,43 @@ static NSString * const kVerticalMarginKey = @"verticalMargin";
 	if (itemIndex >= self.numberOfItems) {
 		return nil;
 	}
-	BOOL isSelectedItem = (itemIndex == self.selectedItemIndex);
-	
-	CGSize itemSize = CGSizeApplyAffineTransform(self.itemSize, [self aspectTransformForItem:itemIndex]);
+	CGRect itemFrame = [self itemFrameForItem:itemIndex];
 
 	return [[MMCoverFlowLayoutAttributes alloc] initWithIndex:itemIndex
-													 position:[self originForItem:itemIndex]
-														 size:itemSize
+													 position:itemFrame.origin
+														 size:itemFrame.size
 												  anchorPoint:CGPointMake(0.5, 0)
 													transfrom:[self transformForItem:itemIndex]
-													zPosition:isSelectedItem ? 0 : -self.stackedDistance];
+													zPosition:0];
 }
 
 #pragma mark - layout logic
 
+- (CGRect)visibleRect
+{
+	return CGRectMake(0, 0, self.visibleSize.width, self.visibleSize.height);
+}
+
+- (CGRect)itemFrameForItem:(NSUInteger)itemIndex
+{
+	CGRect itemRect = {[self originForItem:itemIndex], [self sizeForItem:itemIndex]};
+	return itemRect;
+}
+
+- (CGSize)sizeForItem:(NSUInteger)itemIndex
+{
+	return CGSizeApplyAffineTransform(self.itemSize, [self aspectTransformForItem:itemIndex]);
+}
+	
 - (CATransform3D)transformForItem:(NSUInteger)item
 {
 	if (item == self.selectedItemIndex) {
 		return CATransform3DIdentity;
 	}
 	else if (item < self.selectedItemIndex) {
-		return CATransform3DMakeRotation(DEGREES2RADIANS(self.stackedAngle), 0, 1, 0);
+		return CATransform3DConcat(CATransform3DMakeRotation(DEGREES2RADIANS(self.stackedAngle), 0, 1, 0), CATransform3DMakeTranslation(0, 0, -self.stackedDistance));
 	}
-	return CATransform3DMakeRotation(-DEGREES2RADIANS(self.stackedAngle), 0, 1, 0);
+	return CATransform3DConcat(CATransform3DMakeRotation(-DEGREES2RADIANS(self.stackedAngle), 0, 1, 0), CATransform3DMakeTranslation(0, 0, -self.stackedDistance));
 }
 
 - (CGPoint)originForItem:(NSUInteger)itemIndex

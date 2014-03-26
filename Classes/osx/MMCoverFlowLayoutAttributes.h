@@ -34,12 +34,12 @@ extern NSString * const kMMCoverFlowLayoutAttributesIndexAttributeKey;
 
 @interface MMCoverFlowLayoutAttributes : NSObject
 
-@property (readonly) NSUInteger index;
-@property (readonly) CATransform3D transform;
-@property (readonly) CGRect bounds;
-@property (readonly) CGPoint position;
-@property (readonly) CGPoint anchorPoint;
-@property (readonly) CGFloat zPosition;
+@property (readonly, nonatomic) NSUInteger index;
+@property (readonly, nonatomic) CATransform3D transform;
+@property (readonly, nonatomic) CGRect bounds;
+@property (readonly, nonatomic) CGPoint position;
+@property (readonly, nonatomic) CGPoint anchorPoint;
+@property (readonly, nonatomic) CGFloat zPosition;
 
 - (id)initWithIndex:(NSUInteger)anIndex position:(CGPoint)aPosition size:(CGSize)aSize anchorPoint:(CGPoint)anAnchorPoint transfrom:(CATransform3D)aTransform zPosition:(CGFloat)aZPosition;
 - (void)applyToLayer:(CALayer*)aLayer;
