@@ -269,7 +269,6 @@ static void* kReloadContentObservationContext = @"reloadContent";
 				firstVisibleIndex = idx;
 			}
 			lastVisibleIndex = idx;
-			[self.dataSource coverFlowLayer:self willShowLayer:contentLayer atIndex:idx];
 		}
 		if (lastVisibleIndex != NSNotFound &&
 			lastVisibleIndex < idx) {
@@ -280,11 +279,13 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		self.visibleItemIndexes = [NSIndexSet indexSet];
 		return;
 	}
-	if (lastVisibleIndex > firstVisibleIndex) {
-		firstVisibleIndex = MAX(0, firstVisibleIndex-1);
-		lastVisibleIndex = MIN(self.numberOfItems - 1, lastVisibleIndex+1);
-	}
+	firstVisibleIndex = MAX(0, firstVisibleIndex-1);
+	lastVisibleIndex = MIN(self.numberOfItems - 1, lastVisibleIndex+1);
 	self.visibleItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(firstVisibleIndex, 1 + (lastVisibleIndex - firstVisibleIndex))];
+	[self.visibleItemIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+		CALayer *contentLayer = self.contentLayers[idx];
+		[self.dataSource coverFlowLayer:self willShowLayer:contentLayer atIndex:idx];
+	}];
 }
 
 #pragma mark - KVO

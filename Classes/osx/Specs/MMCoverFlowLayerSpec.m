@@ -444,6 +444,24 @@ describe(@"MMCoverFlowLayer", ^{
 					[[theValue([sut.visibleItemIndexes lastIndex]) should] beZero];
 				});
 			});
+			context(@"when many layers and only one is visible", ^{
+				__block NSUInteger visibleIndex = 0;
+
+				beforeEach(^{
+					contentLayers = @[invisibleLayer, invisibleLayer, visibleLayer, invisibleLayer, invisibleLayer, invisibleLayer];
+					[sut stub:@selector(contentLayers) andReturn:contentLayers];
+					[sut stub:@selector(numberOfItems) andReturn:theValue([contentLayers count])];
+					visibleIndex = 2;
+				});
+				it(@"should have the invisible layer before the first visible layer as the first visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes firstIndex]) should] equal:theValue(visibleIndex-1)];
+				});
+				it(@"should have the invisible layer after the last visible layer as the last visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(visibleIndex+1)];
+				});
+			});
 			context(@"when all layers are visible", ^{
 				beforeEach(^{
 					contentLayers = @[visibleLayer, visibleLayer, visibleLayer, visibleLayer];
@@ -476,7 +494,7 @@ describe(@"MMCoverFlowLayer", ^{
 					}];
 					[[datasourceMock stubAndReturn:layer] coverFlowLayer:sut contentLayerForIndex:idx];
 				}];
-				sut.bounds = CGRectMake(0, 0, 200, 100);
+				sut.bounds = CGRectMake(0, 0, 600, 300);
 				sut.dataSource = datasourceMock;
 				sut.layout.numberOfItems = [sublayers count];
 			});
@@ -541,43 +559,13 @@ describe(@"MMCoverFlowLayer", ^{
 				});
 
 				context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
-					CGRect visibleRect = CGRectMake(1, 1, 20, 20);
-					__block CALayer *layerA = nil;
-					__block CALayer *layerB = nil;
-					__block CALayer *layerC = nil;
-					__block CALayer *invisibleLayer = nil;
-					__block NSArray *visibleLayers = nil;
 
-					beforeEach(^{
-						visibleLayers = nil;
-						layerA = [CALayer nullMockWithName:@"layerA"];
-						layerB = [CALayer nullMockWithName:@"layerB"];
-						layerC = [CALayer nullMockWithName:@"layerC"];
-						invisibleLayer = [CALayer nullMockWithName:@"invisibleLayer"];
-						[layerA stub:@selector(frame) andReturn:theValue(visibleRect)];
-						[layerB stub:@selector(frame) andReturn:theValue(visibleRect)];
-						[layerC stub:@selector(frame) andReturn:theValue(visibleRect)];
-						[invisibleLayer stub:@selector(frame) andReturn:theValue(CGRectNull)];
-						[sut stub:@selector(contentLayers) andReturn:@[invisibleLayer, layerA, layerB, layerC]];
-						visibleLayers = @[layerA, layerB, layerC];
-					});
-					afterEach(^{
-						layerA = layerB = layerC = invisibleLayer = nil;
-					});
 					it(@"should invoke coverFlowLayer:willShowLayer:atIndex: for every visible layer", ^{
-						[[datasourceMock should] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
-						 withArguments:sut, layerA, theValue(1)];
-						[[datasourceMock should] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
-										   withArguments:sut, layerB, theValue(2)];
-						[[datasourceMock should] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
-										   withArguments:sut, layerC, theValue(3)];
 
-						[sut layoutSublayers];
-					});
-					it(@"should not invoke coverFlowLayer:willShowLayer:atIndex: for invisible layers", ^{
-						[[datasourceMock shouldNot] receive:@selector(coverFlowLayer:willShowLayer:atIndex:)
-										   withArguments:sut, invisibleLayer, theValue(0)];
-						
+						[sut.visibleItemIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+							[[datasourceMock should] receive:@selector(coverFlowLayer:willShowLayer:atIndex:) withArguments:sut, sublayers[idx], theValue(idx)];
+						}];
+
 						[sut layoutSublayers];
 					});
 				});
