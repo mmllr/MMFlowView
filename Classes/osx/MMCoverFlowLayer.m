@@ -260,22 +260,31 @@ static void* kReloadContentObservationContext = @"reloadContent";
 
 - (void)updateVisibleItems
 {
-	__block NSUInteger firstVisibleItem = NSNotFound;
-	__block NSUInteger numberOfVisibleItems = 0;
+	__block NSInteger firstVisibleIndex = NSNotFound;
+	__block NSInteger lastVisibleIndex = NSNotFound;
 
 	[self.contentLayers enumerateObjectsUsingBlock:^(CALayer *contentLayer, NSUInteger idx, BOOL *stop) {
 		if (CGRectIntersectsRect(self.bounds, contentLayer.frame)) {
-			if ( firstVisibleItem == NSNotFound ) {
-				firstVisibleItem = idx;
+			if (firstVisibleIndex == NSNotFound) {
+				firstVisibleIndex = idx;
 			}
-			numberOfVisibleItems++;
+			lastVisibleIndex = idx;
 			[self.dataSource coverFlowLayer:self willShowLayer:contentLayer atIndex:idx];
 		}
-		if ( idx > (firstVisibleItem + numberOfVisibleItems) ) {
+		if (lastVisibleIndex != NSNotFound &&
+			lastVisibleIndex < idx) {
 			*stop = YES;
 		}
 	}];
-	self.visibleItemIndexes = ( firstVisibleItem != NSNotFound ) ? [NSIndexSet indexSetWithIndexesInRange:NSMakeRange( firstVisibleItem, numberOfVisibleItems )] : [NSIndexSet indexSet];
+	if (firstVisibleIndex == NSNotFound) {
+		self.visibleItemIndexes = [NSIndexSet indexSet];
+		return;
+	}
+	if (lastVisibleIndex > firstVisibleIndex) {
+		firstVisibleIndex = MAX(0, firstVisibleIndex-1);
+		lastVisibleIndex = MIN(self.numberOfItems - 1, lastVisibleIndex+1);
+	}
+	self.visibleItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(firstVisibleIndex, 1 + (lastVisibleIndex - firstVisibleIndex))];
 }
 
 #pragma mark - KVO

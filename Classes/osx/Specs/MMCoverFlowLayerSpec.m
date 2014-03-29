@@ -368,6 +368,98 @@ describe(@"MMCoverFlowLayer", ^{
 				});
 			});
 		});
+		context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
+			CGRect visibleLayoutRect = CGRectMake(0, 0, 400, 300);
+			CGRect visibleContentLayerRect = CGRectInset(visibleLayoutRect, 40, 40);
+			__block NSArray *contentLayers = nil;
+			__block CALayer *invisibleLayer = nil;
+			__block CALayer *visibleLayer = nil;
+			
+			beforeEach(^{
+				sut.bounds = visibleLayoutRect;
+
+				visibleLayer = [CALayer nullMock];
+				[visibleLayer stub:@selector(frame) andReturn:theValue(visibleContentLayerRect)];
+				invisibleLayer = [CALayer nullMock];
+				[invisibleLayer stub:@selector(frame) andReturn:theValue(CGRectMake(-80, 0, 40, 40))];
+			});
+			afterEach(^{
+				visibleLayer = nil;
+				invisibleLayer = nil;
+				contentLayers = nil;
+			});
+
+			context(@"when the first and the last layer are not visible", ^{
+				beforeEach(^{
+					contentLayers = @[invisibleLayer, invisibleLayer, visibleLayer, visibleLayer, visibleLayer, invisibleLayer, invisibleLayer];
+					[sut stub:@selector(contentLayers) andReturn:contentLayers];
+				});
+				it(@"should have the invisible layer before the first visible layer as the first visible index", ^{
+					NSUInteger expectedIndex = 1;
+					
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes firstIndex]) should] equal:theValue(expectedIndex)];
+				});
+				it(@"should have the invisible layer after the last visible layer as the last visible index", ^{
+					NSUInteger expectedIndex = 5;
+					
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(expectedIndex)];
+				});
+			});
+			context(@"when the first layer is visible", ^{
+				beforeEach(^{
+					contentLayers = @[visibleLayer, visibleLayer, visibleLayer, invisibleLayer, invisibleLayer];
+					[sut stub:@selector(contentLayers) andReturn:contentLayers];
+				});
+				it(@"should have zero as the first visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes firstIndex]) should] beZero];
+				});
+			});
+			context(@"when the last layer is visible", ^{
+				beforeEach(^{
+					contentLayers = @[invisibleLayer, invisibleLayer, visibleLayer, visibleLayer, visibleLayer, visibleLayer];
+					[sut stub:@selector(contentLayers) andReturn:contentLayers];
+					[sut stub:@selector(numberOfItems) andReturn:theValue([contentLayers count])];
+				});
+				it(@"should have the last layers index as the last visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(sut.numberOfItems - 1)];
+				});
+			});
+
+			context(@"when having one layer which is visible", ^{
+				beforeEach(^{
+					contentLayers = @[visibleLayer];
+					[sut stub:@selector(contentLayers) andReturn:contentLayers];
+					[sut stub:@selector(numberOfItems) andReturn:theValue([contentLayers count])];
+				});
+				it(@"should have zero as the first visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes firstIndex]) should] beZero];
+				});
+				it(@"should have zero as the last visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes lastIndex]) should] beZero];
+				});
+			});
+			context(@"when all layers are visible", ^{
+				beforeEach(^{
+					contentLayers = @[visibleLayer, visibleLayer, visibleLayer, visibleLayer];
+					[sut stub:@selector(contentLayers) andReturn:contentLayers];
+					[sut stub:@selector(numberOfItems) andReturn:theValue([contentLayers count])];
+				});
+				it(@"should have zero as the first visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes firstIndex]) should] beZero];
+				});
+				it(@"should have the last layers index as the last visible index", ^{
+					[sut layoutSublayers];
+					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(sut.numberOfItems - 1)];
+				});
+			});
+		});
 		context(@"datasource", ^{
 			__block id datasourceMock = nil;
 			__block NSArray *sublayers = nil;
@@ -400,7 +492,7 @@ describe(@"MMCoverFlowLayer", ^{
 					it(@"should not be nil", ^{
 						[[sut.contentLayers shouldNot] beNil];
 					});
-					it(@"should return a NSArray", ^{
+					it(@"should return an NSArray", ^{
 						[[sut.contentLayers should] beKindOfClass:[NSArray class]];
 					});
 					it(@"should have the correct count of sublayers", ^{
@@ -429,9 +521,9 @@ describe(@"MMCoverFlowLayer", ^{
 					CGPoint expectedPoint = CGPointMake( attr.position.x - (CGRectGetWidth(sut.bounds) / 2.)  + layout.itemSize.width / 2., 0 );
 					[[[NSValue valueWithPoint:sut.bounds.origin] should] equal:[NSValue valueWithPoint:expectedPoint]];
 				});
-				context(@"visibleItemIndexes", ^{
+				context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
 					it(@"should have nonzero visible items", ^{
-						[[theValue([sut.visibleItemIndexes count]) should] beGreaterThan:theValue(0)];
+						[[theValue([sut.visibleItemIndexes count]) shouldNot] beZero];
 					});
 					it(@"should contain the selected index", ^{
 						[[theValue([sut.visibleItemIndexes containsIndex:layout.selectedItemIndex]) should] beYes];
@@ -447,6 +539,7 @@ describe(@"MMCoverFlowLayer", ^{
 					[[datasourceMock shouldEventually] receive:@selector(coverFlowLayerDidRelayout:) withCountAtLeast:1];
 					[sut layoutSublayers];
 				});
+
 				context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
 					CGRect visibleRect = CGRectMake(1, 1, 20, 20);
 					__block CALayer *layerA = nil;
@@ -719,7 +812,7 @@ describe(@"MMCoverFlowLayer", ^{
 					sut.bounds = CGRectMake(0, 0, 100, 50);
 					[sut reloadContent];
 				});
-				context(@"NSAccessibilitySelectedChildrenAttribute", ^{
+				context(NSAccessibilitySelectedChildrenAttribute, ^{
 					it(@"should return only one selected layer", ^{
 						[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] haveCountOf:1];
 					});
@@ -736,7 +829,7 @@ describe(@"MMCoverFlowLayer", ^{
 						[[[sut accessibilityAttributeValue:NSAccessibilitySelectedChildrenAttribute] should] containObjectsInArray:nextLayer];
 					});
 				});
-				context(@"NSAccessibilityVisibleChildrenAttribute", ^{
+				context(NSAccessibilityVisibleChildrenAttribute, ^{
 					__block NSArray *visibleChildren = nil;
 					beforeEach(^{
 						visibleChildren = [sut accessibilityAttributeValue:NSAccessibilityVisibleChildrenAttribute];
