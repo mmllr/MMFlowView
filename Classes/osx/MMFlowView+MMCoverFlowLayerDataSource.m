@@ -34,6 +34,7 @@
 #import "MMCoverFlowLayout.h"
 #import "MMScrollBarLayer.h"
 #import "MMFlowViewImageCache.h"
+#import "CALayer+MMAdditions.h"
 
 @implementation MMFlowView (MMCoverFlowLayerDataSource)
 
@@ -42,6 +43,8 @@
 	CALayer *contentLayer = [CALayer layer];
 	contentLayer.contents = (id)[[self class] defaultImage];
 	contentLayer.contentsGravity = kCAGravityResizeAspectFill;
+	[contentLayer mm_disableImplicitAnimationForKey:NSStringFromSelector(@selector(bounds))];
+	[contentLayer mm_disableImplicitAnimationForKey:NSStringFromSelector(@selector(contents))];
 	return contentLayer;
 }
 

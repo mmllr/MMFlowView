@@ -33,6 +33,7 @@
 #import "MMCoverFlowLayoutAttributes.h"
 #import "CALayer+NSAccessibility.h"
 #import "MMMacros.h"
+#import "CALayer+MMAdditions.h"
 
 static const CGFloat kDefaultEyeDistance = 1500.;
 static const CFTimeInterval kDefaultScrollDuration = .4;
@@ -89,6 +90,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 {
 	CATransformLayer *layer = [CATransformLayer layer];
 	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+	[layer mm_disableImplicitPositionAndBoundsAnimations];
 	return layer;
 }
 

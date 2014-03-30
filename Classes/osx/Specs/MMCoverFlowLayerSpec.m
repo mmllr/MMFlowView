@@ -115,6 +115,21 @@ describe(@"MMCoverFlowLayer", ^{
 			it(@"should be vertically resizable", ^{
 				[[theValue(transformLayer.autoresizingMask & kCALayerHeightSizable) should] beYes];
 			});
+			context(@"core animation actions", ^{
+				__block NSDictionary *actions = nil;
+				beforeEach(^{
+					actions = transformLayer.actions;
+				});
+				afterEach(^{
+					actions = nil;
+				});
+				it(@"should have disabled the bounds action", ^{
+					[[actions[@"bounds"] should] equal:[NSNull null]];
+				});
+				it(@"should have disabled the position action", ^{
+					[[actions[@"position"] should] equal:[NSNull null]];
+				});
+			});
 		});
 		it(@"should have a scroll duration of .4 seconds", ^{
 			[[theValue(sut.scrollDuration) should] equal:theValue(.4)];

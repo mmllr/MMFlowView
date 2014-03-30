@@ -128,6 +128,12 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 			it(@"should have a contentsGravity of kCAGravityResizeAspectFill", ^{
 				[[contentLayer.contentsGravity should] equal:kCAGravityResizeAspectFill];
 			});
+			it(@"should have disabled the bounds action", ^{
+				[[contentLayer.actions[@"bounds"] should] equal:[NSNull null]];
+			});
+			it(@"should have disabled the contents action", ^{
+				[[contentLayer.actions[@"contents"] should] equal:[NSNull null]];
+			});
 		});
 	});
 	context(NSStringFromSelector(@selector(coverFlowLayer:willShowLayer:atIndex:)), ^{
