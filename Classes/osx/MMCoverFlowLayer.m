@@ -279,8 +279,8 @@ static void* kReloadContentObservationContext = @"reloadContent";
 		self.visibleItemIndexes = [NSIndexSet indexSet];
 		return;
 	}
-	firstVisibleIndex = MAX(0, firstVisibleIndex-1);
-	lastVisibleIndex = MIN(self.numberOfItems - 1, lastVisibleIndex+1);
+	firstVisibleIndex = MAX(0, firstVisibleIndex-2);
+	lastVisibleIndex = MIN(self.numberOfItems - 1, lastVisibleIndex+2);
 	self.visibleItemIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(firstVisibleIndex, 1 + (lastVisibleIndex - firstVisibleIndex))];
 	[self.visibleItemIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
 		CALayer *contentLayer = self.contentLayers[idx];

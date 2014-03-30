@@ -374,7 +374,9 @@ describe(@"MMCoverFlowLayer", ^{
 			__block NSArray *contentLayers = nil;
 			__block CALayer *invisibleLayer = nil;
 			__block CALayer *visibleLayer = nil;
-			
+			__block NSUInteger firstVisibleIndex = 0;
+			__block NSUInteger lastVisibleIndex = 0;
+
 			beforeEach(^{
 				sut.bounds = visibleLayoutRect;
 
@@ -391,20 +393,18 @@ describe(@"MMCoverFlowLayer", ^{
 
 			context(@"when the first and the last layer are not visible", ^{
 				beforeEach(^{
-					contentLayers = @[invisibleLayer, invisibleLayer, visibleLayer, visibleLayer, visibleLayer, invisibleLayer, invisibleLayer];
+					contentLayers = @[invisibleLayer, invisibleLayer, invisibleLayer, visibleLayer, visibleLayer, visibleLayer, invisibleLayer, invisibleLayer, invisibleLayer];
 					[sut stub:@selector(contentLayers) andReturn:contentLayers];
+					firstVisibleIndex = 3;
+					lastVisibleIndex = 5;
 				});
-				it(@"should have the invisible layer before the first visible layer as the first visible index", ^{
-					NSUInteger expectedIndex = 1;
-					
+				it(@"should have the two invisible layers before the first visible layer as the first visible index", ^{
 					[sut layoutSublayers];
-					[[theValue([sut.visibleItemIndexes firstIndex]) should] equal:theValue(expectedIndex)];
+					[[theValue([sut.visibleItemIndexes firstIndex]) should] equal:theValue(firstVisibleIndex-2)];
 				});
-				it(@"should have the invisible layer after the last visible layer as the last visible index", ^{
-					NSUInteger expectedIndex = 5;
-					
+				it(@"should have two invisible layers after the last visible layer as the last visible index", ^{
 					[sut layoutSublayers];
-					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(expectedIndex)];
+					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(lastVisibleIndex+2)];
 				});
 			});
 			context(@"when the first layer is visible", ^{
@@ -445,21 +445,19 @@ describe(@"MMCoverFlowLayer", ^{
 				});
 			});
 			context(@"when many layers and only one is visible", ^{
-				__block NSUInteger visibleIndex = 0;
-
 				beforeEach(^{
 					contentLayers = @[invisibleLayer, invisibleLayer, visibleLayer, invisibleLayer, invisibleLayer, invisibleLayer];
 					[sut stub:@selector(contentLayers) andReturn:contentLayers];
 					[sut stub:@selector(numberOfItems) andReturn:theValue([contentLayers count])];
-					visibleIndex = 2;
+					firstVisibleIndex = lastVisibleIndex = 2;
 				});
-				it(@"should have the invisible layer before the first visible layer as the first visible index", ^{
+				it(@"should have the two invisible layers before the first visible layer as the first visible index", ^{
 					[sut layoutSublayers];
-					[[theValue([sut.visibleItemIndexes firstIndex]) should] equal:theValue(visibleIndex-1)];
+					[[theValue([sut.visibleItemIndexes firstIndex]) should] equal:theValue(firstVisibleIndex-2)];
 				});
-				it(@"should have the invisible layer after the last visible layer as the last visible index", ^{
+				it(@"should have two invisible layers after the last visible layer as the last visible index", ^{
 					[sut layoutSublayers];
-					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(visibleIndex+1)];
+					[[theValue([sut.visibleItemIndexes lastIndex]) should] equal:theValue(lastVisibleIndex+2)];
 				});
 			});
 			context(@"when all layers are visible", ^{
@@ -774,8 +772,8 @@ describe(@"MMCoverFlowLayer", ^{
 							beforeEach(^{
 								expectedIndex = sut.visibleItemIndexes.firstIndex;
 								layer = sublayers[expectedIndex];
-								pointInLayer = [layer.superlayer convertPoint:CGPointMake(CGRectGetMidX(layer.frame), CGRectGetMidY(layer.frame))
-														 toLayer:sut];
+								pointInLayer = [sut convertPoint:CGPointMake(CGRectGetMaxX(layer.frame), CGRectGetMidY(layer.frame))
+														 fromLayer:layer.superlayer];
 							});
 							it(@"should return the index of the first visible layer", ^{
 								[[theValue([sut indexOfLayerAtPoint:pointInLayer]) should] equal:theValue(expectedIndex)];
