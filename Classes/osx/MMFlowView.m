@@ -609,7 +609,8 @@ static NSString * const kLayoutKey = @"layout";
 	[self.backgroundLayer insertSublayer:self.titleLayer above:self.containerLayer];
 	self.coverFlowLayer = [MMCoverFlowLayer layerWithLayout:self.coverFlowLayout];
 	self.coverFlowLayer.dataSource = self;
-	self.scrollBarLayer = [self createScrollBarLayer];
+	self.scrollBarLayer = [[MMScrollBarLayer alloc] init];
+	self.scrollBarLayer.scrollBarDelegate = self;
 	
 	[self.containerLayer addSublayer:self.coverFlowLayer];
 	[self.backgroundLayer insertSublayer:self.scrollBarLayer above:self.containerLayer ];
@@ -668,13 +669,6 @@ static NSString * const kLayoutKey = @"layout";
 													 attribute:kCAConstraintMaxY]];
 	[layer mm_disableImplicitAnimationForKey:kPositionKey];
 	[layer mm_disableImplicitAnimationForKey:kBoundsKey];
-	return layer;
-}
-
-- (MMScrollBarLayer*)createScrollBarLayer
-{
-	MMScrollBarLayer *layer = [[MMScrollBarLayer alloc] init];
-	layer.scrollBarDelegate = self;
 	return layer;
 }
 
