@@ -102,7 +102,7 @@ static NSString * const kLayoutKey = @"layout";
 
 + (id)defaultAnimationForKey:(NSString *)key
 {
-	if ([key isEqualToString:kMMFlowViewSpacingKey] || [key isEqualToString:kMMFlowViewStackedAngleKey] ) {
+	if ([key isEqualToString:NSStringFromSelector(@selector(spacing))] || [key isEqualToString:NSStringFromSelector(@selector(stackedAngle))] ) {
 		return [CABasicAnimation animation];
 	}
 	return [super defaultAnimationForKey:key];

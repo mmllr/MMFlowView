@@ -95,6 +95,18 @@ describe(@"MMFlowView", ^{
 			it(@"should be of MMFlowView class", ^{
 				[[sut should] beKindOfClass:[MMFlowView class]];
 			});
+			context(NSStringFromSelector(@selector(defaultAnimationForKey:)), ^{
+				it(@"should return a CABasicAnimation for the spacing key", ^{
+					id animation = [[sut class] defaultAnimationForKey:NSStringFromSelector(@selector(spacing))];
+
+					[[animation should] beKindOfClass:[CABasicAnimation class]];
+				});
+				it(@"should return a CABasicAnimation for the stackedAngle key", ^{
+					id animation = [[sut class] defaultAnimationForKey:NSStringFromSelector(@selector(stackedAngle))];
+					
+					[[animation should] beKindOfClass:[CABasicAnimation class]];
+				});
+			});
 		});
 		context(@"NSView overrides", ^{
 			it(@"should not be flipped", ^{
