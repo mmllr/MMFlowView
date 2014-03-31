@@ -674,23 +674,6 @@ static NSString * const kLayoutKey = @"layout";
 - (MMScrollBarLayer*)createScrollBarLayer
 {
 	MMScrollBarLayer *layer = [[MMScrollBarLayer alloc] init];
-	__weak MMFlowView *weakSelf = self;
-	[layer setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
-								   readBlock:^id{
-									   MMFlowView *strongSelf = weakSelf;
-									   return @(((double)(strongSelf.selectedIndex)) / (strongSelf.numberOfItems - 1));
-								   }
-								  writeBlock:^(id value) {
-									  MMFlowView *strongSelf = weakSelf;
-									  NSInteger index = [value doubleValue] * (MAX( 0, strongSelf.numberOfItems - 1));
-									  strongSelf.selectedIndex = index;
-								  }];
-
-	CALayer *knobLayer = [layer.sublayers firstObject];
-	[knobLayer setReadableAccessibilityAttribute:NSAccessibilityValueAttribute withBlock:^id{
-		MMFlowView *strongSelf = weakSelf;
-		return @(((double)(strongSelf.selectedIndex)) / (strongSelf.numberOfItems - 1));
-	}];
 	layer.scrollBarDelegate = self;
 	return layer;
 }

@@ -102,6 +102,21 @@ static const CGFloat kMinimumKnobWidth = 40.;
 	[self setReadableAccessibilityAttribute:NSAccessibilityOrientationAttribute withBlock:^id{
 		return NSAccessibilityHorizontalOrientationValue;
 	}];
+	__weak typeof(self) weakSelf = self;
+	[self setWritableAccessibilityAttribute:NSAccessibilityValueAttribute readBlock:^id{
+		MMScrollBarLayer *strongSelf = weakSelf;
+		
+		if ([strongSelf.scrollBarDelegate respondsToSelector:@selector(currentKnobPositionInScrollBarLayer:)]) {
+			return @([strongSelf.scrollBarDelegate currentKnobPositionInScrollBarLayer:strongSelf]);
+		}
+		return @0;
+	} writeBlock:^(id value) {
+		MMScrollBarLayer *strongSelf = weakSelf;
+
+		if ([strongSelf.scrollBarDelegate respondsToSelector:@selector(scrollBarLayer:knobDraggedToPosition:)]) {
+			[strongSelf.scrollBarDelegate scrollBarLayer:strongSelf knobDraggedToPosition:[value doubleValue]];
+		}
+	}];
 }
 
 - (void)mouseDownAtPoint:(CGPoint)pointInLayerCoordinates

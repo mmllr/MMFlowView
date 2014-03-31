@@ -200,6 +200,72 @@ describe(@"MMScrollBarLayer", ^{
 			it(@"should be enabled", ^{
 				[[[sut accessibilityAttributeValue:NSAccessibilityEnabledAttribute] should] beYes];
 			});
+			context(@"NSAccessibilityValueAttribute", ^{
+				__block id delegateMock = nil;
+				const CGFloat expectedKnobPosition = .5;
+
+				beforeEach(^{
+					delegateMock = [KWMock nullMockForProtocol:@protocol(MMScrollBarDelegate)];
+					[delegateMock stub:@selector(currentKnobPositionInScrollBarLayer:) andReturn:theValue(expectedKnobPosition)];
+					sut.scrollBarDelegate = delegateMock;
+				});
+				afterEach(^{
+					delegateMock = nil;
+				});
+				context(@"reading the attribute", ^{
+					it(@"should have a NSAccessibilityValueAttribute", ^{
+						[[[sut accessibilityAttributeNames] should] contain:NSAccessibilityValueAttribute];
+					});
+					it(@"should ask the scrollbar delegate for the current position", ^{
+						[[delegateMock should] receive:@selector(currentKnobPositionInScrollBarLayer:) withArguments:sut];
+						
+						[sut accessibilityAttributeValue:NSAccessibilityValueAttribute];
+					});
+					
+					it(@"should return the current knob position from the scroll bar delegate", ^{
+						[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] equal:theValue(expectedKnobPosition)];
+					});
+				});
+				context(@"setting the attribute", ^{
+					it(@"should be writable", ^{
+						[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityValueAttribute]) should] beYes];
+					});
+
+					it(@"should tell the scroll bar delegate to set the new knob position", ^{
+						CGFloat newPosition = .9;
+
+						[[delegateMock should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(newPosition)];
+						
+						[sut accessibilitySetValue:@(newPosition) forAttribute:NSAccessibilityValueAttribute];
+					});
+				});
+				
+				it(@"should return zero when no scroll bar delegate is set", ^{
+					sut.scrollBarDelegate = nil;
+
+					[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] beZero];
+				});
+				context(@"when having an incomplete scroll bar delegate", ^{
+					beforeEach(^{
+						delegateMock = [KWMock mock];
+						sut.scrollBarDelegate = delegateMock;
+					});
+					it(@"should return zero for getting the NSAccessibilityValueAttribute", ^{
+						[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] beZero];
+					});
+					it(@"should not ask the scroll bar delegate for the current position", ^{
+						[[delegateMock shouldNot] receive:@selector(currentKnobPositionInScrollBarLayer:)];
+
+						[sut accessibilityAttributeValue:NSAccessibilityValueAttribute];
+					});
+					it(@"should not ask the scroll bar delegate to change the knob position when setting the NSAccessibilityValueAttribute", ^{
+						[[delegateMock shouldNot] receive:@selector(scrollBarLayer:knobDraggedToPosition:)];
+
+						[sut accessibilitySetValue:@(.4) forAttribute:NSAccessibilityValueAttribute];
+					});
+				});
+				
+			});
 		});
 		context(NSStringFromSelector(@selector(layoutSublayers)), ^{
 			context(@"when the content rect bigger than visible rect", ^{

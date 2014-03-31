@@ -43,10 +43,22 @@ static const CGFloat kCornerRadius = 9.;
 
 - (void)setupAccessibility
 {
-	// NSAccessibility
 	[self setReadableAccessibilityAttribute:NSAccessibilityRoleAttribute withBlock:^id{
 		return NSAccessibilityValueIndicatorRole;
 	}];
+	__weak typeof(self) weakSelf = self;
+	[self setWritableAccessibilityAttribute:NSAccessibilityValueAttribute
+								  readBlock:^id{
+									  MMScrollKnobLayer *strongSelf = weakSelf;
+									  id parent = [strongSelf accessibilityAttributeValue:NSAccessibilityParentAttribute];
+									  return [parent accessibilityAttributeValue:NSAccessibilityValueAttribute];
+								  }
+								 writeBlock:^(id value) {
+									 MMScrollKnobLayer *strongSelf = weakSelf;
+									 id parent = [strongSelf accessibilityAttributeValue:NSAccessibilityParentAttribute];
+
+									 [parent accessibilitySetValue:value forAttribute:NSAccessibilityValueAttribute];
+								 }];
 }
 
 - (void)setupInitialValues

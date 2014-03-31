@@ -30,6 +30,7 @@
 
 #import "Kiwi.h"
 #import "MMScrollKnobLayer.h"
+#import "MMScrollBarLayer.h"
 
 SPEC_BEGIN(MMScrollKnobLayerSpec)
 
@@ -117,6 +118,43 @@ describe(@"MMScrollKnobLayer", ^{
 			});
 			it(@"should be enabled", ^{
 				[[[sut accessibilityAttributeValue:NSAccessibilityEnabledAttribute] should] beYes];
+			});
+			context(@"NSAccessibilityValueAttribute", ^{
+				__block MMScrollBarLayer *axParentMock = nil;
+				CGFloat expectedPosition = .5;
+	
+				beforeEach(^{
+					axParentMock = [MMScrollBarLayer nullMock];
+					[axParentMock stub:@selector(accessibilityIsIgnored) andReturn:theValue(NO)];
+					[axParentMock stub:@selector(accessibilityAttributeValue:) andReturn:@(expectedPosition) withArguments:NSAccessibilityValueAttribute];
+					[sut stub:@selector(superlayer) andReturn:axParentMock];
+				});
+				context(@"reading the attribute", ^{
+					it(@"should have the attribute", ^{
+						[[[sut accessibilityAttributeNames] should] contain:NSAccessibilityValueAttribute];
+					});
+					it(@"should ask its ax parent (which is the scroll bar) for its value", ^{
+						[[axParentMock should] receive:@selector(accessibilityAttributeValue:) withArguments:NSAccessibilityValueAttribute];
+
+						[sut accessibilityAttributeValue:NSAccessibilityValueAttribute];
+					});
+					it(@"should return the value of the ax parent (which is the scroll bar)", ^{
+						[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] equal:@(expectedPosition)];
+					});
+				});
+				context(@"setting the attribute", ^{
+					it(@"should be writabe", ^{
+						[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityValueAttribute]) should] beYes];
+					});
+					it(@"should ask its ax parent (which is the scroll bar) to set the value", ^{
+						[[axParentMock should] receive:@selector(accessibilitySetValue:forAttribute:) withArguments:@.3, NSAccessibilityValueAttribute];
+						
+						[sut accessibilitySetValue:@.3 forAttribute:NSAccessibilityValueAttribute];
+					});
+					it(@"should return the value of the ax parent (which is the scroll bar)", ^{
+						[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] equal:@(expectedPosition)];
+					});
+				});
 			});
 		});
 	});
