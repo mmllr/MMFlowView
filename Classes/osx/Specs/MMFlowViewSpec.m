@@ -914,8 +914,40 @@ describe(@"MMFlowView", ^{
 				[[[sut trackingAreas] should] beEmpty];
 			});
 		});
+		context(NSStringFromSelector(@selector(togglePreviewPanel:)), ^{
+			__block QLPreviewPanel *previewPanelMock = nil;
+			
+			beforeEach(^{
+				previewPanelMock = [QLPreviewPanel nullMock];
+				[[QLPreviewPanel class] stub:@selector(sharedPreviewPanel) andReturn:previewPanelMock];
+			});
+			afterEach(^{
+				previewPanelMock = nil;
+			});
+			context(@"when the shared preview panel exists and when it is visible", ^{
+				beforeEach(^{
+					[[QLPreviewPanel class] stub:@selector(sharedPreviewPanelExists) andReturn:theValue(YES)];
+					[previewPanelMock stub:@selector(isVisible) andReturn:theValue(YES)];
+				});
+				it(@"should become ordered out", ^{
+					[[previewPanelMock should] receive:@selector(orderOut:) withArguments:sut];
+					
+					[sut togglePreviewPanel:nil];
+				});
+			});
+			context(@"when the shared preview panel exists and when it is not visible", ^{
+				beforeEach(^{
+					[[QLPreviewPanel class] stub:@selector(sharedPreviewPanelExists) andReturn:theValue(YES)];
+					[previewPanelMock stub:@selector(isVisible) andReturn:theValue(NO)];
+				});
+				it(@"should become ordered out", ^{
+					[[previewPanelMock should] receive:@selector(makeKeyAndOrderFront:) withArguments:sut];
+					
+					[sut togglePreviewPanel:nil];
+				});
+			});
+		});
 	});
-	
 });
 
 

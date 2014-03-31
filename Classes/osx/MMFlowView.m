@@ -514,12 +514,12 @@ static NSString * const kLayoutKey = @"layout";
 #pragma mark -
 #pragma mark IBActions
 
-- (IBAction)togglePreviewPanel:(id)previewPanel
+- (IBAction)togglePreviewPanel:(id)sender
 {
     if ([QLPreviewPanel sharedPreviewPanelExists] && [[QLPreviewPanel sharedPreviewPanel] isVisible]) {
-        [[QLPreviewPanel sharedPreviewPanel] orderOut:nil];
+        [[QLPreviewPanel sharedPreviewPanel] orderOut:self];
     } else {
-        [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
+        [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:self];
     }
 }
 
