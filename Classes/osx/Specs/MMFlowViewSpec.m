@@ -681,6 +681,24 @@ describe(@"MMFlowView", ^{
 					[[datasourceMock should] receive:@selector(numberOfItemsInFlowView:)];
 					[sut reloadContent];
 				});
+				context(@"when having a incomplete datasource", ^{
+					beforeEach(^{
+						datasourceMock = [KWMock nullMock];
+						sut.dataSource = datasourceMock;
+					});
+					context(NSStringFromSelector(@selector(reloadContent)), ^{
+						it(@"should set the number of items to zero", ^{
+							[sut reloadContent];
+
+							[[theValue(sut.numberOfItems) should] beZero];
+						});
+						it(@"should not ask the datasource for the number of items", ^{
+							[[datasourceMock shouldNot] receive:@selector(numberOfItemsInFlowView:)];
+
+							[sut reloadContent];
+						});
+					});
+				});
 			});
 			context(@"one item", ^{
 				NSString *expectedTitle = @"0";
