@@ -312,7 +312,7 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)setTitleFont:(NSFont*)aFont
 {
-	self.titleLayer.font = (__bridge CFTypeRef)(aFont);
+	self.titleLayer.font = (__bridge CFTypeRef)aFont;
 }
 
 - (CGFloat)titleSize

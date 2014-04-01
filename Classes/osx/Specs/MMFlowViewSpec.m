@@ -180,6 +180,22 @@ describe(@"MMFlowView", ^{
 					[sut setTitleColor:colorMock];
 				});
 			});
+
+			context(NSStringFromSelector(@selector(setTitleFont:)), ^{
+				__block NSFont *fontMock = nil;
+
+				beforeEach(^{
+					fontMock = [NSFont nullMock];
+				});
+				afterEach(^{
+					fontMock = nil;
+				});
+				it(@"should set the font on the title layer", ^{
+					[[titleLayerMock should] receive:@selector(setFont:) withArguments:[KWAny any]];
+
+					[sut setTitleFont:fontMock];
+				});
+			});
 		});
 
 		context(NSStringFromSelector(@selector(coverFlowLayout)), ^{
