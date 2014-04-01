@@ -458,23 +458,6 @@ static NSString * const kLayoutKey = @"layout";
 	return YES;
 }
 
-- (void)viewWillMoveToWindow:(NSWindow *)newWindow
-{
-	BOOL inWindow = [self window] != nil;
-	BOOL willBeInWindow = newWindow != nil;
-	
-	if (willBeInWindow && !inWindow) {
-		[self setupLayers];
-		[self setupTrackingAreas];
-		[self setupNotifications];
-	}
-	else if (inWindow && !willBeInWindow) {
-		[self teardownNotifications];
-		self.layer = nil;
-	}
-	[super viewWillMoveToWindow:newWindow];
-}
-
 - (void)viewWillMoveToSuperview:(NSView *)newSuperview
 {
 	BOOL willBeInSuperview = newSuperview != nil;
@@ -708,15 +691,5 @@ static NSString * const kLayoutKey = @"layout";
 {
 }
 
-#pragma mark -
-#pragma mark Notifications
-
-- (void)setupNotifications
-{
-}
-
-- (void)teardownNotifications
-{
-}
 
 @end
