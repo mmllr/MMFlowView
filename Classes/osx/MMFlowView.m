@@ -327,7 +327,7 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)setTitleColor:(NSColor*)aColor
 {
-	self.titleLayer.foregroundColor = [ aColor CGColor ];
+	self.titleLayer.foregroundColor = [aColor CGColor];
 }
 
 - (void)setSelectedIndex:(NSUInteger)index

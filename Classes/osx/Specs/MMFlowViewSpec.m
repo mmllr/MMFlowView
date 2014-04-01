@@ -108,28 +108,80 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
-		context(@"NSView overrides", ^{
-			it(@"should not be flipped", ^{
-				[[theValue([sut isFlipped]) should] beNo];
-			});
-			it(@"should be opaque", ^{
-				[[theValue([sut isOpaque]) should] beYes];
-			});
-			it(@"should need panel to become to key", ^{
-				[[theValue([sut needsPanelToBecomeKey]) should] beYes];
-			});
-			it(@"should accept touch events", ^{
-				[[theValue([sut acceptsTouchEvents]) should] beYes];
-			});
-			it(@"should have no intrinsinc content size", ^{
-				NSSize expectedContentSite = NSMakeSize(NSViewNoInstrinsicMetric, NSViewNoInstrinsicMetric);
 
-				[[theValue(sut.intrinsicContentSize) should] equal:theValue(expectedContentSite)];
+		it(@"should exist", ^{
+			[[sut shouldNot] beNil];
+		});
+		it(@"should have no items", ^{
+			[[theValue(sut.numberOfItems) should] equal:theValue(0)];
+		});
+		it(@"shoud have no item selected", ^{
+			[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
+		});
+		it(@"should have an empty title", ^{
+			[[sut.title should] equal:@""];
+		});
+		it(@"should have a title size of 18", ^{
+			[[theValue(sut.titleSize) should] equal:theValue(18)];
+		});
+		it(@"should be registered for url pasteboard type", ^{
+			[[[sut registeredDraggedTypes] should] contain:NSURLPboardType];
+		});
+		it(@"should have an empty datasource", ^{
+			[[(id)sut.dataSource should] beNil];
+		});
+
+		context(@"title layer interaction", ^{
+			__block CATextLayer *titleLayerMock = nil;
+			CGFloat expectedFontSize = 30;
+			
+			beforeEach(^{
+				titleLayerMock = [CATextLayer nullMock];
+				sut.titleLayer = titleLayerMock;
 			});
-			it(@"should not translate autoresizing mask into constraints", ^{
-				[[theValue([sut translatesAutoresizingMaskIntoConstraints]) should] beNo];
+			afterEach(^{
+				titleLayerMock = nil;
+			});
+			context(NSStringFromSelector(@selector(titleSize)), ^{
+				
+				
+				it(@"should set the size on the title layer", ^{
+					
+					[[titleLayerMock should] receive:@selector(setFontSize:) withArguments:theValue(expectedFontSize)];
+					
+					sut.titleSize = expectedFontSize;
+				});
+				it(@"should return the size of the title layer", ^{
+					[[titleLayerMock should] receive:@selector(fontSize) andReturn:theValue(expectedFontSize)];
+					
+					CGFloat size = sut.titleSize;
+					[[theValue(size) should] equal:expectedFontSize withDelta:0.00001];
+				});
+			});
+
+			context(NSStringFromSelector(@selector(setTitleColor:)), ^{
+				__block NSColor *colorMock = nil;
+				__block CGColorRef colorRef = NULL;
+
+				beforeEach(^{
+					colorMock = [NSColor nullMock];
+					colorRef = CGColorCreateGenericGray(1, 1);
+					[colorMock stub:@selector(CGColor) andReturn:theValue(colorRef)];
+				});
+				afterEach(^{
+					colorMock = nil;
+					if (colorRef) {
+						CGColorRelease(colorRef);
+					}
+				});
+				it(@"should set the color on the title layer", ^{
+					[[titleLayerMock should] receive:@selector(setForegroundColor:) withArguments:theValue(colorRef)];
+
+					[sut setTitleColor:colorMock];
+				});
 			});
 		});
+
 		context(NSStringFromSelector(@selector(coverFlowLayout)), ^{
 			it(@"should have a coverFlowLayout", ^{
 				[[sut.coverFlowLayout shouldNot] beNil];
@@ -230,27 +282,7 @@ describe(@"MMFlowView", ^{
 				});
 			});
 		});
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should have no items", ^{
-			[[theValue(sut.numberOfItems) should] equal:theValue(0)];
-		});
-		it(@"shoud have no item selected", ^{
-			[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
-		});
-		it(@"should have an empty title", ^{
-			[[sut.title should] equal:@""];
-		});
-		it(@"should have a title size of 18", ^{
-			[[theValue(sut.titleSize) should] equal:theValue(18)];
-		});
-		it(@"should be registered for url pasteboard type", ^{
-			[[[sut registeredDraggedTypes] should] contain:NSURLPboardType];
-		});
-		it(@"should have an empty datasource", ^{
-			[[(id)sut.dataSource should] beNil];
-		});
+
 		context(@"image cache", ^{
 			it(@"should have an image cache", ^{
 				[[(id)sut.imageCache shouldNot] beNil];

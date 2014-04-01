@@ -64,6 +64,26 @@ describe(@"NSView overrides", ^{
 	afterEach(^{
 		sut = nil;
 	});
+	it(@"should not be flipped", ^{
+		[[theValue([sut isFlipped]) should] beNo];
+	});
+	it(@"should be opaque", ^{
+		[[theValue([sut isOpaque]) should] beYes];
+	});
+	it(@"should need panel to become to key", ^{
+		[[theValue([sut needsPanelToBecomeKey]) should] beYes];
+	});
+	it(@"should accept touch events", ^{
+		[[theValue([sut acceptsTouchEvents]) should] beYes];
+	});
+	it(@"should have no intrinsinc content size", ^{
+		NSSize expectedContentSite = NSMakeSize(NSViewNoInstrinsicMetric, NSViewNoInstrinsicMetric);
+		
+		[[theValue(sut.intrinsicContentSize) should] equal:theValue(expectedContentSite)];
+	});
+	it(@"should not translate autoresizing mask into constraints", ^{
+		[[theValue([sut translatesAutoresizingMaskIntoConstraints]) should] beNo];
+	});
 	context(NSStringFromSelector(@selector(viewWillMoveToSuperview:)), ^{
 		__block NSView *superViewMock = nil;
 
