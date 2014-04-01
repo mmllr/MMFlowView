@@ -88,11 +88,20 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	if (self.imageRepresentationKeyPath) {
 		[observedItemKeyPaths addObject:self.imageRepresentationKeyPath];
 	}
+	else {
+		[observedItemKeyPaths addObject:NSStringFromSelector(@selector(imageItemRepresentation))];
+	}
 	if (self.imageRepresentationTypeKeyPath) {
 		[observedItemKeyPaths addObject:self.imageRepresentationTypeKeyPath];
 	}
+	else {
+		[observedItemKeyPaths addObject:NSStringFromSelector(@selector(imageItemRepresentationType))];
+	}
 	if (self.imageUIDKeyPath) {
 		[observedItemKeyPaths addObject:self.imageUIDKeyPath];
+	}
+	else {
+		[observedItemKeyPaths addObject:NSStringFromSelector(@selector(imageItemUID))];
 	}
 	if (self.imageTitleKeyPath) {
 		[observedItemKeyPaths addObject:self.imageTitleKeyPath];
@@ -128,16 +137,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 									   NSObservedKeyPathKey: [keyPath copy],
 									   NSOptionsKey: options ? [options copy] : @{} };
 
-		// set keypaths to MMFlowViewItem defaults
-		if ( !self.imageRepresentationKeyPath ) {
-			self.imageRepresentationKeyPath = kMMFlowViewItemImageRepresentationKey;
-		}
-		if ( !self.imageRepresentationTypeKeyPath ) {
-			self.imageRepresentationTypeKeyPath = kMMFlowViewItemImageRepresentationTypeKey;
-		}
-		if ( !self.imageUIDKeyPath ) {
-			self.imageUIDKeyPath = kMMFlowViewItemImageUIDKey;
-		}
 		[observableController addObserver:self
 							   forKeyPath:keyPath
 								  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial

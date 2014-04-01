@@ -121,13 +121,28 @@ describe(@"NSKeyValueObserving", ^{
 					sut.imageRepresentationKeyPath = @"testImageRepresentation";
 					[[sut.observedItemKeyPaths should] contain:@"testImageRepresentation"];
 				});
+				it(@"should have the default MMFlowViewItem imageItemRepresentation keypath when setting to nil", ^{
+					sut.imageRepresentationKeyPath = nil;
+					
+					[[sut.observedItemKeyPaths should] contain:NSStringFromSelector(@selector(imageItemRepresentation))];
+				});
 				it(@"should contain the imageRepresentationTypeKeyPath (testImageRepresentationType)", ^{
 					sut.imageRepresentationTypeKeyPath = @"testImageRepresentationType";
 					[[sut.observedItemKeyPaths should] contain:@"testImageRepresentationType"];
 				});
+				it(@"should have the default MMFlowViewItem imageItemRepresentationType keypath when setting to nil", ^{
+					sut.imageRepresentationTypeKeyPath = nil;
+					
+					[[sut.observedItemKeyPaths should] contain:NSStringFromSelector(@selector(imageItemRepresentationType))];
+				});
 				it(@"should contain the imageUIDKeyPath (testImageUID)", ^{
 					sut.imageUIDKeyPath = @"testImageUID";
 					[[sut.observedItemKeyPaths should] contain:@"testImageUID"];
+				});
+				it(@"should have the default MMFlowViewItem imageItemUID keypath when setting to nil", ^{
+					sut.imageUIDKeyPath = nil;
+					
+					[[sut.observedItemKeyPaths should] contain:NSStringFromSelector(@selector(imageItemUID))];
 				});
 				it(@"should contain the imageTitleKeyPath (testTitle)", ^{
 					sut.imageTitleKeyPath = @"testTitle";
