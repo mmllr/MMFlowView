@@ -153,10 +153,9 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 - (void)unbind:(NSString*)binding
 {
 	if ([binding isEqualToString:NSContentArrayBinding] && [self infoForBinding:NSContentArrayBinding] ) {
-		[self.contentArrayController
-		 removeObserver:self
-		 forKeyPath:self.contentArrayKeyPath
-		 context:kMMFlowViewContentArrayObservationContext];
+		[self.contentArrayController removeObserver:self
+										 forKeyPath:self.contentArrayKeyPath
+											context:kMMFlowViewContentArrayObservationContext];
 		[self.layer setNeedsDisplay];
 		self.contentArrayBindingInfo = nil;
 	}
@@ -208,7 +207,7 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		[removed removeObjectsInArray:newItems];
 		[removed mm_removeObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		self.observedItems = newItems;
-		
+
 		[self reloadContent];
 	}
 	else if (context == kMMFlowViewIndividualItemKeyPathsObservationContext) {
