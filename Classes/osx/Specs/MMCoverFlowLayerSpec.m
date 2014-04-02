@@ -199,6 +199,24 @@ describe(@"MMCoverFlowLayer", ^{
 			it(@"should have an instanceBlueOffset equal to reflectionOffset", ^{
 				[[theValue(replicatorLayer.instanceBlueOffset) should] equal:sut.reflectionOffset withDelta:.000001];
 			});
+			context(@"core animation actions", ^{
+				__block NSDictionary *actions = nil;
+				beforeEach(^{
+					actions = replicatorLayer.actions;
+				});
+				afterEach(^{
+					actions = nil;
+				});
+				it(@"should have disabled the bounds action", ^{
+					[[actions[NSStringFromSelector(@selector(bounds))] should] equal:[NSNull null]];
+				});
+				it(@"should have disabled the position action", ^{
+					[[actions[NSStringFromSelector(@selector(position))] should] equal:[NSNull null]];
+				});
+				it(@"should have disabled the instanceTransform action", ^{
+					[[actions[NSStringFromSelector(@selector(instanceTransform))] should] equal:[NSNull null]];
+				});
+			});
 			context(NSStringFromSelector(@selector(instanceTransform)), ^{
 				__block NSValue *expectedTransform = nil;
 				beforeEach(^{

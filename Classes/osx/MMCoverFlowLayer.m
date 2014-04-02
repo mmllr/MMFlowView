@@ -83,6 +83,8 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	layer.preservesDepth = YES;
 	layer.instanceBlueOffset = layer.instanceGreenOffset = layer.instanceRedOffset = kDefaultReflectionOffset;
 	layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+	[layer mm_disableImplicitAnimationForKey:NSStringFromSelector(@selector(instanceTransform))];
+	[layer mm_disableImplicitPositionAndBoundsAnimations];
 	return layer;
 }
 
@@ -235,6 +237,7 @@ static void* kReloadContentObservationContext = @"reloadContent";
 	}
 	self.layout.visibleSize = self.bounds.size;
 	self.replicatorLayer.instanceTransform = CATransform3DConcat( CATransform3DMakeScale(1, -1, 1), CATransform3DMakeTranslation(0, -self.layout.itemSize.height, 0));
+
 	[CATransaction begin];
 	[CATransaction setDisableActions:self.inLiveResize];
 	[CATransaction setAnimationDuration:self.scrollDuration];
