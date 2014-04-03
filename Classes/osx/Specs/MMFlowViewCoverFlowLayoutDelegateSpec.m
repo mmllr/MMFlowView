@@ -16,6 +16,7 @@ SPEC_BEGIN(MMFlowViewCoverFlowLayoutDelegateSpec)
 
 describe(NSStringFromProtocol(@protocol(MMCoverFlowLayoutDelegate)), ^{
 	__block MMFlowView *sut = nil;
+	__block id contentAdapterMock = nil;
 	__block CGImageRef testImageRef = NULL;
 	
 	beforeAll(^{
@@ -29,9 +30,12 @@ describe(NSStringFromProtocol(@protocol(MMCoverFlowLayoutDelegate)), ^{
 
 	beforeEach(^{
 		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+		contentAdapterMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
+		sut.contentAdapter = contentAdapterMock;
 	});
 	afterEach(^{
 		sut = nil;
+		contentAdapterMock = nil;
 	});
 	context(NSStringFromSelector(@selector(coverFLowLayout:aspectRatioForItem:)), ^{
 		it(@"should respond to coverFLowLayout:aspectRatioForItem:", ^{
@@ -45,7 +49,7 @@ describe(NSStringFromProtocol(@protocol(MMCoverFlowLayoutDelegate)), ^{
 			beforeEach(^{
 				itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 				[itemMock stub:@selector(imageItemUID) andReturn:testUID];
-				[sut stub:@selector(imageItemForIndex:) andReturn:itemMock];
+				[contentAdapterMock stub:@selector(objectAtIndexedSubscript:) andReturn:itemMock];
 
 				imageCacheMock = [KWMock nullMockForClass:[MMFlowViewImageCache class]];
 				sut.imageCache = imageCacheMock;

@@ -40,8 +40,6 @@ void * const kMMFlowViewItemKeyPathsObservationContext;
 @property (weak, nonatomic, readonly) NSArrayController *contentArrayController;
 @property (weak, nonatomic, readonly) NSString *contentArrayKeyPath;
 
-
-@property (weak, nonatomic,readonly) NSArray *observedItemKeyPaths;
 @property (nonatomic,readonly) BOOL bindingsEnabled;
 
 - (void)setUpObservations;

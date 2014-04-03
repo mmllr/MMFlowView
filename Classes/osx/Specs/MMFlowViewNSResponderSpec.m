@@ -328,12 +328,10 @@ describe(@"MMFlowView+NSResponder", ^{
 				});
 
 				beforeEach(^{
-					mockedDatasource = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
-					sut.dataSource = mockedDatasource;
-
 					itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 					[itemMock stub:@selector(imageItemUID) andReturn:imageUID];
 
+					mockedDatasource = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
 					[mockedDatasource stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
 
 					mockedPasteboard = [NSPasteboard nullMock];
@@ -350,6 +348,8 @@ describe(@"MMFlowView+NSResponder", ^{
 					[sut stub:@selector(indexOfItemAtPoint:) andReturn:theValue(selectedIndex)];
 					[sut stub:@selector(selectedIndex) andReturn:theValue(selectedIndex)];
 					[sut stub:@selector(selectedItemFrame) andReturn:theValue(stubbedItemFrame)];
+
+					sut.dataSource = mockedDatasource;
 				});
 				afterEach(^{
 					mockedDatasource = nil;
@@ -408,8 +408,12 @@ describe(@"MMFlowView+NSResponder", ^{
 					beforeEach(^{
 						mockedDatasource = [KWMock nullMock];
 						[mockedDatasource stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
+						[mockedDatasource stub:@selector(numberOfItemsInFlowView:) andReturn:theValue(5)];
 						sut.dataSource = mockedDatasource;
-						[sut stub:@selector(imageItemForIndex:) andReturn:itemMock];
+						id mockedContentAdapter = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
+						[mockedContentAdapter stub:@selector(objectAtIndexedSubscript:) andReturn:itemMock];
+						[mockedContentAdapter stub:@selector(count) andReturn:theValue(5)];
+						sut.contentAdapter = mockedContentAdapter;
 					});
 					it(@"should not ask the datasource for writing the item to the pasteboard", ^{
 						[[mockedDatasource shouldNot] receive:@selector(flowView:writeItemAtIndex:toPasteboard:)];

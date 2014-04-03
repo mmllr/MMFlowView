@@ -143,6 +143,8 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 		__block KWCaptureSpy *factorySpy = nil;
 		__block void (^completionHandler)(CGImageRef image);
 		__block id itemMock = nil;
+		__block id contentAdapterMock = nil;
+
 		NSString *testRepresentationType = @"testRepresentationType";
 		NSString *testUID = @"testUID";
 
@@ -167,7 +169,10 @@ describe(NSStringFromProtocol(@protocol(MMFlowViewDataSource)), ^{
 			[itemMock stub:@selector(imageItemUID) andReturn:testUID];
 			[itemMock stub:@selector(imageItemRepresentationType) andReturn:testRepresentationType];
 			[itemMock stub:@selector(imageItemRepresentation) andReturn:testImage];
-			[sut stub:@selector(imageItemForIndex:) andReturn:itemMock];
+
+			contentAdapterMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
+			[contentAdapterMock stub:@selector(objectAtIndexedSubscript:) andReturn:itemMock];
+			sut.contentAdapter = contentAdapterMock;
 		});
 		afterEach(^{
 			contentLayer = nil;

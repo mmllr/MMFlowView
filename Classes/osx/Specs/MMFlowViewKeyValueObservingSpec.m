@@ -100,56 +100,6 @@ describe(@"NSKeyValueObserving", ^{
 		afterEach(^{
 			sut = nil;
 		});
-		it(@"should initially have the default MMFlowViewItem imageItemRepresentation keypath", ^{
-			[[sut.imageRepresentationKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentation))];
-		});
-		it(@"should initially have the default MMFlowViewItem imageItemRepresentationType keypath", ^{
-			[[sut.imageRepresentationTypeKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentationType))];
-		});
-		it(@"should initially have the default MMFlowViewItem imageItemUID keypath", ^{
-			[[sut.imageUIDKeyPath should] equal:NSStringFromSelector(@selector(imageItemUID))];
-		});
-		context(NSStringFromSelector(@selector(observedItemKeyPaths)), ^{
-			it(@"should initally have the non optional MMFlowViewItem keypaths", ^{
-				[[sut.observedItemKeyPaths should] haveCountOf:3];
-			});
-			it(@"should initially have the non optional MMFlowViewItems selectors", ^{
-				[[sut.observedItemKeyPaths should] containObjectsInArray:@[sut.imageUIDKeyPath, sut.imageRepresentationKeyPath, sut.imageRepresentationTypeKeyPath]];
-			});
-			context(@"when setting itemKeyPaths", ^{
-				it(@"should contain the imageRepresentationKeyPath (testImageRepresentation)", ^{
-					sut.imageRepresentationKeyPath = @"testImageRepresentation";
-					[[sut.observedItemKeyPaths should] contain:@"testImageRepresentation"];
-				});
-				it(@"should have the default MMFlowViewItem imageItemRepresentation keypath when setting to nil", ^{
-					sut.imageRepresentationKeyPath = nil;
-					
-					[[sut.observedItemKeyPaths should] contain:NSStringFromSelector(@selector(imageItemRepresentation))];
-				});
-				it(@"should contain the imageRepresentationTypeKeyPath (testImageRepresentationType)", ^{
-					sut.imageRepresentationTypeKeyPath = @"testImageRepresentationType";
-					[[sut.observedItemKeyPaths should] contain:@"testImageRepresentationType"];
-				});
-				it(@"should have the default MMFlowViewItem imageItemRepresentationType keypath when setting to nil", ^{
-					sut.imageRepresentationTypeKeyPath = nil;
-					
-					[[sut.observedItemKeyPaths should] contain:NSStringFromSelector(@selector(imageItemRepresentationType))];
-				});
-				it(@"should contain the imageUIDKeyPath (testImageUID)", ^{
-					sut.imageUIDKeyPath = @"testImageUID";
-					[[sut.observedItemKeyPaths should] contain:@"testImageUID"];
-				});
-				it(@"should have the default MMFlowViewItem imageItemUID keypath when setting to nil", ^{
-					sut.imageUIDKeyPath = nil;
-					
-					[[sut.observedItemKeyPaths should] contain:NSStringFromSelector(@selector(imageItemUID))];
-				});
-				it(@"should contain the imageTitleKeyPath (testTitle)", ^{
-					sut.imageTitleKeyPath = @"testTitle";
-					[[sut.observedItemKeyPaths should] contain:@"testTitle"];
-				});
-			});
-		});
 		context(@"bindings", ^{
 			__block NSArray *exposedBindings = nil;
 			__block NSArrayController *arrayController = nil;
@@ -173,18 +123,6 @@ describe(@"NSKeyValueObserving", ^{
 			it(@"should expose NSContentArrayBinding", ^{
 				[[exposedBindings should] contain:NSContentArrayBinding];
 			});
-			it(@"should expose kMMFlowViewImageRepresentationBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageRepresentationBinding];
-			});
-			it(@"should expose kMMFlowViewImageRepresentationTypeBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageRepresentationTypeBinding];
-			});
-			it(@"should expose kMMFlowViewImageUIDBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageUIDBinding];
-			});
-			it(@"should expose kMMFlowViewImageTitleBinding", ^{
-				[[exposedBindings should] contain:kMMFlowViewImageTitleBinding];
-			});
 			context(NSStringFromSelector(@selector(bind:toObject:withKeyPath:options:)), ^{
 				context(@"when binding the NSContentArrayBinding to an NSArrayController", ^{
 					beforeEach(^{
@@ -198,15 +136,6 @@ describe(@"NSKeyValueObserving", ^{
 					});
 					it(@"should have the same number of items", ^{
 						[[theValue(sut.numberOfItems) should] equal:theValue([mockedItems count])];
-					});
-					it(@"should have a default imageRepresentationKeyPath", ^{
-						[[sut.imageRepresentationKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentation))];
-					});
-					it(@"should have a default imageRepresentationTypeKeyPath ", ^{
-						[[sut.imageRepresentationTypeKeyPath should] equal:NSStringFromSelector(@selector(imageItemRepresentationType))];
-					});
-					it(@"should have a default imageUIDKeyPath ", ^{
-						[[sut.imageUIDKeyPath should] equal:NSStringFromSelector(@selector(imageItemUID))];
 					});
 					it(@"should return the arraycontroller for contentArrayController", ^{
 						[[sut.contentArrayController should] equal:arrayController];
@@ -241,50 +170,6 @@ describe(@"NSKeyValueObserving", ^{
 						});
 						it(@"should have the -bind:toObject:withKeyPath:options keyPath as NSObservedKeyPathKey", ^{
 							[[contentArrayBinding[NSObservedKeyPathKey] should] equal:arrangedObjectsKeyPath];
-						});
-					});
-					context(@"trigering KVO", ^{
-						beforeAll(^{
-							for (id itemMock in mockedItems) {
-								[itemMock stub:NSSelectorFromString(@"test")];
-							}
-						});
-						context(@"when changing imageRepresentationKeyPath", ^{
-							it(@"should stop observering for the old key path", ^{
-								[[sut.observedItems should] receive:@selector(mm_removeObserver:forKeyPaths:context:)
-													  withArguments:sut, @[sut.imageRepresentationKeyPath], [KWAny any]];
-								sut.imageRepresentationKeyPath = @"test";
-							});
-							it(@"should start observering for the new key path", ^{
-								[[sut.observedItems should] receive:@selector(mm_addObserver:forKeyPaths:context:)
-													  withArguments:sut, @[@"test"], [KWAny any]];
-								sut.imageRepresentationKeyPath = @"test";
-							});
-						});
-						context(@"when changing imageRepresentationTypeKeyPath", ^{
-							it(@"should stop observering for the old key path", ^{
-								[[sut.observedItems should] receive:@selector(mm_removeObserver:forKeyPaths:context:)
-													  withArguments:sut, @[sut.imageRepresentationTypeKeyPath], [KWAny any]];
-								sut.imageRepresentationTypeKeyPath = @"test";
-							});
-							it(@"should start observering for the new key path", ^{
-								[[sut.observedItems should] receive:@selector(mm_addObserver:forKeyPaths:context:)
-													  withArguments:sut, @[@"test"], [KWAny any]];
-								sut.imageRepresentationTypeKeyPath = @"test";
-							});
-						});
-						context(@"when changing imageUIDKeyPath", ^{
-							it(@"should stop observering for the old key path", ^{
-								[[sut.observedItems should] receive:@selector(mm_removeObserver:forKeyPaths:context:)
-													  withArguments:sut, @[sut.imageUIDKeyPath], [KWAny any]];
-								sut.imageUIDKeyPath = @"test";
-							});
-							it(@"should start observering for the new key path", ^{
-								[[sut.observedItems should] receive:@selector(mm_addObserver:forKeyPaths:context:)
-													  withArguments:sut, @[@"test"], [KWAny any]];
-								sut.imageUIDKeyPath = @"test";
-							});
-							
 						});
 					});
 					context(@"selection", ^{
@@ -324,7 +209,7 @@ describe(@"NSKeyValueObserving", ^{
 					it(@"should call the supers implementation", ^{
 						[[theValue(testingSuperInvoked) should] beYes];
 					});
-					context(@"infoForBinding:", ^{
+					context(NSStringFromSelector(@selector(infoForBinding:)), ^{
 						__block NSDictionary *bindingInfo = nil;
 						beforeEach(^{
 							bindingInfo = [sut infoForBinding:@"stackedAngle"];
@@ -342,7 +227,7 @@ describe(@"NSKeyValueObserving", ^{
 					
 				});
 			});
-			context(@"unbind:", ^{
+			context(NSStringFromSelector(@selector(unbind:)), ^{
 				context(NSContentArrayBinding, ^{
 					beforeEach(^{
 						[sut bind:NSContentArrayBinding toObject:arrayController withKeyPath:arrangedObjectsKeyPath options:nil];
@@ -374,11 +259,9 @@ describe(@"NSKeyValueObserving", ^{
 						[[theValue(testingSuperInvoked) should] beYes];
 					});
 				});
-
-				
 			});
 		});
-		context(@"observeValueForKeyPath:ofObject:change:context:", ^{
+		context(NSStringFromSelector(@selector(observeValueForKeyPath:ofObject:change:context:)), ^{
 			context(@"unhandled observing contexts", ^{
 				__block Method supersMethod;
 				__block Method testingMethod;

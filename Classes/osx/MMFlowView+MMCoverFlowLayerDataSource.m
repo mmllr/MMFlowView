@@ -60,8 +60,8 @@
 
 - (void)coverFlowLayer:(MMCoverFlowLayer *)coverFlowLayer willShowLayer:(CALayer *)contentLayer atIndex:(NSUInteger)itemIndex
 {
-	id item = [self imageItemForIndex:itemIndex];
-	NSString *itemUID = [self imageUIDForItem:item];
+	id<MMFlowViewItem> item = self.contentAdapter[itemIndex];
+	NSString *itemUID = item.imageItemUID;
 
 	CGImageRef cachedImage = [self.imageCache imageForUUID:itemUID];
 
@@ -71,8 +71,8 @@
 	}
 
 	self.imageFactory.maxImageSize = self.coverFlowLayout.itemSize;
-	[self.imageFactory createCGImageFromRepresentation:[self imageRepresentationForItem:item]
-											  withType:[self imageRepresentationTypeForItem:item]
+	[self.imageFactory createCGImageFromRepresentation:item.imageItemRepresentation
+											  withType:item.imageItemRepresentationType
 									 completionHandler:^(CGImageRef anImage) {
 										 [self setImage:anImage forContentLayer:contentLayer];
 										 [self.imageCache cacheImage:anImage withUUID:itemUID];

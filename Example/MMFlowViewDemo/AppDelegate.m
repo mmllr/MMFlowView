@@ -93,11 +93,7 @@
 	NSArray * paths = NSSearchPathForDirectoriesInDomains( NSMoviesDirectory, NSUserDomainMask, YES);
 	NSString *moviesPath = paths[0];
 	[ self loadItems:moviesPath withRepresentationType:kMMFlowViewQTMoviePathRepresentationType ];
-	// image loading via bindings
-	self.flowView.imageTitleKeyPath = @"title";
-	self.flowView.imageRepresentationKeyPath = @"image";
-	self.flowView.imageRepresentationTypeKeyPath = @"type";
-	self.flowView.imageUIDKeyPath = @"uid";
+
 	[ self.flowView bind:NSContentArrayBinding
 				toObject:self.itemArrayController
 			 withKeyPath:@"arrangedObjects"

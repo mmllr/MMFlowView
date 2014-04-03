@@ -36,8 +36,8 @@
 
 - (CGFloat)coverFLowLayout:(MMCoverFlowLayout *)theLayout aspectRatioForItem:(NSUInteger)itemIndex
 {
-	id item = [self imageItemForIndex:itemIndex];
-	NSString *imageUID = [self imageUIDForItem:item];
+	id<MMFlowViewItem> item = self.contentAdapter[itemIndex];
+	NSString *imageUID = item.imageItemUID;
 
 	CGImageRef cachedImage = [self.imageCache imageForUUID:imageUID];
 	if (cachedImage != NULL) {

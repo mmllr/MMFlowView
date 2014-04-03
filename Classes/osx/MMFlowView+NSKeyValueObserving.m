@@ -39,16 +39,6 @@ void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArra
 void * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
 void *const kMMFlowViewItemKeyPathsObservationContext = @"kMMFlowViewItemKeyPathsObservationContext";
 
-NSString * const kMMFlowViewImageRepresentationBinding = @"imageRepresentationKeyPath";
-NSString * const kMMFlowViewImageRepresentationTypeBinding = @"imageRepresentationTypeKeyPath";
-NSString * const kMMFlowViewImageUIDBinding = @"imageUIDKeyPath";
-NSString * const kMMFlowViewImageTitleBinding = @"imageTitleKeyPath";
-
-static NSString * const kMMFlowViewItemImageRepresentationKey = @"imageItemRepresentation";
-static NSString * const kMMFlowViewItemImageRepresentationTypeKey = @"imageItemRepresentationType";
-static NSString * const kMMFlowViewItemImageUIDKey = @"imageItemUID";
-static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
-
 @implementation MMFlowView (NSKeyValueObserving)
 
 + (NSArray*)observedItemKeyPaths
@@ -56,9 +46,9 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 	static NSArray *keys = nil;
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		keys = @[NSStringFromSelector(@selector(imageRepresentationKeyPath)),
-				 NSStringFromSelector(@selector(imageRepresentationTypeKeyPath)),
-				 NSStringFromSelector(@selector(imageUIDKeyPath))];
+		keys = @[NSStringFromSelector(@selector(imageItemRepresentation)),
+				 NSStringFromSelector(@selector(imageItemRepresentationType)),
+				 NSStringFromSelector(@selector(imageItemUID))];
 	});
 	return keys;
 }
@@ -80,33 +70,6 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 {
 	NSArray *array = [self.contentArrayController valueForKeyPath:self.contentArrayKeyPath];
 	return array ? array : @[];
-}
-
-- (NSArray*)observedItemKeyPaths
-{
-	NSMutableSet *observedItemKeyPaths = [NSMutableSet set];
-	if (self.imageRepresentationKeyPath) {
-		[observedItemKeyPaths addObject:self.imageRepresentationKeyPath];
-	}
-	else {
-		[observedItemKeyPaths addObject:NSStringFromSelector(@selector(imageItemRepresentation))];
-	}
-	if (self.imageRepresentationTypeKeyPath) {
-		[observedItemKeyPaths addObject:self.imageRepresentationTypeKeyPath];
-	}
-	else {
-		[observedItemKeyPaths addObject:NSStringFromSelector(@selector(imageItemRepresentationType))];
-	}
-	if (self.imageUIDKeyPath) {
-		[observedItemKeyPaths addObject:self.imageUIDKeyPath];
-	}
-	else {
-		[observedItemKeyPaths addObject:NSStringFromSelector(@selector(imageItemUID))];
-	}
-	if (self.imageTitleKeyPath) {
-		[observedItemKeyPaths addObject:self.imageTitleKeyPath];
-	}
-	return [observedItemKeyPaths allObjects];
 }
 
 - (BOOL)bindingsEnabled
@@ -168,21 +131,12 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 {
 	[self.coverFlowLayout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
 	[self.coverFlowLayout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
-
-	for (NSString *keyPath in [[self class] observedItemKeyPaths]) {
-		[self addObserver:self
-			   forKeyPath:keyPath options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-				  context:kMMFlowViewItemKeyPathsObservationContext];
-	}
 }
 
 - (void)tearDownObservations
 {
 	[self.coverFlowLayout unbind:@"stackedAngle"];
 	[self.coverFlowLayout unbind:@"interItemSpacing"];
-	for (NSString *keyPath in [[self class] observedItemKeyPaths]) {
-		[self removeObserver:self forKeyPath:keyPath context:kMMFlowViewItemKeyPathsObservationContext];
-	}
 }
 
 #pragma mark -
@@ -201,33 +155,27 @@ static NSString * const kMMFlowViewItemImageTitleKey = @"imageItemTitle";
 		
 		NSMutableArray *onlyNew = [NSMutableArray arrayWithArray:newItems];
 		[onlyNew removeObjectsInArray:self.observedItems];
-		[onlyNew mm_addObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
+		[onlyNew mm_addObserver:self forKeyPaths:[[self class] observedItemKeyPaths] context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		
 		NSMutableArray *removed = [self.observedItems mutableCopy];
 		[removed removeObjectsInArray:newItems];
-		[removed mm_removeObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
+		[removed mm_removeObserver:self forKeyPaths:[[self class] observedItemKeyPaths] context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		self.observedItems = newItems;
 
 		[self reloadContent];
 	}
 	else if (context == kMMFlowViewIndividualItemKeyPathsObservationContext) {
-		if ( [keyPath isEqualToString:self.imageUIDKeyPath] ||
-			[keyPath isEqualToString:self.imageRepresentationKeyPath] ||
-			[keyPath isEqualToString:self.imageRepresentationTypeKeyPath] ) {
-			[self.imageCache removeImageWithUUID:[observedObject valueForKeyPath:self.imageUIDKeyPath]];
+		id<MMFlowViewItem> item = (id<MMFlowViewItem>)observedObject;
+
+		if ( [keyPath isEqualToString:NSStringFromSelector(@selector(imageItemRepresentation))] ||
+			[keyPath isEqualToString:NSStringFromSelector(@selector(imageItemRepresentationType))] ||
+			[keyPath isEqualToString:NSStringFromSelector(@selector(imageItemUID))] ) {
+			[self.imageCache removeImageWithUUID:item.imageItemUID];
 			[self.coverFlowLayer setNeedsLayout];
 		}
-		else if ( [keyPath isEqualToString:self.imageTitleKeyPath] ) {
+		else if ( [keyPath isEqualToString:NSStringFromSelector(@selector(imageItemTitle))] ) {
 			self.title = [observedObject valueForKeyPath:keyPath];
 		}
-	}
-	else if (context == kMMFlowViewItemKeyPathsObservationContext) {
-		[self.observedItems mm_removeObserver:self
-								  forKeyPaths:@[change[NSKeyValueChangeOldKey]]
-									  context:kMMFlowViewIndividualItemKeyPathsObservationContext];
-		[self.observedItems mm_addObserver:self
-							   forKeyPaths:@[change[NSKeyValueChangeNewKey]]
-								   context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 	}
 	else {
 		[super observeValueForKeyPath:keyPath

@@ -48,6 +48,7 @@
 #import "MMNSDataImageDecoder.h"
 #import "MMNSImageDecoder.h"
 #import "MMFlowView+MMCoverFlowLayoutDelegate.h"
+#import "MMFlowViewDatasourceContentAdapter.h"
 
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
 NSString * const kMMFlowViewCGImageRepresentationType = @"MMFlowViewCGImageRepresentationType";
@@ -185,10 +186,6 @@ static NSString * const kLayoutKey = @"layout";
 + (void)initialize {
 	if ( self == [MMFlowView class] ) {
 		[self exposeBinding:NSContentArrayBinding];
-		[self exposeBinding:kMMFlowViewImageRepresentationBinding];
-		[self exposeBinding:kMMFlowViewImageRepresentationTypeBinding];
-		[self exposeBinding:kMMFlowViewImageUIDBinding];
-		[self exposeBinding:kMMFlowViewImageTitleBinding];
 		[self setCellClass:[NSActionCell class] ];
 	}
 }
@@ -205,9 +202,6 @@ static NSString * const kLayoutKey = @"layout";
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		_coverFlowLayout = [[MMCoverFlowLayout alloc] init];
 		_coverFlowLayout.delegate = self;
-		_imageRepresentationKeyPath = [NSStringFromSelector(@selector(imageItemRepresentation)) copy];
-		_imageUIDKeyPath = [NSStringFromSelector(@selector(imageItemUID)) copy];
-		_imageRepresentationTypeKeyPath = [NSStringFromSelector(@selector(imageItemRepresentationType)) copy];
 		[self setInitialDefaults];
 		[self setupLayers];
 		self.title = @"";
@@ -396,6 +390,13 @@ static NSString * const kLayoutKey = @"layout";
 	return NSRectFromCGRect([self convertRectFromLayer:selectedRectInLayerSpace]);
 }
 
+-(void)setDataSource:(id<MMFlowViewDataSource>)dataSource
+{
+	_dataSource = dataSource;
+	self.contentAdapter = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:self];
+}
+
+
 #pragma mark - other helpers
 
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex
@@ -410,9 +411,9 @@ static NSString * const kLayoutKey = @"layout";
 
 - (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex
 {
-	id item = [ self imageItemForIndex:anIndex ];
-	NSString *imageRepresentationType = [ self imageRepresentationTypeForItem:item ];
-	id imageRepresentation = [ self imageRepresentationForItem:item ];
+	id<MMFlowViewItem> item = self.contentAdapter[anIndex];
+	NSString *imageRepresentationType = item.imageItemRepresentationType;
+	id imageRepresentation = item.imageItemRepresentation;
 	NSString *uti = nil;
 
 	if ( [ [ [ self class ] pathRepresentationTypes ] containsObject:imageRepresentationType ] ) {
@@ -464,7 +465,6 @@ static NSString * const kLayoutKey = @"layout";
 	BOOL inView = [self superview] != nil;
 
 	if (inView && !willBeInSuperview) {
-		[self.observedItems mm_removeObserver:self forKeyPaths:self.observedItemKeyPaths context:kMMFlowViewIndividualItemKeyPathsObservationContext];
 		[self unbind:NSContentArrayBinding];
 	}
 	[super viewWillMoveToSuperview:newSuperview];
@@ -543,41 +543,14 @@ static NSString * const kLayoutKey = @"layout";
 	return [self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:)] ? [self.dataSource flowView:self itemAtIndex:anIndex] : nil;
 }
 
-- (NSString*)imageUIDForItem:(id)anItem
-{
-	if (self.bindingsEnabled && self.imageUIDKeyPath) {
-		return [anItem valueForKeyPath:self.imageUIDKeyPath];
-	}
-	return [anItem respondsToSelector:@selector(imageItemUID)] ? [anItem imageItemUID] : nil;
-}
-
-- (NSString*)imageRepresentationTypeForItem:(id)anItem
-{
-	if (self.bindingsEnabled && self.imageRepresentationTypeKeyPath) {
-		return [anItem valueForKeyPath:self.imageRepresentationTypeKeyPath];
-	}
-	return [anItem respondsToSelector:@selector(imageItemRepresentationType)] ? [anItem imageItemRepresentationType] : nil;
-}
-
-- (NSString*)imageTitleForItem:(id)anItem
-{
-	if (self.bindingsEnabled && self.imageTitleKeyPath) {
-		return [anItem valueForKeyPath:self.imageTitleKeyPath];
-	}
-	return [anItem respondsToSelector:@selector(imageItemTitle)] ? [anItem imageItemTitle] : [NSString stringWithFormat:NSLocalizedString(@"Untitled item", @"Default item title")];
-}
-
-- (id)imageRepresentationForItem:(id)anItem
-{
-	if (self.bindingsEnabled && self.imageRepresentationKeyPath) {
-		return [anItem valueForKeyPath:self.imageRepresentationKeyPath];
-	}
-	return [anItem respondsToSelector:@selector(imageItemRepresentation)] ? [anItem imageItemRepresentation] : nil;
-}
-
 - (NSString*)titleAtIndex:(NSUInteger)anIndex
 {
-	return [self imageTitleForItem:[self imageItemForIndex:anIndex]];
+	id<MMFlowViewItem> item = self.contentAdapter[anIndex];
+
+	if ([item respondsToSelector:@selector(imageItemTitle)]) {
+		return item.imageItemTitle;
+	}
+	return @"";
 }
 
 #pragma mark -

@@ -37,8 +37,8 @@
 
 - (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel
 {
-	id item = [self imageItemForIndex:self.selectedIndex];
-	return [[[self class] pathRepresentationTypes] containsObject:[self imageRepresentationTypeForItem:item]];
+	id<MMFlowViewItem> item = self.contentAdapter[self.selectedIndex];
+	return [[[self class] pathRepresentationTypes] containsObject:item.imageItemRepresentationType];
 }
 
 - (void)beginPreviewPanelControl:(QLPreviewPanel *)panel

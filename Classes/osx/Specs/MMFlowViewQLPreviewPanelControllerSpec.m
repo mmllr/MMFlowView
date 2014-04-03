@@ -36,11 +36,14 @@ SPEC_BEGIN(MMFlowViewQLPreviewPanelControllerSpec)
 
 describe(@"MMFlowView+QLPreviewPanelController", ^{
 	__block MMFlowView *sut = nil;
+	__block id contentAdapterMock = nil;
 	__block QLPreviewPanel *mockedPanel = nil;
 
 	beforeEach(^{
 		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
 		mockedPanel = [QLPreviewPanel nullMock];
+		contentAdapterMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
+		sut.contentAdapter = contentAdapterMock;
 	});
 	afterEach(^{
 		sut = nil;
@@ -54,7 +57,7 @@ describe(@"MMFlowView+QLPreviewPanelController", ^{
 			mockedItem = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 		});
 		beforeEach(^{
-			[sut stub:@selector(imageItemForIndex:) andReturn:mockedItem];
+			[contentAdapterMock stub:@selector(objectAtIndexedSubscript:) andReturn:mockedItem];
 		});
 		context(@"supported representationTypes", ^{
 			__block NSArray *supportedRepresentationTypes = nil;

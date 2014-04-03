@@ -33,11 +33,10 @@
 
 @implementation MMFlowView (QLPreviewPanelDataSource)
 
-
 - (BOOL)isPathRepresentationAtSelection
 {
-	id item = [self imageItemForIndex:self.selectedIndex];
-	return [[[self class] pathRepresentationTypes] containsObject:[self imageRepresentationTypeForItem:item]];
+	id<MMFlowViewItem> item = self.contentAdapter[self.selectedIndex];
+	return [[[self class] pathRepresentationTypes] containsObject:item.imageItemRepresentationType];
 }
 
 - (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel
@@ -45,10 +44,11 @@
 	return [self isPathRepresentationAtSelection] ? 1 : 0;
 }
 
-- (id<QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)index
+- (id<QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)anIndex
 {
 	if ([self isPathRepresentationAtSelection]) {
-		id representation = [self imageRepresentationForItem:[self imageItemForIndex:self.selectedIndex]];
+		id<MMFlowViewItem> item = self.contentAdapter[self.selectedIndex];
+		id representation = item.imageItemRepresentation;
 		return [representation isKindOfClass:[NSURL class]] ? representation : [NSURL fileURLWithPath:representation];
 	}
 	return nil;

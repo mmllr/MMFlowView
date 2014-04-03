@@ -120,15 +120,8 @@ describe(@"NSView overrides", ^{
 				[sut viewWillMoveToSuperview:nil];
 				[[[sut infoForBinding:NSContentArrayBinding] should] beNil];
 			});
-			it(@"should remove itself as observer from the observed items for all observed key paths", ^{
-				NSIndexSet *expectedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [contentArray count])];
-				for (NSString *keyPath in sut.observedItemKeyPaths) {
-					[[sut.observedItems should] receive:@selector(removeObserver:fromObjectsAtIndexes:forKeyPath:context:) withArguments:sut, expectedIndexes, keyPath, [KWAny any]];
-				}
-				[sut viewWillMoveToSuperview:nil];
-			});
 		});
-		
+
 		context(@"invoking supers implementation", ^{
 			__block Method supersMethod;
 			__block Method testingMethod;

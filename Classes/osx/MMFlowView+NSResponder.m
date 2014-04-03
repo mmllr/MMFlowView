@@ -201,8 +201,8 @@
 
 - (NSImage*)draggedImageForSelection
 {
-	id item = [self imageItemForIndex:self.selectedIndex];
-	CGImageRef imageRef = [self.imageCache imageForUUID:[self imageUIDForItem:item]];
+	id<MMFlowViewItem> item = self.contentAdapter[self.selectedIndex];
+	CGImageRef imageRef = [self.imageCache imageForUUID:item.imageItemUID];
 	return [[NSImage alloc] initWithCGImage:imageRef
 									   size:self.selectedItemFrame.size];
 }
@@ -230,12 +230,12 @@
 
 - (NSURL*)urlFromSelection
 {
-	id item = [self imageItemForIndex:self.selectedIndex];
+	id<MMFlowViewItem> item = self.contentAdapter[self.selectedIndex];
 	
-	if (![[self.class pathRepresentationTypes] containsObject:[self imageRepresentationTypeForItem:item]]) {
+	if (![[self.class pathRepresentationTypes] containsObject:item.imageItemRepresentationType]) {
 		return nil;
 	}
-	id representation = [self imageRepresentationForItem:item];
+	id representation = item.imageItemRepresentation;
 	return [representation isKindOfClass:[NSURL class]] ? representation : [NSURL fileURLWithPath:representation];
 }
 

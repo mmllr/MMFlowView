@@ -54,12 +54,12 @@
 /**
  A weak reference to the datasource, @see MMFlowViewDataSource protocol
  */
-@property (weak) IBOutlet id<MMFlowViewDataSource> dataSource;
+@property (nonatomic, weak) IBOutlet id<MMFlowViewDataSource> dataSource;
 
 /**
  A weak reference to the delegate, @see MMFlowViewDelegate protocol
  */
-@property (weak) IBOutlet id<MMFlowViewDelegate> delegate;
+@property (nonatomic, weak) IBOutlet id<MMFlowViewDelegate> delegate;
 
 /**
  The angle in degrees around which the unselected images are rotated around the y-axis.
@@ -112,89 +112,6 @@
  The indexes of all visible items in the flow view.
  */
 @property (nonatomic, readonly) NSIndexSet *visibleItemIndexes;
-
-/**
- he keypath on the individual items for the image representation. @see MMFlowViewItem protocol
-
- The default value is @"imageItemRepresentation", matching the method -imageItemRepresentation in the MMFlowViewItem protocol.
- 
- You only need to set this property if you are using Cocoa Bindings for the content of the flow view and the items do not conform to the MMFlowViewItem protocol.
- If your items don't conform to the MMFlowViewItem protocol but can provide an image, you can specify the keypath on the item. Suppose you have an item class with an imageValue getter:
- @code
- @interface YourItem : NSObject
-    - (NSImage*)imageValue;
- @end
- @endcode
- Set the flow views `imageRepresentationKeyPath` to `imageValue`.
- @code
-    MMFlowView *flowView = ... // a flow view using Cocoa Bindings through an array controller
-    flowView.imageRepresentationKeyPath = @"imageValue";
-  @endcode
- */
-@property (copy) NSString *imageRepresentationKeyPath;
-
-/**
- The keypath on the individual items for the image representation type. @see MMFlowViewItem
-
- The default value is @"imageItemRepresentationType", matching the method -imageItemRepresentationType in the MMFlowViewItem protocol.
-
- You only need to set this property if you are using Cocoa Bindings for the content of the flow view and the items do not conform to the MMFlowViewItem protocol.
- If your items don't conform to the MMFlowViewItem protocol but can provide an image representation type, you can specify the keypath on the item.
- Suppose you have an item class with an imageType getter:
- @code
- @interface YourItem : NSObject
-    - (NSString*)imageType;
- @end
- @endcode
- Set the flow views imageRepresentationTypeKeyPath to *imageType*:
- @code
-	MMFlowView *flowView = ... // a flow view using Cocoa Bindings through an array controller
-	flowView.imageRepresentationTypeKeyPath = @"imageType";
- @endcode
- */
-@property (copy) NSString *imageRepresentationTypeKeyPath;
-
-/**
- The keypath on the individual items for the image UID. @see MMFlowViewItem
-
- The default value is @"imageItemUID", matching the method -imageItemUID in the MMFlowViewItem protocol.
- 
- You only need to set this property if you are using Cocoa Bindings for the content of the flow view and the items do not conform to the MMFlowViewItem protocol.
- If your items don't conform to the MMFlowViewItem protocol but can provide an image UID, you can specify the keypath on the item.
- Suppose you have an item class with an uniqueID getter:
- @code
- @interface YourItem : NSObject
-    - (NSString*)uniqueID;
- @end
- @endcode
- Set the flow views `imageUIDKeyPath` to *uniqueID*:
- @code
-	MMFlowView *flowView = ... // a flow view using Cocoa Bindings through an array controller
-	flowView.imageUIDKeyPath = @"uniqueID";
- @endcode
- */
-@property (copy) NSString *imageUIDKeyPath;
-
-/**
- The keypath on the individual items for the image title. @see MMFlowViewItem
-
- The default value is @"imageItemTitle", matching the method -imageItemTitle in the MMFlowViewItem protocol.
-
- You only need to set this property if you are using Cocoa Bindings for the content of the flow view and the items do not conform to the MMFlowViewItem protocol.
- If your items don't conform to the MMFlowViewItem protocol but can provide an title, you can specify the keypath on the item.
- Suppose you have an item class with an itemUID getter:
- @code
- @interface YourItem : NSObject
-    - (NSString*)title;
- @end
- @endcode
- Set the flow views `imageUIDKeyPath` to `title`:
- @code
-	MMFlowView *flowView = ... // a flow view using Cocoa Bindings through an array controller
-	imageTitleKeyPath = @"title";
- @endcode
- */
-@property (copy) NSString *imageTitleKeyPath;
 
 /**
  Set the font for the title string. The default value is Helvetica.
@@ -517,30 +434,6 @@ extern NSString * const kMMFlowViewQCCompositionPathRepresentationType;
  A path (NSString) or URL (NSURL) to load data using QuickLook.
  */
 extern NSString * const kMMFlowViewQuickLookPathRepresentationType;
-
-/**
- A binding for keypath to the image representation.
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageRepresentationBinding;
-
-/**
- A binding for keypath to the image-representationtype
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageRepresentationTypeBinding;
-
-/**
- A binding for keypath to the image uid.
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageUIDBinding;
-
-/**
- A binding for keypath to the image title.
- @see MMFlowViewItem protocol.
- */
-extern NSString * const kMMFlowViewImageTitleBinding;
 
 /**
  A notification posted after the selection did change.

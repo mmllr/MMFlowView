@@ -38,6 +38,7 @@ describe(@"MMFlowView+QLPreviewPanelDataSource", ^{
 	__block MMFlowView *sut = nil;
 	__block NSURL *testImageURL = nil;
 	__block id mockedItem = nil;
+	__block id contentAdapterMock = nil;
 
 	beforeAll(^{
 		testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
@@ -49,10 +50,13 @@ describe(@"MMFlowView+QLPreviewPanelDataSource", ^{
 	});
 	beforeEach(^{
 		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
-		[sut stub:@selector(imageItemForIndex:) andReturn:mockedItem];
+		contentAdapterMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
+		[contentAdapterMock stub:@selector(objectAtIndexedSubscript:) andReturn:mockedItem];
+		sut.contentAdapter = contentAdapterMock;
 	});
 	afterEach(^{
 		sut = nil;
+		contentAdapterMock = nil;
 	});
 	context(@"when having a selected item", ^{
 		beforeEach(^{
@@ -117,7 +121,6 @@ describe(@"MMFlowView+QLPreviewPanelDataSource", ^{
 			beforeEach(^{
 				[mockedItem stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
 				[mockedItem stub:@selector(imageItemRepresentation) andReturn:[NSImage nullMock]];
-				[sut stub:@selector(imageItemForIndex:) andReturn:mockedItem];
 			});
 			it(@"it should return zero for numberOfPreviewItemsInPreviewPanel:", ^{
 				[[theValue([sut numberOfPreviewItemsInPreviewPanel:[QLPreviewPanel nullMock]]) should] beZero];

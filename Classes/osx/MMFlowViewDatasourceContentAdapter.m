@@ -22,7 +22,7 @@
     return [self initWithFlowView:nil];
 }
 
-- (id)initWithFlowView:(MMFlowView*)aFlowView
+- (instancetype)initWithFlowView:(MMFlowView*)aFlowView
 {
 	NSParameterAssert(aFlowView);
 	

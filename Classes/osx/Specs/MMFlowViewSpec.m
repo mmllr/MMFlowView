@@ -45,6 +45,7 @@
 #import "MMNSImageDecoder.h"
 #import "MMPDFPageDecoder.h"
 #import "MMQuickLookImageDecoder.h"
+#import "MMFlowViewDatasourceContentAdapter.h"
 
 SPEC_BEGIN(MMFlowViewSpec)
 
@@ -131,6 +132,21 @@ describe(@"MMFlowView", ^{
 			[[(id)sut.dataSource should] beNil];
 		});
 
+		context(NSStringFromSelector(@selector(setDataSource:)), ^{
+			__block id dataSourceMock = nil;
+
+			beforeEach(^{
+				dataSourceMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
+			});
+			afterEach(^{
+				dataSourceMock = nil;
+			});
+			it(@"should set the contentAdapter to a MMFlowViewDatasourceContentAdapter", ^{
+				sut.dataSource = dataSourceMock;
+
+				[[(id)sut.contentAdapter should] beKindOfClass:[MMFlowViewDatasourceContentAdapter class]];
+			});
+		});
 		context(@"title layer interaction", ^{
 			__block CATextLayer *titleLayerMock = nil;
 			CGFloat expectedFontSize = 30;
@@ -722,11 +738,11 @@ describe(@"MMFlowView", ^{
 			});
 			context(@"datasource interaction", ^{
 				beforeEach(^{
-					[[datasourceMock stubAndReturn:theValue(numberOfItems)] numberOfItemsInFlowView:sut];
+					[datasourceMock stub:@selector(numberOfItemsInFlowView:) andReturn:theValue(numberOfItems)];
 					sut.dataSource = datasourceMock;
 				});
 				it(@"should ask the datasource for the number of items", ^{
-					[[datasourceMock should] receive:@selector(numberOfItemsInFlowView:)];
+					[[datasourceMock should] receive:@selector(numberOfItemsInFlowView:) withCountAtLeast:1];
 					[sut reloadContent];
 				});
 				context(@"when having a incomplete datasource", ^{

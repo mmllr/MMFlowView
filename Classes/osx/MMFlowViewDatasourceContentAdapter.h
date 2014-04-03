@@ -16,6 +16,6 @@
 
 @interface MMFlowViewDatasourceContentAdapter : NSObject <MMFlowViewContentAdapter>
 
-- (id)initWithFlowView:(MMFlowView*)aFlowView;
+- (instancetype)initWithFlowView:(MMFlowView*)aFlowView;
 
 @end
