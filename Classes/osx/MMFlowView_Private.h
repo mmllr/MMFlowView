@@ -54,8 +54,6 @@
 @property (strong,nonatomic) CALayer *highlightedLayer;
 @property (strong,readwrite) MMScrollBarLayer *scrollBarLayer;
 @property (strong) MMFlowViewImageFactory *imageFactory;
-@property (strong,nonatomic,readwrite) NSDictionary *contentArrayBindingInfo;
-@property (nonatomic,copy) NSArray *observedItems;
 @property (readwrite,nonatomic) NSUInteger numberOfItems;
 @property (readwrite,strong) id<MMFlowViewImageCache> imageCache;
 @property (nonatomic, readonly) NSRect selectedItemFrame;

@@ -23,7 +23,7 @@ describe(@"MMFlowView+MMFlowViewContentBinderDelegate", ^{
 	beforeEach(^{
 		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
 		contentBinderMock = [KWMock nullMockForClass:[MMFlowViewContentBinder class]];
-		[contentBinderMock stub:@selector(contentArray) andReturn:contentArray];
+		[contentBinderMock stub:@selector(observedItems) andReturn:contentArray];
 	});
 	afterEach(^{
 		sut = nil;
@@ -51,7 +51,7 @@ describe(@"MMFlowView+MMFlowViewContentBinderDelegate", ^{
 		it(@"should set the contentAdapter to the contentBinders contentArray", ^{
 			[sut contentArrayDidChange:contentBinderMock];
 
-			[[sut.contentAdapter should] equal:contentBinderMock.contentArray];
+			[[sut.contentAdapter should] equal:contentBinderMock.observedItems];
 		});
 	});
 

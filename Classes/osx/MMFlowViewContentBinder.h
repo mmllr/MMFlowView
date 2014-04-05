@@ -17,8 +17,7 @@ void * const kMFlowViewContentBinderItemObservationContext;
 
 @property (nonatomic, weak) id<MMFlowViewContentBinderDelegate> delegate;
 @property (nonatomic, readonly, copy) NSString *contentArrayKeyPath;
-@property (nonatomic, readonly, copy) NSArray *contentArray;
-@property (nonatomic, readonly) NSArray *observedItems;
+@property (nonatomic, readonly, copy) NSArray *observedItems;
 @property (nonatomic, readonly) NSArray *observedItemKeys;
 @property (nonatomic, readonly) NSDictionary *bindingInfo;
 

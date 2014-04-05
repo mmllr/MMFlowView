@@ -21,7 +21,7 @@
 
 - (void)contentArrayDidChange:(MMFlowViewContentBinder *)contentBinder
 {
-	self.contentAdapter = contentBinder.contentArray;
+	self.contentAdapter = contentBinder.observedItems;
 	[self reloadContent];
 }
 

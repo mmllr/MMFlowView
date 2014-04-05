@@ -16,14 +16,13 @@ void * const kMFlowViewContentBinderItemObservationContext = @"MFlowViewContentB
 @interface MMFlowViewContentBinder ()
 
 @property (nonatomic, strong) NSArrayController *controller;
-@property (nonatomic, readwrite) NSArray *observedItems;
+@property (nonatomic, readwrite, copy) NSArray *observedItems;
 @property (nonatomic, readwrite, strong) NSDictionary *bindingInfo;
 
 @end
 
 @implementation MMFlowViewContentBinder
 
-@dynamic contentArray;
 @dynamic observedItemKeys;
 
 - (instancetype)init
@@ -43,7 +42,6 @@ void * const kMFlowViewContentBinderItemObservationContext = @"MFlowViewContentB
 	if (self) {
 		_controller = controller;
 		_contentArrayKeyPath = [keyPath copy];
-		_observedItems = nil;
 		_bindingInfo = @{NSObservedObjectKey: controller,
 						 NSObservedKeyPathKey: [keyPath copy],
 						 NSOptionsKey: @{} };
@@ -65,11 +63,6 @@ void * const kMFlowViewContentBinderItemObservationContext = @"MFlowViewContentB
 		mandantoryKeys = @[NSStringFromSelector(@selector(imageItemRepresentation)), NSStringFromSelector(@selector(imageItemRepresentationType)), NSStringFromSelector(@selector(imageItemUID))];
 	});
 	return mandantoryKeys;
-}
-
-- (NSArray*)contentArray
-{
-	return [[self.controller valueForKeyPath:self.contentArrayKeyPath] copy];
 }
 
 - (void)startObservingContent

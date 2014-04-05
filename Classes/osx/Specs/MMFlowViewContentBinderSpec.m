@@ -70,10 +70,6 @@ describe(NSStringFromClass([MMFlowViewContentBinder class]), ^{
 			[[sut.contentArrayKeyPath should] equal:arrangedObjectsKey];
 		});
 
-		it(@"should have an empty contentArray", ^{
-			[[sut.contentArray should] haveCountOf:numberOfItems];
-		});
-
 		it(@"should have no observedItems", ^{
 			[[sut.observedItems should] beNil];
 		});
