@@ -37,6 +37,7 @@
 #import "NSArray+MMAdditions.h"
 #import "MMFlowViewContentBinder.h"
 #import "MMTestImageItem.h"
+#import "MMCoverFLowLayout.h"
 
 static BOOL testingSuperInvoked = NO;
 
@@ -60,11 +61,6 @@ static BOOL testingSuperInvoked = NO;
 	testingSuperInvoked = YES;
 	// invoke swizzled method - strange naming: mmTesting_unbind: is Cocoas unbind:...
 	[self mmTesting_unbind:binding];
-}
-
-- (void)mmTesting_observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	testingSuperInvoked = YES;
 }
 
 @end
@@ -94,6 +90,20 @@ describe(@"NSKeyValueObserving", ^{
 		afterEach(^{
 			sut = nil;
 		});
+
+		context(NSStringFromSelector(@selector(tearDownObservations)), ^{
+			it(@"should unbind the stackedAngle from the layout", ^{
+				[[sut.coverFlowLayout should] receive:@selector(unbind:) withArguments:NSStringFromSelector(@selector(stackedAngle))];
+				
+				[sut tearDownObservations];
+			});
+			it(@"should unbind the interItemSpacing from the layout", ^{
+				[[sut.coverFlowLayout should] receive:@selector(unbind:) withArguments:NSStringFromSelector(@selector(interItemSpacing))];
+				
+				[sut tearDownObservations];
+			});
+		});
+
 		context(@"bindings", ^{
 			__block NSArray *exposedBindings = nil;
 			__block NSArrayController *arrayController = nil;
@@ -119,6 +129,7 @@ describe(@"NSKeyValueObserving", ^{
 			it(@"should expose NSContentArrayBinding", ^{
 				[[exposedBindings should] contain:NSContentArrayBinding];
 			});
+	
 			context(NSStringFromSelector(@selector(bind:toObject:withKeyPath:options:)), ^{
 				context(@"when binding the NSContentArrayBinding to an NSArrayController", ^{
 					beforeEach(^{
@@ -138,15 +149,6 @@ describe(@"NSKeyValueObserving", ^{
 					});
 					it(@"should have the same number of items", ^{
 						[[theValue(sut.numberOfItems) should] equal:theValue([mockedItems count])];
-					});
-					it(@"should return the arraycontroller for contentArrayController", ^{
-						[[sut.contentArrayController should] equal:arrayController];
-					});
-					it(@"should return the observed array for contentArray", ^{
-						[[sut.contentArray should] equal:mockedItems];
-					});
-					it(@"should return the observed keypath for contentArrayKeyPath", ^{
-						[[sut.contentArrayKeyPath should] equal:arrangedObjectsKeyPath];
 					});
 					context(@"when binding NSContentArrayBinding to another array controller", ^{
 						__block id mockedArrayController = nil;
@@ -267,6 +269,8 @@ describe(@"NSKeyValueObserving", ^{
 				});
 			});
 		});
+
+		
 	});
 });
 

@@ -7,6 +7,7 @@
 //
 
 #import "Kiwi.h"
+#import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowViewContentBinder.h"
 #import "MMFlowView+MMFlowViewContentBinderDelegate.h"

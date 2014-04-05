@@ -30,8 +30,6 @@
 
 #import <Quartz/Quartz.h>
 
-#import "MMFlowView.h"
-
 @protocol MMFlowViewImageCache;
 
 @class MMCoverFlowLayout;
@@ -41,6 +39,7 @@
 @class MMCoverFlowLayer;
 @class MMFlowViewContentBinder;
 @protocol MMFlowViewContentAdapter;
+@class MMFlowView;
 
 @interface MMFlowView ()
 
@@ -70,8 +69,6 @@
 - (void)updateTitle;
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPoint;
 - (NSString*)titleAtIndex:(NSUInteger)anIndex;
-- (BOOL)isMovieAtIndex:(NSUInteger)anIndex;
-- (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex;
 - (IBAction)togglePreviewPanel:(id)previewPanel;
 - (void)setupTrackingAreas;
 

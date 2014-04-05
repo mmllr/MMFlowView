@@ -79,17 +79,6 @@ static const CGFloat kDefaultReflectionOffset = -0.4;
 static NSString * const kMMFlowViewTitleLayerName = @"MMFlowViewTitleLayer";
 static NSString * const kMMFlowViewContainerLayerName = @"MMFlowViewContainerLayer";
 static NSString * const kUTTypeQuartzComposerComposition = @"com.apple.quartz-composer-composition";
-static NSString * const kMMFlowViewSpacingKey = @"spacing";
-static NSString * const kMMFlowViewStackedAngleKey = @"stackedAngle";
-static NSString * const kMMFlowViewSelectedScaleKey = @"selectedScale";
-static NSString * const kMMFlowViewReflectionOffsetKey = @"reflectionOffset";
-static NSString * const kMMFlowViewShowsReflectionKey = @"showsReflection";
-static NSString * const kSuperlayerKey = @"superlayer";
-static NSString * const kPositionKey = @"position";
-static NSString * const kBoundsKey = @"bounds";
-static NSString * const kStringKey = @"string";
-static NSString * const kLayoutKey = @"layout";
-
 
 @implementation MMFlowView
 
@@ -222,11 +211,11 @@ static NSString * const kLayoutKey = @"layout";
 		_imageFactory = [[MMFlowViewImageFactory alloc] init];
 		[self setAcceptsTouchEvents:YES];
 		if ( [ aDecoder allowsKeyedCoding ] ) {
-			self.stackedAngle = [ aDecoder decodeDoubleForKey:kMMFlowViewStackedAngleKey ];
-			self.spacing = [ aDecoder decodeDoubleForKey:kMMFlowViewSpacingKey ];
-			self.reflectionOffset = [ aDecoder decodeDoubleForKey:kMMFlowViewReflectionOffsetKey ];
-			self.showsReflection = [ aDecoder decodeBoolForKey:kMMFlowViewShowsReflectionKey ];
-			_coverFlowLayout = [aDecoder decodeObjectForKey:kLayoutKey];
+			self.stackedAngle = [aDecoder decodeDoubleForKey:NSStringFromSelector(@selector(stackedAngle))];
+			self.spacing = [aDecoder decodeDoubleForKey:NSStringFromSelector(@selector(spacing))];
+			self.reflectionOffset = [aDecoder decodeDoubleForKey:NSStringFromSelector(@selector(reflectionOffset))];
+			self.showsReflection = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(showsReflection))];
+			_coverFlowLayout = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(coverFlowLayout))];
 			_coverFlowLayout.delegate = self;
 		}
 		else {
@@ -244,11 +233,11 @@ static NSString * const kLayoutKey = @"layout";
 {
 	[super encodeWithCoder:aCoder];
 	if ([aCoder allowsKeyedCoding]) {
-		[aCoder encodeDouble:self.stackedAngle forKey:kMMFlowViewStackedAngleKey];
-		[aCoder encodeDouble:self.spacing forKey:kMMFlowViewSpacingKey];
-		[aCoder encodeDouble:self.reflectionOffset forKey:kMMFlowViewReflectionOffsetKey];
-		[aCoder encodeDouble:self.showsReflection forKey:kMMFlowViewShowsReflectionKey];
-		[aCoder encodeObject:self.coverFlowLayout forKey:kLayoutKey];
+		[aCoder encodeDouble:self.stackedAngle forKey:NSStringFromSelector(@selector(stackedAngle))];
+		[aCoder encodeDouble:self.spacing forKey:NSStringFromSelector(@selector(spacing))];
+		[aCoder encodeDouble:self.reflectionOffset forKey:NSStringFromSelector(@selector(reflectionOffset))];
+		[aCoder encodeDouble:self.showsReflection forKey:NSStringFromSelector(@selector(showsReflection))];
+		[aCoder encodeObject:self.coverFlowLayout forKey:NSStringFromSelector(@selector(coverFlowLayout))];
 	}
 	else {
 		[NSException raise:NSInvalidArchiveOperationException format:@"Only supports NSKeyedArchiver coders"];
@@ -408,39 +397,7 @@ static NSString * const kLayoutKey = @"layout";
 		[_contentBinder stopObservingContent];
 		_contentBinder = contentBinder;
 		_contentBinder.delegate = self;
-		//[_contentBinder startObservingContent];
 	}
-}
-
-#pragma mark - other helpers
-
-- (BOOL)isMovieAtIndex:(NSUInteger)anIndex
-{
-	return UTTypeConformsTo( (__bridge CFStringRef)[ self uniformTypeIdentifierAtIndex:anIndex ], kUTTypeMovie );
-}
-
-- (BOOL)isQCCompositionAtIndex:(NSUInteger)anIndex
-{
-	return UTTypeConformsTo( (__bridge CFStringRef)[ self uniformTypeIdentifierAtIndex:anIndex ], (__bridge CFStringRef)kUTTypeQuartzComposerComposition );
-}
-
-- (NSString*)uniformTypeIdentifierAtIndex:(NSUInteger)anIndex
-{
-	id<MMFlowViewItem> item = self.contentAdapter[anIndex];
-	NSString *imageRepresentationType = item.imageItemRepresentationType;
-	id imageRepresentation = item.imageItemRepresentation;
-	NSString *uti = nil;
-
-	if ( [ [ [ self class ] pathRepresentationTypes ] containsObject:imageRepresentationType ] ) {
-		NSString *path = [ imageRepresentation isKindOfClass:[ NSURL class ] ] ? [ imageRepresentation path ] : imageRepresentation;
-
-		NSError *error = nil;
-		uti = [ [ NSWorkspace sharedWorkspace ] typeOfFile:path error:&error ];
-	}
-	else {
-		uti = [ [ self class ] uniformTypesDictionary ][imageRepresentationType];
-	}
-	return uti;
 }
 
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPointInView
@@ -535,18 +492,6 @@ static NSString * const kLayoutKey = @"layout";
 	[self setupTrackingAreas];
 }
 
-- (id)imageItemForIndex:(NSUInteger)anIndex
-{
-	if (anIndex == NSNotFound) {
-		return nil;
-	}
-	if (self.bindingsEnabled &&
-		(anIndex < [self.contentArray count])) {
-		return (self.contentArray)[anIndex];
-	}
-	return [self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:)] ? [self.dataSource flowView:self itemAtIndex:anIndex] : nil;
-}
-
 - (NSString*)titleAtIndex:(NSUInteger)anIndex
 {
 	id<MMFlowViewItem> item = self.contentAdapter[anIndex];
@@ -599,15 +544,14 @@ static NSString * const kLayoutKey = @"layout";
 	layer.alignmentMode = kCAAlignmentCenter;
 	layer.fontSize = kDefaultTitleSize;
 	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMinY
-													relativeTo:kSuperlayerKey
+													relativeTo:NSStringFromSelector(@selector(superlayer))
 													 attribute:kCAConstraintMinY
 														offset:kTitleOffset]];
 	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMidX
-													relativeTo:kSuperlayerKey
+													relativeTo:NSStringFromSelector(@selector(superlayer))
 													 attribute:kCAConstraintMidX]];
-	[layer mm_disableImplicitAnimationForKey:kStringKey];
-	[layer mm_disableImplicitAnimationForKey:kPositionKey];
-	[layer mm_disableImplicitAnimationForKey:kBoundsKey];
+	[layer mm_disableImplicitAnimationForKey:NSStringFromSelector(@selector(string))];
+	[layer mm_disableImplicitPositionAndBoundsAnimations];
 	return layer;
 }
 
@@ -616,19 +560,18 @@ static NSString * const kLayoutKey = @"layout";
 	CALayer *layer = [CALayer layer];
 	layer.name = kMMFlowViewContainerLayerName;
 	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMidX
-													relativeTo:kSuperlayerKey
+													relativeTo:NSStringFromSelector(@selector(superlayer))
 													 attribute:kCAConstraintMidX]];
 	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMaxY
-													relativeTo:kSuperlayerKey
+													relativeTo:NSStringFromSelector(@selector(superlayer))
 													 attribute:kCAConstraintMaxY]];
 	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintWidth
-													relativeTo:kSuperlayerKey
+													relativeTo:NSStringFromSelector(@selector(superlayer))
 													 attribute:kCAConstraintWidth]];
 	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMinY
 													relativeTo:kMMFlowViewTitleLayerName
 													 attribute:kCAConstraintMaxY]];
-	[layer mm_disableImplicitAnimationForKey:kPositionKey];
-	[layer mm_disableImplicitAnimationForKey:kBoundsKey];
+	[layer mm_disableImplicitPositionAndBoundsAnimations];
 	return layer;
 }
 

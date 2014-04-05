@@ -36,42 +36,6 @@
 
 @implementation MMFlowView (NSKeyValueObserving)
 
-+ (NSArray*)observedItemKeyPaths
-{
-	static NSArray *keys = nil;
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		keys = @[NSStringFromSelector(@selector(imageItemRepresentation)),
-				 NSStringFromSelector(@selector(imageItemRepresentationType)),
-				 NSStringFromSelector(@selector(imageItemUID))];
-	});
-	return keys;
-}
-
-#pragma mark -
-#pragma mark Binding releated accessors
-
-- (NSArrayController*)contentArrayController
-{
-	return [self infoForBinding:NSContentArrayBinding][NSObservedObjectKey];
-}
-
-- (NSString*)contentArrayKeyPath
-{
-	return [self infoForBinding:NSContentArrayBinding][NSObservedKeyPathKey];
-}
-
-- (NSArray *)contentArray
-{
-	NSArray *array = [self.contentArrayController valueForKeyPath:self.contentArrayKeyPath];
-	return array ? array : @[];
-}
-
-- (BOOL)bindingsEnabled
-{
-	return [self infoForBinding:NSContentArrayBinding] != nil;
-}
-
 #pragma mark -
 #pragma mark NSKeyValueBindingCreation overrides
 

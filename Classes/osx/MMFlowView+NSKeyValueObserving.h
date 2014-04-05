@@ -32,12 +32,6 @@
 
 @interface MMFlowView (NSKeyValueObserving)
 
-@property (weak, nonatomic, readonly) NSArray *contentArray;
-@property (weak, nonatomic, readonly) NSArrayController *contentArrayController;
-@property (weak, nonatomic, readonly) NSString *contentArrayKeyPath;
-
-@property (nonatomic,readonly) BOOL bindingsEnabled;
-
 - (void)setUpObservations;
 - (void)tearDownObservations;
 
