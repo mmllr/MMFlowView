@@ -20,6 +20,7 @@ void * const kMFlowViewContentBinderItemObservationContext;
 @property (nonatomic, readonly, copy) NSArray *contentArray;
 @property (nonatomic, readonly) NSArray *observedItems;
 @property (nonatomic, readonly) NSArray *observedItemKeys;
+@property (nonatomic, readonly) NSDictionary *bindingInfo;
 
 - (instancetype)initWithArrayController:(NSArrayController*)controller withContentArrayKeyPath:(NSString *)keyPath;
 - (void)startObservingContent;

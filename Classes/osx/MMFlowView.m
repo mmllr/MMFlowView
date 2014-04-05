@@ -49,6 +49,8 @@
 #import "MMNSImageDecoder.h"
 #import "MMFlowView+MMCoverFlowLayoutDelegate.h"
 #import "MMFlowViewDatasourceContentAdapter.h"
+#import "MMFlowViewContentBinder.h"
+#import "MMFlowView+MMFlowViewContentBinderDelegate.h"
 
 NSString * const kMMFlowViewURLRepresentationType = @"MMFlowViewURLRepresentationType";
 NSString * const kMMFlowViewCGImageRepresentationType = @"MMFlowViewCGImageRepresentationType";
@@ -328,12 +330,13 @@ static NSString * const kLayoutKey = @"layout";
 {
 	if ( ( self.coverFlowLayout.selectedItemIndex != index ) && ( index < self.numberOfItems ) ) {
 		self.coverFlowLayout.selectedItemIndex = index;
-		[self updateSelectionInRange:NSMakeRange(index, 1)];
+		[self updateTitle];
 		if ( [self.delegate respondsToSelector:@selector(flowViewSelectionDidChange:)] ) {
 			[self.delegate flowViewSelectionDidChange:self];
 		}
-		if ( self.bindingsEnabled ) {
-			[self.contentArrayController setSelectionIndex:index];
+		id boundContentObserver = [self infoForBinding:NSContentArrayBinding][NSObservedObjectKey];
+		if ([boundContentObserver respondsToSelector:@selector(setSelectionIndex:)]) {
+			[boundContentObserver setSelectionIndex:index];
 		}
 	}
 }
@@ -393,9 +396,21 @@ static NSString * const kLayoutKey = @"layout";
 -(void)setDataSource:(id<MMFlowViewDataSource>)dataSource
 {
 	_dataSource = dataSource;
-	self.contentAdapter = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:self];
+	if (![self infoForBinding:NSContentArrayBinding]) {
+		self.contentAdapter = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:self];
+	}
 }
 
+
+- (void)setContentBinder:(MMFlowViewContentBinder *)contentBinder
+{
+	if (contentBinder != _contentBinder) {
+		[_contentBinder stopObservingContent];
+		_contentBinder = contentBinder;
+		_contentBinder.delegate = self;
+		//[_contentBinder startObservingContent];
+	}
+}
 
 #pragma mark - other helpers
 
@@ -511,23 +526,12 @@ static NSString * const kLayoutKey = @"layout";
 
 - (void)reloadContent
 {
-	if (self.bindingsEnabled) {
-		self.numberOfItems = [self.contentArray count];
-	}
-	else if ([self.dataSource respondsToSelector:@selector(numberOfItemsInFlowView:)] &&
-		[self.dataSource respondsToSelector:@selector(flowView:itemAtIndex:)]) {
-		self.numberOfItems = [self.dataSource numberOfItemsInFlowView:self];
-	}
-	else {
-		self.numberOfItems = 0;
-	}
-	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
-	[CATransaction commit];
-	if (self.selectedIndex > self.numberOfItems) {
+	self.numberOfItems = [self.contentAdapter count];
+	if (self.numberOfItems) {
 		self.selectedIndex = 0;
 	};
-	[self updateSelectionInRange:NSMakeRange(0, self.numberOfItems)];
+	[self updateTitle
+	 ];
 	[self setupTrackingAreas];
 }
 
@@ -630,8 +634,12 @@ static NSString * const kLayoutKey = @"layout";
 
 #pragma mark - selection
 
-- (void)updateSelectionInRange:(NSRange)invalidatedRange
+- (void)updateTitle
 {
+	if (self.selectedIndex == NSNotFound) {
+		self.title = @"";
+		return;
+	}
 	self.title = [self titleAtIndex:self.selectedIndex];
 	NSAccessibilityPostNotification(self, NSAccessibilityValueChangedNotification);
 }

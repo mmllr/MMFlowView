@@ -30,14 +30,9 @@
 
 #import "MMFlowView+NSKeyValueObserving.h"
 #import "MMFlowView_Private.h"
-#import "MMFlowViewImageCache.h"
 #import "MMCoverFlowLayout.h"
-#import "MMCoverFlowLayer.h"
-#import "NSArray+MMAdditions.h"
-
-void * const kMMFlowViewContentArrayObservationContext = @"MMFlowViewContentArrayObservationContext";
-void * const kMMFlowViewIndividualItemKeyPathsObservationContext = @"kMMFlowViewIndividualItemKeyPathsObservationContext";
-void *const kMMFlowViewItemKeyPathsObservationContext = @"kMMFlowViewItemKeyPathsObservationContext";
+#import "MMFlowViewContentBinder.h"
+#import "MMFlowView+MMFlowViewContentBinderDelegate.h"
 
 @implementation MMFlowView (NSKeyValueObserving)
 
@@ -83,7 +78,7 @@ void *const kMMFlowViewItemKeyPathsObservationContext = @"kMMFlowViewItemKeyPath
 - (NSDictionary *)infoForBinding:(NSString *)binding
 {
 	if ([binding isEqualToString:NSContentArrayBinding]) {
-		return self.contentArrayBindingInfo;
+		return self.contentBinder.bindingInfo;
 	}
 	return [super infoForBinding:binding];
 }
@@ -93,17 +88,11 @@ void *const kMMFlowViewItemKeyPathsObservationContext = @"kMMFlowViewItemKeyPath
 	if ([binding isEqualToString:NSContentArrayBinding]) {
 		NSParameterAssert([observableController isKindOfClass:[NSArrayController class]]);
 
-		if (self.contentArrayBindingInfo) {
+		if (self.contentBinder) {
 			[self unbind:NSContentArrayBinding];
 		}
-		self.contentArrayBindingInfo = @{NSObservedObjectKey: observableController,
-									   NSObservedKeyPathKey: [keyPath copy],
-									   NSOptionsKey: options ? [options copy] : @{} };
-
-		[observableController addObserver:self
-							   forKeyPath:keyPath
-								  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
-								  context:kMMFlowViewContentArrayObservationContext];
+		self.contentBinder = [[MMFlowViewContentBinder alloc] initWithArrayController:observableController withContentArrayKeyPath:keyPath];
+		[self.contentBinder startObservingContent];
 	}
 	else {
 		[super bind:binding
@@ -115,12 +104,10 @@ void *const kMMFlowViewItemKeyPathsObservationContext = @"kMMFlowViewItemKeyPath
 
 - (void)unbind:(NSString*)binding
 {
-	if ([binding isEqualToString:NSContentArrayBinding] && [self infoForBinding:NSContentArrayBinding] ) {
-		[self.contentArrayController removeObserver:self
-										 forKeyPath:self.contentArrayKeyPath
-											context:kMMFlowViewContentArrayObservationContext];
+	if ([binding isEqualToString:NSContentArrayBinding]) {
+		[self.contentBinder stopObservingContent];
+		self.contentBinder = nil;
 		[self.layer setNeedsDisplay];
-		self.contentArrayBindingInfo = nil;
 	}
 	else {
 		[super unbind:binding];
@@ -129,61 +116,14 @@ void *const kMMFlowViewItemKeyPathsObservationContext = @"kMMFlowViewItemKeyPath
 
 - (void)setUpObservations
 {
-	[self.coverFlowLayout bind:@"stackedAngle" toObject:self withKeyPath:@"stackedAngle" options:nil];
-	[self.coverFlowLayout bind:@"interItemSpacing" toObject:self withKeyPath:@"spacing" options:nil];
+	[self.coverFlowLayout bind:NSStringFromSelector(@selector(stackedAngle)) toObject:self withKeyPath:NSStringFromSelector(@selector(stackedAngle)) options:nil];
+	[self.coverFlowLayout bind:NSStringFromSelector(@selector(interItemSpacing)) toObject:self withKeyPath:NSStringFromSelector(@selector(spacing)) options:nil];
 }
 
 - (void)tearDownObservations
 {
-	[self.coverFlowLayout unbind:@"stackedAngle"];
-	[self.coverFlowLayout unbind:@"interItemSpacing"];
+	[self.coverFlowLayout unbind:NSStringFromSelector(@selector(stackedAngle))];
+	[self.coverFlowLayout unbind:NSStringFromSelector(@selector(interItemSpacing))];
 }
-
-#pragma mark -
-#pragma mark NSKeyValueObserving protocol
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(NSObject *)observedObject change:(NSDictionary *)change context:(void *)context
-{
-	if (context == kMMFlowViewContentArrayObservationContext) {
-		// Have items been removed from the bound-to container?
-		/*
-		 Should be able to use
-		 NSArray *oldItems = [change objectForKey:NSKeyValueChangeOldKey];
-		 etc. but the dictionary doesn't contain old and new arrays.
-		 */
-		NSArray *newItems = [observedObject valueForKeyPath:keyPath];
-		
-		NSMutableArray *onlyNew = [NSMutableArray arrayWithArray:newItems];
-		[onlyNew removeObjectsInArray:self.observedItems];
-		[onlyNew mm_addObserver:self forKeyPaths:[[self class] observedItemKeyPaths] context:kMMFlowViewIndividualItemKeyPathsObservationContext];
-		
-		NSMutableArray *removed = [self.observedItems mutableCopy];
-		[removed removeObjectsInArray:newItems];
-		[removed mm_removeObserver:self forKeyPaths:[[self class] observedItemKeyPaths] context:kMMFlowViewIndividualItemKeyPathsObservationContext];
-		self.observedItems = newItems;
-
-		[self reloadContent];
-	}
-	else if (context == kMMFlowViewIndividualItemKeyPathsObservationContext) {
-		id<MMFlowViewItem> item = (id<MMFlowViewItem>)observedObject;
-
-		if ( [keyPath isEqualToString:NSStringFromSelector(@selector(imageItemRepresentation))] ||
-			[keyPath isEqualToString:NSStringFromSelector(@selector(imageItemRepresentationType))] ||
-			[keyPath isEqualToString:NSStringFromSelector(@selector(imageItemUID))] ) {
-			[self.imageCache removeImageWithUUID:item.imageItemUID];
-			[self.coverFlowLayer setNeedsLayout];
-		}
-		else if ( [keyPath isEqualToString:NSStringFromSelector(@selector(imageItemTitle))] ) {
-			self.title = [observedObject valueForKeyPath:keyPath];
-		}
-	}
-	else {
-		[super observeValueForKeyPath:keyPath
-							 ofObject:observedObject
-							   change:change
-							  context:context];
-	}
-}
-
 
 @end

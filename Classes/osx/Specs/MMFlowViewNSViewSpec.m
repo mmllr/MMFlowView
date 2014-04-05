@@ -35,6 +35,7 @@
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowView+NSKeyValueObserving.h"
+#import "MMTestImageItem.h"
 
 static BOOL testingSuperInvoked = NO;
 
@@ -103,7 +104,7 @@ describe(@"NSView overrides", ^{
 				itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
 				contentArray = @[itemMock, itemMock, itemMock, itemMock];
 				controller = [[NSArrayController alloc] initWithContent:contentArray];
-
+				[controller setObjectClass:[MMTestImageItem class]];
 				[sut bind:NSContentArrayBinding toObject:controller withKeyPath:@"arrangedObjects" options:nil];
 				[sut stub:@selector(superview) andReturn:superViewMock];
 			});

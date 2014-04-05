@@ -35,6 +35,8 @@
 #import "MMFlowView_Private.h"
 #import "MMFlowView+NSKeyValueObserving.h"
 #import "NSArray+MMAdditions.h"
+#import "MMFlowViewContentBinder.h"
+#import "MMTestImageItem.h"
 
 static BOOL testingSuperInvoked = NO;
 
@@ -76,15 +78,7 @@ describe(@"NSKeyValueObserving", ^{
 	beforeAll(^{
 		NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:numberOfItems];
 		for ( NSInteger i = 0; i < numberOfItems; ++i) {
-			NSString *titleString = [NSString stringWithFormat:@"%ld", (long)i];
-			// item
-			id itemMock = [KWMock mockForProtocol:@protocol(MMFlowViewItem)];
-			[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
-			[itemMock stub:@selector(imageItemUID) andReturn:titleString];
-			[itemMock stub:@selector(imageItemTitle) andReturn:titleString];
-			id imageMock = [NSImage nullMock];
-			[itemMock stub:@selector(imageItemRepresentation) andReturn:imageMock];
-			[itemArray addObject:itemMock];
+			[itemArray addObject:[MMTestImageItem new]];
 		}
 		mockedItems = [itemArray copy];
 	});
@@ -107,6 +101,8 @@ describe(@"NSKeyValueObserving", ^{
 			
 			beforeAll(^{
 				arrayController = [[NSArrayController alloc] initWithContent:mockedItems];
+				id item = [mockedItems firstObject];
+				[arrayController setObjectClass:[item class]];
 				[arrayController setEditable:NO];
 			});
 			afterAll(^{
@@ -131,8 +127,14 @@ describe(@"NSKeyValueObserving", ^{
 					afterEach(^{
 						[sut unbind:NSContentArrayBinding];
 					});
+					it(@"should have a content binder", ^{
+						[[sut.contentBinder shouldNot] beNil];
+					});
+					it(@"should be the delegate of the content binder", ^{
+						[[(id)sut.contentBinder.delegate should] equal:sut];
+					});
 					it(@"should be bound to the array controller", ^{
-						[[sut.observedItems should] equal:mockedItems];
+						[[sut.contentAdapter should] equal:mockedItems];
 					});
 					it(@"should have the same number of items", ^{
 						[[theValue(sut.numberOfItems) should] equal:theValue([mockedItems count])];
@@ -151,6 +153,7 @@ describe(@"NSKeyValueObserving", ^{
 
 						beforeEach(^{
 							mockedArrayController =[NSArrayController nullMock];
+							[mockedArrayController stub:@selector(objectClass) andReturn:[MMTestImageItem class]];
 						});
 						it(@"should unbind the previously bound arraycontroller", ^{
 							[[sut should] receive:@selector(unbind:) withArguments:NSContentArrayBinding];
@@ -228,17 +231,20 @@ describe(@"NSKeyValueObserving", ^{
 				});
 			});
 			context(NSStringFromSelector(@selector(unbind:)), ^{
-				context(NSContentArrayBinding, ^{
+				context(@"when having a bound NSContentArrayBinding", ^{
 					beforeEach(^{
 						[sut bind:NSContentArrayBinding toObject:arrayController withKeyPath:arrangedObjectsKeyPath options:nil];
 					});
+
 					it(@"should return nil for infoForBinding", ^{
 						[sut unbind:NSContentArrayBinding];
 						[[[sut infoForBinding:NSContentArrayBinding] should] beNil];
 					});
-					it(@"should remove itself as observer from the array controllers array property", ^{
-						[[arrayController should] receive:@selector(removeObserver:forKeyPath:) withArguments:sut, arrangedObjectsKeyPath];
+
+					it(@"should have a nil contentBinder", ^{
 						[sut unbind:NSContentArrayBinding];
+
+						[[sut.contentBinder should] beNil];
 					});
 				});
 				context(@"when unbind other property than NSContentArrayBinding", ^{
@@ -258,26 +264,6 @@ describe(@"NSKeyValueObserving", ^{
 						[sut unbind:@"stackedAngle"];
 						[[theValue(testingSuperInvoked) should] beYes];
 					});
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(observeValueForKeyPath:ofObject:change:context:)), ^{
-			context(@"unhandled observing contexts", ^{
-				__block Method supersMethod;
-				__block Method testingMethod;
-
-				beforeEach(^{
-					supersMethod = class_getInstanceMethod([sut superclass], @selector(observeValueForKeyPath:ofObject:change:context:));
-					testingMethod = class_getInstanceMethod([sut class], @selector(mmTesting_observeValueForKeyPath:ofObject:change:context:));
-					method_exchangeImplementations(supersMethod, testingMethod);
-					testingSuperInvoked = NO;
-				});
-				afterEach(^{
-					method_exchangeImplementations(testingMethod, supersMethod);
-				});
-				it(@"should call up to supers implementation", ^{
-					[sut observeValueForKeyPath:@"testing" ofObject:[KWNull null] change:nil context:NULL];
-					[[theValue(testingSuperInvoked) should] beYes];
 				});
 			});
 		});

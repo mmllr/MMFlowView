@@ -39,6 +39,7 @@
 @class MMFlowViewImageFactory;
 @class MMScrollBarLayer;
 @class MMCoverFlowLayer;
+@class MMFlowViewContentBinder;
 @protocol MMFlowViewContentAdapter;
 
 @interface MMFlowView ()
@@ -58,7 +59,8 @@
 @property (readwrite,nonatomic) NSUInteger numberOfItems;
 @property (readwrite,strong) id<MMFlowViewImageCache> imageCache;
 @property (nonatomic, readonly) NSRect selectedItemFrame;
-@property (nonatomic, strong) id<MMFlowViewContentAdapter> contentAdapter;
+@property (nonatomic, strong) id contentAdapter;
+@property (nonatomic, strong) MMFlowViewContentBinder *contentBinder;
 
 + (NSSet*)pathRepresentationTypes;
 + (NSDictionary*)uniformTypesDictionary;
@@ -67,7 +69,7 @@
 + (NSArray*)backgroundGradientLocations;
 - (void)mouseEnteredSelection;
 - (void)mouseExitedSelection;
-- (void)updateSelectionInRange:(NSRange)invalidatedRange;
+- (void)updateTitle;
 - (CALayer*)hitLayerAtPoint:(CGPoint)aPoint;
 - (NSString*)titleAtIndex:(NSUInteger)anIndex;
 - (BOOL)isMovieAtIndex:(NSUInteger)anIndex;

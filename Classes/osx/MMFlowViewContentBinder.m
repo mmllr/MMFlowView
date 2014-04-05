@@ -17,6 +17,7 @@ void * const kMFlowViewContentBinderItemObservationContext = @"MFlowViewContentB
 
 @property (nonatomic, strong) NSArrayController *controller;
 @property (nonatomic, readwrite) NSArray *observedItems;
+@property (nonatomic, readwrite, strong) NSDictionary *bindingInfo;
 
 @end
 
@@ -43,6 +44,9 @@ void * const kMFlowViewContentBinderItemObservationContext = @"MFlowViewContentB
 		_controller = controller;
 		_contentArrayKeyPath = [keyPath copy];
 		_observedItems = nil;
+		_bindingInfo = @{NSObservedObjectKey: controller,
+						 NSObservedKeyPathKey: [keyPath copy],
+						 NSOptionsKey: @{} };
 	}
 	return self;
 }
@@ -65,7 +69,7 @@ void * const kMFlowViewContentBinderItemObservationContext = @"MFlowViewContentB
 
 - (NSArray*)contentArray
 {
-	return @[];
+	return [[self.controller valueForKeyPath:self.contentArrayKeyPath] copy];
 }
 
 - (void)startObservingContent
@@ -113,7 +117,7 @@ void * const kMFlowViewContentBinderItemObservationContext = @"MFlowViewContentB
 		}
     }
 	else if (context == kMFlowViewContentBinderItemObservationContext) {
-		NSParameterAssert([observedObject isKindOfClass:[self.controller objectClass]]);
+		//NSParameterAssert([observedObject isKindOfClass:[self.controller objectClass]]);
 
 		[self.delegate contentBinder:self itemChanged:observedObject];
 	}

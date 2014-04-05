@@ -41,6 +41,8 @@
 		2801F64E18D70F1A00075E15 /* NSEventMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62F18D70F1A00075E15 /* NSEventMMAdditionsSpec.m */; };
 		2801F64F18D70F1A00075E15 /* NSValueMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */; };
 		2801F65218D70F2F00075E15 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F65118D70F2F00075E15 /* Item.m */; };
+		2819C46818EDA12B00417731 /* MMTestImageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2819C46718EDA12B00417731 /* MMTestImageItem.m */; };
+		2819C46A18EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */; };
 		2832C8F318E064F7008849B9 /* MMBaseImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */; };
 		285C938918EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */; };
 		286090A918EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */; };
@@ -111,6 +113,9 @@
 		2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSValueMMAdditionsSpec.m; sourceTree = "<group>"; };
 		2801F65018D70F2F00075E15 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
 		2801F65118D70F2F00075E15 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
+		2819C46618EDA12B00417731 /* MMTestImageItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMTestImageItem.h; sourceTree = "<group>"; };
+		2819C46718EDA12B00417731 /* MMTestImageItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMTestImageItem.m; sourceTree = "<group>"; };
+		2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewContentBinderDelegateSpec.m; sourceTree = "<group>"; };
 		2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMBaseImageDecoderSpec.m; sourceTree = "<group>"; };
 		285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewNSViewSpec.m; sourceTree = "<group>"; };
 		286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewDatasourceContentAdapterSpec.m; sourceTree = "<group>"; };
@@ -172,6 +177,7 @@
 		2801F61118D70F1A00075E15 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */,
 				289C24B818EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m */,
 				286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */,
 				285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */,
@@ -302,6 +308,8 @@
 				28DDDE8B18D70B1E007B5664 /* Supporting Files */,
 				289C24BE18EC6A3900D0C046 /* TestingContentContainer.h */,
 				289C24BF18EC6A3900D0C046 /* TestingContentContainer.m */,
+				2819C46618EDA12B00417731 /* MMTestImageItem.h */,
+				2819C46718EDA12B00417731 /* MMTestImageItem.m */,
 			);
 			path = MMFlowViewDemoTests;
 			sourceTree = "<group>";
@@ -503,6 +511,7 @@
 				2801F63F18D70F1A00075E15 /* MMFlowViewNSResponderSpec.m in Sources */,
 				2801F63918D70F1A00075E15 /* MMFlowViewItemLayerSpec.m in Sources */,
 				2801F63318D70F1A00075E15 /* MMCoverFlowImageLayerSpec.m in Sources */,
+				2819C46818EDA12B00417731 /* MMTestImageItem.m in Sources */,
 				2801F64218D70F1A00075E15 /* MMFlowViewQLPreviewPanelDelegateSpec.m in Sources */,
 				2801F64D18D70F1A00075E15 /* NSArrayMMAdditionsSpec.m in Sources */,
 				2801F64718D70F1A00075E15 /* MMPDFPageDecoderSpec.m in Sources */,
@@ -531,6 +540,7 @@
 				2801F64518D70F1A00075E15 /* MMNSDataImageDecoderSpec.m in Sources */,
 				289C9C8C18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m in Sources */,
 				2801F64018D70F1A00075E15 /* MMFlowViewQLPreviewPanelControllerSpec.m in Sources */,
+				2819C46A18EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m in Sources */,
 				2801F63118D70F1A00075E15 /* CALayerMMAdditionsSpec.m in Sources */,
 				2801F64118D70F1A00075E15 /* MMFlowViewQLPreviewPanelDataSourceSpec.m in Sources */,
 				2801F64318D70F1A00075E15 /* MMFlowViewSpec.m in Sources */,

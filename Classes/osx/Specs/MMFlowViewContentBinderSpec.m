@@ -10,17 +10,7 @@
 #import "MMFlowViewContentBinder.h"
 #import "MMFlowView.h"
 #import "TestingContentContainer.h"
-
-@interface MMTestImageItem : NSObject
-
-@property (nonatomic, strong) NSString *imageItemUID;
-@property (nonatomic, strong) NSString *imageItemRepresentationType;
-@property (nonatomic, strong) NSString *imageItemRepresentation;
-
-@end
-
-@implementation MMTestImageItem
-@end
+#import "MMTestImageItem.h"
 
 SPEC_BEGIN(MMFlowViewContentBinderSpec)
 
@@ -81,13 +71,30 @@ describe(NSStringFromClass([MMFlowViewContentBinder class]), ^{
 		});
 
 		it(@"should have an empty contentArray", ^{
-			[[sut.contentArray should] haveCountOf:0];
+			[[sut.contentArray should] haveCountOf:numberOfItems];
 		});
 
 		it(@"should have no observedItems", ^{
 			[[sut.observedItems should] beNil];
 		});
 
+		context(NSStringFromSelector(@selector(bindingInfo)), ^{
+			beforeEach(^{
+			});
+			it(@"should have a NSContentArrayBinding", ^{
+				[[sut.bindingInfo shouldNot] beNil];
+			});
+			it(@"should have the array controller as NSObservedObjectKey", ^{
+				[[sut.bindingInfo[NSObservedObjectKey] should] equal:arrayController];
+			});
+			it(@"should have the keyPath from initalizer as NSObservedKeyPathKey", ^{
+				[[sut.bindingInfo[NSObservedKeyPathKey] should] equal:arrangedObjectsKey];
+			});
+			it(@"should have no options", ^{
+				[[sut.bindingInfo[NSOptionsKey] should] equal:@{}];
+			});
+		});
+		
 		context(NSStringFromSelector(@selector(observedItemKeys)), ^{
 			NSArray *mandantoryKeys = @[NSStringFromSelector(@selector(imageItemRepresentation)), NSStringFromSelector(@selector(imageItemRepresentationType)), NSStringFromSelector(@selector(imageItemUID))];
 			it(@"should contain the non optional MMFlowViewItem protocol methods", ^{

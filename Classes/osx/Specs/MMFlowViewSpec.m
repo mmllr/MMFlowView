@@ -46,6 +46,7 @@
 #import "MMPDFPageDecoder.h"
 #import "MMQuickLookImageDecoder.h"
 #import "MMFlowViewDatasourceContentAdapter.h"
+#import "MMFlowViewContentBinder.h"
 
 SPEC_BEGIN(MMFlowViewSpec)
 
@@ -68,7 +69,7 @@ describe(@"MMFlowView", ^{
 
 			NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:numberOfItems];
 			for ( NSInteger i = 0; i < numberOfItems; ++i) {
-				NSString *titleString = [NSString stringWithFormat:@"%ld", (long)i];
+				NSString *titleString = [NSString stringWithFormat:@"Item %ld", (long)i];
 				// item
 				id itemMock = [KWMock mockForProtocol:@protocol(MMFlowViewItem)];
 				[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
@@ -132,6 +133,78 @@ describe(@"MMFlowView", ^{
 			[[(id)sut.dataSource should] beNil];
 		});
 
+		context(NSStringFromSelector(@selector(title)), ^{
+			__block CATextLayer *titleLayerMock = nil;
+			NSString *testTitle = @"testTitle";
+
+			beforeEach(^{
+				titleLayerMock = [CATextLayer nullMock];
+				[titleLayerMock stub:@selector(string) andReturn:testTitle];
+				sut.titleLayer = titleLayerMock;
+			});
+			afterEach(^{
+				titleLayerMock = nil;
+			});
+
+			it(@"should return the title from the title layer", ^{
+				[[sut.title should] equal:testTitle];
+			});
+			it(@"should set the title to the title layer", ^{
+				[[titleLayerMock should] receive:@selector(setString:) withArguments:testTitle];
+
+				sut.title = testTitle;
+			});
+		});
+
+		context(NSStringFromSelector(@selector(selectedIndex)), ^{
+
+			context(@"when having items", ^{
+				beforeEach(^{
+					sut.contentAdapter = mockedItems;
+					[sut reloadContent];
+				});
+				it(@"should have a valid selection", ^{
+					[[theValue(sut.selectedIndex) shouldNot] equal:theValue(NSNotFound)];
+				});
+				context(@"when the selected item has a title", ^{
+					it(@"should have the title value of the item", ^{
+						NSString *expectedTitle = [NSString stringWithFormat:@"Item %@", @(sut.selectedIndex)];
+						[[sut.title should] equal:expectedTitle];
+					});
+				});
+
+				context(@"when the selected item has no title", ^{
+					__block id itemMock = nil;
+
+					beforeEach(^{
+						itemMock = [KWMock nullMock];
+						[itemMock stub:@selector(imageItemRepresentation) andReturn:[NSImage nullMock]];
+						[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
+						[itemMock stub:@selector(imageItemUID) andReturn:@"123"];
+						sut.contentAdapter = @[itemMock];
+						[sut reloadContent];
+					});
+					afterEach(^{
+						itemMock = nil;
+					});
+
+					it(@"should have an empty title", ^{
+						[[sut.title should] equal:@""];
+					});
+				});
+
+			});
+			
+			context(@"when having no items", ^{
+				it(@"should have NSNotFound as the selection", ^{
+					[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
+				});
+				it(@"should have an empty string as the title", ^{
+					[[sut.title should] equal:@""];
+				});
+			});
+		});
+		
 		context(NSStringFromSelector(@selector(setDataSource:)), ^{
 			__block id dataSourceMock = nil;
 
@@ -141,12 +214,50 @@ describe(@"MMFlowView", ^{
 			afterEach(^{
 				dataSourceMock = nil;
 			});
-			it(@"should set the contentAdapter to a MMFlowViewDatasourceContentAdapter", ^{
-				sut.dataSource = dataSourceMock;
+			context(@"when the NSContentArrayBinding does not exist", ^{
+				beforeEach(^{
+					[sut stub:@selector(infoForBinding:)
+					andReturn:nil
+				withArguments:NSContentArrayBinding];
+				});
+				it(@"should set the contentAdapter to a MMFlowViewDatasourceContentAdapter", ^{
+					sut.dataSource = dataSourceMock;
+					
+					[[(id)sut.contentAdapter should] beKindOfClass:[MMFlowViewDatasourceContentAdapter class]];
+				});
+			});
+			context(@"when the NSContentArrayBinding exists", ^{
+				__block id controllerMock = nil;
 
-				[[(id)sut.contentAdapter should] beKindOfClass:[MMFlowViewDatasourceContentAdapter class]];
+				beforeEach(^{
+					controllerMock = [NSArrayController nullMock];
+
+					[sut stub:@selector(infoForBinding:)
+					andReturn:@{NSObservedObjectKey: controllerMock}
+				withArguments:NSContentArrayBinding];
+				});
+				afterEach(^{
+					controllerMock = nil;
+				});
+				it(@"should not set the contentAdapter to a MMFlowViewDatasourceContentAdapter", ^{
+					[[sut shouldNot] receive:@selector(setContentAdapter:)];
+
+					sut.dataSource = dataSourceMock;
+				});
 			});
 		});
+
+		context(NSStringFromSelector(@selector(reloadContent)), ^{
+			beforeEach(^{
+				sut.contentAdapter = mockedItems;
+			});
+			it(@"should have the number of items from the content array", ^{
+				[sut reloadContent];
+
+				[[theValue(sut.numberOfItems) should] equal:theValue([mockedItems count])];
+			});
+		});
+
 		context(@"title layer interaction", ^{
 			__block CATextLayer *titleLayerMock = nil;
 			CGFloat expectedFontSize = 30;
@@ -159,14 +270,13 @@ describe(@"MMFlowView", ^{
 				titleLayerMock = nil;
 			});
 			context(NSStringFromSelector(@selector(titleSize)), ^{
-				
-				
+
 				it(@"should set the size on the title layer", ^{
-					
 					[[titleLayerMock should] receive:@selector(setFontSize:) withArguments:theValue(expectedFontSize)];
 					
 					sut.titleSize = expectedFontSize;
 				});
+
 				it(@"should return the size of the title layer", ^{
 					[[titleLayerMock should] receive:@selector(fontSize) andReturn:theValue(expectedFontSize)];
 					
@@ -765,7 +875,7 @@ describe(@"MMFlowView", ^{
 				});
 			});
 			context(@"one item", ^{
-				NSString *expectedTitle = @"0";
+				NSString *expectedTitle = @"Item 0";
 
 				beforeEach(^{
 					[[datasourceMock stubAndReturn:theValue(1)] numberOfItemsInFlowView:sut];
@@ -818,7 +928,7 @@ describe(@"MMFlowView", ^{
 					[[theValue(sut.numberOfItems) should] equal:theValue(numberOfItems)];
 				});
 				it(@"should have the first image item title", ^{
-					[[sut.title should] equal:@"0"];
+					[[sut.title should] equal:@"Item 0"];
 				});
 				it(@"should have the first item selected", ^{
 					[[theValue(sut.selectedIndex) should] equal:theValue(0)];
@@ -862,7 +972,7 @@ describe(@"MMFlowView", ^{
 						sut.selectedIndex = sut.selectedIndex + 1;
 					});
 				});
-				context(@"visibleItems", ^{
+				context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
 					it(@"should have the selected item visible", ^{
 						[[theValue([sut.visibleItemIndexes containsIndex:sut.selectedIndex]) should] beYes];
 					});
@@ -878,7 +988,7 @@ describe(@"MMFlowView", ^{
 						[[theValue(sut.selectedIndex) should] equal:theValue(0)];
 					});
 					it(@"should show the first item title", ^{
-						[[sut.title should] equal:@"0"];
+						[[sut.title should] equal:@"Item 0"];
 					});
 				});
 				context(@"moving right", ^{
@@ -889,7 +999,7 @@ describe(@"MMFlowView", ^{
 						[[theValue(sut.selectedIndex) should] equal:theValue(1)];
 					});
 					it(@"should show the second item title", ^{
-						[[sut.title should] equal:@"1"];
+						[[sut.title should] equal:@"Item 1"];
 					});
 					context(@"moving back left", ^{
 						beforeEach(^{
@@ -899,7 +1009,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
 						});
 						it(@"should show the first item title", ^{
-							[[sut.title should] equal:@"0"];
+							[[sut.title should] equal:@"Item 0"];
 						});
 					});
 				});
@@ -915,7 +1025,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(sut.selectedIndex) should] equal:theValue(2)];
 						});
 						it(@"should show the third item title", ^{
-							[[sut.title should] equal:@"2"];
+							[[sut.title should] equal:@"Item 2"];
 						});
 					});
 					context(@"select the last item", ^{
@@ -934,7 +1044,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
 						});
 						it(@"should show the first item title", ^{
-							[[sut.title should] equal:@"0"];
+							[[sut.title should] equal:@"Item 0"];
 						});
 					});
 					context(@"selecting NSNotFound item index", ^{
@@ -945,7 +1055,7 @@ describe(@"MMFlowView", ^{
 							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
 						});
 						it(@"should show the first item title", ^{
-							[[sut.title should] equal:@"0"];
+							[[sut.title should] equal:@"Item 0"];
 						});
 					});
 				});
