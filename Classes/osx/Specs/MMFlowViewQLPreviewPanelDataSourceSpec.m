@@ -24,120 +24,126 @@
 //
 //  MMFlowViewQLPreviewPanelDataSourceSpec.m
 //
-//  Created by Markus Müller on 16.02.14.
+//  Created by Markus Müller on 13.05.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMFlowView+QLPreviewPanelDataSource.h"
 #import "MMFlowView_Private.h"
+#import "MMTestImageItem.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMFlowViewQLPreviewPanelDataSourceSpec)
+@interface MMFlowViewQLPreviewPanelDataSourceSpec : XCTestCase
 
-describe(@"MMFlowView+QLPreviewPanelDataSource", ^{
-	__block MMFlowView *sut = nil;
-	__block NSURL *testImageURL = nil;
-	__block id mockedItem = nil;
-	__block id contentAdapterMock = nil;
+@end
 
-	beforeAll(^{
-		testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-		mockedItem = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
-	});
-	afterAll(^{
-		mockedItem = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
-		testImageURL = nil;
-	});
-	beforeEach(^{
-		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
-		contentAdapterMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
-		[contentAdapterMock stub:@selector(objectAtIndexedSubscript:) andReturn:mockedItem];
-		sut.contentAdapter = contentAdapterMock;
-	});
-	afterEach(^{
-		sut = nil;
-		contentAdapterMock = nil;
-	});
-	context(@"when having a selected item", ^{
-		beforeEach(^{
-			[sut stub:@selector(selectedIndex) andReturn:theValue(0)];
-		});
-		context(@"when a quick-lookable presentation item is selected", ^{
-			__block id previewItem = nil;
+@implementation MMFlowViewQLPreviewPanelDataSourceSpec
+{
+	MMFlowView *_sut;
+	MMTestContentAdapter *_contentAdapter;
+	MMTestImageItem *_mockedItem;
+	NSURL *_testImageURL;
+}
 
-			context(@"when asking for item in supported representation types", ^{
-				__block NSArray *supportedRepresentationTypes = nil;
-  
-				beforeEach(^{
-					supportedRepresentationTypes = @[kMMFlowViewURLRepresentationType,
-													 kMMFlowViewPathRepresentationType,
-													 kMMFlowViewQTMoviePathRepresentationType,
-													 kMMFlowViewQCCompositionPathRepresentationType,
-													 kMMFlowViewQuickLookPathRepresentationType];
-					[mockedItem stub:@selector(imageItemRepresentation) andReturn:testImageURL];
-				});
- 
-				it(@"should return a previewItem", ^{
-					for ( NSString *representationType in supportedRepresentationTypes ) {
-						[mockedItem stub:@selector(imageItemRepresentationType) andReturn:representationType];
-						[[(id)[sut previewPanel:[QLPreviewPanel nullMock] previewItemAtIndex:0] shouldNot] beNil];
-					}
-				});
-			});
-			context(@"when asking for a NSURL based representation", ^{
-				beforeEach(^{
-					[mockedItem stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewURLRepresentationType];
-					[mockedItem stub:@selector(imageItemRepresentation) andReturn:testImageURL];
-					previewItem = [sut previewPanel:[QLPreviewPanel nullMock] previewItemAtIndex:0];
-				});
-				it(@"it should return one for numberOfPreviewItemsInPreviewPanel", ^{
-					[[theValue([sut numberOfPreviewItemsInPreviewPanel:[QLPreviewPanel nullMock]]) should] equal:theValue(1)];
-				});
-				it(@"should not return nil", ^{
-					[[previewItem shouldNot] beNil];
-				});
-				it(@"should return a NSURL", ^{
-					[[previewItem should] beKindOfClass:[NSURL class]];
-				});
-			});
-			context(@"when asking for a string based path representation", ^{
-				beforeEach(^{
-					[mockedItem stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewPathRepresentationType];
-					[mockedItem stub:@selector(imageItemRepresentation) andReturn:[testImageURL path]];
-					previewItem = [sut previewPanel:[QLPreviewPanel nullMock] previewItemAtIndex:0];
-				});
-				it(@"it should return one for numberOfPreviewItemsInPreviewPanel", ^{
-					[[theValue([sut numberOfPreviewItemsInPreviewPanel:[QLPreviewPanel nullMock]]) should] equal:theValue(1)];
-				});
-				it(@"should not return nil", ^{
-					[[previewItem shouldNot] beNil];
-				});
-				it(@"should return a NSURL", ^{
-					[[previewItem should] beKindOfClass:[NSURL class]];
-				});
-			});
-		});
-		context(@"when no quick-lookable presentation item is selected", ^{
-			beforeEach(^{
-				[mockedItem stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
-				[mockedItem stub:@selector(imageItemRepresentation) andReturn:[NSImage nullMock]];
-			});
-			it(@"it should return zero for numberOfPreviewItemsInPreviewPanel:", ^{
-				[[theValue([sut numberOfPreviewItemsInPreviewPanel:[QLPreviewPanel nullMock]]) should] beZero];
-			});
-			it(@"should return nil when asking for the preview item", ^{
-				[[(id)[sut previewPanel:[QLPreviewPanel nullMock] previewItemAtIndex:0] should] beNil];
-			});
-		});
-	});
-	context(@"when no item is selected", ^{
-		it(@"should return zero for numberOfPreviewItemsInPreviewPanel:", ^{
-			[[theValue([sut numberOfPreviewItemsInPreviewPanel:[QLPreviewPanel nullMock]]) should] beZero];
-		});
-		it(@"should return nil when asking for the preview item", ^{
-			[[(id)[sut previewPanel:[QLPreviewPanel nullMock] previewItemAtIndex:0] should] beNil];
-		});
-	});
-});
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+	_testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+	_mockedItem = [[MMTestImageItem alloc] init];
+	_mockedItem.imageItemUID = @"testUID";
+	_contentAdapter = [[MMTestContentAdapter alloc] initWithItems:@[_mockedItem]];
+	_sut.contentAdapter = _contentAdapter;
+	// make the first (and only) item the selected item
+	_sut.coverFlowLayout.numberOfItems = 1;
+	_sut.coverFlowLayout.selectedItemIndex = 0;
+}
 
-SPEC_END
+- (void)tearDown
+{
+	_sut = nil;
+	_contentAdapter = nil;
+	_mockedItem = nil;
+	_testImageURL = nil;
+	[super tearDown];
+}
+
+- (NSArray *)supportedRepresentationTypes
+{
+	return @[kMMFlowViewURLRepresentationType,
+			 kMMFlowViewPathRepresentationType,
+			 kMMFlowViewQTMoviePathRepresentationType,
+			 kMMFlowViewQCCompositionPathRepresentationType,
+			 kMMFlowViewQuickLookPathRepresentationType];
+}
+
+- (void)testReturnsPreviewItemForSupportedRepresentationTypes
+{
+	for (NSString *representationType in [self supportedRepresentationTypes]) {
+		_mockedItem.imageItemRepresentationType = representationType;
+		_mockedItem.imageItemRepresentation = _testImageURL;
+		XCTAssertNotNil([_sut previewPanel:nil previewItemAtIndex:0], @"should return item for %@", representationType);
+	}
+}
+
+- (void)testNumberOfPreviewItemsForURLRepresentation
+{
+	_mockedItem.imageItemRepresentationType = kMMFlowViewURLRepresentationType;
+	_mockedItem.imageItemRepresentation = _testImageURL;
+	XCTAssertEqual([_sut numberOfPreviewItemsInPreviewPanel:nil], (NSInteger)1);
+}
+
+- (void)testPreviewItemForURLRepresentationIsNSURL
+{
+	_mockedItem.imageItemRepresentationType = kMMFlowViewURLRepresentationType;
+	_mockedItem.imageItemRepresentation = _testImageURL;
+	id previewItem = [_sut previewPanel:nil previewItemAtIndex:0];
+	XCTAssertNotNil(previewItem);
+	XCTAssertTrue([previewItem isKindOfClass:[NSURL class]]);
+}
+
+- (void)testNumberOfPreviewItemsForPathRepresentation
+{
+	_mockedItem.imageItemRepresentationType = kMMFlowViewPathRepresentationType;
+	_mockedItem.imageItemRepresentation = [_testImageURL path];
+	XCTAssertEqual([_sut numberOfPreviewItemsInPreviewPanel:nil], (NSInteger)1);
+}
+
+- (void)testPreviewItemForPathRepresentationIsNSURL
+{
+	_mockedItem.imageItemRepresentationType = kMMFlowViewPathRepresentationType;
+	_mockedItem.imageItemRepresentation = [_testImageURL path];
+	id previewItem = [_sut previewPanel:nil previewItemAtIndex:0];
+	XCTAssertNotNil(previewItem);
+	XCTAssertTrue([previewItem isKindOfClass:[NSURL class]]);
+}
+
+- (void)testNumberOfPreviewItemsIsZeroForNonQuickLookableItem
+{
+	_mockedItem.imageItemRepresentationType = kMMFlowViewNSImageRepresentationType;
+	_mockedItem.imageItemRepresentation = [[NSImage alloc] initWithContentsOfURL:_testImageURL];
+	XCTAssertEqual([_sut numberOfPreviewItemsInPreviewPanel:nil], (NSInteger)0);
+}
+
+- (void)testPreviewItemIsNilForNonQuickLookableItem
+{
+	_mockedItem.imageItemRepresentationType = kMMFlowViewNSImageRepresentationType;
+	_mockedItem.imageItemRepresentation = [[NSImage alloc] initWithContentsOfURL:_testImageURL];
+	XCTAssertNil([_sut previewPanel:nil previewItemAtIndex:0]);
+}
+
+- (void)testNumberOfPreviewItemsIsZeroWithoutSelection
+{
+	_sut.coverFlowLayout.selectedItemIndex = NSNotFound;
+	XCTAssertEqual([_sut numberOfPreviewItemsInPreviewPanel:nil], (NSInteger)0);
+}
+
+- (void)testPreviewItemIsNilWithoutSelection
+{
+	_sut.coverFlowLayout.selectedItemIndex = NSNotFound;
+	XCTAssertNil([_sut previewPanel:nil previewItemAtIndex:0]);
+}
+
+@end

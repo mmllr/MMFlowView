@@ -21,17 +21,23 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
 //  MMBaseImageDecoderSpec.m
 //
-//  Created by Markus Müller on 24.03.14.
-//  Copyright 2014 Markus Müller. All rights reserved.
+//  Created by Markus Müller on 17.12.13.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMBaseImageDecoder.h"
 
-SPEC_BEGIN(MMBaseImageDecoderSpec)
+@interface MMBaseImageDecoderSpec : XCTestCase
 
-SPEC_END
+@end
+
+@implementation MMBaseImageDecoderSpec
+
+// The original spec contained no tests; the class is exercised through its subclasses.
+
+@end

@@ -24,107 +24,119 @@
 //
 //  MMNSBitmapImageRepDecoderSpec.m
 //
-//  Created by Markus Müller on 18.12.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Created by Markus Müller on 17.12.13.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import <Kiwi.h>
+#import <XCTest/XCTest.h>
+
 #import "MMNSBitmapImageRepDecoder.h"
 #import "MMMacros.h"
 
-SPEC_BEGIN(MMNSBitmapImageRepDecoderSpec)
+@interface MMNSBitmapImageRepDecoderSpec : XCTestCase
 
-describe(@"MMNSBitmapImageRepDecoder", ^{
-	__block MMNSBitmapImageRepDecoder *sut = nil;
-	__block CGImageRef imageRef = NULL;
-	__block NSBitmapImageRep *imageRep = nil;
-	__block CGImageRef testImageRef = NULL;
-	const NSUInteger expectedImageSize = 100;
+@end
 
-	beforeAll(^{
-		NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-		NSImage *image = [[NSImage alloc] initWithContentsOfURL:testImageURL];
+@implementation MMNSBitmapImageRepDecoderSpec
+{
+	MMNSBitmapImageRepDecoder *_sut;
+	CGImageRef _imageRef;
+	NSBitmapImageRep *_imageRep;
+}
 
-		for ( NSImageRep* rep in [image representations] ) {
-			if ([rep isKindOfClass:[NSBitmapImageRep class]] ) {
-				imageRep = [(NSBitmapImageRep*)rep copy];
-				break;
-			}
+static const NSUInteger expectedImageSize = 100;
+
+- (void)setUp
+{
+	[super setUp];
+	NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+	NSImage *image = [[NSImage alloc] initWithContentsOfURL:testImageURL];
+	for (NSImageRep *rep in [image representations]) {
+		if ([rep isKindOfClass:[NSBitmapImageRep class]]) {
+			_imageRep = [(NSBitmapImageRep *)rep copy];
+			break;
 		}
-	});
-	afterAll(^{
-		imageRep = nil;
-	});
-	it(@"should throw an NSInternalInconsistencyException when not created with designated initalizer", ^{
-		[[theBlock(^{
-			sut = [[MMNSBitmapImageRepDecoder alloc] init];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a nil item", ^{
-		[[theBlock(^{
-			sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a valid item with a zero maxiumum pixel size", ^{
-		[[theBlock(^{
-			sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:imageRep maxPixelSize:0];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from an invalid item", ^{
-		[[theBlock(^{
-			sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:@"Test" maxPixelSize:expectedImageSize];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
+	}
+}
 
-	
-	context(@"when created with designated initializer from a valid item and image size", ^{
-		beforeEach(^{
-			sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:imageRep maxPixelSize:expectedImageSize];
-		});
-		afterEach(^{
-			sut = nil;
-			SAFE_CGIMAGE_RELEASE(testImageRef)
-		});
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should conform to MMImageDecoderProtocol", ^{
-			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
-		});
-		it(@"should respond to newCGImageFromItem:", ^{
-			[[sut should] respondToSelector:@selector(CGImage)];
-		});
-		it(@"should respond to imageFromItem:", ^{
-			[[sut should] respondToSelector:@selector(image)];
-		});
-		
-		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeEach(^{
-				imageRef = sut.CGImage;
-			});
-			it(@"should create an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
-			});
-			it(@"should have a width less or equal 100", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-			it(@"should have a height less or equal 100", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-		});
+- (void)tearDown
+{
+	_sut = nil;
+	_imageRef = NULL;
+	_imageRep = nil;
+	[super tearDown];
+}
 
-		context(NSStringFromSelector(@selector(image)), ^{
-			it(@"should return an image", ^{
-				[[sut.image shouldNot] beNil];
-			});
-			it(@"should return an NSImage", ^{
-				[[sut.image should] beKindOfClass:[NSImage class]];
-			});
-			it(@"should contain the bitmapRef in its representations", ^{
-				[[[sut.image representations] should] contain:imageRep];
-			});
-		});
-	});
-});
+- (void)testThrowsWhenNotCreatedWithDesignatedInitializer
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSBitmapImageRepDecoder alloc] init]), NSException, NSInternalInconsistencyException);
+}
 
-SPEC_END
+- (void)testThrowsWhenCreatedWithNilItem
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithZeroMaximumPixelSize
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:0]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithInvalidItem
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:@"Test" maxPixelSize:expectedImageSize]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testValidInstanceExists
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	XCTAssertNotNil(_sut);
+}
+
+- (void)testValidInstanceConformsToDecoderProtocol
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut conformsToProtocol:@protocol(MMImageDecoderProtocol)]);
+}
+
+- (void)testValidInstanceRespondsToProtocolSelectors
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut respondsToSelector:@selector(CGImage)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(image)]);
+}
+
+- (void)testCGImageCreatesAnImage
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertTrue(_imageRef != NULL);
+}
+
+- (void)testCGImageDimensionsAreLimited
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertLessThanOrEqual(CGImageGetWidth(_imageRef), (size_t)100);
+	XCTAssertLessThanOrEqual(CGImageGetHeight(_imageRef), (size_t)100);
+}
+
+- (void)testImageReturnsAnImage
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	XCTAssertNotNil(_sut.image);
+}
+
+- (void)testImageReturnsAnNSImage
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut.image isKindOfClass:[NSImage class]]);
+}
+
+- (void)testImageContainsTheBitmapRepInItsRepresentations
+{
+	_sut = [[MMNSBitmapImageRepDecoder alloc] initWithItem:_imageRep maxPixelSize:expectedImageSize];
+	XCTAssertTrue([[_sut.image representations] containsObject:_imageRep]);
+}
+
+@end

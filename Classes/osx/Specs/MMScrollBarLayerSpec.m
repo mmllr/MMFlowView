@@ -25,706 +25,585 @@
 //  MMScrollBarLayerSpec.m
 //
 //  Created by Markus Müller on 14.11.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMScrollBarLayer.h"
 #import "MMScrollKnobLayer.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMScrollBarLayerSpec)
+@interface MMScrollBarLayerSpec : XCTestCase
 
-describe(@"MMScrollBarLayer", ^{
-	__block MMScrollBarLayer *sut = nil;
+@end
 
-	context(@"new instance", ^{
-		const CGFloat horizontalKnobMargin = 5;
-		const CGFloat verticalKnobMargin = 2;
+@implementation MMScrollBarLayerSpec
+{
+	MMScrollBarLayer *_sut;
+	MMScrollKnobLayer *_knobLayer;
+	MMTestScrollBarDelegate *_delegate;
+}
 
-		__block id mockedScrollBarDelegate = nil;
-		__block CALayer *knobLayer = nil;
-		
-		beforeEach(^{
-			sut = [[MMScrollBarLayer alloc] init];
-			knobLayer = [sut.sublayers firstObject];
-			mockedScrollBarDelegate = [KWMock nullMockForProtocol:@protocol(MMScrollBarDelegate)];
-		});
-		afterEach(^{
-			mockedScrollBarDelegate = nil;
-			sut = nil;
-			knobLayer = nil;
-		});
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should be of kind MMScrollBarLayer", ^{
-			[[sut should] beKindOfClass:[MMScrollBarLayer class]];
-		});
-		it(@"should be named MMScrollBarLayerName", ^{
-			[[sut.name should] equal:@"MMScrollBarLayerName"];
-		});
-		it(@"should have a black background color", ^{
-			[[[NSColor colorWithCGColor:sut.backgroundColor] should] equal:[NSColor blackColor]];
-		});
-		it(@"should have a gray border color", ^{
-			[[[NSColor colorWithCGColor:sut.borderColor] should] equal:[NSColor grayColor]];
-		});
-		it(@"should be opaque", ^{
-			[[theValue(sut.opaque) should] beYes];
-		});
-		it(@"should have a border width of 1", ^{
-			[[theValue(sut.borderWidth) should] equal:theValue(1.)];
-		});
-		it(@"should have a corner radius of 10", ^{
-			[[theValue(sut.cornerRadius) should] equal:theValue(10.)];
-		});
-		it(@"should have a height of 20", ^{
-			[[theValue(CGRectGetHeight(sut.frame)) should] equal:theValue(20)];
-		});
-		it(@"should have a width of 100", ^{
-			[[theValue(CGRectGetWidth(sut.frame)) should] equal:theValue(100)];
-		});
-		it(@"should have a nil scrollBarDelegate", ^{
-			[[(id)sut.scrollBarDelegate should] beNil];
-		});
-		it(@"should have one sublayer", ^{
-			[[sut.sublayers should] haveCountOf:1];
-		});
-		it(@"should have a MMScrollKnobLayer sublayer", ^{
-			[[knobLayer should] beKindOfClass:[MMScrollKnobLayer class]];
-		});
-		it(@"should have a knob layer at position 5,2", ^{
-			NSValue *expectedPosition = [NSValue valueWithPoint:NSMakePoint(horizontalKnobMargin, verticalKnobMargin)];
-			[[[NSValue valueWithPoint:knobLayer.frame.origin] should] equal:expectedPosition];
-		});
-		context(@"constraints", ^{
-			__block CAConstraint *constraint =  nil;
-			it(@"should have three constraints", ^{
-				[[sut.constraints should] haveCountOf:3];
-			});
-			context(@"super layer midx", ^{
-				beforeEach(^{
-					constraint = [sut.constraints firstObject];
-				});
-				afterEach(^{
-					constraint = nil;
-				});
-				it(@"should be relative to its superlayer", ^{
-					[[ constraint.sourceName should] equal:@"superlayer"];
-				});
-				it(@"should have a mid-x sourceAttribute", ^{
-					[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMidX)];
-				});
-				it(@"should have a mid-x attribute", ^{
-					[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMidX)];
-				});
-				it(@"should have a scale of 1", ^{
-					[[theValue(constraint.scale) should] equal:theValue(1)];
-				});
-				it(@"should have an offset of zero", ^{
-					[[theValue(constraint.offset) should] beZero];
-				});
-			});
-			context(@"super layer min-y with offset", ^{
-				beforeEach(^{
-					constraint = sut.constraints[1];
-				});
-				afterEach(^{
-					constraint = nil;
-				});
-				it(@"should be relative to its superlayer", ^{
-					[[ constraint.sourceName should] equal:@"superlayer"];
-				});
-				it(@"should have a mid-x sourceAttribute", ^{
-					[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMinY)];
-				});
-				it(@"should have a mid-x attribute", ^{
-					[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMinY)];
-				});
-				it(@"should have a scale of 1", ^{
-					[[theValue(constraint.scale) should] equal:theValue(1)];
-				});
-				it(@"should have an offset of 10.", ^{
-					[[theValue(constraint.offset) should] equal:theValue(10.)];
-				});
-			});
-			context(@"super layer width 75% scale", ^{
-				beforeEach(^{
-					constraint = sut.constraints[2];
-				});
-				afterEach(^{
-					constraint = nil;
-				});
-				it(@"should be relative to its superlayer", ^{
-					[[ constraint.sourceName should] equal:@"superlayer"];
-				});
-				it(@"should have a width sourceAttribute", ^{
-					[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintWidth)];
-				});
-				it(@"should have a width attribute", ^{
-					[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintWidth)];
-				});
-				it(@"should have an offset of 0.", ^{
-					[[theValue(constraint.offset) should] beZero];
-				});
-				it(@"should have a scale of .75", ^{
-					[[theValue(constraint.scale) should] equal:theValue(.75)];
-				});
-			});
-		});
-		context(@"CoreAnimation actions", ^{
-			__block NSDictionary *actions = nil;
-			beforeEach(^{
-				actions = sut.actions;
-			});
-			afterEach(^{
-				actions = nil;
-			});
-			it(@"should have disabled the implicit position action", ^{
-				[[actions[@"position"] should] equal:[NSNull null]];
-			});
-			it(@"should have disabled the implicit bounds action", ^{
-				[[actions[@"bounds"] should] equal:[NSNull null]];
-			});
-		});
-		context(@"NSAccessibility", ^{
-			it(@"should not be ignored", ^{
-				[[theValue([sut accessibilityIsIgnored]) should] beNo];
-			});
-			it(@"should have a scrollbar role", ^{
-				[[[sut accessibilityAttributeValue:NSAccessibilityRoleAttribute] should] equal:NSAccessibilityScrollBarRole];
-			});
-			it(@"should have a horizontal orientation", ^{
-				[[[sut accessibilityAttributeValue:NSAccessibilityOrientationAttribute] should] equal:NSAccessibilityHorizontalOrientationValue];
-			});
-			it(@"should be enabled", ^{
-				[[[sut accessibilityAttributeValue:NSAccessibilityEnabledAttribute] should] beYes];
-			});
-			context(@"NSAccessibilityValueAttribute", ^{
-				__block id delegateMock = nil;
-				const CGFloat expectedKnobPosition = .5;
+static const CGFloat horizontalKnobMargin = 5;
+static const CGFloat verticalKnobMargin = 2;
 
-				beforeEach(^{
-					delegateMock = [KWMock nullMockForProtocol:@protocol(MMScrollBarDelegate)];
-					[delegateMock stub:@selector(currentKnobPositionInScrollBarLayer:) andReturn:theValue(expectedKnobPosition)];
-					sut.scrollBarDelegate = delegateMock;
-				});
-				afterEach(^{
-					delegateMock = nil;
-				});
-				context(@"reading the attribute", ^{
-					it(@"should have a NSAccessibilityValueAttribute", ^{
-						[[[sut accessibilityAttributeNames] should] contain:NSAccessibilityValueAttribute];
-					});
-					it(@"should ask the scrollbar delegate for the current position", ^{
-						[[delegateMock should] receive:@selector(currentKnobPositionInScrollBarLayer:) withArguments:sut];
-						
-						[sut accessibilityAttributeValue:NSAccessibilityValueAttribute];
-					});
-					
-					it(@"should return the current knob position from the scroll bar delegate", ^{
-						[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] equal:theValue(expectedKnobPosition)];
-					});
-				});
-				context(@"setting the attribute", ^{
-					it(@"should be writable", ^{
-						[[theValue([sut accessibilityIsAttributeSettable:NSAccessibilityValueAttribute]) should] beYes];
-					});
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMScrollBarLayer alloc] init];
+	_knobLayer = [_sut.sublayers firstObject];
+	_delegate = [[MMTestScrollBarDelegate alloc] init];
+}
 
-					it(@"should tell the scroll bar delegate to set the new knob position", ^{
-						CGFloat newPosition = .9;
+- (void)tearDown
+{
+	_delegate = nil;
+	_sut = nil;
+	_knobLayer = nil;
+	[super tearDown];
+}
 
-						[[delegateMock should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(newPosition)];
-						
-						[sut accessibilitySetValue:@(newPosition) forAttribute:NSAccessibilityValueAttribute];
-					});
-				});
-				
-				it(@"should return zero when no scroll bar delegate is set", ^{
-					sut.scrollBarDelegate = nil;
+- (void)testInstanceExists
+{
+	XCTAssertNotNil(_sut);
+}
 
-					[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] beZero];
-				});
-				context(@"when having an incomplete scroll bar delegate", ^{
-					beforeEach(^{
-						delegateMock = [KWMock mock];
-						sut.scrollBarDelegate = delegateMock;
-					});
-					it(@"should return zero for getting the NSAccessibilityValueAttribute", ^{
-						[[[sut accessibilityAttributeValue:NSAccessibilityValueAttribute] should] beZero];
-					});
-					it(@"should not ask the scroll bar delegate for the current position", ^{
-						[[delegateMock shouldNot] receive:@selector(currentKnobPositionInScrollBarLayer:)];
+- (void)testIsKindOfMMScrollBarLayer
+{
+	XCTAssertTrue([_sut isKindOfClass:[MMScrollBarLayer class]]);
+}
 
-						[sut accessibilityAttributeValue:NSAccessibilityValueAttribute];
-					});
-					it(@"should not ask the scroll bar delegate to change the knob position when setting the NSAccessibilityValueAttribute", ^{
-						[[delegateMock shouldNot] receive:@selector(scrollBarLayer:knobDraggedToPosition:)];
+- (void)testName
+{
+	XCTAssertEqualObjects(_sut.name, @"MMScrollBarLayerName");
+}
 
-						[sut accessibilitySetValue:@(.4) forAttribute:NSAccessibilityValueAttribute];
-					});
-				});
-				
-			});
-		});
-		context(NSStringFromSelector(@selector(layoutSublayers)), ^{
-			context(@"when the content rect bigger than visible rect", ^{
-				const CGFloat contentSize = 2000;
-				const CGFloat visibleSize = 500;
-				const CGFloat scrollBarWidth = visibleSize * .75;
-				const CGFloat effectiveScrollBarWidth = scrollBarWidth - 2*horizontalKnobMargin;
-				const CGFloat contentToVisibleAspectRatio = visibleSize / contentSize;
-				const CGFloat expectedKnobWidth = effectiveScrollBarWidth * contentToVisibleAspectRatio;
-				const CGFloat availableScrollingSize = effectiveScrollBarWidth - expectedKnobWidth;
-				const CGFloat minimumKnobWidth = 40.;
-				__block CGFloat currentKnobPosition = 0;
-				__block CGRect expectedKnobFrame;
+- (void)testBlackBackgroundColor
+{
+	XCTAssertEqualObjects([NSColor colorWithCGColor:_sut.backgroundColor], [NSColor blackColor]);
+}
 
-				beforeEach(^{
-					[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(contentSize)];
-					[mockedScrollBarDelegate stub:@selector(visibleSizeForScrollBarLayer:) andReturn:theValue(visibleSize)];
-					sut.scrollBarDelegate = mockedScrollBarDelegate;
-					[sut stub:@selector(bounds) andReturn:theValue(CGRectMake(0, 0, scrollBarWidth, 20))];
-				});
-				it(@"should ask the delegate for the content size", ^{
-					[[mockedScrollBarDelegate should] receive:@selector(contentSizeForScrollBarLayer:) withArguments:sut];
+- (void)testGrayBorderColor
+{
+	XCTAssertEqualObjects([NSColor colorWithCGColor:_sut.borderColor], [NSColor grayColor]);
+}
 
-					[sut layoutSublayers];
-				});
-				it(@"should ask the delegate for the visible size", ^{
-					[[mockedScrollBarDelegate should] receive:@selector(visibleSizeForScrollBarLayer:) withArguments:sut];
-					
-					[sut layoutSublayers];
-				});
-				it(@"should ask the delegate for the current knob position", ^{
-					[[mockedScrollBarDelegate should] receive:@selector(currentKnobPositionInScrollBarLayer:)];
+- (void)testIsOpaque
+{
+	XCTAssertTrue(_sut.opaque);
+}
 
-					[sut layoutSublayers];
-				});
-				context(@"knob interaction", ^{
-					__block MMScrollKnobLayer *mockedKnob = nil;
-					
-					beforeEach(^{
-						mockedKnob = [MMScrollKnobLayer nullMock];
-						[sut stub:@selector(sublayers) andReturn:@[mockedKnob]];
-					});
-					afterEach(^{
-						mockedKnob = nil;
-					});
-					context(@"knob on leftmost position", ^{
-						beforeEach(^{
-							currentKnobPosition = 0;
-							[mockedScrollBarDelegate stub:@selector(currentKnobPositionInScrollBarLayer:) andReturn:theValue(currentKnobPosition)];
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin + availableScrollingSize * currentKnobPosition, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should set the knob frame", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
+- (void)testBorderWidthOfOne
+{
+	XCTAssertEqual(_sut.borderWidth, (CGFloat)1.);
+}
 
-							[sut layoutSublayers];
-						});
-						it(@"should not be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beNo];
-						});
-					});
-					context(@"knob on mid position", ^{
-						beforeEach(^{
-							currentKnobPosition = .5;
-							[mockedScrollBarDelegate stub:@selector(currentKnobPositionInScrollBarLayer:) andReturn:theValue(currentKnobPosition)];
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin + availableScrollingSize * currentKnobPosition, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should set the knob frame", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
+- (void)testCornerRadiusOfTen
+{
+	XCTAssertEqual(_sut.cornerRadius, (CGFloat)10.);
+}
 
-							[sut layoutSublayers];
-						});
-						it(@"should not be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beNo];
-						});
-					});
-					context(@"knob on rightmost position", ^{
-						beforeEach(^{
-							currentKnobPosition = 1;
-							[mockedScrollBarDelegate stub:@selector(currentKnobPositionInScrollBarLayer:) andReturn:theValue(currentKnobPosition)];
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin + availableScrollingSize * currentKnobPosition, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should set the knob frame", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-							
-							[sut layoutSublayers];
-						});
-						it(@"should not be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beNo];
-						});
-					});
-					context(@"when delegate returns knob position less than zero", ^{
-						beforeEach(^{
-							[mockedScrollBarDelegate stub:@selector(currentKnobPositionInScrollBarLayer:) andReturn:theValue(-10)];
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should set the knob frame to the minimum left position", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-							
-							[sut layoutSublayers];
-						});
-						it(@"should not be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beNo];
-						});
-					});
-					context(@"when delegate returns knob position greater than one", ^{
-						beforeEach(^{
-							[mockedScrollBarDelegate stub:@selector(currentKnobPositionInScrollBarLayer:) andReturn:theValue(2)];
-							CGFloat expectedPosition = horizontalKnobMargin + effectiveScrollBarWidth - expectedKnobWidth;
-							expectedKnobFrame = CGRectMake(expectedPosition, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should set the knob frame to the minimum left position", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-							
-							[sut layoutSublayers];
-						});
-						it(@"should not be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beNo];
-						});
-					});
-					context(@"when visible and content size are greater than zero and equal", ^{
-						beforeEach(^{
-							[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(100)];
-							[mockedScrollBarDelegate stub:@selector(visibleSizeForScrollBarLayer:) andReturn:theValue(100)];
-							sut.scrollBarDelegate = mockedScrollBarDelegate;
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, effectiveScrollBarWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beYes];
-						});
-						it(@"should set the knob to span complete scroll bar", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
+- (void)testHeightOfTwenty
+{
+	XCTAssertEqual(CGRectGetHeight(_sut.frame), (CGFloat)20);
+}
 
-							[sut layoutSublayers];
-						});
-					});
-					context(@"when content size is way greater than visible size", ^{
-						beforeEach(^{
-							[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(5000)];
-							[mockedScrollBarDelegate stub:@selector(visibleSizeForScrollBarLayer:) andReturn:theValue(10)];
-							sut.scrollBarDelegate = mockedScrollBarDelegate;
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, minimumKnobWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should not be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beNo];
-						});
-						it(@"should set the knob to the minimum width (40)", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-							
-							[sut layoutSublayers];
-						});
-					});
-					context(@"when visible size is greater than content size", ^{
-						beforeEach(^{
-							[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(100)];
-							[mockedScrollBarDelegate stub:@selector(visibleSizeForScrollBarLayer:) andReturn:theValue(200)];
-							sut.scrollBarDelegate = mockedScrollBarDelegate;
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, effectiveScrollBarWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						it(@"should be hidden", ^{
-							[sut layoutSublayers];
-							[[theValue(sut.hidden) should] beYes];
-						});
-						it(@"should set the knob to span complete scroll bar", ^{
-							[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-							
-							[sut layoutSublayers];
-						});
-					});
-					context(@"when delegate gives invalid content or visible size", ^{
-						beforeEach(^{
-							expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, effectiveScrollBarWidth, CGRectGetHeight(sut.bounds) - 2*verticalKnobMargin);
-						});
-						context(@"when content size is zero", ^{
-							beforeEach(^{
-								[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(0)];
-								sut.scrollBarDelegate = mockedScrollBarDelegate;
-							});
-							it(@"should be hidden", ^{
-								[sut layoutSublayers];
-								[[theValue(sut.hidden) should] beYes];
-							});
-							it(@"should set the knob to span complete scroll bar", ^{
-								[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-								
-								[sut layoutSublayers];
-							});
-						});
-						context(@"when visbile size is zero", ^{
-							beforeEach(^{
-								[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(0)];
-								sut.scrollBarDelegate = mockedScrollBarDelegate;
-							});
-							it(@"should be hidden", ^{
-								[sut layoutSublayers];
-								[[theValue(sut.hidden) should] beYes];
-							});
-							it(@"should set the knob to span complete scroll bar", ^{
-								[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-								
-								[sut layoutSublayers];
-							});
-						});
-						context(@"when content size is negative", ^{
-							beforeEach(^{
-								[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(-100)];
-								sut.scrollBarDelegate = mockedScrollBarDelegate;
-							});
-							it(@"should be hidden", ^{
-								[sut layoutSublayers];
-								[[theValue(sut.hidden) should] beYes];
-							});
-							it(@"should set the knob to span complete scroll bar", ^{
-								[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-								
-								[sut layoutSublayers];
-							});
-						});
-						context(@"when visbile size is negative", ^{
-							beforeEach(^{
-								[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(-100)];
-								sut.scrollBarDelegate = mockedScrollBarDelegate;
-							});
-							it(@"should be hidden", ^{
-								[sut layoutSublayers];
-								[[theValue(sut.hidden) should] beYes];
-							});
-							it(@"should set the knob to span complete scroll bar", ^{
-								[[mockedKnob should] receive:@selector(setFrame:) withArguments:theValue(expectedKnobFrame)];
-								
-								[sut layoutSublayers];
-							});
-						});
-					});
-					
-				});
-				
-			});
-			context(@"when having a incomplete scrollBarDelegate", ^{
-				beforeEach(^{
-					mockedScrollBarDelegate = [KWMock nullMock];
-					sut.scrollBarDelegate = mockedScrollBarDelegate;
-				});
-				it(@"should not ask the delegate for the content size", ^{
-					[[mockedScrollBarDelegate shouldNot] receive:@selector(contentSizeForScrollBarLayer:)];
+- (void)testWidthOfOneHundred
+{
+	XCTAssertEqual(CGRectGetWidth(_sut.frame), (CGFloat)100);
+}
 
-					[sut layoutSublayers];
-				});
-				it(@"should not ask the delegate for the visible size", ^{
-					[[mockedScrollBarDelegate shouldNot] receive:@selector(visibleSizeForScrollBarLayer:)];
+- (void)testNilScrollBarDelegate
+{
+	XCTAssertNil(_sut.scrollBarDelegate);
+}
 
-					[sut layoutSublayers];
-				});
-				it(@"should not ask the delegate for the current knob position", ^{
-					[[mockedScrollBarDelegate shouldNot] receive:@selector(currentKnobPositionInScrollBarLayer:)];
+- (void)testOneSublayer
+{
+	XCTAssertEqual([_sut.sublayers count], (NSUInteger)1);
+}
 
-					[sut layoutSublayers];
-				});
-				it(@"should be hidden", ^{
-					[sut layoutSublayers];
+- (void)testSublayerIsMMScrollKnobLayer
+{
+	XCTAssertTrue([_knobLayer isKindOfClass:[MMScrollKnobLayer class]]);
+}
 
-					[[theValue(sut.hidden) should] beYes];
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(beginDragAtPoint:)), ^{
-			__block CGPoint dragPoint;
+- (void)testKnobLayerPosition
+{
+	XCTAssertTrue(NSEqualPoints(_knobLayer.frame.origin, NSMakePoint(horizontalKnobMargin, verticalKnobMargin)));
+}
 
-			it(@"should respond to beginDragAtPoint:", ^{
-				[[sut should] respondToSelector:@selector(beginDragAtPoint:)];
-			});
-			context(@"mouse point not in knob layer", ^{
-				beforeEach(^{
-					dragPoint = CGPointMake(CGRectGetMinX(knobLayer.frame) - 10, CGRectGetMinY(knobLayer.frame) - 10);
-				});
-				it(@"should set the draggingOffset to -1", ^{
-					[sut beginDragAtPoint:dragPoint];
-					[[theValue(sut.draggingOffset) should] equal:-1 withDelta:.0000001];
-				});
-			});
-			context(@"mouse point in knob layer", ^{
-				beforeEach(^{
-					dragPoint = CGPointMake(CGRectGetMidX(knobLayer.frame), CGRectGetMinY(knobLayer.frame));
-				});
-				it(@"should set the draggingOffset to the position of the click on the knob", ^{
-					CGFloat expectedOffset = dragPoint.x - CGRectGetMinX(knobLayer.frame);
-					[sut beginDragAtPoint:dragPoint];
-					[[theValue(sut.draggingOffset) should] equal:expectedOffset withDelta:.0000001];
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(endDrag)), ^{
-			it(@"should respond to endDrag", ^{
-				[[sut should] respondToSelector:@selector(endDrag)];
-			});
-			it(@"should set the draggingOffset to -1", ^{
-				[sut endDrag];
-				[[theValue(sut.draggingOffset) should] equal:-1 withDelta:.0000001];
-			});
-		});
-		context(NSStringFromSelector(@selector(mouseDraggedToPoint:)), ^{
-			beforeEach(^{
-				[mockedScrollBarDelegate stub:@selector(contentSizeForScrollBarLayer:) andReturn:theValue(1000)];
-				[mockedScrollBarDelegate stub:@selector(visibleSizeForScrollBarLayer:) andReturn:theValue(100)];
-				sut.scrollBarDelegate = mockedScrollBarDelegate;
-				[sut layoutSublayers];
-			});
+- (void)testThreeConstraints
+{
+	XCTAssertEqual([_sut.constraints count], (NSUInteger)3);
+}
 
-			it(@"should respond to mouseDraggedToPoint:", ^{
-				[[sut should] respondToSelector:@selector(mouseDraggedToPoint:)];
-			});
-			context(@"when in drag", ^{
-				__block CGPoint draggedPoint;
+- (void)testFirstConstraintIsMidXOfSuperlayer
+{
+	CAConstraint *constraint = _sut.constraints[0];
+	XCTAssertEqualObjects(constraint.sourceName, @"superlayer");
+	XCTAssertEqual(constraint.sourceAttribute, kCAConstraintMidX);
+	XCTAssertEqual(constraint.attribute, kCAConstraintMidX);
+	XCTAssertEqual(constraint.scale, (CGFloat)1);
+	XCTAssertEqual(constraint.offset, (CGFloat)0);
+}
 
-				beforeEach(^{
-					sut.draggingOffset = 15;
-				});
-				it(@"should invoke the delegate with position zero when dragging beyound the leftmost position", ^{
-					draggedPoint = CGPointMake(CGRectGetMinX(sut.frame) - 10, CGRectGetMidY(sut.frame));
+- (void)testSecondConstraintIsMinYOfSuperlayerWithOffset
+{
+	CAConstraint *constraint = _sut.constraints[1];
+	XCTAssertEqualObjects(constraint.sourceName, @"superlayer");
+	XCTAssertEqual(constraint.sourceAttribute, kCAConstraintMinY);
+	XCTAssertEqual(constraint.attribute, kCAConstraintMinY);
+	XCTAssertEqual(constraint.scale, (CGFloat)1);
+	XCTAssertEqual(constraint.offset, (CGFloat)10.);
+}
 
-					[[mockedScrollBarDelegate should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(0)];
+- (void)testThirdConstraintIsWidthOfSuperlayerWithScale
+{
+	CAConstraint *constraint = _sut.constraints[2];
+	XCTAssertEqualObjects(constraint.sourceName, @"superlayer");
+	XCTAssertEqual(constraint.sourceAttribute, kCAConstraintWidth);
+	XCTAssertEqual(constraint.attribute, kCAConstraintWidth);
+	XCTAssertEqual(constraint.offset, (CGFloat)0.);
+	XCTAssertEqual(constraint.scale, (CGFloat).75);
+}
 
-					[sut mouseDraggedToPoint:draggedPoint];
-				});
-				it(@"should invoke the delegate with position one when dragging to rightmost position", ^{
-					draggedPoint = CGPointMake(CGRectGetMaxX(sut.frame), CGRectGetMidY(sut.frame));
+- (void)testDisabledImplicitPositionAction
+{
+	XCTAssertEqualObjects(_sut.actions[@"position"], [NSNull null]);
+}
 
-					[[mockedScrollBarDelegate should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(1)];
+- (void)testDisabledImplicitBoundsAction
+{
+	XCTAssertEqualObjects(_sut.actions[@"bounds"], [NSNull null]);
+}
 
-					[sut mouseDraggedToPoint:draggedPoint];
-				});
-				it(@"should invoke the delegate with position adjusted by the draggingOffset when dragging to mid position", ^{
-					draggedPoint = CGPointMake(CGRectGetMidX(sut.frame) + 10, CGRectGetMidY(sut.frame));
+#pragma mark - NSAccessibility
 
-					CGFloat dragPointCorrectedByOffset = draggedPoint.x - sut.draggingOffset;
-					CGFloat minX = horizontalKnobMargin;
-					CGFloat maxX = CGRectGetMaxX(sut.bounds) - horizontalKnobMargin - CGRectGetWidth(knobLayer.bounds);
-					CGFloat scrollWidth = maxX - minX;
-					CGFloat expectedPosition = (dragPointCorrectedByOffset - minX) / scrollWidth;
-					[[mockedScrollBarDelegate should] receive:@selector(scrollBarLayer:knobDraggedToPosition:) withArguments:sut, theValue(expectedPosition)];
-					
-					[sut mouseDraggedToPoint:draggedPoint];
-				});
-				context(@"when scrollBarDelegete does not respond to -scrollBarLayer:knobDraggedToPosition:", ^{
-					beforeEach(^{
-						mockedScrollBarDelegate = [KWMock nullMock];
-						sut.scrollBarDelegate = mockedScrollBarDelegate;
-						draggedPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMidY(sut.frame));
-					});
-					it(@"should not receive -scrollBarLayer:knobDraggedToPosition:", ^{
-						[[mockedScrollBarDelegate shouldNot] receive:@selector(scrollBarLayer:knobDraggedToPosition:)];
+- (void)testAccessibilityIsNotIgnored
+{
+	XCTAssertFalse([_sut accessibilityIsIgnored]);
+}
 
-						[sut mouseDraggedToPoint:draggedPoint];
-					});
-				});
-			});
-			context(@"when not in drag", ^{
-				beforeEach(^{
-					sut.draggingOffset = -1;
-				});
-				it(@"should not invoke the scrollbar delegate", ^{
-					CGPoint draggedPoint = CGPointMake(CGRectGetMidX(sut.frame), CGRectGetMidY(sut.frame));
-					[[mockedScrollBarDelegate shouldNot] receive:@selector(scrollBarLayer:knobDraggedToPosition:)];
-					[sut mouseDraggedToPoint:draggedPoint];
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(mouseDownAtPoint:)), ^{
-			__block CGPoint mousePoint;
-			__block id knobLayerMock = nil;
+- (void)testAccessibilityScrollBarRole
+{
+	XCTAssertEqualObjects([_sut accessibilityAttributeValue:NSAccessibilityRoleAttribute], NSAccessibilityScrollBarRole);
+}
 
-			beforeEach(^{
-				sut.scrollBarDelegate = mockedScrollBarDelegate;
-				knobLayerMock = [MMScrollKnobLayer nullMock];
+- (void)testAccessibilityHorizontalOrientation
+{
+	XCTAssertEqualObjects([_sut accessibilityAttributeValue:NSAccessibilityOrientationAttribute], NSAccessibilityHorizontalOrientationValue);
+}
 
-				CGRect knobFrame = CGRectInset(sut.bounds, 30, 5);
-				[knobLayerMock stub:@selector(frame) andReturn:theValue(knobFrame)];
-				[sut stub:@selector(sublayers) andReturn:@[knobLayerMock]];
-			});
-			afterEach(^{
-				knobLayerMock = nil;
-			});
+- (void)testAccessibilityEnabled
+{
+	XCTAssertEqualObjects([_sut accessibilityAttributeValue:NSAccessibilityEnabledAttribute], @YES);
+}
 
-			it(@"should respond to mouseDownAtPoint:", ^{
-				[[sut should] respondToSelector:@selector(mouseDownAtPoint:)];
-			});
-			context(@"when clicking left to knob in layer", ^{
-				beforeEach(^{
-					mousePoint = CGPointMake(CGRectGetMinX([knobLayerMock frame]) - 10, CGRectGetMidY(sut.bounds));
-				});
-				it(@"should tell the scrollBarDelegate to perform a decrement action", ^{
-					[[mockedScrollBarDelegate should] receive:@selector(decrementClickedInScrollBarLayer:) withArguments:sut];
-					[sut mouseDownAtPoint:mousePoint];
-				});
-				it(@"should not start a drag", ^{
-					[[sut shouldNot] receive:@selector(beginDragAtPoint:)];
-					
-					[sut mouseDownAtPoint:mousePoint];
-				});
-				context(@"when the scroll bar delegate does not handle the decrement", ^{
-					beforeEach(^{
-						mockedScrollBarDelegate = [KWMock nullMock];
-						sut.scrollBarDelegate = mockedScrollBarDelegate;
-					});
-					it(@"should not tell the delegate to perform the decrement", ^{
-						[[mockedScrollBarDelegate shouldNot] receive:@selector(decrementClickedInScrollBarLayer:)];
-						
-						[sut mouseDownAtPoint:mousePoint];
-					});
-				});
-			});
-			context(@"when clicking right to knob in layer", ^{
-				beforeEach(^{
-					MMScrollKnobLayer *knob = [sut.sublayers firstObject];
+- (void)testAccessibilityValueAttributePresent
+{
+	XCTAssertTrue([[_sut accessibilityAttributeNames] containsObject:NSAccessibilityValueAttribute]);
+}
 
-					mousePoint = CGPointMake(CGRectGetMaxX(knob.frame) + 10, CGRectGetMidY(sut.bounds));
-				});
-				it(@"should tell the scrollBarDelegate to perform a increment action", ^{
-					[[mockedScrollBarDelegate should] receive:@selector(incrementClickedInScrollBarLayer:) withArguments:sut];
-					
-					[sut mouseDownAtPoint:mousePoint];
-				});
-				it(@"should not start a drag", ^{
-					[[sut shouldNot] receive:@selector(beginDragAtPoint:)];
-					
-					[sut mouseDownAtPoint:mousePoint];
-				});
-				context(@"when the scroll bar delegate does not handle the increment", ^{
-					beforeEach(^{
-						mockedScrollBarDelegate = [KWMock nullMock];
-						sut.scrollBarDelegate = mockedScrollBarDelegate;
-					});
-					it(@"should not tell the delegate to perform the increment", ^{
-						[[mockedScrollBarDelegate shouldNot] receive:@selector(incrementClickedInScrollBarLayer:)];
+- (void)testAccessibilityValueReturnsKnobPositionFromDelegate
+{
+	_delegate.knobPosition = .5;
+	_sut.scrollBarDelegate = _delegate;
+	XCTAssertEqualObjects([_sut accessibilityAttributeValue:NSAccessibilityValueAttribute], @(.5));
+}
 
-						[sut mouseDownAtPoint:mousePoint];
-					});
-				});
-			});
-			context(@"when clicking on the knob", ^{
-				beforeEach(^{
-					MMScrollKnobLayer *knob = [sut.sublayers firstObject];
-					
-					mousePoint = CGPointMake(CGRectGetMidX(knob.frame), CGRectGetMidY(sut.bounds));
-				});
-				it(@"should start a drag", ^{
-					[[sut should] receive:@selector(beginDragAtPoint:) withArguments:theValue(mousePoint)];
+- (void)testAccessibilityValueIsSettable
+{
+	_delegate.knobPosition = .5;
+	_sut.scrollBarDelegate = _delegate;
+	XCTAssertTrue([_sut accessibilityIsAttributeSettable:NSAccessibilityValueAttribute]);
+}
 
-					[sut mouseDownAtPoint:mousePoint];
-				});
-			});
-		});
-	});
-});
+- (void)testAccessibilitySetValueNotifiesDelegate
+{
+	_delegate.knobPosition = .5;
+	_sut.scrollBarDelegate = _delegate;
+	[_sut accessibilitySetValue:@(.9) forAttribute:NSAccessibilityValueAttribute];
+	XCTAssertEqualObjects(_delegate.draggedPositions.lastObject, @(.9));
+}
 
-SPEC_END
+- (void)testAccessibilityValueReturnsZeroWithoutDelegate
+{
+	XCTAssertEqualObjects([_sut accessibilityAttributeValue:NSAccessibilityValueAttribute], @0);
+}
+
+- (void)testAccessibilityValueReturnsZeroWithIncompleteDelegate
+{
+	_sut.scrollBarDelegate = (id<MMScrollBarDelegate>)[NSObject new];
+	XCTAssertEqualObjects([_sut accessibilityAttributeValue:NSAccessibilityValueAttribute], @0);
+}
+
+- (void)testAccessibilitySetValueWithIncompleteDelegateDoesNotThrow
+{
+	_sut.scrollBarDelegate = (id<MMScrollBarDelegate>)[NSObject new];
+	XCTAssertNoThrow([_sut accessibilitySetValue:@(.4) forAttribute:NSAccessibilityValueAttribute]);
+}
+
+#pragma mark - layoutSublayers
+
+- (void)testLayoutSublayersAsksDelegateForSizesAndPosition
+{
+	_delegate.contentSize = 2000;
+	_delegate.visibleSize = 500;
+	_delegate.knobPosition = 0;
+	_sut.scrollBarDelegate = _delegate;
+	_sut.bounds = CGRectMake(0, 0, 375, 20);
+
+	[_sut layoutSublayers];
+
+	XCTAssertEqual(_delegate.knobPosition, (CGFloat)0);
+}
+
+- (void)knobFrameForPosition:(CGFloat)position
+				contentSize:(CGFloat)contentSize
+				visibleSize:(CGFloat)visibleSize
+				scrollBarWidth:(CGFloat)scrollBarWidth
+				expectedFrame:(CGRect *)outFrame
+				expectHidden:(BOOL *)outHidden
+{
+	_delegate.contentSize = contentSize;
+	_delegate.visibleSize = visibleSize;
+	_delegate.knobPosition = position;
+	_sut.scrollBarDelegate = _delegate;
+	_sut.bounds = CGRectMake(0, 0, scrollBarWidth, 20);
+
+	[_sut layoutSublayers];
+
+	*outFrame = _knobLayer.frame;
+	*outHidden = _sut.hidden;
+}
+
+- (void)testKnobFrameAndVisibilityForLeftmostPosition
+{
+	CGFloat contentSize = 2000;
+	CGFloat visibleSize = 500;
+	CGFloat scrollBarWidth = visibleSize * .75;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGFloat contentToVisibleAspectRatio = visibleSize / contentSize;
+	CGFloat expectedKnobWidth = effectiveScrollBarWidth * contentToVisibleAspectRatio;
+	CGFloat availableScrollingSize = effectiveScrollBarWidth - expectedKnobWidth;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin + availableScrollingSize * 0, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:0 contentSize:contentSize visibleSize:visibleSize scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+	XCTAssertFalse(hidden);
+}
+
+- (void)testKnobFrameAndVisibilityForMidPosition
+{
+	CGFloat contentSize = 2000;
+	CGFloat visibleSize = 500;
+	CGFloat scrollBarWidth = visibleSize * .75;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGFloat contentToVisibleAspectRatio = visibleSize / contentSize;
+	CGFloat expectedKnobWidth = effectiveScrollBarWidth * contentToVisibleAspectRatio;
+	CGFloat availableScrollingSize = effectiveScrollBarWidth - expectedKnobWidth;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin + availableScrollingSize * .5, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:.5 contentSize:contentSize visibleSize:visibleSize scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+	XCTAssertFalse(hidden);
+}
+
+- (void)testKnobFrameAndVisibilityForRightmostPosition
+{
+	CGFloat contentSize = 2000;
+	CGFloat visibleSize = 500;
+	CGFloat scrollBarWidth = visibleSize * .75;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGFloat contentToVisibleAspectRatio = visibleSize / contentSize;
+	CGFloat expectedKnobWidth = effectiveScrollBarWidth * contentToVisibleAspectRatio;
+	CGFloat availableScrollingSize = effectiveScrollBarWidth - expectedKnobWidth;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin + availableScrollingSize * 1, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:1 contentSize:contentSize visibleSize:visibleSize scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+	XCTAssertFalse(hidden);
+}
+
+- (void)testKnobFrameClampedForNegativePosition
+{
+	CGFloat contentSize = 2000;
+	CGFloat visibleSize = 500;
+	CGFloat scrollBarWidth = visibleSize * .75;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGFloat contentToVisibleAspectRatio = visibleSize / contentSize;
+	CGFloat expectedKnobWidth = effectiveScrollBarWidth * contentToVisibleAspectRatio;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:-10 contentSize:contentSize visibleSize:visibleSize scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+	XCTAssertFalse(hidden);
+}
+
+- (void)testKnobFrameClampedForPositionGreaterThanOne
+{
+	CGFloat contentSize = 2000;
+	CGFloat visibleSize = 500;
+	CGFloat scrollBarWidth = visibleSize * .75;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGFloat contentToVisibleAspectRatio = visibleSize / contentSize;
+	CGFloat expectedKnobWidth = effectiveScrollBarWidth * contentToVisibleAspectRatio;
+	CGFloat expectedPosition = horizontalKnobMargin + effectiveScrollBarWidth - expectedKnobWidth;
+	CGRect expectedKnobFrame = CGRectMake(expectedPosition, verticalKnobMargin, expectedKnobWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:2 contentSize:contentSize visibleSize:visibleSize scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+	XCTAssertFalse(hidden);
+}
+
+- (void)testHiddenWhenVisibleAndContentSizeEqual
+{
+	CGFloat scrollBarWidth = 100;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, effectiveScrollBarWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:0 contentSize:100 visibleSize:100 scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(hidden);
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+}
+
+- (void)testHiddenWhenContentSizeWayGreaterThanVisibleSize
+{
+	CGFloat scrollBarWidth = 100;
+	CGFloat minimumKnobWidth = 40.;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, minimumKnobWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:0 contentSize:5000 visibleSize:10 scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertFalse(hidden);
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+}
+
+- (void)testHiddenWhenVisibleSizeGreaterThanContentSize
+{
+	CGFloat scrollBarWidth = 100;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, effectiveScrollBarWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:0 contentSize:100 visibleSize:200 scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(hidden);
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+}
+
+- (void)testHiddenAndFullWidthKnobForZeroContentSize
+{
+	CGFloat scrollBarWidth = 100;
+	CGFloat effectiveScrollBarWidth = scrollBarWidth - 2 * horizontalKnobMargin;
+	CGRect expectedKnobFrame = CGRectMake(horizontalKnobMargin, verticalKnobMargin, effectiveScrollBarWidth, CGRectGetHeight(_sut.bounds) - 2 * verticalKnobMargin);
+
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:0 contentSize:0 visibleSize:100 scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+
+	XCTAssertTrue(hidden);
+	XCTAssertTrue(CGRectEqualToRect(actualFrame, expectedKnobFrame));
+}
+
+- (void)testHiddenForNegativeContentSize
+{
+	CGFloat scrollBarWidth = 100;
+	CGRect actualFrame;
+	BOOL hidden;
+	[self knobFrameForPosition:0 contentSize:-100 visibleSize:100 scrollBarWidth:scrollBarWidth expectedFrame:&actualFrame expectHidden:&hidden];
+	XCTAssertTrue(hidden);
+}
+
+- (void)testHiddenWithIncompleteDelegate
+{
+	_sut.scrollBarDelegate = (id<MMScrollBarDelegate>)[NSObject new];
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	[_sut layoutSublayers];
+	XCTAssertTrue(_sut.hidden);
+}
+
+#pragma mark - dragging
+
+- (void)testRespondsToBeginDragAtPoint
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(beginDragAtPoint:)]);
+}
+
+- (void)testBeginDragOutsideKnobSetsDraggingOffsetToMinusOne
+{
+	CGPoint dragPoint = CGPointMake(CGRectGetMinX(_knobLayer.frame) - 10, CGRectGetMinY(_knobLayer.frame) - 10);
+	[_sut beginDragAtPoint:dragPoint];
+	XCTAssertEqualWithAccuracy(_sut.draggingOffset, -1, .0000001);
+}
+
+- (void)testBeginDragInsideKnobSetsDraggingOffsetToClickPosition
+{
+	CGPoint dragPoint = CGPointMake(CGRectGetMidX(_knobLayer.frame), CGRectGetMinY(_knobLayer.frame));
+	CGFloat expectedOffset = dragPoint.x - CGRectGetMinX(_knobLayer.frame);
+	[_sut beginDragAtPoint:dragPoint];
+	XCTAssertEqualWithAccuracy(_sut.draggingOffset, expectedOffset, .0000001);
+}
+
+- (void)testRespondsToEndDrag
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(endDrag)]);
+}
+
+- (void)testEndDragSetsDraggingOffsetToMinusOne
+{
+	[_sut endDrag];
+	XCTAssertEqualWithAccuracy(_sut.draggingOffset, -1, .0000001);
+}
+
+- (void)testRespondsToMouseDraggedToPoint
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(mouseDraggedToPoint:)]);
+}
+
+- (void)testMouseDraggedToPointWhileDragging
+{
+	_delegate.contentSize = 1000;
+	_delegate.visibleSize = 100;
+	_sut.scrollBarDelegate = _delegate;
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	[_sut layoutSublayers];
+
+	_sut.draggingOffset = 15;
+	NSUInteger before = [_delegate.draggedPositions count];
+
+	// drag far left -> position 0
+	CGPoint draggedPoint = CGPointMake(CGRectGetMinX(_sut.frame) - 10, CGRectGetMidY(_sut.frame));
+	[_sut mouseDraggedToPoint:draggedPoint];
+	XCTAssertEqual([_delegate.draggedPositions count], before + 1);
+	XCTAssertEqualObjects(_delegate.draggedPositions.lastObject, @(0));
+
+	// drag to rightmost -> position 1
+	draggedPoint = CGPointMake(CGRectGetMaxX(_sut.frame), CGRectGetMidY(_sut.frame));
+	[_sut mouseDraggedToPoint:draggedPoint];
+	XCTAssertEqualObjects(_delegate.draggedPositions.lastObject, @(1));
+
+	// drag to mid position adjusted by draggingOffset
+	draggedPoint = CGPointMake(CGRectGetMidX(_sut.frame) + 10, CGRectGetMidY(_sut.frame));
+	[_sut mouseDraggedToPoint:draggedPoint];
+	CGFloat dragPointCorrectedByOffset = draggedPoint.x - _sut.draggingOffset;
+	CGFloat minX = horizontalKnobMargin;
+	CGFloat maxX = CGRectGetMaxX(_sut.bounds) - horizontalKnobMargin - CGRectGetWidth(_knobLayer.bounds);
+	CGFloat scrollWidth = maxX - minX;
+	CGFloat expectedPosition = (dragPointCorrectedByOffset - minX) / scrollWidth;
+	XCTAssertEqualWithAccuracy([_delegate.draggedPositions.lastObject doubleValue], expectedPosition, 0.000001);
+}
+
+- (void)testMouseDraggedToPointNotInDragDoesNotInvokeDelegate
+{
+	_delegate.contentSize = 1000;
+	_delegate.visibleSize = 100;
+	_sut.scrollBarDelegate = _delegate;
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	[_sut layoutSublayers];
+
+	_sut.draggingOffset = -1;
+	NSUInteger before = [_delegate.draggedPositions count];
+	[_sut mouseDraggedToPoint:CGPointMake(CGRectGetMidX(_sut.frame), CGRectGetMidY(_sut.frame))];
+	XCTAssertEqual([_delegate.draggedPositions count], before);
+}
+
+- (void)testMouseDraggedToPointWithIncompleteDelegateDoesNotThrow
+{
+	_sut.scrollBarDelegate = (id<MMScrollBarDelegate>)[NSObject new];
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	_sut.draggingOffset = 15;
+	XCTAssertNoThrow([_sut mouseDraggedToPoint:CGPointMake(50, 10)]);
+}
+
+#pragma mark - mouseDown
+
+- (void)testRespondsToMouseDownAtPoint
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(mouseDownAtPoint:)]);
+}
+
+- (void)testMouseDownLeftOfKnobDecrements
+{
+	_delegate.contentSize = 1000;
+	_delegate.visibleSize = 100;
+	_sut.scrollBarDelegate = _delegate;
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	[_sut layoutSublayers];
+
+	CGPoint mousePoint = CGPointMake(CGRectGetMinX(_knobLayer.frame) - 10, CGRectGetMidY(_sut.bounds));
+	[_sut mouseDownAtPoint:mousePoint];
+
+	XCTAssertGreaterThan(_delegate.decrementCount, (NSUInteger)0);
+	XCTAssertEqual(_delegate.incrementCount, (NSUInteger)0);
+}
+
+- (void)testMouseDownRightOfKnobIncrements
+{
+	_delegate.contentSize = 1000;
+	_delegate.visibleSize = 100;
+	_sut.scrollBarDelegate = _delegate;
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	[_sut layoutSublayers];
+
+	CGPoint mousePoint = CGPointMake(CGRectGetMaxX(_knobLayer.frame) + 10, CGRectGetMidY(_sut.bounds));
+	[_sut mouseDownAtPoint:mousePoint];
+
+	XCTAssertGreaterThan(_delegate.incrementCount, (NSUInteger)0);
+	XCTAssertEqual(_delegate.decrementCount, (NSUInteger)0);
+}
+
+- (void)testMouseDownOnKnobStartsDrag
+{
+	_delegate.contentSize = 1000;
+	_delegate.visibleSize = 100;
+	_sut.scrollBarDelegate = _delegate;
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	[_sut layoutSublayers];
+
+	CGPoint mousePoint = CGPointMake(CGRectGetMidX(_knobLayer.frame), CGRectGetMidY(_sut.bounds));
+	[_sut mouseDownAtPoint:mousePoint];
+
+	XCTAssertNotEqualWithAccuracy(_sut.draggingOffset, -1, .0000001);
+	XCTAssertEqual(_delegate.decrementCount, (NSUInteger)0);
+	XCTAssertEqual(_delegate.incrementCount, (NSUInteger)0);
+}
+
+- (void)testMouseDownLeftOfKnobWithIncompleteDelegateDoesNotThrow
+{
+	_sut.scrollBarDelegate = (id<MMScrollBarDelegate>)[NSObject new];
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	XCTAssertNoThrow([_sut mouseDownAtPoint:CGPointMake(1, 10)]);
+}
+
+- (void)testMouseDownRightOfKnobWithIncompleteDelegateDoesNotThrow
+{
+	_sut.scrollBarDelegate = (id<MMScrollBarDelegate>)[NSObject new];
+	_sut.bounds = CGRectMake(0, 0, 100, 20);
+	XCTAssertNoThrow([_sut mouseDownAtPoint:CGPointMake(99, 10)]);
+}
+
+@end

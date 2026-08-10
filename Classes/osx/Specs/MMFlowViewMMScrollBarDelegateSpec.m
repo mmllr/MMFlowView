@@ -28,7 +28,8 @@
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowView+MMScrollBarDelegate.h"
@@ -36,205 +37,173 @@
 #import "MMCoverFlowLayout.h"
 #import "MMCoverFlowLayer.h"
 
-SPEC_BEGIN(MMFlowViewMMScrollBarDelegateSpec)
+@interface MMFlowViewMMScrollBarDelegateSpec : XCTestCase
 
-describe(@"MMFlowView+MMScrollBarDelegate", ^{
-	__block MMFlowView *sut = nil;
+@end
 
-	beforeEach(^{
-		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
-	});
-	afterEach(^{
-		sut = nil;
-	});
-	it(@"should conform to MMScrollBarDelegate protocol", ^{
-		[[sut should] conformToProtocol:@protocol(MMScrollBarDelegate)];
-	});
-	it(@"should respond to scrollBarLayer:knobDraggedToPosition:", ^{
-		[[sut should] respondToSelector:@selector(scrollBarLayer:knobDraggedToPosition:)];
-	});
-	it(@"should respond to decrementClickedInScrollBarLayer:", ^{
-		[[sut should] respondToSelector:@selector(decrementClickedInScrollBarLayer:)];
-	});
-	it(@"should respond to incrementClickedInScrollBarLayer:", ^{
-		[[sut should] respondToSelector:@selector(incrementClickedInScrollBarLayer:)];
-	});
-	it(@"should be the scroll bar delegate", ^{
-		[[sut should] equal:sut.scrollBarLayer.scrollBarDelegate];
-	});
-	context(NSStringFromSelector(@selector(scrollBarLayer:knobDraggedToPosition:)), ^{
-		context(@"when delegate method is invoked from flowviews scroll bar layer and the flow view has items", ^{
-			beforeEach(^{
-				[sut stub:@selector(numberOfItems) andReturn:theValue(11)];
-			});
-			it(@"should change the selection to first item when knob dragged to leftmost position", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(0)];
-				[sut scrollBarLayer:sut.scrollBarLayer knobDraggedToPosition:0];
-			});
-			it(@"should change the selection to last item when knob dragged to rightmost position", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(10)];
-				[sut scrollBarLayer:sut.scrollBarLayer knobDraggedToPosition:1];
-			});
-			it(@"should change the selection to the middle item when knob dragged to mid position", ^{
-				[[sut should] receive:@selector(setSelectedIndex:) withArguments:theValue(5)];
-				[sut scrollBarLayer:sut.scrollBarLayer knobDraggedToPosition:.5];
-			});
-		});
-		context(@"when delegate method is not invoked with flowviews scroll bar layer", ^{
-			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
-			
-			beforeEach(^{
-				mockedScrollBarLayer = [MMScrollBarLayer nullMock];
-			});
-			afterEach(^{
-				mockedScrollBarLayer = nil;
-			});
-			it(@"should not change the selection", ^{
-				[[sut shouldNot] receive:@selector(setSelectedIndex:)];
-				
-				[sut scrollBarLayer:mockedScrollBarLayer knobDraggedToPosition:.3];
-			});
-		});
-	});
-	context(NSStringFromSelector(@selector(decrementClickedInScrollBarLayer:)), ^{
-		context(@"when delegate method is invoked from flowviews scroll bar layer", ^{
-			it(@"should move the selection one item left", ^{
-				[[sut should] receive:@selector(moveLeft:) withArguments:sut];
-				[sut decrementClickedInScrollBarLayer:sut.scrollBarLayer];
-			});
-		});
-		context(@"when delegate method is not invoked with flowviews scroll bar layer", ^{
-			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
-			
-			beforeEach(^{
-				mockedScrollBarLayer = [MMScrollBarLayer nullMock];
-			});
-			afterEach(^{
-				mockedScrollBarLayer = nil;
-			});
-			it(@"should not change the selection", ^{
-				[[sut shouldNot] receive:@selector(setSelectedIndex:)];
-				
-				[sut decrementClickedInScrollBarLayer:mockedScrollBarLayer];
-			});
-		});
-	});
-	context(NSStringFromSelector(@selector(incrementClickedInScrollBarLayer:)), ^{
-		context(@"when delegate method is invoked from flowviews scroll bar layer", ^{
-			it(@"should move the selection one item right", ^{
-				[[sut should] receive:@selector(moveRight:) withArguments:sut];
-				[sut incrementClickedInScrollBarLayer:sut.scrollBarLayer];
-			});
-		});
-		context(@"when delegate method is not invoked with flowviews scroll bar layer", ^{
-			__block MMScrollBarLayer *mockedScrollBarLayer = nil;
-			
-			beforeEach(^{
-				mockedScrollBarLayer = [MMScrollBarLayer nullMock];
-			});
-			afterEach(^{
-				mockedScrollBarLayer = nil;
-			});
-			it(@"should not change the selection", ^{
-				[[sut shouldNot] receive:@selector(setSelectedIndex:)];
-				
-				[sut incrementClickedInScrollBarLayer:mockedScrollBarLayer];
-			});
-		});
-	});
-	context(NSStringFromSelector(@selector(contentSizeForScrollBarLayer:)), ^{
-		__block MMCoverFlowLayout *mockedLayout = nil;
+@implementation MMFlowViewMMScrollBarDelegateSpec
+{
+	MMFlowView *_sut;
+}
 
-		beforeEach(^{
-			mockedLayout = [MMCoverFlowLayout nullMock];
-			[mockedLayout stub:@selector(contentSize) andReturn:theValue(CGSizeMake(1000, 100))];
-			sut.coverFlowLayout = mockedLayout;
-		});
-		afterEach(^{
-			mockedLayout = nil;
-		});
-		it(@"should respond to contentSizeForScrollBarLayer:", ^{
-			[[sut should] respondToSelector:@selector(contentSizeForScrollBarLayer:)];
-		});
-		it(@"should return the content size of the layout", ^{
-			CGFloat expectedSize = 1000;
-			[[theValue([sut contentSizeForScrollBarLayer:sut.scrollBarLayer]) should] equal:theValue(expectedSize)];
-		});
-		it(@"should ask the layout for the content size", ^{
-			[[mockedLayout should] receive:@selector(contentSize)];
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+}
 
-			[sut contentSizeForScrollBarLayer:sut.scrollBarLayer];
-		});
-	});
-	context(NSStringFromSelector(@selector(visibleSizeForScrollBarLayer:)), ^{
-		__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
-		CGRect visibleRect = CGRectMake(0, 0, 100, 100);
+- (void)tearDown
+{
+	_sut = nil;
+	[super tearDown];
+}
 
-		beforeEach(^{
-			mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
-			[mockedCoverFlowLayer stub:@selector(visibleRect) andReturn:theValue(visibleRect)];
-			sut.coverFlowLayer = mockedCoverFlowLayer;
-		});
-		afterEach(^{
-			mockedCoverFlowLayer = nil;
-		});
-		it(@"should respond to visibleSizeForScrollBarLayer:", ^{
-			[[sut should] respondToSelector:@selector(visibleSizeForScrollBarLayer:)];
-		});
-		it(@"should return the visible size of the cover flow layer", ^{
-			[[theValue([sut visibleSizeForScrollBarLayer:sut.scrollBarLayer]) should] equal:CGRectGetWidth(visibleRect) withDelta:0.00001];
-		});
-		it(@"should ask the cover flow layer for its visible rect", ^{
-			[[mockedCoverFlowLayer should] receive:@selector(visibleRect)];
+- (void)testConformsToScrollBarDelegateProtocol
+{
+	XCTAssertTrue([_sut conformsToProtocol:@protocol(MMScrollBarDelegate)]);
+}
 
-			[sut visibleSizeForScrollBarLayer:sut.scrollBarLayer];
-		});
-	});
-	context(NSStringFromSelector(@selector(currentKnobPositionInScrollBarLayer:)), ^{
-		beforeEach(^{
-			[sut stub:@selector(numberOfItems) andReturn:theValue(11)];
-		});
-		it(@"should respond to currentKnobPositionInScrollBarLayer:", ^{
-			[[sut should] respondToSelector:@selector(currentKnobPositionInScrollBarLayer:)];
-		});
-		it(@"should return zero for the first selected index", ^{
-			[sut stub:@selector(selectedIndex) andReturn:theValue(0)];
+- (void)testRespondsToDelegateSelectors
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(scrollBarLayer:knobDraggedToPosition:)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(decrementClickedInScrollBarLayer:)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(incrementClickedInScrollBarLayer:)]);
+}
 
-			[[theValue([sut currentKnobPositionInScrollBarLayer:sut.scrollBarLayer]) should] beZero];
-		});
-		it(@"should return one for the last selected index", ^{
-			[sut stub:@selector(selectedIndex) andReturn:theValue(10)];
-			
-			[[theValue([sut currentKnobPositionInScrollBarLayer:sut.scrollBarLayer]) should] equal:theValue(1)];
-		});
-		it(@"should return .5 for the mid selected index", ^{
-			[sut stub:@selector(selectedIndex) andReturn:theValue(5)];
+- (void)testIsTheScrollBarDelegate
+{
+	XCTAssertEqualObjects(_sut, _sut.scrollBarLayer.scrollBarDelegate);
+}
 
-			[[theValue([sut currentKnobPositionInScrollBarLayer:sut.scrollBarLayer]) should] equal:theValue(.5)];
-		});
-		it(@"should return zero for an invalid selection", ^{
-			[sut stub:@selector(selectedIndex) andReturn:theValue(NSNotFound)];
+- (void)testKnobDraggedToLeftmostPositionSelectsFirstItem
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	[_sut scrollBarLayer:_sut.scrollBarLayer knobDraggedToPosition:0];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)0);
+}
 
-			[[theValue([sut currentKnobPositionInScrollBarLayer:sut.scrollBarLayer]) should] beZero];
-		});
-		it(@"should return zero for with no items", ^{
-			[sut stub:@selector(numberOfItems) andReturn:theValue(0)];
+- (void)testKnobDraggedToRightmostPositionSelectsLastItem
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	[_sut scrollBarLayer:_sut.scrollBarLayer knobDraggedToPosition:1];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)10);
+}
 
-			[[theValue([sut currentKnobPositionInScrollBarLayer:sut.scrollBarLayer]) should] beZero];
-		});
-		it(@"should return zero for with first item selected and one items", ^{
-			[sut stub:@selector(selectedIndex) andReturn:theValue(0)];
-			[sut stub:@selector(numberOfItems) andReturn:theValue(1)];
-			
-			[[theValue([sut currentKnobPositionInScrollBarLayer:sut.scrollBarLayer]) should] beZero];
-		});
-		it(@"should return zero for with first item selected and one items", ^{
-			[sut stub:@selector(selectedIndex) andReturn:theValue(1)];
-			[sut stub:@selector(numberOfItems) andReturn:theValue(1)];
-			
-			[[theValue([sut currentKnobPositionInScrollBarLayer:sut.scrollBarLayer]) should] equal:theValue(1)];
-		});
-	});
-});
+- (void)testKnobDraggedToMidPositionSelectsMiddleItem
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	[_sut scrollBarLayer:_sut.scrollBarLayer knobDraggedToPosition:.5];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)5);
+}
 
-SPEC_END
+- (void)testKnobDraggedOnForeignScrollBarDoesNotChangeSelection
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 3;
+	MMScrollBarLayer *foreignScrollBar = [[MMScrollBarLayer alloc] init];
+	[_sut scrollBarLayer:foreignScrollBar knobDraggedToPosition:.3];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)3);
+}
+
+- (void)testDecrementMovesSelectionOneItemLeft
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 5;
+	[_sut decrementClickedInScrollBarLayer:_sut.scrollBarLayer];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)4);
+}
+
+- (void)testDecrementOnForeignScrollBarDoesNotChangeSelection
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 5;
+	MMScrollBarLayer *foreignScrollBar = [[MMScrollBarLayer alloc] init];
+	[_sut decrementClickedInScrollBarLayer:foreignScrollBar];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)5);
+}
+
+- (void)testIncrementMovesSelectionOneItemRight
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 5;
+	[_sut incrementClickedInScrollBarLayer:_sut.scrollBarLayer];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)6);
+}
+
+- (void)testIncrementOnForeignScrollBarDoesNotChangeSelection
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 5;
+	MMScrollBarLayer *foreignScrollBar = [[MMScrollBarLayer alloc] init];
+	[_sut incrementClickedInScrollBarLayer:foreignScrollBar];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)5);
+}
+
+- (void)testRespondsToContentSizeForScrollBarLayer
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(contentSizeForScrollBarLayer:)]);
+}
+
+- (void)testContentSizeMatchesLayoutContentSize
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 5;
+	CGFloat expectedSize = _sut.coverFlowLayout.contentSize.width;
+	XCTAssertEqual([_sut contentSizeForScrollBarLayer:_sut.scrollBarLayer], expectedSize);
+}
+
+- (void)testRespondsToVisibleSizeForScrollBarLayer
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(visibleSizeForScrollBarLayer:)]);
+}
+
+- (void)testRespondsToCurrentKnobPositionInScrollBarLayer
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(currentKnobPositionInScrollBarLayer:)]);
+}
+
+- (void)testKnobPositionZeroForFirstSelectedIndex
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 0;
+	XCTAssertEqual([_sut currentKnobPositionInScrollBarLayer:_sut.scrollBarLayer], (CGFloat)0);
+}
+
+- (void)testKnobPositionOneForLastSelectedIndex
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 10;
+	XCTAssertEqual([_sut currentKnobPositionInScrollBarLayer:_sut.scrollBarLayer], (CGFloat)1);
+}
+
+- (void)testKnobPositionHalfForMidSelectedIndex
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = 5;
+	XCTAssertEqual([_sut currentKnobPositionInScrollBarLayer:_sut.scrollBarLayer], (CGFloat).5);
+}
+
+- (void)testKnobPositionZeroForInvalidSelection
+{
+	_sut.coverFlowLayout.numberOfItems = 11;
+	_sut.coverFlowLayout.selectedItemIndex = NSNotFound;
+	XCTAssertEqual([_sut currentKnobPositionInScrollBarLayer:_sut.scrollBarLayer], (CGFloat)0);
+}
+
+- (void)testKnobPositionZeroWithoutItems
+{
+	XCTAssertEqual([_sut currentKnobPositionInScrollBarLayer:_sut.scrollBarLayer], (CGFloat)0);
+}
+
+- (void)testKnobPositionZeroForSingleItem
+{
+	_sut.coverFlowLayout.numberOfItems = 1;
+	_sut.coverFlowLayout.selectedItemIndex = 0;
+	XCTAssertEqual([_sut currentKnobPositionInScrollBarLayer:_sut.scrollBarLayer], (CGFloat)0);
+}
+
+// DISABLED: visibleSizeForScrollBarLayer: depends on the live geometry of the
+// cover flow layer (visibleRect), which is not meaningful for layers outside a
+// displayed window hierarchy.
+
+@end

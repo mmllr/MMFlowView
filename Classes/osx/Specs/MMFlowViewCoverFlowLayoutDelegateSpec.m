@@ -1,89 +1,109 @@
+/*
+ 
+ The MIT License (MIT)
+ 
+ Copyright (c) 2014 Markus Müller https://github.com/mmllr All rights reserved.
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ software and associated documentation files (the "Software"), to deal in the Software
+ without restriction, including without limitation the rights to use, copy, modify, merge,
+ publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+ persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all copies
+ or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+ 
+ */
 //
 //  MMFlowViewCoverFlowLayoutDelegateSpec.m
-//  MMFlowViewDemo
 //
-//  Created by Markus Müller on 26.03.14.
-//  Copyright 2014 Markus Müller. All rights reserved.
+//  Created by Markus Müller on 23.10.13.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
+#import "MMFlowView.h"
+#import "MMFlowView_Private.h"
 #import "MMFlowView+MMCoverFlowLayoutDelegate.h"
 #import "MMFlowViewImageCache.h"
-#import "MMFlowView_Private.h"
-#import "MMMacros.h"
+#import "MMTestImageItem.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMFlowViewCoverFlowLayoutDelegateSpec)
+@interface MMFlowViewCoverFlowLayoutDelegateSpec : XCTestCase
 
-describe(NSStringFromProtocol(@protocol(MMCoverFlowLayoutDelegate)), ^{
-	__block MMFlowView *sut = nil;
-	__block id contentAdapterMock = nil;
-	__block CGImageRef testImageRef = NULL;
-	
-	beforeAll(^{
-		NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-		NSDictionary *quickLookOptions = @{(id)kQLThumbnailOptionIconModeKey: (id)kCFBooleanFalse};
-		testImageRef = QLThumbnailImageCreate(NULL, (__bridge CFURLRef)(imageURL), CGSizeMake(400, 400), (__bridge CFDictionaryRef)quickLookOptions );
-	});
-	afterAll(^{
-		SAFE_CGIMAGE_RELEASE(testImageRef);
-	});
+@end
 
-	beforeEach(^{
-		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
-		contentAdapterMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
-		sut.contentAdapter = contentAdapterMock;
-	});
-	afterEach(^{
-		sut = nil;
-		contentAdapterMock = nil;
-	});
-	context(NSStringFromSelector(@selector(coverFLowLayout:aspectRatioForItem:)), ^{
-		it(@"should respond to coverFLowLayout:aspectRatioForItem:", ^{
-			[[sut should] respondToSelector:@selector(coverFLowLayout:aspectRatioForItem:)];
-		});
-		context(@"image cache interaction", ^{
-			NSString *testUID = @"testUID";
-			__block MMFlowViewImageCache *imageCacheMock = nil;
-			__block id itemMock = nil;
+@implementation MMFlowViewCoverFlowLayoutDelegateSpec
+{
+	MMFlowView *_sut;
+	MMTestContentAdapter *_contentAdapter;
+	MMTestImageCache *_imageCache;
+	CGImageRef _testImageRef;
+}
 
-			beforeEach(^{
-				itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
-				[itemMock stub:@selector(imageItemUID) andReturn:testUID];
-				[contentAdapterMock stub:@selector(objectAtIndexedSubscript:) andReturn:itemMock];
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
 
-				imageCacheMock = [KWMock nullMockForClass:[MMFlowViewImageCache class]];
-				sut.imageCache = imageCacheMock;
-			});
-			afterEach(^{
-				itemMock = nil;
-				imageCacheMock = nil;
-			});
+	MMTestImageItem *item = [[MMTestImageItem alloc] init];
+	item.imageItemUID = @"testUID";
+	item.imageItemRepresentationType = kMMFlowViewPathRepresentationType;
+	_contentAdapter = [[MMTestContentAdapter alloc] initWithItems:@[item]];
+	_sut.contentAdapter = _contentAdapter;
 
-			it(@"should ask the image cache for the item", ^{
-				[[imageCacheMock should] receive:@selector(imageForUUID:) withArguments:testUID];
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	CGContextRef context = CGBitmapContextCreate(NULL, 20, 10, 8, 20 * 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedFirst);
+	_testImageRef = CGBitmapContextCreateImage(context);
+	CGContextRelease(context);
+	CGColorSpaceRelease(colorSpace);
 
-				[sut coverFLowLayout:sut.coverFlowLayout aspectRatioForItem:0];
-			});
-			context(@"when there is no image in the cache", ^{
-				beforeEach(^{
-					[imageCacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)NULL];
-				});
-				it(@"should return 1", ^{
-					[[theValue([sut coverFLowLayout:sut.coverFlowLayout aspectRatioForItem:0]) should] equal:1 withDelta:0.0000001];
-				});
-			});
-			context(@"when there is an image in the cache", ^{
-				beforeEach(^{
-					[imageCacheMock stub:@selector(imageForUUID:) andReturn:(__bridge id)testImageRef];
-				});
-				it(@"should return the aspect ratio of the image", ^{
-					CGFloat expectedAspectRatio = (CGFloat)CGImageGetWidth(testImageRef) / (CGFloat)CGImageGetHeight(testImageRef);
+	_imageCache = [[MMTestImageCache alloc] init];
+	_sut.imageCache = _imageCache;
+}
 
-					[[theValue([sut coverFLowLayout:sut.coverFlowLayout aspectRatioForItem:0]) should] equal:expectedAspectRatio withDelta:0.0000001];
-				});
-			});
-		});
-	});
-});
+- (void)tearDown
+{
+	_sut = nil;
+	_contentAdapter = nil;
+	_imageCache = nil;
+	CGImageRelease(_testImageRef);
+	_testImageRef = NULL;
+	[super tearDown];
+}
 
-SPEC_END
+- (void)testRespondsToAspectRatioSelector
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(coverFLowLayout:aspectRatioForItem:)]);
+}
+
+- (void)testAsksImageCacheForTheItem
+{
+	[_imageCache cacheImage:_testImageRef withUUID:@"testUID"];
+	[_sut coverFLowLayout:_sut.coverFlowLayout aspectRatioForItem:0];
+	XCTAssertNotNil(_imageCache.cachedImages[@"testUID"]);
+}
+
+- (void)testReturnsOneWhenNoImageInCache
+{
+	CGFloat ratio = [_sut coverFLowLayout:_sut.coverFlowLayout aspectRatioForItem:0];
+	XCTAssertEqualWithAccuracy(ratio, 1, 0.0000001);
+}
+
+- (void)testReturnsAspectRatioOfCachedImage
+{
+	[_imageCache cacheImage:_testImageRef withUUID:@"testUID"];
+	CGFloat expectedAspectRatio = (CGFloat)CGImageGetWidth(_testImageRef) / (CGFloat)CGImageGetHeight(_testImageRef);
+	CGFloat ratio = [_sut coverFLowLayout:_sut.coverFlowLayout aspectRatioForItem:0];
+	XCTAssertEqualWithAccuracy(ratio, expectedAspectRatio, 0.0000001);
+}
+
+@end

@@ -221,7 +221,7 @@
 	
 	[panel setAllowedFileTypes:@[@"com.adobe.pdf"]];
 	[panel beginWithCompletionHandler:^(NSInteger result) {
-		if (result == NSFileHandlingPanelOKButton) {
+		if (result == NSModalResponseOK) {
 			[self loadPDFDocument:[panel URL]];
 			[self.flowView reloadContent];
 		}

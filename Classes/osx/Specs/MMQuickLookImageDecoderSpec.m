@@ -25,131 +25,142 @@
 //  MMQuickLookImageDecoderSpec.m
 //
 //  Created by Markus Müller on 17.12.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMQuickLookImageDecoder.h"
 #import "MMMacros.h"
 
-SPEC_BEGIN(MMQuickLookImageDecoderSpec)
+@interface MMQuickLookImageDecoderSpec : XCTestCase
 
-describe(@"MMQuickLookImageDecoder", ^{
-	NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-	NSString *testImagePath = [testImageURL path];
-	__block MMQuickLookImageDecoder *sut = nil;
-	__block CGImageRef imageRef = NULL;
-	__block NSImage *image = nil;
-	const NSUInteger expectedImageSize = 100;
+@end
 
-	afterAll(^{
-		image = nil;
-	});
-	
-	it(@"should throw an NSInternalInconsistencyException when not created with designated initalizer", ^{
-		[[theBlock(^{
-			sut = [[MMQuickLookImageDecoder alloc] init];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a nil item", ^{
-		[[theBlock(^{
-			sut = [[MMQuickLookImageDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a valid item with a zero maxiumum pixel size", ^{
-		[[theBlock(^{
-			sut = [[MMQuickLookImageDecoder alloc] initWithItem:testImageURL maxPixelSize:0];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from an invalid item", ^{
-		[[theBlock(^{
-			sut = [[MMQuickLookImageDecoder alloc] initWithItem:[NSColor blueColor] maxPixelSize:expectedImageSize];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	
-	context(@"when created with designated initializer from an url and a valid image size", ^{
-		beforeEach(^{
-			sut = [[MMQuickLookImageDecoder alloc] initWithItem:testImageURL maxPixelSize:expectedImageSize];
-		});
-		afterEach(^{
-			sut = nil;
-		});
+@implementation MMQuickLookImageDecoderSpec
+{
+	MMQuickLookImageDecoder *_sut;
+	CGImageRef _imageRef;
+	NSURL *_testImageURL;
+	NSString *_testImagePath;
+}
 
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should conform to MMImageDecoderProtocol", ^{
-			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
-		});
-		it(@"should respond to CGImage", ^{
-			[[sut should] respondToSelector:@selector(CGImage)];
-		});
-		it(@"should respond to image", ^{
-			[[sut should] respondToSelector:@selector(image)];
-		});
-		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeEach(^{
-				imageRef = sut.CGImage;
-			});
+static const NSUInteger expectedImageSize = 100;
 
-			it(@"should load an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
-			});
-			it(@"should have a width less or equal 100", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-			it(@"should have a height less or equal 100", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-		});
-		context(NSStringFromSelector(@selector(image)), ^{
-			it(@"should load an image", ^{
-				[[sut.image shouldNot] beNil];
-			});
-		});
-	});
+- (void)setUp
+{
+	[super setUp];
+	_testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+	_testImagePath = [_testImageURL path];
+}
 
-	context(@"when created with designated initializer from a file path and a valid image size", ^{
-		beforeEach(^{
-			sut = [[MMQuickLookImageDecoder alloc] initWithItem:testImagePath maxPixelSize:expectedImageSize];
-		});
-		afterEach(^{
-			sut = nil;
-		});
+- (void)tearDown
+{
+	_sut = nil;
+	_imageRef = NULL;
+	_testImageURL = nil;
+	_testImagePath = nil;
+	[super tearDown];
+}
 
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should conform to MMImageDecoderProtocol", ^{
-			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
-		});
-		it(@"should respond to CGImage", ^{
-			[[sut should] respondToSelector:@selector(CGImage)];
-		});
-		it(@"should respond to image", ^{
-			[[sut should] respondToSelector:@selector(image)];
-		});
-		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeEach(^{
-				imageRef = sut.CGImage;
-			});
+- (void)testThrowsWhenNotCreatedWithDesignatedInitializer
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMQuickLookImageDecoder alloc] init]), NSException, NSInternalInconsistencyException);
+}
 
-			it(@"should load an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
-			});
-			it(@"should have a width less or equal 100", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-			it(@"should have a height less or equal 100", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-		});
-		context(NSStringFromSelector(@selector(image)), ^{
-			it(@"should load an image", ^{
-				[[sut.image shouldNot] beNil];
-			});
-		});
-	});
-});
+- (void)testThrowsWhenCreatedWithNilItem
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMQuickLookImageDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize]), NSException, NSInternalInconsistencyException);
+}
 
-SPEC_END
+- (void)testThrowsWhenCreatedWithZeroMaximumPixelSize
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImageURL maxPixelSize:0]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithInvalidItem
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMQuickLookImageDecoder alloc] initWithItem:[NSColor blueColor] maxPixelSize:expectedImageSize]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testURLInstanceExists
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImageURL maxPixelSize:expectedImageSize];
+	XCTAssertNotNil(_sut);
+}
+
+- (void)testURLInstanceConformsToDecoderProtocol
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImageURL maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut conformsToProtocol:@protocol(MMImageDecoderProtocol)]);
+}
+
+- (void)testURLInstanceRespondsToProtocolSelectors
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImageURL maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut respondsToSelector:@selector(CGImage)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(image)]);
+}
+
+- (void)testURLCGImageLoadsAnImage
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImageURL maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertTrue(_imageRef != NULL);
+}
+
+- (void)testURLCGImageDimensionsAreLimited
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImageURL maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertLessThanOrEqual(CGImageGetWidth(_imageRef), (size_t)100);
+	XCTAssertLessThanOrEqual(CGImageGetHeight(_imageRef), (size_t)100);
+}
+
+- (void)testURLImageLoadsAnImage
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImageURL maxPixelSize:expectedImageSize];
+	XCTAssertNotNil(_sut.image);
+}
+
+- (void)testPathInstanceExists
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImagePath maxPixelSize:expectedImageSize];
+	XCTAssertNotNil(_sut);
+}
+
+- (void)testPathInstanceConformsToDecoderProtocol
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImagePath maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut conformsToProtocol:@protocol(MMImageDecoderProtocol)]);
+}
+
+- (void)testPathInstanceRespondsToProtocolSelectors
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImagePath maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut respondsToSelector:@selector(CGImage)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(image)]);
+}
+
+- (void)testPathCGImageLoadsAnImage
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImagePath maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertTrue(_imageRef != NULL);
+}
+
+- (void)testPathCGImageDimensionsAreLimited
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImagePath maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertLessThanOrEqual(CGImageGetWidth(_imageRef), (size_t)100);
+	XCTAssertLessThanOrEqual(CGImageGetHeight(_imageRef), (size_t)100);
+}
+
+- (void)testPathImageLoadsAnImage
+{
+	_sut = [[MMQuickLookImageDecoder alloc] initWithItem:_testImagePath maxPixelSize:expectedImageSize];
+	XCTAssertNotNil(_sut.image);
+}
+
+@end

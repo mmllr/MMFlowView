@@ -8,10 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@interface MMTestImageItem : NSObject
+#import "MMFlowView.h"
+
+@interface MMTestImageItem : NSObject <MMFlowViewItem>
 
 @property (nonatomic, strong) NSString *imageItemUID;
 @property (nonatomic, strong) NSString *imageItemRepresentationType;
-@property (nonatomic, strong) NSString *imageItemRepresentation;
+@property (nonatomic, strong) id imageItemRepresentation;
+@property (nonatomic, strong) NSString *imageItemTitle;
 
 @end

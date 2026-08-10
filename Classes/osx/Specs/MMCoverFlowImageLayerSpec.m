@@ -24,108 +24,96 @@
 //
 //  MMCoverFlowImageLayerSpec.m
 //
-//  Created by Markus Müller on 29.10.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Created by Markus Müller on 06.12.13.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
-#import "MMFLowViewImageLayer.h"
+#import <XCTest/XCTest.h>
 
-SPEC_BEGIN(MMCoverFlowImageLayerSpec)
+#import "MMFlowViewImageLayer.h"
 
-describe(@"MMFlowViewImageLayer", ^{
-	__block MMFlowViewImageLayer *sut = nil;
+@interface MMCoverFlowImageLayerSpec : XCTestCase
 
-	context(@"creating with CALayer default -init/+layer", ^{
-		it(@"should raise if created with +layer", ^{
-			[[theBlock(^{
-				[MMFlowViewImageLayer layer];
-			}) should] raiseWithName:NSInternalInconsistencyException];
-		});
-		it(@"should raise if created with -init", ^{
-			[[theBlock(^{
-				sut = [[MMFlowViewImageLayer alloc] init];
-			}) should] raiseWithName:NSInternalInconsistencyException];
-		});
-	});
-	context(@"designated initializer", ^{
-		const NSUInteger expectedIndex = 1;
+@end
 
-		beforeEach(^{
-			sut = [[MMFlowViewImageLayer alloc] initWithIndex:expectedIndex];
-		});
-		afterEach(^{
-			sut = nil;
-		});
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should have an index", ^{
-			[[theValue(sut.index) should] equal:theValue(expectedIndex)];
-		});
-		it(@"should have name equal MMFlowViewContentLayerImage", ^{
-			[[sut.name should] equal:@"MMFlowViewContentLayerImage"];
-		});
-		it(@"should have a contentsGravity of kCAGravityResizeAspect", ^{
-			[[sut.contentsGravity should] equal:kCAGravityResizeAspect];
-		});
-		it(@"should have a constraints layout manager", ^{
-			[[sut.layoutManager should] equal:[CAConstraintLayoutManager layoutManager]];
-		});
-		context(@"CoreAnimation actions", ^{
-			__block id action = nil;
-			
-			context(@"transitions", ^{
-				__block CATransition *transition = nil;
-				
-				context(@"order out transition", ^{
-					beforeEach(^{
-						action = [sut actionForKey:kCAOnOrderOut];
-						transition = (CATransition*)action;
-					});
-					afterEach(^{
-						transition = nil;
-					});
-					it(@"should be a CATransition class", ^{
-						[[transition should] beKindOfClass:[CATransition class]];
-					});
-					it(@"should be a fading transition", ^{
-						[[transition.type should] equal:kCATransitionFade];
-					});
-					it(@"should have a duration of .5 seconds", ^{
-						[[theValue(transition.duration) should] equal:theValue(.5)];
-					});
-				});
-				context(@"order in transition", ^{
-					beforeEach(^{
-						action = [sut actionForKey:kCAOnOrderIn];
-						transition = (CATransition*)action;
-					});
-					afterEach(^{
-						transition = nil;
-					});
-					it(@"should be a CATransition class", ^{
-						[[transition should] beKindOfClass:[CATransition class]];
-					});
-					it(@"should be a reveal transition", ^{
-						[[transition.type should] equal:kCATransitionReveal];
-					});
-					it(@"should have a duration of .5 seconds", ^{
-						[[theValue(transition.duration) should] equal:theValue(.5)];
-					});
-				});
-			});
-			it(@"should have no contents action", ^{
-				[[(id)[sut actionForKey:@"contents"] should] beNil];
-			});
-			it(@"should have no bounds action", ^{
-				[[(id)[sut actionForKey:@"bounds"] should] beNil];
-			});
-			
-		});
+@implementation MMCoverFlowImageLayerSpec
+{
+	MMFlowViewImageLayer *_sut;
+}
 
-	});
-	
-});
+static const NSUInteger expectedIndex = 1;
 
-SPEC_END
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMFlowViewImageLayer alloc] initWithIndex:expectedIndex];
+}
+
+- (void)tearDown
+{
+	_sut = nil;
+	[super tearDown];
+}
+
+- (void)testThrowsWhenCreatedWithLayer
+{
+	XCTAssertThrowsSpecificNamed([MMFlowViewImageLayer layer], NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithInit
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMFlowViewImageLayer alloc] init]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testInstanceExists
+{
+	XCTAssertNotNil(_sut);
+}
+
+- (void)testHasIndex
+{
+	XCTAssertEqual(_sut.index, expectedIndex);
+}
+
+- (void)testHasName
+{
+	XCTAssertEqualObjects(_sut.name, @"MMFlowViewContentLayerImage");
+}
+
+- (void)testHasContentsGravityResizeAspect
+{
+	XCTAssertEqualObjects(_sut.contentsGravity, kCAGravityResizeAspect);
+}
+
+- (void)testHasConstraintLayoutManager
+{
+	XCTAssertEqualObjects(_sut.layoutManager, [CAConstraintLayoutManager layoutManager]);
+}
+
+- (void)testOrderOutTransitionIsFadingHalfSecond
+{
+	CATransition *transition = (CATransition *)[_sut actionForKey:kCAOnOrderOut];
+	XCTAssertTrue([transition isKindOfClass:[CATransition class]]);
+	XCTAssertEqualObjects(transition.type, kCATransitionFade);
+	XCTAssertEqual(transition.duration, (CGFloat).5);
+}
+
+- (void)testOrderInTransitionIsRevealingHalfSecond
+{
+	CATransition *transition = (CATransition *)[_sut actionForKey:kCAOnOrderIn];
+	XCTAssertTrue([transition isKindOfClass:[CATransition class]]);
+	XCTAssertEqualObjects(transition.type, kCATransitionReveal);
+	XCTAssertEqual(transition.duration, (CGFloat).5);
+}
+
+- (void)testNoContentsAction
+{
+	XCTAssertNil([_sut actionForKey:@"contents"]);
+}
+
+- (void)testNoBoundsAction
+{
+	XCTAssertNil([_sut actionForKey:@"bounds"]);
+}
+
+@end

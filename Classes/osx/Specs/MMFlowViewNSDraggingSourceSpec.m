@@ -24,94 +24,97 @@
 //
 //  MMFlowViewNSDraggingSourceSpec.m
 //
-//  Created by Markus Müller on 19.02.14.
+//  Created by Markus Müller on 15.04.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMFlowView+NSDraggingSource.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMFlowViewNSDraggingSourceSpec)
+@interface MMFlowViewNSDraggingSourceSpec : XCTestCase
 
-describe(@"MMFlowView+NSDraggingSource", ^{
-	__block MMFlowView *sut = nil;
-	__block NSDraggingSession *mockedDragSession = nil;
+@end
 
-	beforeEach(^{
-		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
-		mockedDragSession = [NSDraggingSession nullMock];
-	});
-	afterEach(^{
-		sut = nil;
-		mockedDragSession = nil;
-	});
-	context(NSStringFromSelector(@selector(draggingSession:sourceOperationMaskForDraggingContext:)), ^{
-		context(@"delegate not implementing flowView:draggingSession:sourceOperationMaskForDraggingContext:", ^{
-			it(@"should return NSDragOperationNone for NSDraggingContextOutsideApplication", ^{
-				[[theValue([sut draggingSession:mockedDragSession sourceOperationMaskForDraggingContext:NSDraggingContextOutsideApplication]) should] equal:theValue(NSDragOperationNone)];
-			});
-			it(@"should return NSDragOperationNone for NSDraggingContextWithinApplication", ^{
-				[[theValue([sut draggingSession:mockedDragSession sourceOperationMaskForDraggingContext:NSDraggingContextWithinApplication]) should] equal:theValue(NSDragOperationNone)];
-			});
-		});
-		context(@"delegate implementing flowView:draggingSession:sourceOperationMaskForDraggingContext:", ^{
-			__block id delegateMock = nil;
+@implementation MMFlowViewNSDraggingSourceSpec
+{
+	MMFlowView *_sut;
+}
 
-			beforeEach(^{
-				delegateMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewDelegate)];
-				[delegateMock stub:@selector(flowView:draggingSession:sourceOperationMaskForDraggingContext:) andReturn:theValue(NSDragOperationEvery)];
-				sut.delegate = delegateMock;
-			});
-			context(@"when context is NSDraggingContextOutsideApplication", ^{
-				it(@"should ask the delegate for the operation", ^{
-					[[delegateMock should] receive:@selector(flowView:draggingSession:sourceOperationMaskForDraggingContext:) withArguments:sut, mockedDragSession, theValue(NSDraggingContextOutsideApplication)];
-					[sut draggingSession:mockedDragSession sourceOperationMaskForDraggingContext:NSDraggingContextOutsideApplication];
-				});
-				it(@"should return the value provided from the delegate", ^{
-					[[theValue([sut draggingSession:mockedDragSession sourceOperationMaskForDraggingContext:NSDraggingContextOutsideApplication]) should] equal:theValue(NSDragOperationEvery)];
-				});
-			});
-			context(@"when context is NSDraggingContextWithinApplication", ^{
-				it(@"should ask the delegate for the operation", ^{
-					[[delegateMock should] receive:@selector(flowView:draggingSession:sourceOperationMaskForDraggingContext:) withArguments:sut, mockedDragSession, theValue(NSDraggingContextWithinApplication)];
-					[sut draggingSession:mockedDragSession sourceOperationMaskForDraggingContext:NSDraggingContextWithinApplication];
-				});
-				it(@"should return the value provided from the delegate", ^{
-					[[theValue([sut draggingSession:mockedDragSession sourceOperationMaskForDraggingContext:NSDraggingContextOutsideApplication]) should] equal:theValue(NSDragOperationEvery)];
-				});
-			});
-		});
-	});
-	context(NSStringFromSelector(@selector(draggingSession:endedAtPoint:operation:)), ^{
-		__block id datasourceMock = nil;
-		
-		context(@"when the datasource handles removing of items", ^{
-			beforeEach(^{
-				datasourceMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
-				[datasourceMock stub:@selector(flowView:removeItemAtIndex:)];
-				sut.dataSource = datasourceMock;
-			});
-			it(@"should ask the datasource to delete the selected item when the drag operation is NSDragOperationDelete", ^{
-				[[datasourceMock should] receive:@selector(flowView:removeItemAtIndex:) withArguments:sut, theValue(sut.selectedIndex)];
-				[sut draggingSession:mockedDragSession endedAtPoint:NSZeroPoint operation:NSDragOperationDelete];
-			});
-			it(@"should not ask the datasource to delete the selected item when the drag operation is not NSDragOperationDelete", ^{
-				[[datasourceMock shouldNot] receive:@selector(flowView:removeItemAtIndex:) withArguments:sut, theValue(sut.selectedIndex)];
-				[sut draggingSession:mockedDragSession endedAtPoint:NSZeroPoint operation:NSDragOperationEvery^NSDragOperationDelete];
-			});
-		});
-		context(@"when the datasource does not handle the removing of items", ^{
-			beforeEach(^{
-				datasourceMock = [KWMock nullMock];
-				sut.dataSource = datasourceMock;
-			});
-			it(@"should not ask the datasource to receive the selected item", ^{
-				[[datasourceMock shouldNot] receive:@selector(flowView:removeItemAtIndex:)];
-				[sut draggingSession:mockedDragSession endedAtPoint:NSZeroPoint operation:NSDragOperationDelete];
-			});
-		});
-		
-	});
-});
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+}
 
-SPEC_END;
+- (void)tearDown
+{
+	_sut = nil;
+	[super tearDown];
+}
+
+- (NSDraggingSession *)dummySession
+{
+	return [[NSDraggingSession alloc] init];
+}
+
+- (void)testReturnsNoneForOutsideApplicationWithoutDelegate
+{
+	XCTAssertEqual([_sut draggingSession:[self dummySession] sourceOperationMaskForDraggingContext:NSDraggingContextOutsideApplication], NSDragOperationNone);
+}
+
+- (void)testReturnsNoneForWithinApplicationWithoutDelegate
+{
+	XCTAssertEqual([_sut draggingSession:[self dummySession] sourceOperationMaskForDraggingContext:NSDraggingContextWithinApplication], NSDragOperationNone);
+}
+
+- (void)testReturnsDelegateValueForOutsideApplication
+{
+	MMTestFlowViewDelegate *delegate = [[MMTestFlowViewDelegate alloc] init];
+	delegate.sourceOperationMask = NSDragOperationEvery;
+	_sut.delegate = delegate;
+
+	NSDragOperation result = [_sut draggingSession:[self dummySession] sourceOperationMaskForDraggingContext:NSDraggingContextOutsideApplication];
+	XCTAssertEqual(result, NSDragOperationEvery);
+	XCTAssertEqual(delegate.sourceOperationMask, NSDragOperationEvery);
+}
+
+- (void)testReturnsDelegateValueForWithinApplication
+{
+	MMTestFlowViewDelegate *delegate = [[MMTestFlowViewDelegate alloc] init];
+	delegate.sourceOperationMask = NSDragOperationEvery;
+	_sut.delegate = delegate;
+
+	NSDragOperation result = [_sut draggingSession:[self dummySession] sourceOperationMaskForDraggingContext:NSDraggingContextWithinApplication];
+	XCTAssertEqual(result, NSDragOperationEvery);
+}
+
+- (void)testAsksDataSourceToDeleteSelectedItemOnDeleteOperation
+{
+	MMTestFlowViewDataSource *dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:@[]];
+	_sut.dataSource = dataSource;
+
+	[_sut draggingSession:[self dummySession] endedAtPoint:NSZeroPoint operation:NSDragOperationDelete];
+
+	XCTAssertGreaterThan(dataSource.removeItemAtIndexCallCount, (NSUInteger)0);
+}
+
+- (void)testDoesNotAskDataSourceToDeleteForNonDeleteOperation
+{
+	MMTestFlowViewDataSource *dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:@[]];
+	_sut.dataSource = dataSource;
+
+	[_sut draggingSession:[self dummySession] endedAtPoint:NSZeroPoint operation:(NSDragOperationEvery ^ NSDragOperationDelete)];
+
+	XCTAssertEqual(dataSource.removeItemAtIndexCallCount, (NSUInteger)0);
+}
+
+- (void)testDoesNotAskNonHandlingDataSourceToDelete
+{
+	_sut.dataSource = (id<MMFlowViewDataSource>)[NSObject new];
+
+	XCTAssertNoThrow([_sut draggingSession:[self dummySession] endedAtPoint:NSZeroPoint operation:NSDragOperationDelete]);
+}
+
+@end

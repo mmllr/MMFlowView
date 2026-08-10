@@ -24,154 +24,135 @@
 //
 //  MMPDFPageDecoderSpec.m
 //
-//  Created by Markus Müller on 18.12.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Created by Markus Müller on 17.12.13.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
+
+#import <XCTest/XCTest.h>
 
 #import <Quartz/Quartz.h>
 
-#import <Kiwi.h>
 #import "MMPDFPageDecoder.h"
 #import "MMMacros.h"
 
-SPEC_BEGIN(MMPDFPageDecoderSpec)
+@interface MMPDFPageDecoderSpec : XCTestCase
 
-describe(@"MMPDFPageDecoder", ^{
-	__block MMPDFPageDecoder *sut = nil;
-	__block CGImageRef imageRef = NULL;
-	__block PDFDocument *document = nil;
-	__block PDFPage *pdfPage = nil;
-	const NSUInteger expectedPixelSize = 100;
+@end
 
-	beforeAll(^{
-		NSURL *resource = [[NSBundle bundleForClass:[self class]] URLForResource:@"Test" withExtension:@"pdf"];
-		document = [[PDFDocument alloc] initWithURL:resource];
-		pdfPage = [document pageAtIndex:0];
-	});
-	afterAll(^{
-		document = nil;
-		pdfPage = nil;
-	});
-	context(@"when not creating with designated initializer", ^{
-		it(@"should throw an NSInternalInconsistencyException", ^{
-			[[theBlock(^{
-				sut = [[MMPDFPageDecoder alloc] init];
-			}) should] raiseWithName:NSInternalInconsistencyException];
-		});
-	});
-	context(@"when created with designated initializer from a PDFPage", ^{
-		beforeEach(^{
-			sut = [[MMPDFPageDecoder alloc] initWithItem:pdfPage maxPixelSize:expectedPixelSize];
-		});
-		afterEach(^{
-			sut = nil;
-		});
+@implementation MMPDFPageDecoderSpec
+{
+	MMPDFPageDecoder *_sut;
+	CGImageRef _imageRef;
+	PDFDocument *_document;
+	PDFPage *_pdfPage;
+}
 
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should conform to MMImageDecoderProtocol", ^{
-			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
-		});
-		it(@"should respond to initWithItem:maxPixelSize:", ^{
-			[[sut should] respondToSelector:@selector(initWithItem:maxPixelSize:)];
-		});
-		it(@"should respond to CGImage", ^{
-			[[sut should] respondToSelector:@selector(CGImage)];
-		});
-		it(@"should respond to image", ^{
-			[[sut should] respondToSelector:@selector(image)];
-		});
-		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeEach(^{
-				imageRef = sut.CGImage;
-			});
-			it(@"should return an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
-			});
-			it(@"should have a width less or equal 100", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-			it(@"should have a height less or equal 100", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-		});
-		context(NSStringFromSelector(@selector(image)), ^{
-			__block NSImage *image = nil;
-			
-			context(@"creating an image from a PDFPage", ^{
-				beforeAll(^{
-					image = sut.image;
-				});
-				afterAll(^{
-					image = nil;
-				});
-				it(@"should return an image", ^{
-					[[image shouldNot] beNil];
-				});
-				it(@"should return an NSImage", ^{
-					[[image should] beKindOfClass:[NSImage class]];
-				});
-			});
-		});
-	});
-	context(@"when created with designated initializer from a CGPDFPageRef", ^{
-		beforeEach(^{
-			sut = [[MMPDFPageDecoder alloc] initWithItem:(id)[pdfPage pageRef] maxPixelSize:expectedPixelSize];
-		});
-		afterEach(^{
-			sut = nil;
-		});
-		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeEach(^{
-				imageRef = sut.CGImage;
-			});
-			it(@"should return an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
-			});
-			it(@"should have a width less or equal 100", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-			it(@"should have a height less or equal 100", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-		});
-		
-		context(NSStringFromSelector(@selector(image)), ^{
-			__block NSImage *image = nil;
-			
-			context(@"creating an image from a PDFPage", ^{
-				beforeAll(^{
-					image = sut.image;
-				});
-				afterAll(^{
-					image = nil;
-				});
-				it(@"should return an image", ^{
-					[[image shouldNot] beNil];
-				});
-				it(@"should return an NSImage", ^{
-					[[image should] beKindOfClass:[NSImage class]];
-				});
-			});
-		});
+static const NSUInteger expectedPixelSize = 100;
 
-		
-	});
-	context(@"when created with designated initializer with a nil item", ^{
-		it(@"should raise an NSInternalInconsistencyException", ^{
-			[[theBlock(^{
-				sut = [[MMPDFPageDecoder alloc] initWithItem:nil maxPixelSize:expectedPixelSize];
-			}) should] raiseWithName:NSInternalInconsistencyException];
-		});
-	});
-	context(@"when created with designated initializer with a zero maxImageSize", ^{
-		it(@"should raise an NSInternalInconsistencyException", ^{
-			[[theBlock(^{
-				sut = [[MMPDFPageDecoder alloc] initWithItem:pdfPage maxPixelSize:0];
-			}) should] raiseWithName:NSInternalInconsistencyException];
-		});
-	});
-});
+- (void)setUp
+{
+	[super setUp];
+	NSURL *resource = [[NSBundle bundleForClass:[self class]] URLForResource:@"Test" withExtension:@"pdf"];
+	_document = [[PDFDocument alloc] initWithURL:resource];
+	_pdfPage = [_document pageAtIndex:0];
+}
 
-SPEC_END
+- (void)tearDown
+{
+	_sut = nil;
+	_imageRef = NULL;
+	_document = nil;
+	_pdfPage = nil;
+	[super tearDown];
+}
+
+- (void)testThrowsWhenNotCreatedWithDesignatedInitializer
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMPDFPageDecoder alloc] init]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithNilItem
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMPDFPageDecoder alloc] initWithItem:nil maxPixelSize:expectedPixelSize]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithZeroMaximumPixelSize
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:0]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testPDFPageInstanceExists
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:expectedPixelSize];
+	XCTAssertNotNil(_sut);
+}
+
+- (void)testPDFPageInstanceConformsToDecoderProtocol
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:expectedPixelSize];
+	XCTAssertTrue([_sut conformsToProtocol:@protocol(MMImageDecoderProtocol)]);
+}
+
+- (void)testPDFPageInstanceRespondsToProtocolSelectors
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:expectedPixelSize];
+	XCTAssertTrue([_sut respondsToSelector:@selector(initWithItem:maxPixelSize:)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(CGImage)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(image)]);
+}
+
+- (void)testPDFPageCGImageReturnsAnImage
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:expectedPixelSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertTrue(_imageRef != NULL);
+}
+
+- (void)testPDFPageCGImageDimensionsAreLimited
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:expectedPixelSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertLessThanOrEqual(CGImageGetWidth(_imageRef), (size_t)100);
+	XCTAssertLessThanOrEqual(CGImageGetHeight(_imageRef), (size_t)100);
+}
+
+- (void)testPDFPageImageReturnsAnImage
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:expectedPixelSize];
+	XCTAssertNotNil(_sut.image);
+}
+
+- (void)testPDFPageImageReturnsAnNSImage
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:_pdfPage maxPixelSize:expectedPixelSize];
+	XCTAssertTrue([_sut.image isKindOfClass:[NSImage class]]);
+}
+
+- (void)testCGPDFPageRefInstanceCGImageReturnsAnImage
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:(id)[_pdfPage pageRef] maxPixelSize:expectedPixelSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertTrue(_imageRef != NULL);
+}
+
+- (void)testCGPDFPageRefInstanceCGImageDimensionsAreLimited
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:(id)[_pdfPage pageRef] maxPixelSize:expectedPixelSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertLessThanOrEqual(CGImageGetWidth(_imageRef), (size_t)100);
+	XCTAssertLessThanOrEqual(CGImageGetHeight(_imageRef), (size_t)100);
+}
+
+- (void)testCGPDFPageRefInstanceImageReturnsAnImage
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:(id)[_pdfPage pageRef] maxPixelSize:expectedPixelSize];
+	XCTAssertNotNil(_sut.image);
+}
+
+- (void)testCGPDFPageRefInstanceImageReturnsAnNSImage
+{
+	_sut = [[MMPDFPageDecoder alloc] initWithItem:(id)[_pdfPage pageRef] maxPixelSize:expectedPixelSize];
+	XCTAssertTrue([_sut.image isKindOfClass:[NSImage class]]);
+}
+
+@end

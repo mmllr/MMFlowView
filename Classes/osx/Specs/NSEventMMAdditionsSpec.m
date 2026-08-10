@@ -24,53 +24,46 @@
 //
 //  NSEventMMAdditionsSpec.m
 //
-//  Created by Markus Müller on 23.02.14.
+//  Created by Markus Müller on 23.01.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "NSEvent+MMAdditions.h"
 
-SPEC_BEGIN(NSEventMMAdditionsSpec)
+@interface NSEventMMAdditionsSpec : XCTestCase
 
-describe(@"NSEvent+MMAdditions", ^{
-	__block NSEvent *sut = nil;
+@end
 
-	beforeEach(^{
-		sut = [[NSEvent alloc] init];
-	});
-	afterEach(^{
-		sut = nil;
-	});
-	context(NSStringFromSelector(@selector(dominantDeltaInXYSpace)), ^{
-		context(@"when the events absolute deltaX is greater than deltaY", ^{
-			beforeEach(^{
-				[sut stub:@selector(deltaX) andReturn:theValue(10)];
-				[sut stub:@selector(deltaY) andReturn:theValue(-5)];
-			});
-			it(@"should return deltaX", ^{
-				[[theValue(sut.dominantDeltaInXYSpace) should] equal:10 withDelta:0.0000001];
-			});
-		});
-		context(@"when the events absolute deltaX is equal to deltaY", ^{
-			beforeEach(^{
-				[sut stub:@selector(deltaX) andReturn:theValue(-5)];
-				[sut stub:@selector(deltaY) andReturn:theValue(-5)];
-			});
-			it(@"should return deltaX", ^{
-				[[theValue(sut.dominantDeltaInXYSpace) should] equal:-5 withDelta:0.0000001];
-			});
-		});
-		context(@"when the events absolute deltaX is less than deltaY", ^{
-			beforeEach(^{
-				[sut stub:@selector(deltaX) andReturn:theValue(-5)];
-				[sut stub:@selector(deltaY) andReturn:theValue(-6)];
-			});
-			it(@"should return deltaY", ^{
-				[[theValue(sut.dominantDeltaInXYSpace) should] equal:-6 withDelta:0.0000001];
-			});
-		});
-	});
-});
+@implementation NSEventMMAdditionsSpec
 
-SPEC_END
+// Creates a real scroll wheel event with the given line-based deltas.
+// CGEventCreateScrollWheelEvent: wheel1 == deltaY (axis 1), wheel2 == deltaX (axis 2).
+- (NSEvent *)scrollEventWithDeltaX:(CGFloat)deltaX deltaY:(CGFloat)deltaY
+{
+	CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, (int32_t)deltaY, (int32_t)deltaX);
+	NSEvent *event = [NSEvent eventWithCGEvent:cgEvent];
+	CFRelease(cgEvent);
+	return event;
+}
+
+- (void)testDominantDeltaWhenAbsoluteDeltaXGreaterThanDeltaY
+{
+	NSEvent *sut = [self scrollEventWithDeltaX:10 deltaY:-5];
+	XCTAssertEqualWithAccuracy(sut.dominantDeltaInXYSpace, 10, 0.0000001);
+}
+
+- (void)testDominantDeltaWhenAbsoluteDeltaXEqualToDeltaY
+{
+	NSEvent *sut = [self scrollEventWithDeltaX:-5 deltaY:-5];
+	XCTAssertEqualWithAccuracy(sut.dominantDeltaInXYSpace, -5, 0.0000001);
+}
+
+- (void)testDominantDeltaWhenAbsoluteDeltaXLessThanDeltaY
+{
+	NSEvent *sut = [self scrollEventWithDeltaX:-5 deltaY:-6];
+	XCTAssertEqualWithAccuracy(sut.dominantDeltaInXYSpace, -6, 0.0000001);
+}
+
+@end

@@ -1,5 +1,5 @@
 # MMLayerAccessibility
-[![Build Status](https://travis-ci.org/mmllr/MMLayerAccessibility.png?branch=master)](https://travis-ci.org/mmllr/MMLayerAccessibility)
+[![Build Status](https://travis-ci.org/mmllr/MMLayerAccessibility.png?branch=master)](https://travis-ci.org/mmllr/MMLayerAccessibility)  [![Coverage Status](https://coveralls.io/repos/mmllr/MMLayerAccessibility/badge.png)](https://coveralls.io/r/mmllr/MMLayerAccessibility)  
 
 Sometimes you need to build a user interface in a custom view from CoreAnimation layers. Unfortunately they don't support NSAccessibility and renders the UI useless for your disabled users.
 

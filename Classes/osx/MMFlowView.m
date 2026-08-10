@@ -463,7 +463,7 @@ static NSString * const kUTTypeQuartzComposerComposition = @"com.apple.quartz-co
 
 - (NSSize)intrinsicContentSize
 {
-	return NSMakeSize(NSViewNoInstrinsicMetric, NSViewNoInstrinsicMetric);
+	return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric);
 }
 
 #pragma mark -

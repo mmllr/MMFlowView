@@ -1,130 +1,168 @@
+/*
+ 
+ The MIT License (MIT)
+ 
+ Copyright (c) 2014 Markus Müller https://github.com/mmllr All rights reserved.
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ software and associated documentation files (the "Software"), to deal in the Software
+ without restriction, including without limitation the rights to use, copy, modify, merge,
+ publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+ persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all copies
+ or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+ 
+ */
 //
 //  MMFlowViewDatasourceContentAdapterSpec.m
-//  MMFlowViewDemo
 //
-//  Created by Markus Müller on 01.04.14.
-//  Copyright 2014 Markus Müller. All rights reserved.
+//  Created by Markus Müller on 02.04.14.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
-#import "MMFlowViewContentAdapter.h"
+#import <XCTest/XCTest.h>
+
 #import "MMFlowViewDatasourceContentAdapter.h"
 #import "MMFlowView.h"
+#import "MMTestImageItem.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMFlowViewDatasourceContentAdapterSpec)
+@interface MMFlowViewDatasourceContentAdapterSpec : XCTestCase
 
-describe(NSStringFromClass([MMFlowViewDatasourceContentAdapter class]), ^{
-	__block MMFlowViewDatasourceContentAdapter *sut = nil;
-	__block id dataSourceMock = nil;
-	__block MMFlowView *flowViewMock = nil;
+@end
 
-	afterEach(^{
-		sut = nil;
-		dataSourceMock = nil;
-		flowViewMock = nil;
-	});
+@implementation MMFlowViewDatasourceContentAdapterSpec
+{
+	MMFlowViewDatasourceContentAdapter *_sut;
+	MMFlowView *_flowView;
+	MMTestFlowViewDataSource *_dataSource;
+}
 
-	it(@"should raise an NSInternalInconsistencyException when not created with designated initalizer", ^{
-		[[theBlock(^{
-			sut = [[MMFlowViewDatasourceContentAdapter alloc] init];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
+- (void)setUp
+{
+	[super setUp];
+	_flowView = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+}
 
-	it(@"should raise an NSInternalInconsistencyException when created with nil flow view", ^{
-		[[theBlock(^{
-			sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:nil];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	context(@"a newly instance created with a valid datasource and a flowview", ^{
-		__block id itemMock = nil;
-		NSUInteger numberOfItems = 10;
-		
-		beforeEach(^{
-			itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
+- (void)tearDown
+{
+	_sut = nil;
+	_flowView = nil;
+	_dataSource = nil;
+	[super tearDown];
+}
 
-			dataSourceMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
-			[dataSourceMock stub:@selector(flowView:itemAtIndex:) andReturn:itemMock];
-			[dataSourceMock stub:@selector(numberOfItemsInFlowView:) andReturn:theValue(numberOfItems)];
+- (void)testThrowsWhenCreatedWithDefaultInit
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMFlowViewDatasourceContentAdapter alloc] init]), NSException, NSInternalInconsistencyException);
+}
 
-			flowViewMock = [MMFlowView nullMock];
-			[flowViewMock stub:@selector(dataSource) andReturn:dataSourceMock];
+- (void)testThrowsWhenCreatedWithNilFlowView
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:nil]), NSException, NSInternalInconsistencyException);
+}
 
-			sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:flowViewMock];
-		});
-		afterEach(^{
-			itemMock = nil;
-		});
-		
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should conform to MMFlowViewContentAdapter", ^{
-			[[sut should] conformToProtocol:@protocol(MMFlowViewContentAdapter)];
-		});
-		
-		context(NSStringFromSelector(@selector(count)), ^{
-			it(@"should respond to count", ^{
-				[[sut should] respondToSelector:@selector(count)];
-			});
-			it(@"should ask the datasource for the count of items", ^{
-				[[dataSourceMock should] receive:@selector(numberOfItemsInFlowView:) withArguments:flowViewMock];
-		
-				[sut count];
-			});
-			it(@"should return the number of items in the datasource", ^{
-				[[sut should] haveCountOf:numberOfItems];
-			});
-		});
+- (NSArray *)makeItems
+{
+	NSMutableArray *items = [NSMutableArray array];
+	for (NSUInteger i = 0; i < 10; i++) {
+		MMTestImageItem *item = [[MMTestImageItem alloc] init];
+		item.imageItemUID = [NSString stringWithFormat:@"%lu", (unsigned long)i];
+		item.imageItemRepresentationType = kMMFlowViewPathRepresentationType;
+		[items addObject:item];
+	}
+	return items;
+}
 
-		context(NSStringFromSelector(@selector(objectAtIndexedSubscript:)), ^{
-			it(@"should respond to objectAtIndexedSubscript:", ^{
-				[[sut should] respondToSelector:@selector(objectAtIndexedSubscript:)];
-			});
-			it(@"should ask the datasource for the item at the index", ^{
-				[[dataSourceMock should] receive:@selector(flowView:itemAtIndex:)];
+- (void)testInstanceExists
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertNotNil(_sut);
+}
 
-				[sut objectAtIndexedSubscript:0];
-			});
-			it(@"should raise an NSRangeException if accessed with an index out of bounds", ^{
-				[[theBlock(^{
-					[sut objectAtIndexedSubscript:numberOfItems];
-				}) should] raiseWithName:NSRangeException reason:@"Index 10 out of bounds (10)"];
-			});
-		});
-	});
-	context(@"when the datasource is set but incomplete", ^{
-		beforeEach(^{
-			dataSourceMock = [KWMock mock];
-			
-			flowViewMock = [MMFlowView nullMock];
-			[flowViewMock stub:@selector(dataSource) andReturn:dataSourceMock];
+- (void)testConformsToContentAdapterProtocol
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertTrue([_sut conformsToProtocol:@protocol(MMFlowViewContentAdapter)]);
+}
 
-			sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:flowViewMock];
-		});
-		context(NSStringFromSelector(@selector(count)), ^{
-			it(@"should not ask the datasource if it does not respond to numberOfItemsInFlowView:", ^{
-				[[dataSourceMock shouldNot] receive:@selector(numberOfItemsInFlowView:)];
-				
-				[sut count];
-			});
-			it(@"should have a count of zero", ^{
-				[[sut should] haveCountOf:0];
-			});
-		});
+- (void)testRespondsToCount
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertTrue([_sut respondsToSelector:@selector(count)]);
+}
 
-		context(@"when the datasource implements numberOfItemsInFlowView:", ^{
-			beforeEach(^{
-				[dataSourceMock stub:@selector(numberOfItemsInFlowView:) andReturn:theValue(10)];
-			});
-			context(NSStringFromSelector(@selector(objectAtIndexedSubscript:)), ^{
-				it(@"should not send flowView:itemAtIndex: to the datasource and return nil", ^{
-					[[dataSourceMock shouldNot] receive:@selector(flowView:itemAtIndex:)];
+- (void)testCountAsksTheDataSource
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
 
-					[[(id)[sut objectAtIndexedSubscript:0] should] beNil];
-				});
-			});
-		});
-	});
-});
+	NSUInteger before = _dataSource.numberOfItemsCallCount;
+	[_sut count];
+	XCTAssertGreaterThan(_dataSource.numberOfItemsCallCount, before);
+}
 
-SPEC_END
+- (void)testCountReturnsNumberOfItemsInDataSource
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertEqual([_sut count], (NSUInteger)10);
+}
+
+- (void)testRespondsToObjectAtIndexedSubscript
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertTrue([_sut respondsToSelector:@selector(objectAtIndexedSubscript:)]);
+}
+
+- (void)testObjectAtIndexedSubscriptAsksTheDataSource
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+
+	id<MMFlowViewItem> item = [_sut objectAtIndexedSubscript:0];
+	XCTAssertNotNil(item);
+}
+
+- (void)testObjectAtIndexedSubscriptRaisesOutOfBounds
+{
+	_dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:[self makeItems]];
+	_flowView.dataSource = _dataSource;
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertThrowsSpecificNamed([_sut objectAtIndexedSubscript:10], NSException, NSRangeException);
+}
+
+- (void)testIncompleteDataSourceCountIsZero
+{
+	_flowView.dataSource = (id<MMFlowViewDataSource>)[NSObject new];
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertEqual([_sut count], (NSUInteger)0);
+}
+
+- (void)testIncompleteDataSourceObjectAtIndexedSubscriptReturnsNil
+{
+	_flowView.dataSource = (id<MMFlowViewDataSource>)[NSObject new];
+	_sut = [[MMFlowViewDatasourceContentAdapter alloc] initWithFlowView:_flowView];
+	XCTAssertNil([_sut objectAtIndexedSubscript:0]);
+}
+
+@end

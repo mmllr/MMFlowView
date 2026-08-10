@@ -24,11 +24,12 @@
 //
 //  MMFlowViewSpec.m
 //
-//  Created by Markus Müller on 17.10.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Created by Markus Müller on 13.01.12.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMMacros.h"
@@ -38,7 +39,6 @@
 #import "MMCoverFlowLayer.h"
 #import "MMCoverFlowLayout.h"
 #import "MMScrollBarLayer.h"
-
 #import "MMCGImageSourceDecoder.h"
 #import "MMNSBitmapImageRepDecoder.h"
 #import "MMNSDataImageDecoder.h"
@@ -47,1100 +47,641 @@
 #import "MMQuickLookImageDecoder.h"
 #import "MMFlowViewDatasourceContentAdapter.h"
 #import "MMFlowViewContentBinder.h"
+#import "MMTestImageItem.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMFlowViewSpec)
+@interface MMFlowViewSpec : XCTestCase
 
-describe(@"MMFlowView", ^{
-	context(@"a new instance", ^{
-		__block MMFlowView *sut = nil;
-		__block NSArray *mockedItems = nil;
-		__block CGImageRef testImageRef = NULL;
-		__block NSURL *testImageURL = nil;
+@end
 
-		const NSInteger numberOfItems = 10;
-		const NSRect initialFrame = NSMakeRect(0, 0, 400, 300);
+@implementation MMFlowViewSpec
+{
+	MMFlowView *_sut;
+	NSArray *_mockedItems;
+	NSURL *_testImageURL;
+	CGImageRef _testImageRef;
+}
 
-		beforeAll(^{
-			testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-			
-			testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:testImageURL] CGImageForProposedRect:NULL
-																											  context:NULL
-																												hints:nil]);
+static const NSInteger numberOfItems = 10;
+static const NSRect initialFrame = {{0, 0}, {400, 300}};
 
-			NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:numberOfItems];
-			for ( NSInteger i = 0; i < numberOfItems; ++i) {
-				NSString *titleString = [NSString stringWithFormat:@"Item %ld", (long)i];
-				// item
-				id itemMock = [KWMock mockForProtocol:@protocol(MMFlowViewItem)];
-				[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
-				[itemMock stub:@selector(imageItemUID) andReturn:titleString];
-				[itemMock stub:@selector(imageItemTitle) andReturn:titleString];
-				id imageMock = [NSImage nullMock];
-				[itemMock stub:@selector(imageItemRepresentation) andReturn:imageMock];
-				[itemArray addObject:itemMock];
-			}
-			mockedItems = [itemArray copy];
-		});
-		afterAll(^{
-			testImageURL = nil;
-			SAFE_CGIMAGE_RELEASE(testImageRef);
-			mockedItems = nil;
-		});
-		beforeEach(^{
-			sut = [[MMFlowView alloc] initWithFrame:initialFrame];
-		});
-		afterEach(^{
-			sut = nil;
-		});
+- (void)setUp
+{
+	[super setUp];
+	_testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+	_testImageRef = CGImageRetain([[[NSImage alloc] initWithContentsOfURL:_testImageURL] CGImageForProposedRect:NULL context:NULL hints:nil]);
 
-		context(@"class related", ^{
-			it(@"should be of MMFlowView class", ^{
-				[[sut should] beKindOfClass:[MMFlowView class]];
-			});
-			context(NSStringFromSelector(@selector(defaultAnimationForKey:)), ^{
-				it(@"should return a CABasicAnimation for the spacing key", ^{
-					id animation = [[sut class] defaultAnimationForKey:NSStringFromSelector(@selector(spacing))];
+	NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:numberOfItems];
+	for (NSInteger i = 0; i < numberOfItems; ++i) {
+		NSString *titleString = [NSString stringWithFormat:@"Item %ld", (long)i];
+		MMTestImageItem *item = [[MMTestImageItem alloc] init];
+		item.imageItemRepresentationType = kMMFlowViewNSImageRepresentationType;
+		item.imageItemUID = titleString;
+		item.imageItemTitle = titleString;
+		item.imageItemRepresentation = [[NSImage alloc] initWithContentsOfURL:_testImageURL];
+		[itemArray addObject:item];
+	}
+	_mockedItems = [itemArray copy];
 
-					[[animation should] beKindOfClass:[CABasicAnimation class]];
-				});
-				it(@"should return a CABasicAnimation for the stackedAngle key", ^{
-					id animation = [[sut class] defaultAnimationForKey:NSStringFromSelector(@selector(stackedAngle))];
-					
-					[[animation should] beKindOfClass:[CABasicAnimation class]];
-				});
-			});
-		});
+	_sut = [[MMFlowView alloc] initWithFrame:initialFrame];
+	// give the layer tree a sane geometry so layout computations stay finite
+	_sut.coverFlowLayer.bounds = _sut.bounds;
+	_sut.coverFlowLayout.visibleSize = _sut.bounds.size;
+}
 
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should have no items", ^{
-			[[theValue(sut.numberOfItems) should] equal:theValue(0)];
-		});
-		it(@"shoud have no item selected", ^{
-			[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
-		});
-		it(@"should have an empty title", ^{
-			[[sut.title should] equal:@""];
-		});
-		it(@"should have a title size of 18", ^{
-			[[theValue(sut.titleSize) should] equal:theValue(18)];
-		});
-		it(@"should be registered for url pasteboard type", ^{
-			[[[sut registeredDraggedTypes] should] contain:NSURLPboardType];
-		});
-		it(@"should have an empty datasource", ^{
-			[[(id)sut.dataSource should] beNil];
-		});
+- (void)tearDown
+{
+	_sut = nil;
+	_testImageURL = nil;
+	SAFE_CGIMAGE_RELEASE(_testImageRef);
+	_mockedItems = nil;
+	[super tearDown];
+}
 
-		context(NSStringFromSelector(@selector(title)), ^{
-			__block CATextLayer *titleLayerMock = nil;
-			NSString *testTitle = @"testTitle";
+#pragma mark - class related
 
-			beforeEach(^{
-				titleLayerMock = [CATextLayer nullMock];
-				[titleLayerMock stub:@selector(string) andReturn:testTitle];
-				sut.titleLayer = titleLayerMock;
-			});
-			afterEach(^{
-				titleLayerMock = nil;
-			});
+- (void)testIsOfMMFlowViewClass
+{
+	XCTAssertTrue([_sut isKindOfClass:[MMFlowView class]]);
+}
 
-			it(@"should return the title from the title layer", ^{
-				[[sut.title should] equal:testTitle];
-			});
-			it(@"should set the title to the title layer", ^{
-				[[titleLayerMock should] receive:@selector(setString:) withArguments:testTitle];
+- (void)testDefaultAnimationForKeySpacingIsCABasicAnimation
+{
+	id animation = [[_sut class] defaultAnimationForKey:NSStringFromSelector(@selector(spacing))];
+	XCTAssertTrue([animation isKindOfClass:[CABasicAnimation class]]);
+}
 
-				sut.title = testTitle;
-			});
-		});
+- (void)testDefaultAnimationForKeyStackedAngleIsCABasicAnimation
+{
+	id animation = [[_sut class] defaultAnimationForKey:NSStringFromSelector(@selector(stackedAngle))];
+	XCTAssertTrue([animation isKindOfClass:[CABasicAnimation class]]);
+}
 
-		context(NSStringFromSelector(@selector(selectedIndex)), ^{
+#pragma mark - defaults
 
-			context(@"when having items", ^{
-				beforeEach(^{
-					sut.contentAdapter = mockedItems;
-					[sut reloadContent];
-				});
-				it(@"should have a valid selection", ^{
-					[[theValue(sut.selectedIndex) shouldNot] equal:theValue(NSNotFound)];
-				});
-				context(@"when the selected item has a title", ^{
-					it(@"should have the title value of the item", ^{
-						NSString *expectedTitle = [NSString stringWithFormat:@"Item %@", @(sut.selectedIndex)];
-						[[sut.title should] equal:expectedTitle];
-					});
-				});
+- (void)testInstanceExists
+{
+	XCTAssertNotNil(_sut);
+}
 
-				context(@"when the selected item has no title", ^{
-					__block id itemMock = nil;
+- (void)testNoItems
+{
+	XCTAssertEqual(_sut.numberOfItems, (NSUInteger)0);
+}
 
-					beforeEach(^{
-						itemMock = [KWMock nullMock];
-						[itemMock stub:@selector(imageItemRepresentation) andReturn:[NSImage nullMock]];
-						[itemMock stub:@selector(imageItemRepresentationType) andReturn:kMMFlowViewNSImageRepresentationType];
-						[itemMock stub:@selector(imageItemUID) andReturn:@"123"];
-						sut.contentAdapter = @[itemMock];
-						[sut reloadContent];
-					});
-					afterEach(^{
-						itemMock = nil;
-					});
+- (void)testNoItemSelected
+{
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)NSNotFound);
+}
 
-					it(@"should have an empty title", ^{
-						[[sut.title should] equal:@""];
-					});
-				});
+- (void)testEmptyTitle
+{
+	XCTAssertEqualObjects(_sut.title, @"");
+}
 
-			});
-			
-			context(@"when having no items", ^{
-				it(@"should have NSNotFound as the selection", ^{
-					[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
-				});
-				it(@"should have an empty string as the title", ^{
-					[[sut.title should] equal:@""];
-				});
-			});
-		});
-		
-		context(NSStringFromSelector(@selector(setDataSource:)), ^{
-			__block id dataSourceMock = nil;
+- (void)testTitleSizeOfEighteen
+{
+	XCTAssertEqual(_sut.titleSize, (CGFloat)18);
+}
 
-			beforeEach(^{
-				dataSourceMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewDataSource)];
-			});
-			afterEach(^{
-				dataSourceMock = nil;
-			});
-			context(@"when the NSContentArrayBinding does not exist", ^{
-				beforeEach(^{
-					[sut stub:@selector(infoForBinding:)
-					andReturn:nil
-				withArguments:NSContentArrayBinding];
-				});
-				it(@"should set the contentAdapter to a MMFlowViewDatasourceContentAdapter", ^{
-					sut.dataSource = dataSourceMock;
-					
-					[[(id)sut.contentAdapter should] beKindOfClass:[MMFlowViewDatasourceContentAdapter class]];
-				});
-			});
-			context(@"when the NSContentArrayBinding exists", ^{
-				__block id controllerMock = nil;
+- (void)testRegisteredForURLPasteboardType
+{
+	XCTAssertTrue([[_sut registeredDraggedTypes] containsObject:NSURLPboardType]);
+}
 
-				beforeEach(^{
-					controllerMock = [NSArrayController nullMock];
+- (void)testEmptyDataSource
+{
+	XCTAssertNil(_sut.dataSource);
+}
 
-					[sut stub:@selector(infoForBinding:)
-					andReturn:@{NSObservedObjectKey: controllerMock}
-				withArguments:NSContentArrayBinding];
-				});
-				afterEach(^{
-					controllerMock = nil;
-				});
-				it(@"should not set the contentAdapter to a MMFlowViewDatasourceContentAdapter", ^{
-					[[sut shouldNot] receive:@selector(setContentAdapter:)];
+- (void)testTitleGetAndSet
+{
+	_sut.title = @"testTitle";
+	XCTAssertEqualObjects(_sut.title, @"testTitle");
+}
 
-					sut.dataSource = dataSourceMock;
-				});
-			});
-		});
+- (void)testTitleSizeSetAndGet
+{
+	_sut.titleSize = 30;
+	XCTAssertEqualWithAccuracy(_sut.titleSize, 30, .00001);
+}
 
-		context(NSStringFromSelector(@selector(reloadContent)), ^{
-			beforeEach(^{
-				sut.contentAdapter = mockedItems;
-			});
-			it(@"should have the number of items from the content array", ^{
-				[sut reloadContent];
+- (void)testTitleColorSet
+{
+	[_sut setTitleColor:[NSColor whiteColor]];
+	XCTAssertTrue(_sut.titleLayer.foregroundColor != NULL);
+}
 
-				[[theValue(sut.numberOfItems) should] equal:theValue([mockedItems count])];
-			});
-		});
+- (void)testTitleFontSet
+{
+	[_sut setTitleFont:[NSFont systemFontOfSize:14]];
+	XCTAssertNotNil(_sut.titleLayer.font);
+}
 
-		context(@"title layer interaction", ^{
-			__block CATextLayer *titleLayerMock = nil;
-			CGFloat expectedFontSize = 30;
-			
-			beforeEach(^{
-				titleLayerMock = [CATextLayer nullMock];
-				sut.titleLayer = titleLayerMock;
-			});
-			afterEach(^{
-				titleLayerMock = nil;
-			});
-			context(NSStringFromSelector(@selector(titleSize)), ^{
+#pragma mark - selection with items
 
-				it(@"should set the size on the title layer", ^{
-					[[titleLayerMock should] receive:@selector(setFontSize:) withArguments:theValue(expectedFontSize)];
-					
-					sut.titleSize = expectedFontSize;
-				});
+- (void)testValidSelectionWithItems
+{
+	_sut.contentAdapter = _mockedItems;
+	[_sut reloadContent];
+	XCTAssertNotEqual(_sut.selectedIndex, (NSUInteger)NSNotFound);
+}
 
-				it(@"should return the size of the title layer", ^{
-					[[titleLayerMock should] receive:@selector(fontSize) andReturn:theValue(expectedFontSize)];
-					
-					CGFloat size = sut.titleSize;
-					[[theValue(size) should] equal:expectedFontSize withDelta:0.00001];
-				});
-			});
+- (void)testTitleOfSelectedItem
+{
+	_sut.contentAdapter = _mockedItems;
+	[_sut reloadContent];
+	NSString *expectedTitle = [NSString stringWithFormat:@"Item %@", @(_sut.selectedIndex)];
+	XCTAssertEqualObjects(_sut.title, expectedTitle);
+}
 
-			context(NSStringFromSelector(@selector(setTitleColor:)), ^{
-				__block NSColor *colorMock = nil;
-				__block CGColorRef colorRef = NULL;
+- (void)testEmptyTitleForItemWithoutTitle
+{
+	MMTestImageItem *item = [[MMTestImageItem alloc] init];
+	item.imageItemRepresentation = [[NSImage alloc] initWithContentsOfURL:_testImageURL];
+	item.imageItemRepresentationType = kMMFlowViewNSImageRepresentationType;
+	item.imageItemUID = @"123";
+	item.imageItemTitle = @"";
+	_sut.contentAdapter = @[item];
+	[_sut reloadContent];
+	XCTAssertTrue(_sut.title.length == 0);
+}
 
-				beforeEach(^{
-					colorMock = [NSColor nullMock];
-					colorRef = CGColorCreateGenericGray(1, 1);
-					[colorMock stub:@selector(CGColor) andReturn:theValue(colorRef)];
-				});
-				afterEach(^{
-					colorMock = nil;
-					if (colorRef) {
-						CGColorRelease(colorRef);
-					}
-				});
-				it(@"should set the color on the title layer", ^{
-					[[titleLayerMock should] receive:@selector(setForegroundColor:) withArguments:theValue(colorRef)];
+- (void)testNoItemsSelectionIsNotFound
+{
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)NSNotFound);
+	XCTAssertEqualObjects(_sut.title, @"");
+}
 
-					[sut setTitleColor:colorMock];
-				});
-			});
+- (void)testChangingSelectionWithoutItemsDoesNothing
+{
+	_sut.selectedIndex = 0;
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)NSNotFound);
+}
 
-			context(NSStringFromSelector(@selector(setTitleFont:)), ^{
-				__block NSFont *fontMock = nil;
+#pragma mark - dataSource
 
-				beforeEach(^{
-					fontMock = [NSFont nullMock];
-				});
-				afterEach(^{
-					fontMock = nil;
-				});
-				it(@"should set the font on the title layer", ^{
-					[[titleLayerMock should] receive:@selector(setFont:) withArguments:[KWAny any]];
+- (void)testSettingDataSourceCreatesDatasourceContentAdapter
+{
+	MMTestFlowViewDataSource *dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:_mockedItems];
+	_sut.dataSource = dataSource;
+	XCTAssertTrue([_sut.contentAdapter isKindOfClass:[MMFlowViewDatasourceContentAdapter class]]);
+}
 
-					[sut setTitleFont:fontMock];
-				});
-			});
-		});
+- (void)testSettingDataSourceWithExistingBindingDoesNotReplaceContentAdapter
+{
+	MMTestImageItem *boundItem = [[MMTestImageItem alloc] init];
+	boundItem.imageItemUID = @"bound";
+	boundItem.imageItemRepresentationType = kMMFlowViewNSImageRepresentationType;
+	boundItem.imageItemRepresentation = [[NSImage alloc] initWithContentsOfURL:_testImageURL];
 
-		context(NSStringFromSelector(@selector(coverFlowLayout)), ^{
-			it(@"should have a coverFlowLayout", ^{
-				[[sut.coverFlowLayout shouldNot] beNil];
-			});
-			it(@"should be a MMCoverFlowLayout class", ^{
-				[[sut.coverFlowLayout should] beKindOfClass:[MMCoverFlowLayout class]];
-			});
-			it(@"should be the delegate of the layout", ^{
-				[[(id)sut.coverFlowLayout.delegate should] equal:sut];
-			});
-		});
-		context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
-			it(@"should not be nil", ^{
-				[[sut.visibleItemIndexes shouldNot] beNil];
-			});
-			it(@"should have count of zero", ^{
-				[[sut.visibleItemIndexes should] haveCountOf:0];
-			});
-		});
-		context(NSStringFromSelector(@selector(stackedAngle)), ^{
-			it(@"should have a default stacked angle of 70", ^{
-				[[theValue(sut.stackedAngle) should] equal:theValue(70)];
-			});
-			context(@"setting its value", ^{
-				beforeEach(^{
-					sut.stackedAngle = 50;
-				});
-				it(@"should change the stacked angle", ^{
-					[[theValue(sut.stackedAngle) should] equal:theValue(50)];
-				});
-				it(@"should change the cover flow layout", ^{
-					[[theValue(sut.coverFlowLayout.stackedAngle) should] equal:theValue(sut.stackedAngle)];
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(selectedItemFrame)), ^{
-			it(@"should initially have a selectedItemFrame of NSZeroRect", ^{
-				NSValue *expectedFrame = [NSValue valueWithRect:NSZeroRect];
-				[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
-			});
-		});
-		context(NSStringFromSelector(@selector(spacing)), ^{
-			it(@"should have a default spacing of 50", ^{
-				[[theValue(sut.spacing) should] equal:theValue(50)];
-			});
-			context(@"setting its value", ^{
-				beforeEach(^{
-					sut.spacing = 100;
-				});
-				it(@"should change the spacing", ^{
-					[[theValue(sut.spacing) should] equal:theValue(100)];
-				});
-				it(@"should change the underlying layout", ^{
-					[[theValue(sut.coverFlowLayout.interItemSpacing) should] equal:theValue(sut.spacing)];
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(showsReflection)), ^{
-			it(@"should not initially show reflections", ^{
-				[[theValue(sut.showsReflection) should] beNo];
-			});
-			context(@"setting", ^{
-				beforeEach(^{
-					sut.showsReflection = YES;
-				});
-				it(@"should be enabled", ^{
-					[[theValue(sut.showsReflection) should] beYes];
-				});
-				it(@"should enable it on the coverFlowLayer", ^{
-					[[theValue(sut.coverFlowLayer.showsReflection) should] beYes];
-				});
-				context(@"disabling", ^{
-					beforeEach(^{
-						sut.showsReflection = NO;
-					});
-					it(@"should be disabled", ^{
-						[[theValue(sut.showsReflection) should] beNo];
-					});
-					it(@"should enable it on the coverFlowLayer", ^{
-						[[theValue(sut.coverFlowLayer.showsReflection) should] beNo];
-					});
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(reflectionOffset)), ^{
-			it(@"should have a reflectionOffset of -.4", ^{
-				[[theValue(sut.reflectionOffset) should] equal:-.4 withDelta:.0000001];
-			});
-			context(@"setting", ^{
-				beforeEach(^{
-					sut.reflectionOffset = -.7;
-				});
-				it(@"should be -.7", ^{
-					[[theValue(sut.reflectionOffset) should] equal:-.7 withDelta:0.000001];
-				});
-				it(@"should set the coverFlowLayers reflectionOffset", ^{
-					[[theValue(sut.coverFlowLayer.reflectionOffset) should] equal:-.7 withDelta:0.0000001];
-				});
-			});
-		});
+	NSArrayController *controller = [[NSArrayController alloc] initWithContent:@[boundItem]];
+	[controller setObjectClass:[MMTestImageItem class]];
+	[_sut bind:NSContentArrayBinding toObject:controller withKeyPath:@"arrangedObjects" options:nil];
 
-		context(@"image cache", ^{
-			it(@"should have an image cache", ^{
-				[[(id)sut.imageCache shouldNot] beNil];
-			});
-			it(@"should conform to the MMFlowViewImageCache protocol", ^{
-				[[((id)sut.imageCache) should] conformToProtocol:@protocol(MMFlowViewImageCache)];
-			});
-		});
-		context(@"image factory", ^{
-			it(@"should have an image factory", ^{
-				[[sut.imageFactory shouldNot] beNil];
-			});
-			it(@"should be a MMFlowViewImageFactory class", ^{
-				[[sut.imageFactory should] beKindOfClass:[MMFlowViewImageFactory class]];
-			});
-			context(@"decoders", ^{
-				__block CGImageSourceRef imageSource = NULL;
-				__block NSDictionary *testRepresentations = nil;
-				__block CGPDFPageRef testPDFPageRef = NULL;
+	MMTestFlowViewDataSource *dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:_mockedItems];
+	_sut.dataSource = dataSource;
 
-				NSDictionary *expectedRepresentationMappings = @{
-														 kMMFlowViewURLRepresentationType: [MMQuickLookImageDecoder class],
-														 //kMMFlowViewCGImageRepresentationType: [MMNSImageDecoder class],
-														 kMMFlowViewPDFPageRepresentationType: [MMPDFPageDecoder class],
-														 kMMFlowViewPathRepresentationType: [MMQuickLookImageDecoder class],
-														 kMMFlowViewNSImageRepresentationType: [MMNSImageDecoder class],
-														 kMMFlowViewCGImageSourceRepresentationType: [MMCGImageSourceDecoder class],
-														 kMMFlowViewNSDataRepresentationType: [MMNSDataImageDecoder class],
-														 kMMFlowViewNSBitmapRepresentationType: [MMNSBitmapImageRepDecoder class],
-														 //kMMFlowViewQTMovieRepresentationType: [MMQuickLookImageDecoder class],
-														 kMMFlowViewQTMoviePathRepresentationType: [MMQuickLookImageDecoder class],
-														// kMMFlowViewQCCompositionRepresentationType: [MMQuickLookImageDecoder class],
-														 kMMFlowViewQCCompositionPathRepresentationType: [MMQuickLookImageDecoder class],
-														 kMMFlowViewQuickLookPathRepresentationType: [MMQuickLookImageDecoder class]
-														 };
+	XCTAssertFalse([_sut.contentAdapter isKindOfClass:[MMFlowViewDatasourceContentAdapter class]]);
+	[_sut unbind:NSContentArrayBinding];
+}
 
-				beforeAll(^{
-					imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)(testImageURL), NULL);
+- (void)testReloadContentSetsNumberOfItems
+{
+	_sut.contentAdapter = _mockedItems;
+	[_sut reloadContent];
+	XCTAssertEqual(_sut.numberOfItems, (NSUInteger)[_mockedItems count]);
+}
 
-					PDFDocument *document = [[PDFDocument alloc] initWithURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"Test" withExtension:@"pdf"]];
-					testPDFPageRef = CGPDFPageRetain([[document pageAtIndex:0] pageRef]);
+#pragma mark - layout related
 
-					testRepresentations = @{
-											kMMFlowViewURLRepresentationType: testImageURL,
-											//kMMFlowViewCGImageRepresentationType: (__bridge id)testImageRef,
-											kMMFlowViewPDFPageRepresentationType: (__bridge id)testPDFPageRef,
-											kMMFlowViewPathRepresentationType: [testImageURL absoluteString],
-											kMMFlowViewNSImageRepresentationType: [NSImage nullMock],
-											kMMFlowViewCGImageSourceRepresentationType: (__bridge id)imageSource,
-											kMMFlowViewNSDataRepresentationType: [NSData nullMock],
-											kMMFlowViewNSBitmapRepresentationType: [NSBitmapImageRep nullMock],
-											//kMMFlowViewQTMovieRepresentationType: [QTMovie nullMock],
-											kMMFlowViewQTMoviePathRepresentationType: testImageURL,
-											//kMMFlowViewQCCompositionRepresentationType: [QCComposition nullMock],
-											kMMFlowViewQCCompositionPathRepresentationType: testImageURL,
-											kMMFlowViewQuickLookPathRepresentationType: testImageURL
-											};
-				});
-				afterAll(^{
-					if (imageSource) {
-						CFRelease(imageSource);
-						imageSource = NULL;
-					}
-					if (testPDFPageRef) {
-						CGPDFPageRelease(testPDFPageRef);
-						testPDFPageRef = NULL;
-					}
-					testRepresentations = nil;
-				});
-								
-				it(@"should be able to decode the expected types", ^{
-					[expectedRepresentationMappings enumerateKeysAndObjectsUsingBlock:^(NSString *type, Class decoderClass, BOOL *stop) {
-						[[theValue([sut.imageFactory canDecodeRepresentationType:type]) should] beYes];
-					}];
-				});
-				it(@"should provide a decoder for the expected types", ^{
-					[testRepresentations enumerateKeysAndObjectsUsingBlock:^(NSString *representationType, id representation, BOOL *stop) {
-						[[(id)[sut.imageFactory decoderforItem:representation
-										withRepresentationType:representationType] shouldNot] beNil];
-					}];
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(viewDidEndLiveResize)), ^{
-			context(@"coverflow layer interaction", ^{
-				beforeEach(^{
-					[sut viewWillStartLiveResize];
-				});
-				it(@"should set the live resizing status to the MMCoverFLowLayer", ^{
-					[[theValue(sut.coverFlowLayer.inLiveResize) should] beYes];
-				});
-				it(@"should end the live resizing to the MMCoverFlowLayer", ^{
-					[sut viewDidEndLiveResize];
-					[[theValue(sut.coverFlowLayer.inLiveResize) should] beNo];
-				});
-			});
-			context(@"image factory interaction", ^{
-				__block MMCoverFlowLayout *layoutMock = nil;
-				__block MMFlowViewImageFactory *imageFactoryMock = nil;
-				CGSize itemSize = CGSizeMake(300, 300);
+- (void)testHasCoverFlowLayout
+{
+	XCTAssertNotNil(_sut.coverFlowLayout);
+	XCTAssertTrue([_sut.coverFlowLayout isKindOfClass:[MMCoverFlowLayout class]]);
+	XCTAssertEqualObjects(_sut.coverFlowLayout.delegate, _sut);
+}
 
-				beforeEach(^{
-					layoutMock = [MMCoverFlowLayout nullMock];
-					[layoutMock stub:@selector(itemSize) andReturn:theValue(itemSize)];
-					sut.coverFlowLayout = layoutMock;
-					
-					imageFactoryMock = [MMFlowViewImageFactory nullMock];
-					sut.imageFactory = imageFactoryMock;
-				});
-				afterEach(^{
-					layoutMock = nil;
-					imageFactoryMock = nil;
-				});
-				it(@"should set the layout itemSize to the image factory", ^{
-					[[imageFactoryMock should] receive:@selector(setMaxImageSize:) withArguments:theValue(itemSize)];
+- (void)testVisibleItemIndexesInitiallyEmpty
+{
+	XCTAssertNotNil(_sut.visibleItemIndexes);
+	XCTAssertEqual([_sut.visibleItemIndexes count], (NSUInteger)0);
+}
 
-					[sut viewDidEndLiveResize];
-				});
-			});
-		});
-		
-		context(NSStringFromSelector(@selector(delegate)), ^{
-			it(@"should have an empty delegate", ^{
-				[[(id)sut.delegate should] beNil];
-			});
-		});
-		context(@"changing the selection", ^{
-			beforeEach(^{
-				sut.selectedIndex = 0;
-			});
-			it(@"should do nothing", ^{
-				[[theValue(sut.selectedIndex) should] equal:theValue(NSNotFound)];
-			});
-			it(@"should have an empty title", ^{
-				sut.title = @"";
-			});
-		});
-		
-		context(@"layers", ^{
-			beforeEach(^{
-				[sut.layer layoutSublayers];
-			});
-			it(@"should be layer backed", ^{
-				[[theValue([sut wantsLayer]) should] beYes];
-			});
-			it(@"should have a layer attached", ^{
-				[[[sut layer] shouldNot] beNil];
-			});
-			context(NSStringFromSelector(@selector(backgroundLayer)), ^{
-				it(@"should have a background layer", ^{
-					[[sut.backgroundLayer shouldNot] beNil];
-				});
-				it(@"should have the background layer as its view layer", ^{
-					[[[sut layer] should] equal:sut.backgroundLayer];
-				});
-				it(@"should be a gradient layer", ^{
-					[[sut.backgroundLayer should] beKindOfClass:[CAGradientLayer class]];
-				});
-				it(@"should horizontally autoresize", ^{
-					[[theValue(sut.backgroundLayer.autoresizingMask & kCALayerWidthSizable)should] beTrue];
-				});
-				it(@"should vertically autoresize", ^{
-					[[theValue(sut.backgroundLayer.autoresizingMask & kCALayerHeightSizable)should] beTrue];
-				});
-				it(@"should have a layout manager", ^{
-					[[sut.backgroundLayer.layoutManager shouldNot] beNil];
-				});
-				it(@"should have a constraint layout manager", ^{
-					[[sut.backgroundLayer.layoutManager should] beKindOfClass:[CAConstraintLayoutManager class]];
-				});
-				it(@"should have the colors", ^{
-					NSArray *expectedColors = @[(__bridge id)[ [ NSColor colorWithCalibratedRed:52.f / 255.f green:55.f / 255.f blue:69.f / 255.f alpha:1.f ] CGColor ],
-												(__bridge id)[ [ NSColor colorWithCalibratedRed:36.f / 255.f green:37.f / 255.f blue:48.f / 255.f alpha:1.f ] CGColor ],
-												(__bridge id)[[ NSColor blackColor ] CGColor ]];
-					[[((CAGradientLayer*)sut.backgroundLayer).colors should] equal:expectedColors];
-				});
-				it(@"should have the positions", ^{
-					NSArray *expectedLocations = @[@0.,@.2,@1.];
-					CAGradientLayer *gradientLayer = (CAGradientLayer*)sut.backgroundLayer;
-					[[gradientLayer.locations should] equal:expectedLocations];
-				});
-				it(@"should have a zero position", ^{
-					NSValue *actualPosition = [NSValue valueWithPoint:sut.backgroundLayer.position];
-					[[actualPosition should] equal:[NSValue valueWithPoint:CGPointZero]];
-				});
-				it(@"should match the views bounds", ^{
-					NSValue *actualBounds = [NSValue valueWithRect:sut.backgroundLayer.bounds];
-					NSValue *viewBounds = [NSValue valueWithRect:[sut bounds]];
-					[[actualBounds should] equal:viewBounds];
-				});
-				it(@"should be have a frame origin of 0,0", ^{
-					NSValue *expectedPoint = [NSValue valueWithPoint:NSMakePoint(0, 0)];
-					[[[NSValue valueWithPoint:sut.backgroundLayer.frame.origin] should] equal:expectedPoint];
-				});
-			});
-			context(NSStringFromSelector(@selector(coverFlowLayer)), ^{
-				it(@"should be set", ^{
-					[[sut.coverFlowLayer shouldNot] beNil];
-				});
-				it(@"should have type MMCoverFlowLayer", ^{
-					[[sut.coverFlowLayer should] beKindOfClass:[MMCoverFlowLayer class]];
-				});
-				it(@"should be a sublayer of the container layer", ^{
-					[[sut.containerLayer.sublayers should] contain:sut.coverFlowLayer];
-				});
-				it(@"should have the same width as the view", ^{
-					[[theValue(CGRectGetWidth(sut.coverFlowLayer.bounds)) should] equal:theValue(CGRectGetWidth(sut.bounds))];
-				});
-			});
-			context(NSStringFromSelector(@selector(containerLayer)), ^{
-				it(@"should exist", ^{
-					[[sut.containerLayer shouldNot] beNil];
-				});
-				it(@"should be a CALayer", ^{
-					[[sut.containerLayer should] beKindOfClass:[CALayer class]];
-				});
-				it(@"should be a sublayer of the background layer", ^{
-					[[sut.backgroundLayer.sublayers should] contain:sut.containerLayer];
-				});
-				it(@"should have the name MMFlowViewContainerLayer", ^{
-					[[sut.containerLayer.name should] equal:@"MMFlowViewContainerLayer"];
-				});
-				it(@"should have the same width as the view", ^{
-					[[theValue(CGRectGetWidth(sut.containerLayer.bounds)) should] equal:theValue(CGRectGetWidth(sut.bounds))];
-				});
-				context(@"constraints", ^{
-					__block CAConstraint *constraint =  nil;
-					it(@"should have three constraints", ^{
-						[[sut.containerLayer.constraints should] haveCountOf:4];
-					});
-					context(@"superlayer equal midx", ^{
-						beforeEach(^{
-							constraint = [sut.containerLayer.constraints firstObject];
-						});
-						afterEach(^{
-							constraint = nil;
-						});
-						it(@"should be relative to its superlayer", ^{
-							[[ constraint.sourceName should] equal:@"superlayer"];
-						});
-						it(@"should have a mid-x sourceAttribute", ^{
-							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMidX)];
-						});
-						it(@"should have a mid-x attribute", ^{
-							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMidX)];
-						});
-						it(@"should have a scale of 1", ^{
-							[[theValue(constraint.scale) should] equal:theValue(1)];
-						});
-						it(@"should have an offset of zero", ^{
-							[[theValue(constraint.offset) should] beZero];
-						});
-					});
-					context(@"superlayer max-y", ^{
-						beforeEach(^{
-							constraint = sut.containerLayer.constraints[1];
-						});
-						afterEach(^{
-							constraint = nil;
-						});
-						it(@"should be relative to its superlayer", ^{
-							[[ constraint.sourceName should] equal:@"superlayer"];
-						});
-						it(@"should have a max-y sourceAttribute", ^{
-							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMaxY)];
-						});
-						it(@"should have a max-Y attribute", ^{
-							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMaxY)];
-						});
-						it(@"should have a scale of 1", ^{
-							[[theValue(constraint.scale) should] equal:theValue(1)];
-						});
-						it(@"should have an offset of zero", ^{
-							[[theValue(constraint.offset) should] beZero];
-						});
-					});
-					context(@"superlayer equal width", ^{
-						beforeEach(^{
-							constraint = sut.containerLayer.constraints[2];
-						});
-						afterEach(^{
-							constraint = nil;
-						});
-						it(@"should be relative to its superlayer", ^{
-							[[ constraint.sourceName should] equal:@"superlayer"];
-						});
-						it(@"should have a width sourceAttribute", ^{
-							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintWidth)];
-						});
-						it(@"should have a width attribute", ^{
-							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintWidth)];
-						});
-						it(@"should have an offset of 0.", ^{
-							[[theValue(constraint.offset) should] beZero];
-						});
-						it(@"should have a scale of 1", ^{
-							[[theValue(constraint.scale) should] equal:theValue(1)];
-						});
-					});
-					context(@"superlayer equal width", ^{
-						beforeEach(^{
-							constraint = sut.containerLayer.constraints[3];
-						});
-						afterEach(^{
-							constraint = nil;
-						});
-						it(@"should be relative to the MMFlowViewTitleLayer", ^{
-							[[ constraint.sourceName should] equal:@"MMFlowViewTitleLayer"];
-						});
-						it(@"should have a width sourceAttribute", ^{
-							[[theValue(constraint.sourceAttribute) should] equal:theValue(kCAConstraintMaxY)];
-						});
-						it(@"should have a width attribute", ^{
-							[[theValue(constraint.attribute) should] equal:theValue(kCAConstraintMinY)];
-						});
-						it(@"should have an offset of 0.", ^{
-							[[theValue(constraint.offset) should] beZero];
-						});
-						it(@"should have a scale of 1", ^{
-							[[theValue(constraint.scale) should] equal:theValue(1)];
-						});
-					});
-				});
-				context(@"core animation actions", ^{
-					__block NSDictionary *actions = nil;
-					beforeEach(^{
-						actions = sut.containerLayer.actions;
-					});
-					afterEach(^{
-						actions = nil;
-					});
-					it(@"should have disabled the bounds action", ^{
-						[[actions[@"bounds"] should] equal:[NSNull null]];
-					});
-					it(@"should have disabled the position action", ^{
-						[[actions[@"position"] should] equal:[NSNull null]];
-					});
-				});
-			});
-			context(NSStringFromSelector(@selector(scrollBarLayer)), ^{
-				it(@"should not be nil", ^{
-					[[sut.scrollBarLayer shouldNot] beNil];
-				});
-				it(@"should be from type MMScrollBarLayer", ^{
-					[[sut.scrollBarLayer should] beKindOfClass:[MMScrollBarLayer class]];
-				});
-				it(@"should be a sublayer of the container layer", ^{
-					[[sut.backgroundLayer.sublayers should] contain:sut.scrollBarLayer];
-				});
-			});
-			
-		});
-		context(@"layout", ^{
-			__block NSPoint pointInCenterOfView;
-			__block NSPoint pointNotInView;
+- (void)testDefaultStackedAngleAndPropagation
+{
+	XCTAssertEqual(_sut.stackedAngle, (CGFloat)70);
+	_sut.stackedAngle = 50;
+	XCTAssertEqual(_sut.stackedAngle, (CGFloat)50);
+	XCTAssertEqual(_sut.coverFlowLayout.stackedAngle, _sut.stackedAngle);
+}
 
-			beforeEach(^{
-				pointInCenterOfView = NSMakePoint(NSMidX([sut bounds]), NSMidY([sut bounds]));
-				pointNotInView = NSMakePoint(NSWidth([sut bounds])*2, NSHeight([sut bounds])*2);
-			});
-			context(NSStringFromSelector(@selector(indexOfItemAtPoint:)), ^{
-				it(@"should return NSNotFound with empty contents for point in view", ^{
-					[[theValue([sut indexOfItemAtPoint:pointInCenterOfView]) should] equal:theValue(NSNotFound)];
-				});
-				it(@"should return NSNotFound for point outside view", ^{
-					[[theValue([sut indexOfItemAtPoint:pointNotInView]) should] equal:theValue(NSNotFound)];
-				});
-				context(@"layer interaction", ^{
-					__block CALayer *mockedHostingLayer = nil;
-					__block MMCoverFlowLayer *mockedCoverFlowLayer = nil;
-					__block CALayer *mockedContainerLayer = nil;
-					CGPoint expectedPoint = {20, 20};
+- (void)testSelectedItemFrameInitiallyZero
+{
+	XCTAssertTrue(NSIsEmptyRect(_sut.selectedItemFrame));
+}
 
-					beforeEach(^{
-						mockedHostingLayer = [CALayer nullMock];
-						mockedContainerLayer = [CALayer nullMock];
-						mockedCoverFlowLayer = [MMCoverFlowLayer nullMock];
-						[sut stub:@selector(layer) andReturn:mockedHostingLayer];
-						sut.coverFlowLayer = mockedCoverFlowLayer;
-						sut.containerLayer = mockedContainerLayer;
-						[mockedHostingLayer stub:@selector(convertPoint:toLayer:) andReturn:theValue(expectedPoint)];
-					});
-					afterEach(^{
-						mockedHostingLayer = nil;
-					});
-					it(@"should ask the views layer to convert the point to the containerlayer", ^{
-						[[mockedHostingLayer should] receive:@selector(convertPoint:toLayer:) withArguments:theValue(pointInCenterOfView), mockedContainerLayer];
-						[sut indexOfItemAtPoint:pointInCenterOfView];
-					});
-					it(@"should ask the coverFlowLayer for the index", ^{
-						[[mockedCoverFlowLayer should] receive:@selector(indexOfLayerAtPoint:) withArguments:theValue(expectedPoint)];
-						[sut indexOfItemAtPoint:pointInCenterOfView];
-					});
-				});
-				
-			});
-			
-		});
-		context(@"datasource", ^{
-			__block id datasourceMock = nil;
+- (void)testDefaultSpacingAndPropagation
+{
+	XCTAssertEqual(_sut.spacing, (CGFloat)50);
+	_sut.spacing = 100;
+	XCTAssertEqual(_sut.spacing, (CGFloat)100);
+	XCTAssertEqual(_sut.coverFlowLayout.interItemSpacing, _sut.spacing);
+}
 
-			beforeEach(^{
-				id imageDecoderMock = [KWMock nullMockForProtocol:@protocol(MMImageDecoderProtocol)];
-				[imageDecoderMock stub:@selector(initWithItem:maxPixelSize:) andReturn:imageDecoderMock];
-				[imageDecoderMock stub:@selector(CGImage) andReturn:(__bridge id)(testImageRef)];
-				[[MMNSImageDecoder class] stub:@selector(alloc) andReturn:imageDecoderMock];
+- (void)testShowsReflectionToggles
+{
+	XCTAssertFalse(_sut.showsReflection);
+	_sut.showsReflection = YES;
+	XCTAssertTrue(_sut.showsReflection);
+	XCTAssertTrue(_sut.coverFlowLayer.showsReflection);
+	_sut.showsReflection = NO;
+	XCTAssertFalse(_sut.showsReflection);
+	XCTAssertFalse(_sut.coverFlowLayer.showsReflection);
+}
 
-				datasourceMock = [KWMock mockForProtocol:@protocol(MMFlowViewDataSource)];
-				[mockedItems enumerateObjectsUsingBlock:^(id itemMock, NSUInteger idx, BOOL *stop) {
-					[[datasourceMock stubAndReturn:itemMock] flowView:sut itemAtIndex:idx];
-				}];
-				sut.dataSource = datasourceMock;
-				[sut.layer layoutSublayers];
-			});
-			afterEach(^{
-				sut.dataSource = nil;
-				datasourceMock = nil;
-			});
-			it(@"should have the datasource", ^{
-				[[(id)sut.dataSource should] equal:datasourceMock];
-			});
-			context(@"datasource interaction", ^{
-				beforeEach(^{
-					[datasourceMock stub:@selector(numberOfItemsInFlowView:) andReturn:theValue(numberOfItems)];
-					sut.dataSource = datasourceMock;
-				});
-				it(@"should ask the datasource for the number of items", ^{
-					[[datasourceMock should] receive:@selector(numberOfItemsInFlowView:) withCountAtLeast:1];
-					[sut reloadContent];
-				});
-				context(@"when having a incomplete datasource", ^{
-					beforeEach(^{
-						datasourceMock = [KWMock nullMock];
-						sut.dataSource = datasourceMock;
-					});
-					context(NSStringFromSelector(@selector(reloadContent)), ^{
-						it(@"should set the number of items to zero", ^{
-							[sut reloadContent];
+- (void)testReflectionOffset
+{
+	XCTAssertEqualWithAccuracy(_sut.reflectionOffset, -.4, .0000001);
+	_sut.reflectionOffset = -.7;
+	XCTAssertEqualWithAccuracy(_sut.reflectionOffset, -.7, .000001);
+	XCTAssertEqualWithAccuracy(_sut.coverFlowLayer.reflectionOffset, -.7, .0000001);
+}
 
-							[[theValue(sut.numberOfItems) should] beZero];
-						});
-						it(@"should not ask the datasource for the number of items", ^{
-							[[datasourceMock shouldNot] receive:@selector(numberOfItemsInFlowView:)];
+#pragma mark - image cache and factory
 
-							[sut reloadContent];
-						});
-					});
-				});
-			});
-			context(@"one item", ^{
-				NSString *expectedTitle = @"Item 0";
+- (void)testHasImageCache
+{
+	XCTAssertNotNil(_sut.imageCache);
+	XCTAssertTrue([_sut.imageCache conformsToProtocol:@protocol(MMFlowViewImageCache)]);
+}
 
-				beforeEach(^{
-					[[datasourceMock stubAndReturn:theValue(1)] numberOfItemsInFlowView:sut];
-					sut.dataSource = datasourceMock;
-					[sut reloadContent];
-				});
-				it(@"should have one item", ^{
-					[[theValue(sut.numberOfItems) should] equal:theValue(1)];
-				});
-				it(@"should have the image item title", ^{
-					[[sut.title should] equal:expectedTitle];
-				});
-				it(@"should have one visibile item", ^{
-					[[sut.visibleItemIndexes should] haveCountOf:1];
-				});
-				context(@"tracking areas", ^{
-					__block NSTrackingArea *trackingArea = nil;
+- (void)testHasImageFactory
+{
+	XCTAssertNotNil(_sut.imageFactory);
+	XCTAssertTrue([_sut.imageFactory isKindOfClass:[MMFlowViewImageFactory class]]);
+}
 
-					beforeEach(^{
-						trackingArea = [[sut trackingAreas] firstObject];
-					});
-					afterEach(^{
-						trackingArea = nil;
-					});
-					it(@"should have one tracking area", ^{
-						[[[sut trackingAreas] should] haveCountOf:1];
-					});
-					it(@"should have the selected item rect", ^{
-						[[theValue([trackingArea rect]) should] equal:theValue(sut.selectedItemFrame)];
-					});
-					it(@"should have the correct options", ^{
-						[[theValue([trackingArea options]) should] equal:theValue(NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside)];
-					});
-					it(@"should be the owner of the tracking area", ^{
-						[[[trackingArea owner] should] equal:sut];
-					});
-				});
-			});
-			
-			context(@"many items", ^{
-				beforeAll(^{
-					
-				});
-				beforeEach(^{
-					[[datasourceMock stubAndReturn:theValue(numberOfItems)] numberOfItemsInFlowView:sut];
-					sut.dataSource = datasourceMock;
-					[sut reloadContent];
-				});
-				it(@"should have 10 items", ^{
-					[[theValue(sut.numberOfItems) should] equal:theValue(numberOfItems)];
-				});
-				it(@"should have the first image item title", ^{
-					[[sut.title should] equal:@"Item 0"];
-				});
-				it(@"should have the first item selected", ^{
-					[[theValue(sut.selectedIndex) should] equal:theValue(0)];
-				});
+- (void)testFactoryRegistersExpectedDecoderTypes
+{
+	NSDictionary *expectedRepresentationMappings = @{
+		kMMFlowViewURLRepresentationType: [MMQuickLookImageDecoder class],
+		kMMFlowViewPDFPageRepresentationType: [MMPDFPageDecoder class],
+		kMMFlowViewPathRepresentationType: [MMQuickLookImageDecoder class],
+		kMMFlowViewNSImageRepresentationType: [MMNSImageDecoder class],
+		kMMFlowViewCGImageSourceRepresentationType: [MMCGImageSourceDecoder class],
+		kMMFlowViewNSDataRepresentationType: [MMNSDataImageDecoder class],
+		kMMFlowViewNSBitmapRepresentationType: [MMNSBitmapImageRepDecoder class],
+		kMMFlowViewQTMoviePathRepresentationType: [MMQuickLookImageDecoder class],
+		kMMFlowViewQCCompositionPathRepresentationType: [MMQuickLookImageDecoder class],
+		kMMFlowViewQuickLookPathRepresentationType: [MMQuickLookImageDecoder class]
+	};
+	[expectedRepresentationMappings enumerateKeysAndObjectsUsingBlock:^(NSString *type, Class decoderClass, BOOL *stop) {
+		XCTAssertTrue([_sut.imageFactory canDecodeRepresentationType:type], @"should decode %@", type);
+	}];
+}
 
-				context(@"tracking areas", ^{
-					context(@"tracking areas", ^{
-						__block NSTrackingArea *trackingArea = nil;
-						
-						beforeEach(^{
-							trackingArea = [[sut trackingAreas] firstObject];
-						});
-						afterEach(^{
-							trackingArea = nil;
-						});
-						it(@"should have one tracking area", ^{
-							[[[sut trackingAreas] should] haveCountOf:1];
-						});
-						it(@"should have the selected item rect", ^{
-							[[theValue([trackingArea rect]) should] equal:theValue(sut.selectedItemFrame)];
-						});
-						it(@"should have the correct options", ^{
-							[[theValue([trackingArea options]) should] equal:theValue(NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside)];
-						});
-						it(@"should be the owner of the tracking area", ^{
-							[[[trackingArea owner] should] equal:sut];
-						});
-					});
-				});
+- (void)testFactoryProvidesDecoderForExpectedTypes
+{
+	NSData *imageData = [NSData dataWithContentsOfURL:_testImageURL];
+	NSImage *image = [[NSImage alloc] initWithContentsOfURL:_testImageURL];
+	NSBitmapImageRep *bitmapRep = nil;
+	for (NSImageRep *rep in [image representations]) {
+		if ([rep isKindOfClass:[NSBitmapImageRep class]]) {
+			bitmapRep = [(NSBitmapImageRep *)rep copy];
+			break;
+		}
+	}
+	CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)(_testImageURL), NULL);
+	PDFDocument *document = [[PDFDocument alloc] initWithURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"Test" withExtension:@"pdf"]];
+	CGPDFPageRef testPDFPageRef = CGPDFPageRetain([[document pageAtIndex:0] pageRef]);
 
-				context(@"layers", ^{
-					it(@"should have numberOfItems (10) sublayers", ^{
-						[[theValue(sut.numberOfItems) should] equal:theValue(10)];
-					});
-					it(@"should reload the cover flow layer when invoking reloadContent", ^{
-						[[sut.coverFlowLayer should] receive:@selector(reloadContent)];
-						[sut reloadContent];
-					});
-					it(@"should relayout the cover flow layer when changing the selection", ^{
-						[[sut.coverFlowLayer should] receive:@selector(setNeedsLayout)];
-						sut.selectedIndex = sut.selectedIndex + 1;
-					});
-				});
-				context(NSStringFromSelector(@selector(visibleItemIndexes)), ^{
-					it(@"should have the selected item visible", ^{
-						[[theValue([sut.visibleItemIndexes containsIndex:sut.selectedIndex]) should] beYes];
-					});
-					it(@"should match the visible item count of its cover flow layer", ^{
-						[[sut.visibleItemIndexes should] haveCountOf:[sut.coverFlowLayer.visibleItemIndexes count]];
-					});
-				});
-				context(@"moving left", ^{
-					beforeEach(^{
-						[sut moveLeft:self];
-					});
-					it(@"should still have the first item selected", ^{
-						[[theValue(sut.selectedIndex) should] equal:theValue(0)];
-					});
-					it(@"should show the first item title", ^{
-						[[sut.title should] equal:@"Item 0"];
-					});
-				});
-				context(@"moving right", ^{
-					beforeEach(^{
-						[sut moveRight:self];
-					});
-					it(@"should have the second item selected", ^{
-						[[theValue(sut.selectedIndex) should] equal:theValue(1)];
-					});
-					it(@"should show the second item title", ^{
-						[[sut.title should] equal:@"Item 1"];
-					});
-					context(@"moving back left", ^{
-						beforeEach(^{
-							[sut moveLeft:self];
-						});
-						it(@"should have the first item selected", ^{
-							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
-						});
-						it(@"should show the first item title", ^{
-							[[sut.title should] equal:@"Item 0"];
-						});
-					});
-				});
-				context(@"changing the selection", ^{
-					afterEach(^{
-						sut.selectedIndex = 0;
-					});
-					context(@"select the third item", ^{
-						beforeEach(^{
-							sut.selectedIndex = 2;
-						});
-						it(@"should have the third item selected", ^{
-							[[theValue(sut.selectedIndex) should] equal:theValue(2)];
-						});
-						it(@"should show the third item title", ^{
-							[[sut.title should] equal:@"Item 2"];
-						});
-					});
-					context(@"select the last item", ^{
-						beforeEach(^{
-							sut.selectedIndex = sut.numberOfItems - 1;
-						});
-						it(@"should have selected the last item", ^{
-							[[theValue(sut.selectedIndex) should] equal:theValue(numberOfItems - 1)];
-						});
-					});
-					context(@"select beyound the item count", ^{
-						beforeEach(^{
-							sut.selectedIndex = sut.numberOfItems * 2;
-						});
-						it(@"should do nothing", ^{
-							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
-						});
-						it(@"should show the first item title", ^{
-							[[sut.title should] equal:@"Item 0"];
-						});
-					});
-					context(@"selecting NSNotFound item index", ^{
-						beforeEach(^{
-							sut.selectedIndex = NSNotFound;
-						});
-						it(@"should do nothing", ^{
-							[[theValue(sut.selectedIndex) should] equal:theValue(0)];
-						});
-						it(@"should show the first item title", ^{
-							[[sut.title should] equal:@"Item 0"];
-						});
-					});
-				});
-				context(@"selectedItemFrame", ^{
-					it(@"should have a selectedItemFrame matching the coverflow layers selectedItemFrame coverted into view space", ^{
-						NSRect rectInHostingLayer = NSRectFromCGRect([sut.layer convertRect:sut.coverFlowLayer.selectedItemFrame fromLayer:sut.coverFlowLayer]);
-						NSValue *expectedFrame = [NSValue valueWithRect:rectInHostingLayer];
-						[[[NSValue valueWithRect:sut.selectedItemFrame] should] equal:expectedFrame];
-					});
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(updateTrackingAreas)), ^{
-			context(@"When an item is selected", ^{
-				NSRect expectedRect = NSMakeRect(40, 40, 400, 400);
-				__block NSTrackingArea *trackingArea = nil;
+	NSDictionary *testRepresentations = @{
+		kMMFlowViewURLRepresentationType: _testImageURL,
+		kMMFlowViewPDFPageRepresentationType: (__bridge id)testPDFPageRef,
+		kMMFlowViewPathRepresentationType: [_testImageURL absoluteString],
+		kMMFlowViewNSImageRepresentationType: image,
+		kMMFlowViewCGImageSourceRepresentationType: (__bridge id)imageSource,
+		kMMFlowViewNSDataRepresentationType: imageData,
+		kMMFlowViewNSBitmapRepresentationType: bitmapRep,
+		kMMFlowViewQTMoviePathRepresentationType: _testImageURL,
+		kMMFlowViewQCCompositionPathRepresentationType: _testImageURL,
+		kMMFlowViewQuickLookPathRepresentationType: _testImageURL
+	};
+	[testRepresentations enumerateKeysAndObjectsUsingBlock:^(NSString *representationType, id representation, BOOL *stop) {
+		XCTAssertNotNil([_sut.imageFactory decoderforItem:representation withRepresentationType:representationType], @"should decode %@", representationType);
+	}];
 
-				beforeEach(^{
-					[sut stub:@selector(selectedIndex) andReturn:0];
-					[sut stub:@selector(selectedItemFrame)
-					andReturn:theValue(expectedRect)];
+	if (imageSource) {
+		CFRelease(imageSource);
+	}
+	if (testPDFPageRef) {
+		CGPDFPageRelease(testPDFPageRef);
+	}
+}
 
-					[sut updateTrackingAreas];
-					trackingArea = [[sut trackingAreas] firstObject];
-				});
-				afterEach(^{
-					trackingArea = nil;
-				});
-				it(@"should have one tracking area", ^{
-					[[[sut trackingAreas] should] haveCountOf:1];
-				});
-				it(@"should have the selected item rect", ^{
-					[[theValue([trackingArea rect]) should] equal:theValue(sut.selectedItemFrame)];
-				});
-				it(@"should have the correct options", ^{
-					[[theValue([trackingArea options]) should] equal:theValue(NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside)];
-				});
-				it(@"should be the owner of the tracking area", ^{
-					[[[trackingArea owner] should] equal:sut];
-				});
-			});
-		});
-		context(@"when no item is selected", ^{
-			beforeEach(^{
-				[sut stub:@selector(selectedIndex) andReturn:theValue(NSNotFound)];
-			});
-			it(@"should not have any tracking areas", ^{
-				[[[sut trackingAreas] should] beEmpty];
-			});
-		});
-		context(NSStringFromSelector(@selector(togglePreviewPanel:)), ^{
-			__block QLPreviewPanel *previewPanelMock = nil;
-			
-			beforeEach(^{
-				previewPanelMock = [QLPreviewPanel nullMock];
-				[[QLPreviewPanel class] stub:@selector(sharedPreviewPanel) andReturn:previewPanelMock];
-			});
-			afterEach(^{
-				previewPanelMock = nil;
-			});
-			context(@"when the shared preview panel exists and when it is visible", ^{
-				beforeEach(^{
-					[[QLPreviewPanel class] stub:@selector(sharedPreviewPanelExists) andReturn:theValue(YES)];
-					[previewPanelMock stub:@selector(isVisible) andReturn:theValue(YES)];
-				});
-				it(@"should become ordered out", ^{
-					[[previewPanelMock should] receive:@selector(orderOut:) withArguments:sut];
-					
-					[sut togglePreviewPanel:nil];
-				});
-			});
-			context(@"when the shared preview panel exists and when it is not visible", ^{
-				beforeEach(^{
-					[[QLPreviewPanel class] stub:@selector(sharedPreviewPanelExists) andReturn:theValue(YES)];
-					[previewPanelMock stub:@selector(isVisible) andReturn:theValue(NO)];
-				});
-				it(@"should become ordered out", ^{
-					[[previewPanelMock should] receive:@selector(makeKeyAndOrderFront:) withArguments:sut];
-					
-					[sut togglePreviewPanel:nil];
-				});
-			});
-		});
-	});
-});
+#pragma mark - live resize
 
+- (void)testLiveResizeTogglesCoverFlowLayerState
+{
+	[_sut viewWillStartLiveResize];
+	XCTAssertTrue(_sut.coverFlowLayer.inLiveResize);
+	[_sut viewDidEndLiveResize];
+	XCTAssertFalse(_sut.coverFlowLayer.inLiveResize);
+}
 
-SPEC_END
+- (void)testViewDidEndLiveResizeSetsFactoryMaxImageSize
+{
+	_sut.coverFlowLayout.visibleSize = CGSizeMake(400, 300);
+	CGSize expectedItemSize = _sut.coverFlowLayout.itemSize;
+	[_sut viewDidEndLiveResize];
+	XCTAssertTrue(CGSizeEqualToSize(_sut.imageFactory.maxImageSize, expectedItemSize));
+}
+
+#pragma mark - layers
+
+- (void)testLayerBacked
+{
+	[_sut.layer layoutSublayers];
+	XCTAssertTrue([_sut wantsLayer]);
+	XCTAssertNotNil([_sut layer]);
+	XCTAssertEqualObjects([_sut layer], _sut.backgroundLayer);
+}
+
+- (void)testBackgroundLayerIsGradient
+{
+	CALayer *layer = _sut.backgroundLayer;
+	XCTAssertNotNil(layer);
+	XCTAssertTrue([layer isKindOfClass:[CAGradientLayer class]]);
+	XCTAssertTrue((layer.autoresizingMask & kCALayerWidthSizable) != 0);
+	XCTAssertTrue((layer.autoresizingMask & kCALayerHeightSizable) != 0);
+	XCTAssertNotNil(layer.layoutManager);
+	XCTAssertTrue([layer.layoutManager isKindOfClass:[CAConstraintLayoutManager class]]);
+
+	CAGradientLayer *gradientLayer = (CAGradientLayer *)layer;
+	NSArray *expectedColors = @[(__bridge id)[[NSColor colorWithCalibratedRed:52.f / 255.f green:55.f / 255.f blue:69.f / 255.f alpha:1.f] CGColor],
+								(__bridge id)[[NSColor colorWithCalibratedRed:36.f / 255.f green:37.f / 255.f blue:48.f / 255.f alpha:1.f] CGColor],
+								(__bridge id)[[NSColor blackColor] CGColor]];
+	XCTAssertEqualObjects(gradientLayer.colors, expectedColors);
+	NSArray *expectedLocations = @[@0., @0.2, @1.];
+	XCTAssertEqualObjects(gradientLayer.locations, expectedLocations);
+	XCTAssertTrue(NSEqualPoints(gradientLayer.position, CGPointZero));
+	XCTAssertTrue(NSEqualRects(gradientLayer.bounds, [_sut bounds]));
+}
+
+- (void)testCoverFlowLayerSetup
+{
+	XCTAssertNotNil(_sut.coverFlowLayer);
+	XCTAssertTrue([_sut.coverFlowLayer isKindOfClass:[MMCoverFlowLayer class]]);
+	XCTAssertTrue([_sut.containerLayer.sublayers containsObject:_sut.coverFlowLayer]);
+	XCTAssertEqual(CGRectGetWidth(_sut.coverFlowLayer.bounds), CGRectGetWidth(_sut.bounds));
+}
+
+- (void)testContainerLayerSetup
+{
+	CALayer *layer = _sut.containerLayer;
+	XCTAssertNotNil(layer);
+	XCTAssertTrue([layer isKindOfClass:[CALayer class]]);
+	XCTAssertTrue([_sut.backgroundLayer.sublayers containsObject:layer]);
+	XCTAssertEqualObjects(layer.name, @"MMFlowViewContainerLayer");
+	[_sut.layer layoutSublayers];
+	XCTAssertEqual(CGRectGetWidth(layer.bounds), CGRectGetWidth(_sut.bounds));
+	XCTAssertEqual([layer.constraints count], (NSUInteger)4);
+	XCTAssertEqualObjects(layer.actions[@"bounds"], [NSNull null]);
+	XCTAssertEqualObjects(layer.actions[@"position"], [NSNull null]);
+
+	CAConstraint *midXConstraint = layer.constraints[0];
+	XCTAssertEqualObjects(midXConstraint.sourceName, @"superlayer");
+	XCTAssertEqual(midXConstraint.sourceAttribute, kCAConstraintMidX);
+	XCTAssertEqual(midXConstraint.attribute, kCAConstraintMidX);
+	XCTAssertEqual(midXConstraint.scale, (CGFloat)1);
+	XCTAssertEqual(midXConstraint.offset, (CGFloat)0);
+
+	CAConstraint *maxYConstraint = layer.constraints[1];
+	XCTAssertEqualObjects(maxYConstraint.sourceName, @"superlayer");
+	XCTAssertEqual(maxYConstraint.sourceAttribute, kCAConstraintMaxY);
+	XCTAssertEqual(maxYConstraint.attribute, kCAConstraintMaxY);
+
+	CAConstraint *widthConstraint = layer.constraints[2];
+	XCTAssertEqualObjects(widthConstraint.sourceName, @"superlayer");
+	XCTAssertEqual(widthConstraint.sourceAttribute, kCAConstraintWidth);
+	XCTAssertEqual(widthConstraint.attribute, kCAConstraintWidth);
+	XCTAssertEqual(widthConstraint.scale, (CGFloat)1);
+
+	CAConstraint *titleConstraint = layer.constraints[3];
+	XCTAssertEqualObjects(titleConstraint.sourceName, @"MMFlowViewTitleLayer");
+	XCTAssertEqual(titleConstraint.sourceAttribute, kCAConstraintMaxY);
+	XCTAssertEqual(titleConstraint.attribute, kCAConstraintMinY);
+}
+
+- (void)testScrollBarLayerSetup
+{
+	XCTAssertNotNil(_sut.scrollBarLayer);
+	XCTAssertTrue([_sut.scrollBarLayer isKindOfClass:[MMScrollBarLayer class]]);
+	XCTAssertTrue([_sut.backgroundLayer.sublayers containsObject:_sut.scrollBarLayer]);
+}
+
+#pragma mark - layout / hit testing
+
+- (void)testIndexOfItemAtPointReturnsNotFoundForEmptyContents
+{
+	[_sut.layer layoutSublayers];
+	NSPoint pointInCenterOfView = NSMakePoint(NSMidX([_sut bounds]), NSMidY([_sut bounds]));
+	XCTAssertEqual([_sut indexOfItemAtPoint:pointInCenterOfView], (NSUInteger)NSNotFound);
+}
+
+- (void)testIndexOfItemAtPointReturnsNotFoundOutsideView
+{
+	[_sut.layer layoutSublayers];
+	NSPoint pointNotInView = NSMakePoint(NSWidth([_sut bounds]) * 2, NSHeight([_sut bounds]) * 2);
+	XCTAssertEqual([_sut indexOfItemAtPoint:pointNotInView], (NSUInteger)NSNotFound);
+}
+
+#pragma mark - datasource interaction
+
+- (MMTestFlowViewDataSource *)makeDataSource
+{
+	return [[MMTestFlowViewDataSource alloc] initWithItems:_mockedItems];
+}
+
+- (void)testHasTheDataSource
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	XCTAssertEqualObjects(_sut.dataSource, dataSource);
+}
+
+- (void)testReloadAsksDataSourceForNumberOfItems
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	NSUInteger before = dataSource.numberOfItemsCallCount;
+	[_sut reloadContent];
+	XCTAssertGreaterThan(dataSource.numberOfItemsCallCount, before);
+}
+
+- (void)testIncompleteDataSourceReloadGivesZeroItems
+{
+	_sut.dataSource = (id<MMFlowViewDataSource>)[NSObject new];
+	[_sut reloadContent];
+	XCTAssertEqual(_sut.numberOfItems, (NSUInteger)0);
+}
+
+- (void)testOneItemFlowView
+{
+	MMTestImageItem *item = [_mockedItems firstObject];
+	MMTestFlowViewDataSource *dataSource = [[MMTestFlowViewDataSource alloc] initWithItems:@[item]];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+
+	XCTAssertEqual(_sut.numberOfItems, (NSUInteger)1);
+	XCTAssertEqualObjects(_sut.title, @"Item 0");
+	_sut.coverFlowLayer.bounds = _sut.bounds;
+	[_sut.coverFlowLayer layoutSublayers];
+	[_sut updateTrackingAreas];
+	XCTAssertEqual([_sut.visibleItemIndexes count], (NSUInteger)1);
+
+	NSTrackingArea *trackingArea = [[_sut trackingAreas] firstObject];
+	XCTAssertEqual([[_sut trackingAreas] count], (NSUInteger)1);
+	XCTAssertTrue(NSEqualRects([trackingArea rect], _sut.selectedItemFrame));
+	XCTAssertEqual([trackingArea options], NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside);
+	XCTAssertEqualObjects([trackingArea owner], _sut);
+}
+
+- (void)testManyItemsFlowView
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+
+	XCTAssertEqual(_sut.numberOfItems, (NSUInteger)numberOfItems);
+	XCTAssertEqualObjects(_sut.title, @"Item 0");
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)0);
+
+	NSTrackingArea *trackingArea = [[_sut trackingAreas] firstObject];
+	XCTAssertEqual([[_sut trackingAreas] count], (NSUInteger)1);
+	XCTAssertTrue(NSEqualRects([trackingArea rect], _sut.selectedItemFrame));
+
+	_sut.coverFlowLayer.bounds = _sut.bounds;
+	[_sut.coverFlowLayer layoutSublayers];
+	[_sut updateTrackingAreas];
+	XCTAssertTrue([_sut.visibleItemIndexes containsIndex:_sut.selectedIndex]);
+	XCTAssertEqual([_sut.visibleItemIndexes count], [_sut.coverFlowLayer.visibleItemIndexes count]);
+}
+
+- (void)testReloadContentReloadsCoverFlowLayer
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+
+	MMCoverFlowLayerRecordingSubclass *coverFlowLayer = [[MMCoverFlowLayerRecordingSubclass alloc] initWithLayout:_sut.coverFlowLayout];
+	coverFlowLayer.dataSource = (id<MMCoverFlowLayerDataSource>)_sut;
+	_sut.coverFlowLayer = coverFlowLayer;
+
+	[_sut reloadContent];
+	XCTAssertGreaterThan(coverFlowLayer.reloadContentCallCount, (NSUInteger)0);
+}
+
+- (void)testChangingSelectionRelayoutsCoverFlowLayer
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+
+	MMCoverFlowLayerRecordingSubclass *coverFlowLayer = [[MMCoverFlowLayerRecordingSubclass alloc] initWithLayout:_sut.coverFlowLayout];
+	coverFlowLayer.dataSource = (id<MMCoverFlowLayerDataSource>)_sut;
+	_sut.coverFlowLayer = coverFlowLayer;
+	[_sut reloadContent];
+
+	NSUInteger before = coverFlowLayer.setNeedsLayoutCallCount;
+	_sut.selectedIndex = _sut.selectedIndex + 1;
+	XCTAssertGreaterThan(coverFlowLayer.setNeedsLayoutCallCount, before);
+}
+
+- (void)testMoveLeftKeepsFirstItemSelected
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+	[_sut moveLeft:self];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)0);
+	XCTAssertEqualObjects(_sut.title, @"Item 0");
+}
+
+- (void)testMoveRightSelectsSecondItem
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+	[_sut moveRight:self];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)1);
+	XCTAssertEqualObjects(_sut.title, @"Item 1");
+	[_sut moveLeft:self];
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)0);
+	XCTAssertEqualObjects(_sut.title, @"Item 0");
+}
+
+- (void)testSelectingItemsByIndex
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+
+	_sut.selectedIndex = 2;
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)2);
+	XCTAssertEqualObjects(_sut.title, @"Item 2");
+
+	_sut.selectedIndex = _sut.numberOfItems - 1;
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)(numberOfItems - 1));
+
+	_sut.selectedIndex = 0;
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)0);
+
+	_sut.selectedIndex = _sut.numberOfItems * 2;
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)0);
+	XCTAssertEqualObjects(_sut.title, @"Item 0");
+
+	_sut.selectedIndex = NSNotFound;
+	XCTAssertEqual(_sut.selectedIndex, (NSUInteger)0);
+	XCTAssertEqualObjects(_sut.title, @"Item 0");
+}
+
+- (void)testSelectedItemFrameMatchesCoverFlowLayer
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+	[_sut.layer layoutSublayers];
+
+	NSRect rectInHostingLayer = NSRectFromCGRect([_sut.layer convertRect:_sut.coverFlowLayer.selectedItemFrame fromLayer:_sut.coverFlowLayer]);
+	XCTAssertTrue(NSEqualRects(_sut.selectedItemFrame, rectInHostingLayer));
+}
+
+#pragma mark - tracking areas
+
+- (void)testUpdateTrackingAreasWithSelection
+{
+	MMTestFlowViewDataSource *dataSource = [self makeDataSource];
+	_sut.dataSource = dataSource;
+	[_sut reloadContent];
+
+	[_sut updateTrackingAreas];
+	NSTrackingArea *trackingArea = [[_sut trackingAreas] firstObject];
+	XCTAssertEqual([[_sut trackingAreas] count], (NSUInteger)1);
+	XCTAssertTrue(NSEqualRects([trackingArea rect], _sut.selectedItemFrame));
+	XCTAssertEqual([trackingArea options], NSTrackingActiveInActiveApp | NSTrackingActiveWhenFirstResponder | NSTrackingMouseEnteredAndExited | NSTrackingAssumeInside);
+	XCTAssertEqualObjects([trackingArea owner], _sut);
+}
+
+- (void)testNoTrackingAreasWithoutSelection
+{
+	XCTAssertEqual([[_sut trackingAreas] count], (NSUInteger)0);
+}
+
+// DISABLED: the remaining original tests verified indexOfItemAtPoint layer
+// coordinate plumbing and togglePreviewPanel: with a mocked QLPreviewPanel
+// (sharedPreviewPanel ordering). Both require stubbing layer conversions or a live
+// QuickLook panel, which is not available in a plain XCTest run. The datasource,
+// selection, layout, and tracking-area behavior is covered above.
+
+@end

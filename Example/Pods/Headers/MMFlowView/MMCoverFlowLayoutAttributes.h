@@ -1,1 +1,0 @@
-../../../../Classes/osx/MMCoverFlowLayoutAttributes.h

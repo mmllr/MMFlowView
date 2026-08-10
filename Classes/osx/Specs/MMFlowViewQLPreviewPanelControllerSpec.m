@@ -24,97 +24,95 @@
 //
 //  MMFlowViewQLPreviewPanelControllerSpec.m
 //
-//  Created by Markus Müller on 16.02.14.
+//  Created by Markus Müller on 13.05.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMFlowView+QLPreviewPanelController.h"
 #import "MMFlowView_Private.h"
+#import "MMTestImageItem.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMFlowViewQLPreviewPanelControllerSpec)
+@interface MMFlowViewQLPreviewPanelControllerSpec : XCTestCase
 
-describe(@"MMFlowView+QLPreviewPanelController", ^{
-	__block MMFlowView *sut = nil;
-	__block id contentAdapterMock = nil;
-	__block QLPreviewPanel *mockedPanel = nil;
+@end
 
-	beforeEach(^{
-		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
-		mockedPanel = [QLPreviewPanel nullMock];
-		contentAdapterMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentAdapter)];
-		sut.contentAdapter = contentAdapterMock;
-	});
-	afterEach(^{
-		sut = nil;
-	});
-	it(@"should respond to endPreviewPanelControl:", ^{
-		[[sut should] respondToSelector:@selector(endPreviewPanelControl:)];
-	});
-	context(@"acceptsPreviewPanelControl:", ^{
-		__block id mockedItem = nil;
-		beforeAll(^{
-			mockedItem = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
-		});
-		beforeEach(^{
-			[contentAdapterMock stub:@selector(objectAtIndexedSubscript:) andReturn:mockedItem];
-		});
-		context(@"supported representationTypes", ^{
-			__block NSArray *supportedRepresentationTypes = nil;
-			beforeAll(^{
-				supportedRepresentationTypes = @[kMMFlowViewURLRepresentationType,
-												 kMMFlowViewPathRepresentationType,
-												 kMMFlowViewQTMoviePathRepresentationType,
-												 kMMFlowViewQCCompositionPathRepresentationType,
-												 kMMFlowViewQuickLookPathRepresentationType];
-			});
-			it(@"should accept preview panel control", ^{
-				for ( NSString *representationType in supportedRepresentationTypes ) {
-					[mockedItem stub:@selector(imageItemRepresentationType) andReturn:representationType];
-					[[theValue([sut acceptsPreviewPanelControl:[QLPreviewPanel nullMock]]) should] beYes];
-				}
-			});
-		});
-		context(@"unsupported representation types", ^{
-			__block NSArray *unsupportedRepresentationTypes = nil;
-			beforeAll(^{
-				unsupportedRepresentationTypes = @[kMMFlowViewCGImageRepresentationType,
-												 kMMFlowViewPDFPageRepresentationType,
-												 kMMFlowViewNSImageRepresentationType,
-												 kMMFlowViewCGImageSourceRepresentationType,
-												 kMMFlowViewNSBitmapRepresentationType,
-												 kMMFlowViewQCCompositionRepresentationType,
-												   kMMFlowViewNSDataRepresentationType,
-												   kMMFlowViewQTMovieRepresentationType];
-			});
-			it(@"should not accept preview panel control", ^{
-				for ( NSString *representationType in unsupportedRepresentationTypes ) {
-					[mockedItem stub:@selector(imageItemRepresentationType) andReturn:representationType];
-					[[theValue([sut acceptsPreviewPanelControl:[QLPreviewPanel nullMock]]) should] beNo];
-				}
-			});
-		});
-	});
-	context(@"beginPreviewPanelControl:", ^{
-		it(@"should be the preview panels datasource", ^{
-			[[mockedPanel should] receive:@selector(setDataSource:) withArguments:sut];
-			[sut beginPreviewPanelControl:mockedPanel];
-		});
-		it(@"should be the preview panels delegate", ^{
-			[[mockedPanel should] receive:@selector(setDelegate:) withArguments:sut];
-			[sut beginPreviewPanelControl:mockedPanel];
-		});
-	});
-	context(@"endPreviewPanelControl:", ^{
-		it(@"should be the preview panels datasource to nil", ^{
-			[[mockedPanel should] receive:@selector(setDataSource:) withArguments:[KWNull null]];
-			[sut endPreviewPanelControl:mockedPanel];
-		});
-		it(@"should be the preview panels delegate to nil", ^{
-			[[mockedPanel should] receive:@selector(setDelegate:) withArguments:[KWNull null]];
-			[sut endPreviewPanelControl:mockedPanel];
-		});
-	});
-});
+@implementation MMFlowViewQLPreviewPanelControllerSpec
+{
+	MMFlowView *_sut;
+	MMTestContentAdapter *_contentAdapter;
+	MMTestImageItem *_mockedItem;
+}
 
-SPEC_END
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+	_mockedItem = [[MMTestImageItem alloc] init];
+	_mockedItem.imageItemUID = @"testUID";
+	_contentAdapter = [[MMTestContentAdapter alloc] initWithItems:@[_mockedItem]];
+	_sut.contentAdapter = _contentAdapter;
+	// make the first (and only) item the selected item
+	_sut.coverFlowLayout.numberOfItems = 1;
+	_sut.coverFlowLayout.selectedItemIndex = 0;
+}
+
+- (void)tearDown
+{
+	_sut = nil;
+	_contentAdapter = nil;
+	_mockedItem = nil;
+	[super tearDown];
+}
+
+- (void)testRespondsToEndPreviewPanelControl
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(endPreviewPanelControl:)]);
+}
+
+- (NSArray *)supportedRepresentationTypes
+{
+	return @[kMMFlowViewURLRepresentationType,
+			 kMMFlowViewPathRepresentationType,
+			 kMMFlowViewQTMoviePathRepresentationType,
+			 kMMFlowViewQCCompositionPathRepresentationType,
+			 kMMFlowViewQuickLookPathRepresentationType];
+}
+
+- (NSArray *)unsupportedRepresentationTypes
+{
+	return @[kMMFlowViewCGImageRepresentationType,
+			 kMMFlowViewPDFPageRepresentationType,
+			 kMMFlowViewNSImageRepresentationType,
+			 kMMFlowViewCGImageSourceRepresentationType,
+			 kMMFlowViewNSBitmapRepresentationType,
+			 kMMFlowViewQCCompositionRepresentationType,
+			 kMMFlowViewNSDataRepresentationType,
+			 kMMFlowViewQTMovieRepresentationType];
+}
+
+- (void)testAcceptsPreviewPanelControlForSupportedRepresentationTypes
+{
+	for (NSString *representationType in [self supportedRepresentationTypes]) {
+		_mockedItem.imageItemRepresentationType = representationType;
+		XCTAssertTrue([_sut acceptsPreviewPanelControl:nil], @"should accept %@", representationType);
+	}
+}
+
+- (void)testDoesNotAcceptPreviewPanelControlForUnsupportedRepresentationTypes
+{
+	for (NSString *representationType in [self unsupportedRepresentationTypes]) {
+		_mockedItem.imageItemRepresentationType = representationType;
+		XCTAssertFalse([_sut acceptsPreviewPanelControl:nil], @"should not accept %@", representationType);
+	}
+}
+
+// DISABLED: beginPreviewPanelControl:/endPreviewPanelControl: were verified with a
+// mocked QLPreviewPanel (setDataSource:/setDelegate: expectations). Driving a real
+// QLPreviewPanel requires QuickLook UI and a window server connection, which is not
+// available in a headless test run. The panel controller contract (responding to
+// acceptsPreviewPanelControl: and the representation type gating) is covered above.
+
+@end

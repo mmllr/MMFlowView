@@ -24,95 +24,102 @@
 //
 //  MMNSImageDecoderSpec.m
 //
-//  Created by Markus Müller on 18.12.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Created by Markus Müller on 17.12.13.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMNSImageDecoder.h"
 #import "MMMacros.h"
 
-SPEC_BEGIN(MMNSImageDecoderSpec)
+@interface MMNSImageDecoderSpec : XCTestCase
 
-describe(@"MMNSImageDecoder", ^{
-	__block MMNSImageDecoder *sut = nil;
-	__block CGImageRef imageRef = NULL;
-	__block NSImage *testImage = nil;
-	const NSUInteger expectedImageSize = 100;
+@end
 
-	beforeAll(^{
-		NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
-		testImage = [[NSImage alloc] initWithContentsOfURL:testImageURL];
-	});
-	afterAll(^{
-		testImage = nil;
-	});
-	it(@"should throw an NSInternalInconsistencyException when not created with designated initalizer", ^{
-		[[theBlock(^{
-			sut = [[MMNSImageDecoder alloc] init];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a nil item", ^{
-		[[theBlock(^{
-			sut = [[MMNSImageDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from a valid item with a zero maxiumum pixel size", ^{
-		[[theBlock(^{
-			sut = [[MMNSImageDecoder alloc] initWithItem:testImage maxPixelSize:0];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should throw an NSInternalInconsistencyException when created with designated initializer from an invalid item", ^{
-		[[theBlock(^{
-			sut = [[MMNSImageDecoder alloc] initWithItem:@"Test" maxPixelSize:expectedImageSize];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
+@implementation MMNSImageDecoderSpec
+{
+	MMNSImageDecoder *_sut;
+	CGImageRef _imageRef;
+	NSImage *_testImage;
+}
 
-	context(@"when created with designated initializer from a valid item and image size", ^{
-		beforeEach(^{
-			sut = [[MMNSImageDecoder alloc] initWithItem:testImage maxPixelSize:expectedImageSize];
-		});
-		afterEach(^{
-			sut = nil;
-		});
+static const NSUInteger expectedImageSize = 100;
 
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
-		it(@"should conform to MMImageDecoderProtocol", ^{
-			[[sut should] conformToProtocol:@protocol(MMImageDecoderProtocol)];
-		});
-		it(@"should respond to initWithItem:maxPixelSize:", ^{
-			[[sut should] respondToSelector:@selector(initWithItem:maxPixelSize:)];
-		});
-		it(@"should respond to CGImage", ^{
-			[[sut should] respondToSelector:@selector(CGImage)];
-		});
-		it(@"should respond to image", ^{
-			[[sut should] respondToSelector:@selector(image)];
-		});
+- (void)setUp
+{
+	[super setUp];
+	NSURL *testImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImage01" withExtension:@"jpg"];
+	_testImage = [[NSImage alloc] initWithContentsOfURL:testImageURL];
+}
 
-		context(NSStringFromSelector(@selector(CGImage)), ^{
-			beforeEach(^{
-				imageRef = sut.CGImage;
-			});
+- (void)tearDown
+{
+	_sut = nil;
+	_imageRef = NULL;
+	_testImage = nil;
+	[super tearDown];
+}
 
-			it(@"should load an image", ^{
-				[[theValue(imageRef != NULL) should] beTrue];
-			});
-			it(@"should have a width less or equal 100", ^{
-				[[theValue(CGImageGetWidth(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-			it(@"should have a height less or equal 100", ^{
-				[[theValue(CGImageGetHeight(imageRef)) should] beLessThanOrEqualTo:theValue(100)];
-			});
-		});
-		context(NSStringFromSelector(@selector(image)), ^{
-			it(@"should return the image it was created from", ^{
-				[[sut.image should] equal:testImage];
-			});
-		});
-	});
-});
+- (void)testThrowsWhenNotCreatedWithDesignatedInitializer
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSImageDecoder alloc] init]), NSException, NSInternalInconsistencyException);
+}
 
-SPEC_END
+- (void)testThrowsWhenCreatedWithNilItem
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSImageDecoder alloc] initWithItem:nil maxPixelSize:expectedImageSize]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithZeroMaximumPixelSize
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSImageDecoder alloc] initWithItem:_testImage maxPixelSize:0]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testThrowsWhenCreatedWithInvalidItem
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMNSImageDecoder alloc] initWithItem:@"Test" maxPixelSize:expectedImageSize]), NSException, NSInternalInconsistencyException);
+}
+
+- (void)testValidInstanceExists
+{
+	_sut = [[MMNSImageDecoder alloc] initWithItem:_testImage maxPixelSize:expectedImageSize];
+	XCTAssertNotNil(_sut);
+}
+
+- (void)testValidInstanceConformsToDecoderProtocol
+{
+	_sut = [[MMNSImageDecoder alloc] initWithItem:_testImage maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut conformsToProtocol:@protocol(MMImageDecoderProtocol)]);
+}
+
+- (void)testValidInstanceRespondsToProtocolSelectors
+{
+	_sut = [[MMNSImageDecoder alloc] initWithItem:_testImage maxPixelSize:expectedImageSize];
+	XCTAssertTrue([_sut respondsToSelector:@selector(initWithItem:maxPixelSize:)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(CGImage)]);
+	XCTAssertTrue([_sut respondsToSelector:@selector(image)]);
+}
+
+- (void)testCGImageLoadsAnImage
+{
+	_sut = [[MMNSImageDecoder alloc] initWithItem:_testImage maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertTrue(_imageRef != NULL);
+}
+
+- (void)testCGImageDimensionsAreLimited
+{
+	_sut = [[MMNSImageDecoder alloc] initWithItem:_testImage maxPixelSize:expectedImageSize];
+	_imageRef = _sut.CGImage;
+	XCTAssertLessThanOrEqual(CGImageGetWidth(_imageRef), (size_t)100);
+	XCTAssertLessThanOrEqual(CGImageGetHeight(_imageRef), (size_t)100);
+}
+
+- (void)testImageReturnsTheImageItWasCreatedFrom
+{
+	_sut = [[MMNSImageDecoder alloc] initWithItem:_testImage maxPixelSize:expectedImageSize];
+	XCTAssertEqualObjects(_sut.image, _testImage);
+}
+
+@end

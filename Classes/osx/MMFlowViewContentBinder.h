@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-void * const kMFlowViewContentBinderArrayObservationContext;
-void * const kMFlowViewContentBinderItemObservationContext;
+extern void * const kMFlowViewContentBinderArrayObservationContext;
+extern void * const kMFlowViewContentBinderItemObservationContext;
 
 @protocol MMFlowViewContentBinderDelegate;
 

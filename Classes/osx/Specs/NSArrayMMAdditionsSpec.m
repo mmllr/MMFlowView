@@ -24,98 +24,132 @@
 //
 //  NSArrayMMAdditionsSpec.m
 //
-//  Created by Markus Müller on 23.02.14.
+//  Created by Markus Müller on 21.01.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "NSArray+MMAdditions.h"
 
 static void *testingContext = @"NSArray+MMAddittions test context";
 
-@interface TestObserver : NSObject
+@interface NSArrayTestObserver : NSObject
+
+@property (nonatomic, readonly) NSUInteger notificationCount;
+@property (nonatomic, strong, readonly) NSMutableArray *notifications; // NSDictionary with keyPath/object
 
 @end
 
-@implementation TestObserver
+@implementation NSArrayTestObserver
+
+- (instancetype)init
+{
+	self = [super init];
+	if (self) {
+		_notifications = [NSMutableArray array];
+	}
+	return self;
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == testingContext) {
-
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
+	if (context == testingContext) {
+		_notificationCount++;
+		[_notifications addObject:@{@"keyPath": keyPath ?: [NSNull null],
+									@"object": object ?: [NSNull null]}];
+	} else {
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}
 }
 
 @end
 
-SPEC_BEGIN(NSArrayMMAdditionsSpec)
+@interface NSArrayMMAdditionsSpec : XCTestCase
 
-describe(@"NSArray+MMAdditions", ^{
-	__block NSArray *sut = nil;
+@end
 
-	afterEach(^{
-		sut = nil;
-	});
-	context(@"KVO", ^{
-		__block TestObserver *testObserver = nil;
-		__block NSMutableDictionary *aDict = nil;
-		__block NSMutableDictionary *anotherDict = nil;
-		__block NSIndexSet *indexes = nil;
-		NSArray *observedKeyPaths = @[@"name"];
+@implementation NSArrayMMAdditionsSpec
 
-		beforeEach(^{
-			testObserver = [[TestObserver alloc] init];
-			aDict = [NSMutableDictionary dictionary];
-			aDict[@"name"] = @"a name";
-			anotherDict = [NSMutableDictionary dictionary];
-			anotherDict[@"name"] = @"another name";
-			sut = @[aDict, anotherDict];
-			indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [sut count])];
-		});
-		afterEach(^{
-			indexes = nil;
-			testObserver = nil;
-			aDict = nil;
-			anotherDict = nil;
-		});
-		context(NSStringFromSelector(@selector(mm_addObserver:forKeyPaths:context:)), ^{
-			it(@"should add the observer to all items in the array for all key paths", ^{
-				for ( NSString *keyPath in observedKeyPaths) {
-					[[sut should] receive:@selector(addObserver:toObjectsAtIndexes:forKeyPath:options:context:) withArguments:testObserver, indexes, keyPath, [KWAny any], theValue(testingContext)];
-				}
-				[sut mm_addObserver:testObserver forKeyPaths:observedKeyPaths context:testingContext];
-			});
-			it(@"should add the observer to the dictionaries", ^{
-				[sut mm_addObserver:testObserver forKeyPaths:observedKeyPaths context:testingContext];
-				[[testObserver should] receive:@selector(observeValueForKeyPath:ofObject:change:context:)
-							  withCountAtLeast:1
-									 arguments:@"name", [sut firstObject], [KWAny any], theValue(testingContext)];
-				NSMutableDictionary *firstDict = [sut firstObject];
-				firstDict[@"name"] = @"name changed";
-			});
-			it(@"should not add an observer for a null placeholder key path", ^{
-				[[sut shouldNot] receive:@selector(addObserver:toObjectsAtIndexes:forKeyPath:options:context:) withArguments:testObserver, indexes, [NSNull null], [KWAny any], theValue(testingContext)];
-				[sut mm_addObserver:testObserver forKeyPaths:@[[NSNull null]] context:testingContext];
-			});
-		});
-		context(NSStringFromSelector(@selector(mm_removeObserver:forKeyPaths:context:)), ^{
-			beforeEach(^{
-				[sut mm_addObserver:testObserver forKeyPaths:observedKeyPaths context:testingContext];
-			});
-			it(@"should remove the observer", ^{
-				for ( NSString *keyPath in observedKeyPaths) {
-					[[sut should] receive:@selector(removeObserver:fromObjectsAtIndexes:forKeyPath:context:) withArguments:testObserver, indexes, keyPath, theValue(testingContext)];
-				}
-				[sut mm_removeObserver:testObserver forKeyPaths:observedKeyPaths context:testingContext];
-			});
-			it(@"should not remove an observer for a null placeholder key path", ^{
-				[[sut shouldNot] receive:@selector(removeObserver:fromObjectsAtIndexes:forKeyPath:context:) withArguments:testObserver, indexes, [NSNull null], theValue(testingContext)];
-				[sut mm_removeObserver:testObserver forKeyPaths:@[[NSNull null]] context:testingContext];
-			});
-		});
-	});
-});
+- (NSArray *)makeArrayWithObservableDictionaries
+{
+	NSMutableDictionary *aDict = [NSMutableDictionary dictionary];
+	aDict[@"name"] = @"a name";
+	NSMutableDictionary *anotherDict = [NSMutableDictionary dictionary];
+	anotherDict[@"name"] = @"another name";
+	return @[aDict, anotherDict];
+}
 
-SPEC_END
+- (void)testMMAddObserverAddsObserverForAllKeyPaths
+{
+	NSArrayTestObserver *testObserver = [[NSArrayTestObserver alloc] init];
+	NSArray *sut = [self makeArrayWithObservableDictionaries];
+
+	[sut mm_addObserver:testObserver forKeyPaths:@[@"name"] context:testingContext];
+
+	NSMutableDictionary *firstDict = sut[0];
+	firstDict[@"name"] = @"name changed";
+	NSMutableDictionary *secondDict = sut[1];
+	secondDict[@"name"] = @"second changed";
+
+	XCTAssertGreaterThanOrEqual(testObserver.notificationCount, (NSUInteger)2);
+}
+
+- (void)testMMAddObserverNotifiesForTheObservedItems
+{
+	NSArrayTestObserver *testObserver = [[NSArrayTestObserver alloc] init];
+	NSArray *sut = [self makeArrayWithObservableDictionaries];
+
+	[sut mm_addObserver:testObserver forKeyPaths:@[@"name"] context:testingContext];
+
+	NSMutableDictionary *firstDict = sut[0];
+	firstDict[@"name"] = @"name changed";
+
+	XCTAssertGreaterThanOrEqual(testObserver.notificationCount, (NSUInteger)1);
+	XCTAssertEqualObjects(testObserver.notifications.lastObject[@"keyPath"], @"name");
+	XCTAssertEqual(testObserver.notifications.lastObject[@"object"], firstDict);
+}
+
+- (void)testMMAddObserverDoesNotAddObserverForNullPlaceholderKeyPath
+{
+	NSArrayTestObserver *testObserver = [[NSArrayTestObserver alloc] init];
+	NSArray *sut = [self makeArrayWithObservableDictionaries];
+
+	[sut mm_addObserver:testObserver forKeyPaths:@[[NSNull null]] context:testingContext];
+
+	NSMutableDictionary *firstDict = sut[0];
+	firstDict[@"name"] = @"name changed";
+
+	XCTAssertEqual(testObserver.notificationCount, (NSUInteger)0);
+}
+
+- (void)testMMRemoveObserverRemovesTheObserver
+{
+	NSArrayTestObserver *testObserver = [[NSArrayTestObserver alloc] init];
+	NSArray *sut = [self makeArrayWithObservableDictionaries];
+
+	[sut mm_addObserver:testObserver forKeyPaths:@[@"name"] context:testingContext];
+	[sut mm_removeObserver:testObserver forKeyPaths:@[@"name"] context:testingContext];
+
+	NSUInteger before = testObserver.notificationCount;
+	NSMutableDictionary *firstDict = sut[0];
+	firstDict[@"name"] = @"name changed";
+
+	XCTAssertEqual(testObserver.notificationCount, before);
+}
+
+- (void)testMMRemoveObserverDoesNotRemoveObserverForNullPlaceholderKeyPath
+{
+	NSArrayTestObserver *testObserver = [[NSArrayTestObserver alloc] init];
+	NSArray *sut = [self makeArrayWithObservableDictionaries];
+
+	[sut mm_addObserver:testObserver forKeyPaths:@[@"name"] context:testingContext];
+	[sut mm_removeObserver:testObserver forKeyPaths:@[[NSNull null]] context:testingContext];
+
+	NSMutableDictionary *firstDict = sut[0];
+	firstDict[@"name"] = @"name changed";
+
+	XCTAssertGreaterThanOrEqual(testObserver.notificationCount, (NSUInteger)1);
+}
+
+@end

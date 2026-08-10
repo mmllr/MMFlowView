@@ -21,17 +21,17 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
 //  MMFlowViewNSViewSpec.m
 //
-//  Created by Markus Müller on 01.04.14.
-//  Copyright 2014 Markus Müller. All rights reserved.
+//  Created by Markus Müller on 02.04.14.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
+
+#import <XCTest/XCTest.h>
 
 #import <objc/runtime.h>
 
-#import "Kiwi.h"
 #import "MMFlowView.h"
 #import "MMFlowView_Private.h"
 #import "MMFlowView+NSKeyValueObserving.h"
@@ -40,9 +40,7 @@
 static BOOL testingSuperInvoked = NO;
 
 @interface MMFlowView (MMFlowViewNSViewSpec)
-
 - (void)mmTesting_viewWillMoveToSuperview:(NSView *)newSuperview;
-
 @end
 
 @implementation MMFlowView (MMResponderTests)
@@ -54,94 +52,84 @@ static BOOL testingSuperInvoked = NO;
 
 @end
 
-SPEC_BEGIN(MMFlowViewNSViewSpec)
+@interface MMFlowViewNSViewSpec : XCTestCase
 
-describe(@"NSView overrides", ^{
-	__block MMFlowView *sut = nil;
+@end
 
-	beforeEach(^{
-		sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
-	});
-	afterEach(^{
-		sut = nil;
-	});
-	it(@"should not be flipped", ^{
-		[[theValue([sut isFlipped]) should] beNo];
-	});
-	it(@"should be opaque", ^{
-		[[theValue([sut isOpaque]) should] beYes];
-	});
-	it(@"should need panel to become to key", ^{
-		[[theValue([sut needsPanelToBecomeKey]) should] beYes];
-	});
-	it(@"should accept touch events", ^{
-		[[theValue([sut acceptsTouchEvents]) should] beYes];
-	});
-	it(@"should have no intrinsinc content size", ^{
-		NSSize expectedContentSite = NSMakeSize(NSViewNoInstrinsicMetric, NSViewNoInstrinsicMetric);
-		
-		[[theValue(sut.intrinsicContentSize) should] equal:theValue(expectedContentSite)];
-	});
-	it(@"should not translate autoresizing mask into constraints", ^{
-		[[theValue([sut translatesAutoresizingMaskIntoConstraints]) should] beNo];
-	});
-	context(NSStringFromSelector(@selector(viewWillMoveToSuperview:)), ^{
-		__block NSView *superViewMock = nil;
+@implementation MMFlowViewNSViewSpec
+{
+	MMFlowView *_sut;
+}
 
-		beforeEach(^{
-			superViewMock = [NSView nullMock];
-		});
-		afterEach(^{
-			superViewMock = nil;
-		});
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMFlowView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+}
 
-		context(@"when removed from view hierarchy and bound to a content array", ^{
-			__block NSArray *contentArray = nil;
-			__block id itemMock = nil;
-			__block NSArrayController *controller = nil;
+- (void)tearDown
+{
+	_sut = nil;
+	[super tearDown];
+}
 
-			beforeEach(^{
-				itemMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewItem)];
-				contentArray = @[itemMock, itemMock, itemMock, itemMock];
-				controller = [[NSArrayController alloc] initWithContent:contentArray];
-				[controller setObjectClass:[MMTestImageItem class]];
-				[sut bind:NSContentArrayBinding toObject:controller withKeyPath:@"arrangedObjects" options:nil];
-				[sut stub:@selector(superview) andReturn:superViewMock];
-			});
-			afterEach(^{
-				contentArray = nil;
-				controller = nil;
-			});
-			it(@"should unbind from the NSContentArrayBinding", ^{
-				[[sut should] receive:@selector(unbind:) withArguments:NSContentArrayBinding];
+- (void)testIsNotFlipped
+{
+	XCTAssertFalse([_sut isFlipped]);
+}
 
-				[sut viewWillMoveToSuperview:nil];
-			});
-			it(@"should not have a content array binding", ^{
-				[sut viewWillMoveToSuperview:nil];
-				[[[sut infoForBinding:NSContentArrayBinding] should] beNil];
-			});
-		});
+- (void)testIsOpaque
+{
+	XCTAssertTrue([_sut isOpaque]);
+}
 
-		context(@"invoking supers implementation", ^{
-			__block Method supersMethod;
-			__block Method testingMethod;
-			
-			beforeEach(^{
-				supersMethod = class_getInstanceMethod([sut superclass], @selector(viewWillMoveToSuperview:));
-				testingMethod = class_getInstanceMethod([sut class], @selector(mmTesting_viewWillMoveToSuperview:));
-				method_exchangeImplementations(supersMethod, testingMethod);
-			});
-			afterEach(^{
-				method_exchangeImplementations(testingMethod, supersMethod);
-			});
-			it(@"should call up to super", ^{
-				testingSuperInvoked = NO;
-				[sut viewWillMoveToSuperview:superViewMock];
-				[[theValue(testingSuperInvoked) should] beYes];
-			});
-		});
-	});
-});
+- (void)testNeedsPanelToBecomeKey
+{
+	XCTAssertTrue([_sut needsPanelToBecomeKey]);
+}
 
-SPEC_END
+- (void)testAcceptsTouchEvents
+{
+	XCTAssertTrue([_sut acceptsTouchEvents]);
+}
+
+- (void)testHasNoIntrinsicContentSize
+{
+	NSSize expectedContentSize = NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric);
+	XCTAssertTrue(NSEqualSizes(_sut.intrinsicContentSize, expectedContentSize));
+}
+
+- (void)testDoesNotTranslateAutoresizingMaskIntoConstraints
+{
+	XCTAssertFalse([_sut translatesAutoresizingMaskIntoConstraints]);
+}
+
+- (void)testViewWillMoveToSuperviewUnbindsContentArrayBinding
+{
+	NSArrayController *controller = [[NSArrayController alloc] initWithContent:@[[MMTestImageItem new], [MMTestImageItem new]]];
+	[controller setObjectClass:[MMTestImageItem class]];
+	[_sut bind:NSContentArrayBinding toObject:controller withKeyPath:@"arrangedObjects" options:nil];
+
+	NSView *container = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+	[container addSubview:_sut];
+	XCTAssertNotNil([_sut superview]);
+
+	[_sut viewWillMoveToSuperview:nil];
+
+	XCTAssertNil([_sut infoForBinding:NSContentArrayBinding]);
+}
+
+- (void)testViewWillMoveToSuperviewCallsSuper
+{
+	Method supersMethod = class_getInstanceMethod([_sut superclass], @selector(viewWillMoveToSuperview:));
+	Method testingMethod = class_getInstanceMethod([_sut class], @selector(mmTesting_viewWillMoveToSuperview:));
+	method_exchangeImplementations(supersMethod, testingMethod);
+
+	testingSuperInvoked = NO;
+	[_sut viewWillMoveToSuperview:[NSView new]];
+	XCTAssertTrue(testingSuperInvoked);
+
+	method_exchangeImplementations(testingMethod, supersMethod);
+}
+
+@end

@@ -22,231 +22,251 @@
  
  */
 //
-//  MMCoverFlowLayoutAttributeSpec.m
+//  MMCoverFlowLayoutAttributesSpec.m
 //
-//  Created by Markus Müller on 18.10.13.
-//  Copyright 2013 www.isnotnil.com. All rights reserved.
+//  Created by Markus Müller on 26.11.13.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
+
+#import <XCTest/XCTest.h>
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "Kiwi.h"
-#import "MMCoverFLowLayoutAttributes.h"
+#import "MMCoverFlowLayoutAttributes.h"
 
 @interface TestingMMCoverFlowLayoutAttributesSubclass : MMCoverFlowLayoutAttributes
-
 @end
 
 @implementation TestingMMCoverFlowLayoutAttributesSubclass
+@end
 
+@interface MMCoverFlowLayoutAttributesSpec : XCTestCase
 
 @end
 
-SPEC_BEGIN(MMCoverFlowLayoutAttributesSpec)
+@implementation MMCoverFlowLayoutAttributesSpec
+{
+	MMCoverFlowLayoutAttributes *_sut;
+}
 
-describe(@"MMCoverFlowLayoutAttributes", ^{
-	__block MMCoverFlowLayoutAttributes *sut = nil;
+static const NSUInteger indexFixture = 10;
+static const CGPoint positionFixture = {10, 10};
+static const CGSize sizeFixture = {50, 50};
+static const CGPoint anchorPointFixture = {.5, .5};
+static const CATransform3D transformFixture = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+static const CGFloat zPositionFixture = 100;
 
-	context(@"creating with default -init", ^{
-		it(@"should raise if created with -init", ^{
-			[[theBlock(^{
-				sut = [[MMCoverFlowLayoutAttributes alloc] init];
-			}) should] raiseWithName:NSInternalInconsistencyException];
-		});
-	});
-	context(@"a new instance created with designated initializer", ^{
-		const NSUInteger indexFixture = 10;
-		const CGPoint positionFixture = CGPointMake(10, 10);
-		const CGSize sizeFixture = CGSizeMake(50, 50);
-		const CGPoint anchorPointFixture = CGPointMake(.5,.5);
-		const CATransform3D transformFixture = CATransform3DIdentity;
-		const CGFloat zPositionFixture = 100;
+- (void)setUp
+{
+	[super setUp];
+	_sut = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:indexFixture
+													 position:positionFixture
+														 size:sizeFixture
+												  anchorPoint:anchorPointFixture
+													transfrom:transformFixture
+													zPosition:zPositionFixture];
+}
 
-		beforeEach(^{
-			sut = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:indexFixture
-															position:positionFixture
-																size:sizeFixture
-														 anchorPoint:anchorPointFixture
-														   transfrom:transformFixture
-														   zPosition:zPositionFixture];
-		});
-		afterEach(^{
-			sut = nil;
-		});
-		it(@"should exists", ^{
-			[[sut shouldNot] beNil];
-		});
-		context(@"values from designated initializer", ^{
-			it(@"should have an index of 10", ^{
-				[[theValue(sut.index) should] equal:@(indexFixture)];
-			});
-			it(@"should have an identity transform matrix", ^{
-				NSValue *expectedTransform = [NSValue valueWithCATransform3D:transformFixture];
-				[[[NSValue valueWithCATransform3D:sut.transform] should] equal:expectedTransform];
-			});
-			it(@"should have a positon of {10,10}", ^{
-				NSValue *expectedPosition = [NSValue valueWithPoint:positionFixture];
-				[[[NSValue valueWithPoint:sut.position] should] equal:expectedPosition];
-			});
-			it(@"should have the bounds passed by the designated initalizer", ^{
-				[[theValue(sut.bounds) should] equal:theValue(CGRectMake(0, 0, sizeFixture.width, sizeFixture.height))];
-			});
-			it(@"should have a {0.5,0.5} anchorpoint", ^{
-				NSValue *expectedPoint = [NSValue valueWithPoint:NSPointFromCGPoint(CGPointMake(.5, .5))];
-				[[[NSValue valueWithPoint:NSPointFromCGPoint(sut.anchorPoint)] should] equal:expectedPoint];
-			});
-			it(@"should have a zPosition of 100", ^{
-				[[theValue(sut.zPosition) should] equal:theValue(100)];
-			});
-		});
-		context(NSStringFromProtocol(@protocol(NSObject)), ^{
-			__block MMCoverFlowLayoutAttributes *attribute = nil;
+- (void)tearDown
+{
+	_sut = nil;
+	[super tearDown];
+}
 
-			beforeEach(^{
-				attribute = [[MMCoverFlowLayoutAttributes alloc] initWithIndex:sut.index position:sut.position size:sut.bounds.size anchorPoint:sut.anchorPoint transfrom:sut.transform zPosition:sut.zPosition];
-			});
-			afterEach(^{
-				attribute = nil;
-			});
+- (void)testThrowsWhenCreatedWithDefaultInit
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMCoverFlowLayoutAttributes alloc] init]), NSException, NSInternalInconsistencyException);
+}
 
-			context(NSStringFromSelector(@selector(hash)), ^{
-				it(@"should have the same hash as an instance with identical values", ^{
-					[[theValue([sut hash]) should] equal:theValue([attribute hash])];
-				});
-				it(@"should not be equal with a differing index", ^{
-					[attribute setValue:@(20) forKey:NSStringFromSelector(@selector(index))];
-					
-					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
-				});
-				it(@"should not have the same hash with a differing transform", ^{
-					[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:NSStringFromSelector(@selector(transform))];
-					
-					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
-				});
-				it(@"should not have the same hash with a differing bounds", ^{
-					[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:NSStringFromSelector(@selector(bounds))];
-					
-					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
-				});
-				it(@"should not have the same hash with a differing zPosition", ^{
-					[attribute setValue:@200 forKey:NSStringFromSelector(@selector(zPosition))];
-					
-					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
-				});
-				it(@"should not have the same hash with a differing position", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(position))];
-					
-					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
-				});
-				it(@"should not have the same hash with a differing anchorPoint", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(anchorPoint))];
-					
-					[[theValue([sut hash]) shouldNot] equal:theValue([attribute hash])];
-				});
-			});
-			context(NSStringFromSelector(@selector(isEqual:)), ^{
-				it(@"should be equal to itself", ^{
-					[[theValue([sut isEqual:sut]) should] beYes];
-				});
-				it(@"should be equal to another instance with the same attribute values", ^{
-					[[sut should] equal:attribute];
-				});
-				it(@"should not be equal with a differing index", ^{
-					[attribute setValue:@(20) forKey:NSStringFromSelector(@selector(index))];
-					
-					[[sut shouldNot] equal:attribute];
-				});
-				it(@"should not be equal with a differing transform", ^{
-					[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:NSStringFromSelector(@selector(transform))];
-					
-					[[sut shouldNot] equal:attribute];
-				});
-				it(@"should not be equal with a differing bounds", ^{
-					[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:NSStringFromSelector(@selector(bounds))];
-					
-					[[sut shouldNot] equal:attribute];
-				});
-				it(@"should not be equal with a differing zPosition", ^{
-					[attribute setValue:@200 forKey:NSStringFromSelector(@selector(zPosition))];
-					
-					[[sut shouldNot] equal:attribute];
-				});
-				it(@"should not be equal with a differing position", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(position))];
-					
-					[[sut shouldNot] equal:attribute];
-				});
-				it(@"should not be equal with a differing anchorPoint", ^{
-					[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(anchorPoint))];
-					
-					[[sut shouldNot] equal:attribute];
-				});
-				it(@"should be equal to a subclass", ^{
-					TestingMMCoverFlowLayoutAttributesSubclass *subclass = [[TestingMMCoverFlowLayoutAttributesSubclass alloc] initWithIndex:sut.index position:sut.position size:sut.bounds.size anchorPoint:sut.anchorPoint transfrom:sut.transform zPosition:sut.zPosition];
-					
-					[[sut should] equal:subclass];
-				});
-				it(@"should not be equal to a KVC compatible container", ^{
-					NSDictionary *attributesDict = [sut dictionaryWithValuesForKeys:@[@"index", @"transform", @"bounds", @"position", @"anchorPoint", @"zPosition"]];
-					
-					[[sut shouldNot] equal:attributesDict];
-				});
-			});
-		});
-		context(NSStringFromSelector(@selector(applyToLayer:)), ^{
-			__block CALayer *mockedLayer = nil;
+- (void)testInstanceExists
+{
+	XCTAssertNotNil(_sut);
+}
 
-			beforeEach(^{
-				mockedLayer = [CALayer nullMock];
-			});
-			afterEach(^{
-				mockedLayer = nil;
-			});
+- (void)testHasIndexFromInitializer
+{
+	XCTAssertEqual(_sut.index, (NSUInteger)indexFixture);
+}
 
-			it(@"should respond to applyToLayer:", ^{
-				[[sut should] respondToSelector:@selector(applyToLayer:)];
-			});
-			it(@"should set the anchorPoint to the layer", ^{
-				[[mockedLayer should] receive:@selector(setAnchorPoint:) withArguments:theValue(sut.anchorPoint)];
+- (void)testHasIdentityTransformMatrix
+{
+	XCTAssertEqualObjects([NSValue valueWithCATransform3D:_sut.transform], [NSValue valueWithCATransform3D:transformFixture]);
+}
 
-				[sut applyToLayer:mockedLayer];
-			});
-			it(@"should set the zPosition to the layer", ^{
-				[[mockedLayer should] receive:@selector(setZPosition:) withArguments:theValue(sut.zPosition)];
-			
-				[sut applyToLayer:mockedLayer];
-			});
-			it(@"should set the transform to the layer", ^{
-				[[mockedLayer should] receive:@selector(setTransform:) withArguments:theValue(sut.transform)];
-				
-				[sut applyToLayer:mockedLayer];
-			});
-			it(@"should set the bounds to the layer", ^{
-				[[mockedLayer should] receive:@selector(setBounds:) withArguments:theValue(sut.bounds)];
-				
-				[sut applyToLayer:mockedLayer];
-			});
-			it(@"should set the position adjusted by the anchorPoint", ^{
-				CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(sut.anchorPoint.x*CGRectGetWidth(sut.bounds), sut.anchorPoint.y*CGRectGetHeight(sut.bounds));
-				CGPoint expectedPosition = CGPointApplyAffineTransform(sut.position, anchorTransform);
-				[[mockedLayer should] receive:@selector(setPosition:) withArguments:theValue(expectedPosition)];
+- (void)testHasPositionFromInitializer
+{
+	XCTAssertEqualObjects([NSValue valueWithPoint:_sut.position], [NSValue valueWithPoint:positionFixture]);
+}
 
-				[sut applyToLayer:mockedLayer];
-			});
-			it(@"should set the index", ^{
-				[[mockedLayer should] receive:@selector(setValue:forKey:) withArguments:@(indexFixture), kMMCoverFlowLayoutAttributesIndexAttributeKey];
-				
-				[sut applyToLayer:mockedLayer];
-			});
-		});
-		context(NSStringFromSelector(@selector(description)), ^{
-			it(@"should return the expected description string", ^{
-				NSString *expectedDescription = [NSString stringWithFormat:@"MMCoverFlowLayoutAttributes: %p, index: %@, position: %@, anchorPoint: %@, bounds: %@, zPosition: %@, transform: %@", sut, @(sut.index), [NSValue valueWithPoint:sut.position], [NSValue valueWithPoint:sut.anchorPoint], [NSValue valueWithRect:sut.bounds], @(sut.zPosition), [NSValue valueWithCATransform3D:sut.transform]];
+- (void)testHasBoundsFromInitializerSize
+{
+	XCTAssertTrue(CGRectEqualToRect(_sut.bounds, CGRectMake(0, 0, sizeFixture.width, sizeFixture.height)));
+}
 
-				[[[sut description] should] equal:expectedDescription];
-			});
-		});
-	});
-});
+- (void)testHasAnchorPointFromInitializer
+{
+	XCTAssertEqualObjects([NSValue valueWithPoint:NSPointFromCGPoint(_sut.anchorPoint)], [NSValue valueWithPoint:NSPointFromCGPoint(anchorPointFixture)]);
+}
 
-SPEC_END
+- (void)testHasZPositionFromInitializer
+{
+	XCTAssertEqual(_sut.zPosition, zPositionFixture);
+}
+
+- (MMCoverFlowLayoutAttributes *)attributeWithSameValues
+{
+	return [[MMCoverFlowLayoutAttributes alloc] initWithIndex:_sut.index
+													 position:_sut.position
+														 size:_sut.bounds.size
+												  anchorPoint:_sut.anchorPoint
+													transfrom:_sut.transform
+													zPosition:_sut.zPosition];
+}
+
+- (void)testHashSameAsInstanceWithIdenticalValues
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	XCTAssertEqual([_sut hash], [attribute hash]);
+}
+
+- (void)testHashDiffersWithDifferingIndex
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:@(20) forKey:NSStringFromSelector(@selector(index))];
+	XCTAssertNotEqual([_sut hash], [attribute hash]);
+}
+
+- (void)testHashDiffersWithDifferingTransform
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:NSStringFromSelector(@selector(transform))];
+	XCTAssertNotEqual([_sut hash], [attribute hash]);
+}
+
+- (void)testHashDiffersWithDifferingBounds
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:NSStringFromSelector(@selector(bounds))];
+	XCTAssertNotEqual([_sut hash], [attribute hash]);
+}
+
+- (void)testHashDiffersWithDifferingZPosition
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:@200 forKey:NSStringFromSelector(@selector(zPosition))];
+	XCTAssertNotEqual([_sut hash], [attribute hash]);
+}
+
+- (void)testHashDiffersWithDifferingPosition
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(position))];
+	XCTAssertNotEqual([_sut hash], [attribute hash]);
+}
+
+- (void)testHashDiffersWithDifferingAnchorPoint
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(anchorPoint))];
+	XCTAssertNotEqual([_sut hash], [attribute hash]);
+}
+
+- (void)testIsEqualToItself
+{
+	XCTAssertTrue([_sut isEqual:_sut]);
+}
+
+- (void)testIsEqualToInstanceWithSameValues
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	XCTAssertEqualObjects(_sut, attribute);
+}
+
+- (void)testNotEqualWithDifferingIndex
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:@(20) forKey:NSStringFromSelector(@selector(index))];
+	XCTAssertNotEqualObjects(_sut, attribute);
+}
+
+- (void)testNotEqualWithDifferingTransform
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithCATransform3D:CATransform3DMakeScale(30, 60, 90)] forKey:NSStringFromSelector(@selector(transform))];
+	XCTAssertNotEqualObjects(_sut, attribute);
+}
+
+- (void)testNotEqualWithDifferingBounds
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithRect:CGRectMake(0, 0, 400, 400)] forKey:NSStringFromSelector(@selector(bounds))];
+	XCTAssertNotEqualObjects(_sut, attribute);
+}
+
+- (void)testNotEqualWithDifferingZPosition
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:@200 forKey:NSStringFromSelector(@selector(zPosition))];
+	XCTAssertNotEqualObjects(_sut, attribute);
+}
+
+- (void)testNotEqualWithDifferingPosition
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(position))];
+	XCTAssertNotEqualObjects(_sut, attribute);
+}
+
+- (void)testNotEqualWithDifferingAnchorPoint
+{
+	MMCoverFlowLayoutAttributes *attribute = [self attributeWithSameValues];
+	[attribute setValue:[NSValue valueWithPoint:CGPointMake(50, 50)] forKey:NSStringFromSelector(@selector(anchorPoint))];
+	XCTAssertNotEqualObjects(_sut, attribute);
+}
+
+- (void)testEqualToSubclass
+{
+	TestingMMCoverFlowLayoutAttributesSubclass *subclass = [[TestingMMCoverFlowLayoutAttributesSubclass alloc] initWithIndex:_sut.index
+																												  position:_sut.position
+																													  size:_sut.bounds.size
+																											   anchorPoint:_sut.anchorPoint
+																												 transfrom:_sut.transform
+																												 zPosition:_sut.zPosition];
+	XCTAssertEqualObjects(_sut, subclass);
+}
+
+- (void)testNotEqualToKVCDictionary
+{
+	NSDictionary *attributesDict = [_sut dictionaryWithValuesForKeys:@[@"index", @"transform", @"bounds", @"position", @"anchorPoint", @"zPosition"]];
+	XCTAssertNotEqualObjects(_sut, attributesDict);
+}
+
+- (void)testRespondsToApplyToLayer
+{
+	XCTAssertTrue([_sut respondsToSelector:@selector(applyToLayer:)]);
+}
+
+- (void)testApplyToLayerSetsPropertiesOnRealLayer
+{
+	CALayer *layer = [CALayer layer];
+	[_sut applyToLayer:layer];
+
+	XCTAssertTrue(CGPointEqualToPoint(layer.anchorPoint, _sut.anchorPoint));
+	XCTAssertEqual(layer.zPosition, _sut.zPosition);
+	XCTAssertTrue(CATransform3DEqualToTransform(layer.transform, _sut.transform));
+	XCTAssertTrue(CGRectEqualToRect(layer.bounds, _sut.bounds));
+
+	CGAffineTransform anchorTransform = CGAffineTransformMakeTranslation(_sut.anchorPoint.x * CGRectGetWidth(_sut.bounds), _sut.anchorPoint.y * CGRectGetHeight(_sut.bounds));
+	CGPoint expectedPosition = CGPointApplyAffineTransform(_sut.position, anchorTransform);
+	XCTAssertTrue(CGPointEqualToPoint(layer.position, expectedPosition));
+
+	XCTAssertEqualObjects([layer valueForKey:kMMCoverFlowLayoutAttributesIndexAttributeKey], @(indexFixture));
+}
+
+- (void)testDescriptionMatchesExpectedString
+{
+	NSString *expectedDescription = [NSString stringWithFormat:@"MMCoverFlowLayoutAttributes: %p, index: %@, position: %@, anchorPoint: %@, bounds: %@, zPosition: %@, transform: %@", _sut, @(_sut.index), [NSValue valueWithPoint:_sut.position], [NSValue valueWithPoint:_sut.anchorPoint], [NSValue valueWithRect:_sut.bounds], @(_sut.zPosition), [NSValue valueWithCATransform3D:_sut.transform]];
+	XCTAssertEqualObjects([_sut description], expectedDescription);
+}
+
+@end

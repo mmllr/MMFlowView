@@ -402,7 +402,6 @@ extern NSString * const kMMFlowViewNSBitmapRepresentationType;
  kMMFlowViewQTMovieRepresentationType
  
  A QTMovie object.
- @deprecated Deprecated in OS X 10.9, will be removed in a future version of MMFlowView.
  */
 extern NSString * const kMMFlowViewQTMovieRepresentationType;
 
@@ -410,7 +409,6 @@ extern NSString * const kMMFlowViewQTMovieRepresentationType;
  kMMFlowViewQTMoviePathRepresentationType
  
  A path (NSString) or URL (NSURL) to a QuickTime movie.
- @deprecated Deprecated in OS X 10.9, will be removed in a future version of MMFlowView.
  */
 extern NSString * const kMMFlowViewQTMoviePathRepresentationType;
 

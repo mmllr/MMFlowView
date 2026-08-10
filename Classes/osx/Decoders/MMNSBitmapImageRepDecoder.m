@@ -36,6 +36,7 @@
 
 @property (nonatomic, strong) id item;
 @property NSUInteger maxPixelSize;
+@property (strong) MMNSDataImageDecoder *dataDecoder;
 
 @end
 
@@ -62,9 +63,11 @@
 
 - (CGImageRef)CGImage
 {
-	MMNSDataImageDecoder *dataDecoder = [[MMNSDataImageDecoder alloc] initWithItem:[self.item TIFFRepresentation]
-																	  maxPixelSize:self.maxPixelSize];
-	return dataDecoder.CGImage;
+	if (!self.dataDecoder) {
+		self.dataDecoder = [[MMNSDataImageDecoder alloc] initWithItem:[self.item TIFFRepresentation]
+														  maxPixelSize:self.maxPixelSize];
+	}
+	return self.dataDecoder.CGImage;
 }
 
 - (NSImage*)image

@@ -42,12 +42,12 @@
 		2801F64F18D70F1A00075E15 /* NSValueMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */; };
 		2801F65218D70F2F00075E15 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F65118D70F2F00075E15 /* Item.m */; };
 		2819C46818EDA12B00417731 /* MMTestImageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2819C46718EDA12B00417731 /* MMTestImageItem.m */; };
+		28D0B1E500000000000000A1 /* MMFlowViewTestDoubles.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D0B1E500000000000000A3 /* MMFlowViewTestDoubles.m */; };
 		2819C46A18EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */; };
 		2832C8F318E064F7008849B9 /* MMBaseImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */; };
 		285C938918EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */; };
 		286090A918EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */; };
-		287AF70E18D9852F00FEDAA9 /* MMCodeCoverageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */; };
-		287AF70F18D9853400FEDAA9 /* NSApplication+MMCodeCoverageFixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 287AF70D18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.m */; };
+
 		289C24B918EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C24B818EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m */; };
 		289C24C018EC6A3900D0C046 /* TestingContentContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C24BF18EC6A3900D0C046 /* TestingContentContainer.m */; };
 		289C9C8C18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */; };
@@ -62,8 +62,8 @@
 		28DDDE8718D70B1E007B5664 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DDDE6618D70B1E007B5664 /* Cocoa.framework */; };
 		28DDDE8F18D70B1E007B5664 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DDDE8D18D70B1E007B5664 /* InfoPlist.strings */; };
 		28E1CF5118E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */; };
-		4A92B4B49A91486FA8852B74 /* libPods-MMFlowViewDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B578C80D8F1488BA1F66E61 /* libPods-MMFlowViewDemo.a */; };
-		AAD466973B93441CA82A701E /* libPods-MMFlowViewDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 175FB78536EA43E8B12137D9 /* libPods-MMFlowViewDemoTests.a */; };
+		4C3B71169FFDAD44A63DC2BF /* libPods-MMFlowViewDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69E3FFFF5620AC55821CEDCB /* libPods-MMFlowViewDemo.a */; };
+		D6403E30503A3D9F77157810 /* libPods-MMFlowViewDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7FF2CE8F23C1787CE71EB21 /* libPods-MMFlowViewDemoTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,7 +77,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		175FB78536EA43E8B12137D9 /* libPods-MMFlowViewDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2801F60D18D70EF100075E15 /* Test.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Test.pdf; sourceTree = "<group>"; };
 		2801F60E18D70EF100075E15 /* TestImage01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TestImage01.jpg; sourceTree = "<group>"; };
 		2801F61218D70F1A00075E15 /* CALayerMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerMMAdditionsSpec.m; sourceTree = "<group>"; };
@@ -115,14 +114,12 @@
 		2801F65118D70F2F00075E15 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
 		2819C46618EDA12B00417731 /* MMTestImageItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMTestImageItem.h; sourceTree = "<group>"; };
 		2819C46718EDA12B00417731 /* MMTestImageItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMTestImageItem.m; sourceTree = "<group>"; };
+		28D0B1E500000000000000A2 /* MMFlowViewTestDoubles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMFlowViewTestDoubles.h; sourceTree = "<group>"; };
+		28D0B1E500000000000000A3 /* MMFlowViewTestDoubles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewTestDoubles.m; sourceTree = "<group>"; };
 		2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewContentBinderDelegateSpec.m; sourceTree = "<group>"; };
 		2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMBaseImageDecoderSpec.m; sourceTree = "<group>"; };
 		285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewNSViewSpec.m; sourceTree = "<group>"; };
 		286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewDatasourceContentAdapterSpec.m; sourceTree = "<group>"; };
-		287AF70A18D9852300FEDAA9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MMCodeCoverageTests.m; sourceTree = "<group>"; };
-		287AF70C18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSApplication+MMCodeCoverageFixer.h"; sourceTree = "<group>"; };
-		287AF70D18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+MMCodeCoverageFixer.m"; sourceTree = "<group>"; };
 		289C24B818EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewContentBinderSpec.m; sourceTree = "<group>"; };
 		289C24BE18EC6A3900D0C046 /* TestingContentContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestingContentContainer.h; sourceTree = "<group>"; };
 		289C24BF18EC6A3900D0C046 /* TestingContentContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestingContentContainer.m; sourceTree = "<group>"; };
@@ -146,9 +143,12 @@
 		28DDDE8C18D70B1E007B5664 /* MMFlowViewDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewDemoTests-Info.plist"; sourceTree = "<group>"; };
 		28DDDE8E18D70B1E007B5664 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewCoverFlowLayoutDelegateSpec.m; sourceTree = "<group>"; };
-		3B578C80D8F1488BA1F66E61 /* libPods-MMFlowViewDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3E4A91415B0F4B4FA8D2F1BD /* Pods-MMFlowViewDemoTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemoTests.xcconfig"; path = "Pods/Pods-MMFlowViewDemoTests.xcconfig"; sourceTree = "<group>"; };
-		6828D05556D049169608CC5A /* Pods-MMFlowViewDemo.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemo.xcconfig"; path = "Pods/Pods-MMFlowViewDemo.xcconfig"; sourceTree = "<group>"; };
+		37966BA23DD0D2F75048ECC3 /* Pods-MMFlowViewDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemoTests.release.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemoTests/Pods-MMFlowViewDemoTests.release.xcconfig"; sourceTree = "<group>"; };
+		69E3FFFF5620AC55821CEDCB /* libPods-MMFlowViewDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7FF2CE8F23C1787CE71EB21 /* libPods-MMFlowViewDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BEEE6BD7BCA8A4E6F6F8FA56 /* Pods-MMFlowViewDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemo.debug.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemo/Pods-MMFlowViewDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		CA76DCBC498635962572CDB7 /* Pods-MMFlowViewDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemo.release.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemo/Pods-MMFlowViewDemo.release.xcconfig"; sourceTree = "<group>"; };
+		E0B74DFD2CEAD789D5DCEC40 /* Pods-MMFlowViewDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemoTests.debug.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemoTests/Pods-MMFlowViewDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,7 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				28DDDE6718D70B1E007B5664 /* Cocoa.framework in Frameworks */,
-				4A92B4B49A91486FA8852B74 /* libPods-MMFlowViewDemo.a in Frameworks */,
+				4C3B71169FFDAD44A63DC2BF /* libPods-MMFlowViewDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,7 +167,7 @@
 			files = (
 				28DDDE8718D70B1E007B5664 /* Cocoa.framework in Frameworks */,
 				28DDDE8618D70B1E007B5664 /* XCTest.framework in Frameworks */,
-				AAD466973B93441CA82A701E /* libPods-MMFlowViewDemoTests.a in Frameworks */,
+				D6403E30503A3D9F77157810 /* libPods-MMFlowViewDemoTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,17 +220,6 @@
 			path = ../../Classes/osx/Specs;
 			sourceTree = "<group>";
 		};
-		287AF70918D9852300FEDAA9 /* MMTestingHelper */ = {
-			isa = PBXGroup;
-			children = (
-				287AF70A18D9852300FEDAA9 /* LICENSE */,
-				287AF70B18D9852300FEDAA9 /* MMCodeCoverageTests.m */,
-				287AF70C18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.h */,
-				287AF70D18D9852300FEDAA9 /* NSApplication+MMCodeCoverageFixer.m */,
-			);
-			path = MMTestingHelper;
-			sourceTree = SOURCE_ROOT;
-		};
 		28DDDE5A18D70B1E007B5664 = {
 			isa = PBXGroup;
 			children = (
@@ -238,8 +227,7 @@
 				28DDDE8A18D70B1E007B5664 /* MMFlowViewDemoTests */,
 				28DDDE6518D70B1E007B5664 /* Frameworks */,
 				28DDDE6418D70B1E007B5664 /* Products */,
-				6828D05556D049169608CC5A /* Pods-MMFlowViewDemo.xcconfig */,
-				3E4A91415B0F4B4FA8D2F1BD /* Pods-MMFlowViewDemoTests.xcconfig */,
+				EB5D3412D3435B79390E2216 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -258,8 +246,8 @@
 				28DDDE6618D70B1E007B5664 /* Cocoa.framework */,
 				28DDDE8518D70B1E007B5664 /* XCTest.framework */,
 				28DDDE6818D70B1E007B5664 /* Other Frameworks */,
-				3B578C80D8F1488BA1F66E61 /* libPods-MMFlowViewDemo.a */,
-				175FB78536EA43E8B12137D9 /* libPods-MMFlowViewDemoTests.a */,
+				69E3FFFF5620AC55821CEDCB /* libPods-MMFlowViewDemo.a */,
+				B7FF2CE8F23C1787CE71EB21 /* libPods-MMFlowViewDemoTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -303,13 +291,14 @@
 		28DDDE8A18D70B1E007B5664 /* MMFlowViewDemoTests */ = {
 			isa = PBXGroup;
 			children = (
-				287AF70918D9852300FEDAA9 /* MMTestingHelper */,
 				2801F61118D70F1A00075E15 /* Specs */,
 				28DDDE8B18D70B1E007B5664 /* Supporting Files */,
 				289C24BE18EC6A3900D0C046 /* TestingContentContainer.h */,
 				289C24BF18EC6A3900D0C046 /* TestingContentContainer.m */,
 				2819C46618EDA12B00417731 /* MMTestImageItem.h */,
 				2819C46718EDA12B00417731 /* MMTestImageItem.m */,
+				28D0B1E500000000000000A2 /* MMFlowViewTestDoubles.h */,
+				28D0B1E500000000000000A3 /* MMFlowViewTestDoubles.m */,
 			);
 			path = MMFlowViewDemoTests;
 			sourceTree = "<group>";
@@ -325,6 +314,18 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		EB5D3412D3435B79390E2216 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BEEE6BD7BCA8A4E6F6F8FA56 /* Pods-MMFlowViewDemo.debug.xcconfig */,
+				CA76DCBC498635962572CDB7 /* Pods-MMFlowViewDemo.release.xcconfig */,
+				E0B74DFD2CEAD789D5DCEC40 /* Pods-MMFlowViewDemoTests.debug.xcconfig */,
+				37966BA23DD0D2F75048ECC3 /* Pods-MMFlowViewDemoTests.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -332,11 +333,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 28DDDE9418D70B1E007B5664 /* Build configuration list for PBXNativeTarget "MMFlowViewDemo" */;
 			buildPhases = (
-				9927FB9ED43E421FBDE90203 /* Check Pods Manifest.lock */,
+				595B0E1E6996B8977C9398F0 /* [CP] Check Pods Manifest.lock */,
 				28DDDE5F18D70B1E007B5664 /* Sources */,
 				28DDDE6018D70B1E007B5664 /* Frameworks */,
 				28DDDE6118D70B1E007B5664 /* Resources */,
-				980D5855AE7A4E49A43D381E /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -351,11 +351,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 28DDDE9718D70B1E007B5664 /* Build configuration list for PBXNativeTarget "MMFlowViewDemoTests" */;
 			buildPhases = (
-				447960262A58421EA7EDD790 /* Check Pods Manifest.lock */,
+				719DC9E20C4C44D6E263694C /* [CP] Check Pods Manifest.lock */,
 				28DDDE8018D70B1E007B5664 /* Sources */,
 				28DDDE8118D70B1E007B5664 /* Frameworks */,
 				28DDDE8218D70B1E007B5664 /* Resources */,
-				3166B69E08AC44D9991B9E66 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -425,64 +424,48 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3166B69E08AC44D9991B9E66 /* Copy Pods Resources */ = {
+		595B0E1E6996B8977C9398F0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
+			inputFileListPaths = (
 			);
-			name = "Copy Pods Resources";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MMFlowViewDemo-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-MMFlowViewDemoTests-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		447960262A58421EA7EDD790 /* Check Pods Manifest.lock */ = {
+		719DC9E20C4C44D6E263694C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
+			inputFileListPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MMFlowViewDemoTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		980D5855AE7A4E49A43D381E /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-MMFlowViewDemo-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9927FB9ED43E421FBDE90203 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -493,7 +476,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2801F65218D70F2F00075E15 /* Item.m in Sources */,
-				287AF70F18D9853400FEDAA9 /* NSApplication+MMCodeCoverageFixer.m in Sources */,
 				28DDDE7A18D70B1E007B5664 /* AppDelegate.m in Sources */,
 				28DDDE7318D70B1E007B5664 /* main.m in Sources */,
 			);
@@ -504,7 +486,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2801F63D18D70F1A00075E15 /* MMFlowViewNSDraggingDestinationSpec.m in Sources */,
-				287AF70E18D9852F00FEDAA9 /* MMCodeCoverageTests.m in Sources */,
 				2801F64918D70F1A00075E15 /* MMQuickLookImageDecoderSpec.m in Sources */,
 				2801F64E18D70F1A00075E15 /* NSEventMMAdditionsSpec.m in Sources */,
 				2801F63518D70F1A00075E15 /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
@@ -512,6 +493,7 @@
 				2801F63918D70F1A00075E15 /* MMFlowViewItemLayerSpec.m in Sources */,
 				2801F63318D70F1A00075E15 /* MMCoverFlowImageLayerSpec.m in Sources */,
 				2819C46818EDA12B00417731 /* MMTestImageItem.m in Sources */,
+				28D0B1E500000000000000A1 /* MMFlowViewTestDoubles.m in Sources */,
 				2801F64218D70F1A00075E15 /* MMFlowViewQLPreviewPanelDelegateSpec.m in Sources */,
 				2801F64D18D70F1A00075E15 /* NSArrayMMAdditionsSpec.m in Sources */,
 				2801F64718D70F1A00075E15 /* MMPDFPageDecoderSpec.m in Sources */,
@@ -643,7 +625,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ONLY_ACTIVE_ARCH = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
@@ -701,7 +683,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
@@ -715,7 +697,7 @@
 		};
 		28DDDE9518D70B1E007B5664 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6828D05556D049169608CC5A /* Pods-MMFlowViewDemo.xcconfig */;
+			baseConfigurationReference = BEEE6BD7BCA8A4E6F6F8FA56 /* Pods-MMFlowViewDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -723,7 +705,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -731,7 +713,7 @@
 		};
 		28DDDE9618D70B1E007B5664 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6828D05556D049169608CC5A /* Pods-MMFlowViewDemo.xcconfig */;
+			baseConfigurationReference = CA76DCBC498635962572CDB7 /* Pods-MMFlowViewDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -739,7 +721,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -747,7 +729,7 @@
 		};
 		28DDDE9818D70B1E007B5664 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3E4A91415B0F4B4FA8D2F1BD /* Pods-MMFlowViewDemoTests.xcconfig */;
+			baseConfigurationReference = E0B74DFD2CEAD789D5DCEC40 /* Pods-MMFlowViewDemoTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MMFlowViewDemo.app/Contents/MacOS/MMFlowViewDemo";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -761,6 +743,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = "MMFlowViewDemoTests/MMFlowViewDemoTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
@@ -770,7 +753,7 @@
 		};
 		28DDDE9918D70B1E007B5664 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3E4A91415B0F4B4FA8D2F1BD /* Pods-MMFlowViewDemoTests.xcconfig */;
+			baseConfigurationReference = 37966BA23DD0D2F75048ECC3 /* Pods-MMFlowViewDemoTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MMFlowViewDemo.app/Contents/MacOS/MMFlowViewDemo";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -780,6 +763,7 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = "MMFlowViewDemoTests/MMFlowViewDemoTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";

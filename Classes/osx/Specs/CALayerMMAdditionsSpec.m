@@ -24,132 +24,123 @@
 //
 //  CALayerMMAdditionsSpec.m
 //
-//  Created by Markus Müller on 10.01.14.
+//  Created by Markus Müller on 21.01.14.
 //  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "CALayer+MMAdditions.h"
 
-SPEC_BEGIN(CALayerMMAdditionsSpec)
+@interface CALayerMMAdditionsSpec : XCTestCase
 
-describe(@"CALayer+MMAdditions", ^{
-	__block CALayer *sut = nil;
+@end
+
+@implementation CALayerMMAdditionsSpec
+
+- (CALayer *)makeSut
+{
+	CALayer *sut = [CALayer layer];
+	sut.frame = CGRectMake(20, 30, 200, 400);
+	return sut;
+}
+
+- (void)testRespondsToMMEnableImplicitAnimationForKey
+{
+	CALayer *sut = [self makeSut];
+	XCTAssertTrue([sut respondsToSelector:@selector(mm_enableImplicitAnimationForKey:)]);
+}
+
+- (void)testMMEnableImplicitAnimationForKeyRemovesKeyFromCustomActions
+{
+	CALayer *sut = [self makeSut];
 	NSDictionary *customActions = @{@"position": [NSNull null],
-									@"anchorPoint": [NSNull null]
-									};
+									@"anchorPoint": [NSNull null]};
+	sut.actions = customActions;
 
-	beforeEach(^{
-		sut = [CALayer layer];
-		sut.frame = CGRectMake(20, 30, 200, 400);
-	});
-	afterEach(^{
-		sut = nil;
-	});
+	[sut mm_enableImplicitAnimationForKey:@"position"];
 
-	context(NSStringFromSelector(@selector(mm_enableImplicitAnimationForKey:)), ^{
-		it(@"should respond to mm_enableImplicitAnimationForKey:", ^{
-			[[sut should] respondToSelector:@selector(mm_enableImplicitAnimationForKey:)];
-		});
-		context(@"when custom actions are set", ^{
-			NSDictionary *actionsWithoutPosition = @{@"anchorPoint": [NSNull null]};
+	XCTAssertNil(sut.actions[@"position"]);
+	XCTAssertEqual(sut.actions[@"anchorPoint"], [NSNull null]);
+}
 
-			beforeEach(^{
-				sut.actions = customActions;
-			});
-			it(@"should remove the key from the custom actions", ^{
-				[[sut should] receive:@selector(setActions:) withArguments:actionsWithoutPosition];
+- (void)testRespondsToMMDisableImplicitAnimationForKey
+{
+	CALayer *sut = [self makeSut];
+	XCTAssertTrue([sut respondsToSelector:@selector(mm_disableImplicitAnimationForKey:)]);
+}
 
-				[sut mm_enableImplicitAnimationForKey:@"position"];
-			});
-		});
-	});
-	context(NSStringFromSelector(@selector(mm_disableImplicitAnimationForKey:)), ^{
-		it(@"should respond to mm_disableImplicitAnimationForKey:", ^{
-			[[sut should] respondToSelector:@selector(mm_disableImplicitAnimationForKey:)];
-		});
-		context(@"with no custom actions", ^{
-			it(@"should set NSNull for the specified action", ^{
-				[[sut should] receive:@selector(setActions:) withArguments:@{@"bounds": [NSNull null]}];
-				
-				[sut mm_disableImplicitAnimationForKey:@"bounds"];
-			});
-		});
-		context(@"with custom actions", ^{
-			beforeEach(^{
-				sut.actions = customActions;
-			});
-			it(@"should set NSNull for the specified action", ^{
-				NSMutableDictionary *expectedDictionary = [customActions mutableCopy];
+- (void)testMMDisableImplicitAnimationForKeySetsNullWithNoCustomActions
+{
+	CALayer *sut = [self makeSut];
 
-				expectedDictionary[@"bounds"] = [NSNull null];
-				[[sut should] receive:@selector(setActions:) withArguments:[expectedDictionary copy]];
+	[sut mm_disableImplicitAnimationForKey:@"bounds"];
 
-				[sut mm_disableImplicitAnimationForKey:@"bounds"];
-			});
-		});
-	});
-	context(@"Implicit bounds and position animations", ^{
-		context(@"disable animations", ^{
-			beforeEach(^{
-				[sut mm_disableImplicitPositionAndBoundsAnimations];
-			});
-			it(@"should have a position action of NSNull", ^{
-				[[sut.actions[@"position"] should] equal:[NSNull null]];
-			});
-			it(@"should have a bounds action of NSNull", ^{
-				[[sut.actions[@"bounds"] should] equal:[NSNull null]];
-			});
-			context(@"reenabling animations", ^{
-				beforeEach(^{
-					[sut mm_enableImplicitPositionAndBoundsAnimations];
-				});
-				it(@"should not have a nil position value in its action dictionary", ^{
-					[[sut.actions[@"position"] should] beNil];
-				});
-				it(@"should not have a nil bounds value in its action dictionary", ^{
-					[[sut.actions[@"bounds"] should] beNil];
-				});
-			});
-		});
-	});
-	context(NSStringFromSelector(@selector(mm_boundingRect)), ^{
-		it(@"should return the frame for a layer without sublayers", ^{
-			NSValue *expectedRect = [NSValue valueWithRect:sut.frame];
+	XCTAssertEqual(sut.actions[@"bounds"], [NSNull null]);
+}
 
-			[[[NSValue valueWithRect:[sut mm_boundingRect]] should] equal:expectedRect];
-		});
-		context(@"when having sublayers exceeding the layers frame", ^{
-			__block NSValue *expectedRect;
+- (void)testMMDisableImplicitAnimationForKeySetsNullWithCustomActions
+{
+	CALayer *sut = [self makeSut];
+	NSDictionary *customActions = @{@"position": [NSNull null],
+									@"anchorPoint": [NSNull null]};
+	sut.actions = customActions;
 
-			beforeEach(^{
-				CALayer *sublayerA = [CALayer layer];
-				sublayerA.frame = CGRectMake(-100, -100, 1000, 444);
-				CALayer *sublayerB = [CALayer layer];
-				sublayerB.frame = CGRectMake(0, -200, 1100, 300);
-				CALayer *subSubLayerA = [CALayer layer];
-				subSubLayerA.frame = CGRectMake(-100, -100, 999, 445);
-				[sublayerA addSublayer:subSubLayerA];
-				CALayer *subSubLayerB = [CALayer layer];
-				subSubLayerB.frame = CGRectMake(0, -200, 1101, 300);
-				[sublayerB addSublayer:subSubLayerB];
-				[sut addSublayer:sublayerA];
-				[sut addSublayer:sublayerB];
+	[sut mm_disableImplicitAnimationForKey:@"bounds"];
 
-				CGRect unionRect = CGRectUnion(sut.frame, sublayerA.frame);
-				unionRect = CGRectUnion(unionRect, sublayerB.frame);
-				unionRect = CGRectUnion(unionRect, subSubLayerA.frame);
-				unionRect = CGRectUnion(unionRect, subSubLayerB.frame);
-				expectedRect = [NSValue valueWithRect:unionRect];
-			});
-			afterEach(^{
-				expectedRect = nil;
-			});
-			it(@"should have the bounding rect of its frame and its sublayers frame", ^{
-				[[[NSValue valueWithRect:[sut mm_boundingRect]] should] equal:expectedRect];
-			});
-		});
-	});
-});
+	XCTAssertEqual(sut.actions[@"bounds"], [NSNull null]);
+	XCTAssertEqual(sut.actions[@"position"], [NSNull null]);
+	XCTAssertEqual(sut.actions[@"anchorPoint"], [NSNull null]);
+}
 
-SPEC_END
+- (void)testMMDisableImplicitPositionAndBoundsAnimations
+{
+	CALayer *sut = [self makeSut];
+	[sut mm_disableImplicitPositionAndBoundsAnimations];
+
+	XCTAssertEqual(sut.actions[@"position"], [NSNull null]);
+	XCTAssertEqual(sut.actions[@"bounds"], [NSNull null]);
+}
+
+- (void)testMMEnableImplicitPositionAndBoundsAnimations
+{
+	CALayer *sut = [self makeSut];
+	[sut mm_disableImplicitPositionAndBoundsAnimations];
+	[sut mm_enableImplicitPositionAndBoundsAnimations];
+
+	XCTAssertNil(sut.actions[@"position"]);
+	XCTAssertNil(sut.actions[@"bounds"]);
+}
+
+- (void)testMMBoundingRectReturnsFrameWithoutSublayers
+{
+	CALayer *sut = [self makeSut];
+	XCTAssertTrue(CGRectEqualToRect([sut mm_boundingRect], sut.frame));
+}
+
+- (void)testMMBoundingRectIncludesSublayersFrames
+{
+	CALayer *sut = [self makeSut];
+
+	CALayer *sublayerA = [CALayer layer];
+	sublayerA.frame = CGRectMake(-100, -100, 1000, 444);
+	CALayer *sublayerB = [CALayer layer];
+	sublayerB.frame = CGRectMake(0, -200, 1100, 300);
+	CALayer *subSubLayerA = [CALayer layer];
+	subSubLayerA.frame = CGRectMake(-100, -100, 999, 445);
+	[sublayerA addSublayer:subSubLayerA];
+	CALayer *subSubLayerB = [CALayer layer];
+	subSubLayerB.frame = CGRectMake(0, -200, 1101, 300);
+	[sublayerB addSublayer:subSubLayerB];
+	[sut addSublayer:sublayerA];
+	[sut addSublayer:sublayerB];
+
+	CGRect unionRect = CGRectUnion(sut.frame, sublayerA.frame);
+	unionRect = CGRectUnion(unionRect, sublayerB.frame);
+	unionRect = CGRectUnion(unionRect, subSubLayerA.frame);
+	unionRect = CGRectUnion(unionRect, subSubLayerB.frame);
+
+	XCTAssertTrue(CGRectEqualToRect([sut mm_boundingRect], unionRect));
+}
+
+@end

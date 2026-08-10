@@ -1,250 +1,213 @@
+/*
+ 
+ The MIT License (MIT)
+ 
+ Copyright (c) 2014 Markus Müller https://github.com/mmllr All rights reserved.
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ software and associated documentation files (the "Software"), to deal in the Software
+ without restriction, including without limitation the rights to use, copy, modify, merge,
+ publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+ persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all copies
+ or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+ 
+ */
 //
 //  MMFlowViewContentBinderSpec.m
-//  MMFlowViewDemo
 //
 //  Created by Markus Müller on 02.04.14.
-//  Copyright 2014 Markus Müller. All rights reserved.
+//  Copyright 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <XCTest/XCTest.h>
+
 #import "MMFlowViewContentBinder.h"
-#import "MMFlowView.h"
-#import "TestingContentContainer.h"
 #import "MMTestImageItem.h"
+#import "TestingContentContainer.h"
+#import "MMFlowViewTestDoubles.h"
 
-SPEC_BEGIN(MMFlowViewContentBinderSpec)
+@interface MMFlowViewContentBinderSpec : XCTestCase
 
-describe(NSStringFromClass([MMFlowViewContentBinder class]), ^{
-	__block MMFlowViewContentBinder *sut = nil;
-	__block NSArrayController *arrayController = nil;
-	__block TestingContentContainer *container = nil;
-	__block id delegateMock = nil;
-	NSUInteger numberOfItems = 10;
-	
-	NSString *arrangedObjectsKey = @"arrangedObjects";
+@end
 
-	beforeEach(^{
-		container = [TestingContentContainer new];
+@implementation MMFlowViewContentBinderSpec
+{
+	MMFlowViewContentBinder *_sut;
+	NSArrayController *_arrayController;
+	TestingContentContainer *_container;
+	MMTestContentBinderDelegate *_delegate;
+}
 
-		NSMutableArray *items = [container mutableArrayValueForKey:@"items"];
-		for (NSUInteger i = 0; i < numberOfItems; ++i) {
-			[items addObject:[MMTestImageItem new]];
-		}
-		arrayController = [[NSArrayController alloc] init];
-		[arrayController setObjectClass:[MMTestImageItem class]];
-		[arrayController setEditable:YES];
-		[arrayController bind:NSContentArrayBinding
-					 toObject:container
-				  withKeyPath:@"items"
-					  options:nil];
-		delegateMock = [KWMock nullMockForProtocol:@protocol(MMFlowViewContentBinderDelegate)];
-	});
-	afterEach(^{
-		arrayController = nil;
-		sut = nil;
-		delegateMock = nil;
-	});
-	it(@"should raise an NSInternalInconsistencyException when not crated by designated initalizer", ^{
-		[[theBlock(^{
-			sut = [[MMFlowViewContentBinder alloc] init];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	it(@"should raise an NSInternalInconsistencyException whenn created by an correctly configured NSArrayController but a nil content array key path", ^{
-		[[theBlock(^{
-			sut = [[MMFlowViewContentBinder alloc] initWithArrayController:arrayController withContentArrayKeyPath:nil];
-		}) should] raiseWithName:NSInternalInconsistencyException];
-	});
-	context(@"a new instance created by an correctly configured NSArrayController and a content array key path", ^{
-		beforeEach(^{
-			sut = [[MMFlowViewContentBinder alloc] initWithArrayController:arrayController withContentArrayKeyPath:arrangedObjectsKey];
-		});
-		afterEach(^{
-			sut = nil;
-		});
+static NSString *const arrangedObjectsKey = @"arrangedObjects";
+static const NSUInteger numberOfItems = 10;
 
-		it(@"should exist", ^{
-			[[sut shouldNot] beNil];
-		});
+- (void)setUp
+{
+	[super setUp];
+	_container = [[TestingContentContainer alloc] init];
+	NSMutableArray *items = [_container mutableArrayValueForKey:@"items"];
+	for (NSUInteger i = 0; i < numberOfItems; ++i) {
+		[items addObject:[MMTestImageItem new]];
+	}
+	_arrayController = [[NSArrayController alloc] init];
+	[_arrayController setObjectClass:[MMTestImageItem class]];
+	[_arrayController setEditable:YES];
+	[_arrayController bind:NSContentArrayBinding toObject:_container withKeyPath:@"items" options:nil];
+	_delegate = [[MMTestContentBinderDelegate alloc] init];
+}
 
-		it(@"should have the content key path from the initializer", ^{
-			[[sut.contentArrayKeyPath should] equal:arrangedObjectsKey];
-		});
+- (void)tearDown
+{
+	[_sut stopObservingContent];
+	_sut = nil;
+	_arrayController = nil;
+	_container = nil;
+	_delegate = nil;
+	[super tearDown];
+}
 
-		it(@"should have no observedItems", ^{
-			[[sut.observedItems should] beNil];
-		});
+- (void)testThrowsWhenNotCreatedWithDesignatedInitializer
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMFlowViewContentBinder alloc] init]), NSException, NSInternalInconsistencyException);
+}
 
-		context(NSStringFromSelector(@selector(bindingInfo)), ^{
-			beforeEach(^{
-			});
-			it(@"should have a NSContentArrayBinding", ^{
-				[[sut.bindingInfo shouldNot] beNil];
-			});
-			it(@"should have the array controller as NSObservedObjectKey", ^{
-				[[sut.bindingInfo[NSObservedObjectKey] should] equal:arrayController];
-			});
-			it(@"should have the keyPath from initalizer as NSObservedKeyPathKey", ^{
-				[[sut.bindingInfo[NSObservedKeyPathKey] should] equal:arrangedObjectsKey];
-			});
-			it(@"should have no options", ^{
-				[[sut.bindingInfo[NSOptionsKey] should] equal:@{}];
-			});
-		});
-		
-		context(NSStringFromSelector(@selector(observedItemKeys)), ^{
-			NSArray *mandantoryKeys = @[NSStringFromSelector(@selector(imageItemRepresentation)), NSStringFromSelector(@selector(imageItemRepresentationType)), NSStringFromSelector(@selector(imageItemUID))];
-			it(@"should contain the non optional MMFlowViewItem protocol methods", ^{
-				[[sut.observedItemKeys should] containObjectsInArray:mandantoryKeys];
-			});
-		});
+- (void)testThrowsWhenCreatedWithNilContentArrayKeyPath
+{
+	XCTAssertThrowsSpecificNamed((_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:nil]), NSException, NSInternalInconsistencyException);
+}
 
-		context(NSStringFromSelector(@selector(stopObservingContent)), ^{
-	
-			context(@"when observing the content", ^{
-				beforeEach(^{
-					[sut startObservingContent];
-				});
+- (void)testThrowsWhenCreatedWithNonConformingObjectClass
+{
+	NSArrayController *badController = [[NSArrayController alloc] init];
+	badController.objectClass = [NSObject class];
+	XCTAssertThrowsSpecificNamed((_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:badController withContentArrayKeyPath:arrangedObjectsKey]), NSException, NSInternalInconsistencyException);
+}
 
-				it(@"should not observe the content anymore", ^{
-					[sut stopObservingContent];
+- (void)testInstanceExists
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	XCTAssertNotNil(_sut);
+}
 
-					[[sut.observedItems should] beNil];
-				});
+- (void)testContentArrayKeyPathFromInitializer
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	XCTAssertEqualObjects(_sut.contentArrayKeyPath, arrangedObjectsKey);
+}
 
-				it(@"should remove itself as an observer from the observed items", ^{
-					NSIndexSet *expectedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [sut.observedItems count])];
-					for (NSString *key in sut.observedItemKeys) {
-						[[sut.observedItems should] receive:@selector(removeObserver:fromObjectsAtIndexes:forKeyPath:context:) withArguments:sut, expectedIndexes, key, [KWAny any]];
-					}
-					[sut stopObservingContent];
-				});
+- (void)testNoObservedItemsBeforeObserving
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	XCTAssertNil(_sut.observedItems);
+}
 
-				it(@"should remove itself as an observer from the array controller", ^{
-					[[arrayController should] receive:@selector(removeObserver:forKeyPath:context:) withArguments:sut, arrangedObjectsKey, [KWAny any]];
-			
-					[sut stopObservingContent];
-				});
-			});
+- (void)testBindingInfo
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	XCTAssertNotNil(_sut.bindingInfo);
+	XCTAssertEqualObjects(_sut.bindingInfo[NSObservedObjectKey], _arrayController);
+	XCTAssertEqualObjects(_sut.bindingInfo[NSObservedKeyPathKey], arrangedObjectsKey);
+	XCTAssertEqualObjects(_sut.bindingInfo[NSOptionsKey], @{});
+}
 
-			context(@"when not observing the content", ^{
-				it(@"should not remove itself as an observer from the array controller", ^{
-					[[arrayController shouldNot] receive:@selector(removeObserver:forKeyPath:context:) withArguments:sut, arrangedObjectsKey, [KWAny any]];
-					
-					[sut stopObservingContent];
-				});
-			});
-			
-		}),
-		
-		context(NSStringFromSelector(@selector(startObservingContent)), ^{
-			__block MMTestImageItem *anItem = nil;
+- (void)testObservedItemKeys
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	NSArray *mandatoryKeys = @[NSStringFromSelector(@selector(imageItemRepresentation)),
+							   NSStringFromSelector(@selector(imageItemRepresentationType)),
+							   NSStringFromSelector(@selector(imageItemUID))];
+	for (NSString *key in mandatoryKeys) {
+		XCTAssertTrue([_sut.observedItemKeys containsObject:key]);
+	}
+}
 
-			beforeEach(^{
-				sut.delegate = delegateMock;
-				[sut startObservingContent];
-			});
-			afterEach(^{
-				anItem = nil;
-			});
+- (void)testStopObservingClearsObservedItems
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	[_sut startObservingContent];
+	XCTAssertNotNil(_sut.observedItems);
+	[_sut stopObservingContent];
+	XCTAssertNil(_sut.observedItems);
+}
 
-			it(@"should observe the items to the array controller", ^{
-				[[sut.observedItems should] haveCountOf:numberOfItems];
-				[[sut.observedItems should] equal:[arrayController arrangedObjects]];
-			});
+- (void)testStopObservingWithoutObservingDoesNotThrow
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	XCTAssertNoThrow([_sut stopObservingContent]);
+}
 
-			context(@"adding new items with the array controller", ^{
+- (void)testStartObservingSetsObservedItems
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	_sut.delegate = _delegate;
+	[_sut startObservingContent];
+	XCTAssertEqual([_sut.observedItems count], numberOfItems);
+	XCTAssertEqualObjects(_sut.observedItems, [_arrayController arrangedObjects]);
+}
 
-				beforeEach(^{
-					anItem = [arrayController newObject];
-				});
+- (void)testAddingItemUpdatesObservedItemsAndNotifiesDelegate
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	_sut.delegate = _delegate;
+	[_sut startObservingContent];
 
-				it(@"should add new object to the observed items", ^{
-					[arrayController addObject:anItem];
+	MMTestImageItem *anItem = [_arrayController newObject];
+	[_arrayController addObject:anItem];
 
-					[[sut.observedItems should] contain:anItem];
-				});
-	
-				it(@"should inform the delegate that the content changed", ^{
-					[[delegateMock should] receive:@selector(contentArrayDidChange:)];
+	XCTAssertTrue([_sut.observedItems containsObject:anItem]);
+	XCTAssertGreaterThan(_delegate.contentArrayDidChangeCount, (NSUInteger)0);
+}
 
-					[arrayController addObject:anItem];
-				});
-			});
+- (void)testRemovingItemUpdatesObservedItemsAndNotifiesDelegate
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	_sut.delegate = _delegate;
+	[_sut startObservingContent];
 
-			context(@"removing items from the array controller", ^{
-				NSUInteger removedIndex = 2;
+	NSUInteger removedIndex = 2;
+	MMTestImageItem *anItem = [_arrayController arrangedObjects][removedIndex];
+	[_arrayController removeObjectAtArrangedObjectIndex:removedIndex];
 
-				beforeEach(^{
-					anItem = [arrayController arrangedObjects][removedIndex];
-				});
+	XCTAssertFalse([_sut.observedItems containsObject:anItem]);
+	XCTAssertGreaterThan(_delegate.contentArrayDidChangeCount, (NSUInteger)0);
+}
 
-				it(@"should not observe the item item anymore", ^{
-					[arrayController removeObjectAtArrangedObjectIndex:removedIndex];
+- (void)testDelegateNotInformedWhenItDoesNotRespondToContentArrayDidChange
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	_sut.delegate = (id<MMFlowViewContentBinderDelegate>)[NSObject new];
+	[_sut startObservingContent];
 
-					[[sut.observedItems shouldNot] contain:anItem];
-				});
+	XCTAssertNoThrow([_arrayController addObject:[_arrayController newObject]]);
+}
 
-				it(@"should inform the delegate that the content changed", ^{
-					[[delegateMock should] receive:@selector(contentArrayDidChange:) withArguments:sut];
+- (void)testChangingItemPropertiesNotifiesDelegate
+{
+	_sut = [[MMFlowViewContentBinder alloc] initWithArrayController:_arrayController withContentArrayKeyPath:arrangedObjectsKey];
+	_sut.delegate = _delegate;
+	[_sut startObservingContent];
 
-					[arrayController removeObjectAtArrangedObjectIndex:removedIndex];
-				});
-			});
+	MMTestImageItem *anItem = [_sut.observedItems firstObject];
+	NSUInteger before = _delegate.itemChangedCount;
+	anItem.imageItemRepresentation = @"test";
+	XCTAssertGreaterThan(_delegate.itemChangedCount, before);
 
-			context(@"when the delegate does not respond to contentArrayDidChange:", ^{
-				beforeEach(^{
-					delegateMock = [KWMock nullMock];
-					sut.delegate = delegateMock;
-				});
+	before = _delegate.itemChangedCount;
+	anItem.imageItemRepresentationType = @"test";
+	XCTAssertGreaterThan(_delegate.itemChangedCount, before);
 
-				it(@"should not inform the delegate when adding items", ^{
-					[[delegateMock shouldNot] receive:@selector(contentArrayDidChange:)];
+	before = _delegate.itemChangedCount;
+	anItem.imageItemUID = @"test";
+	XCTAssertGreaterThan(_delegate.itemChangedCount, before);
+}
 
-					anItem = [arrayController newObject];
-					[arrayController addObject:anItem];
-				});
-
-				it(@"should not inform the delegate that the content changed", ^{
-					[[delegateMock shouldNot] receive:@selector(contentArrayDidChange:) withArguments:sut];
-					
-					[arrayController removeObjectAtArrangedObjectIndex:0];
-				});
-			});
-			
-			context(@"when changing values for the MMFlowViewItem protocol", ^{
-				beforeEach(^{
-					anItem = [sut.observedItems firstObject];
-
-					[[(id)sut.delegate should] receive:@selector(contentBinder:itemChanged:) withArguments:sut, anItem];
-				});
-
-				it(@"should inform the delegate when changing an imageItemRepresentation", ^{
-					anItem.imageItemRepresentation = @"test";
-				});
-
-				it(@"should inform the delegate when changing an imageItemRepresentationType", ^{
-					anItem.imageItemRepresentationType = @"test";
-				});
-
-				it(@"should inform the delegate when changing an imageItemUID", ^{
-					anItem.imageItemUID = @"test";
-				});
-			});
-		});
-
-	});
-
-	context(@"a new instance created with an NSArrayController with an non MMFlowViewItem conforming objectClass", ^{
-		beforeEach(^{
-			arrayController = [NSArrayController nullMock];
-		});
-
-		it(@"should raise an NSInternalInconsistencyException", ^{
-			[[theBlock(^{
-				sut = [[MMFlowViewContentBinder alloc] initWithArrayController:arrayController withContentArrayKeyPath:nil];
-			}) should] raiseWithName:NSInternalInconsistencyException];
-		});
-	});
-});
-
-SPEC_END
+@end
