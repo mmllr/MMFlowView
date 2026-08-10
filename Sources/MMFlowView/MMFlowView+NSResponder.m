@@ -54,6 +54,8 @@
 {
 	[self handleScrollBarClick:theEvent];
 	[self handleItemClick:theEvent];
+	CGPoint mouseInView = NSPointToCGPoint([self convertPoint:[theEvent locationInWindow] fromView:nil]);
+	self.selectedLayer = [self hitLayerAtPoint:mouseInView];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
@@ -69,6 +71,10 @@
 - (void)mouseUp:(NSEvent *)theEvent
 {
 	[self.scrollBarLayer endDrag];
+	if ([self.selectedLayer respondsToSelector:@selector(performClick:)]) {
+		[(id)self.selectedLayer performClick:self];
+	}
+	self.selectedLayer = nil;
 }
 
 - (void)rightMouseUp:(NSEvent *)theEvent
