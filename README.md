@@ -1,7 +1,7 @@
 # MMFlowView
 [![Build Status](https://travis-ci.org/mmllr/MMFlowView.png?branch=master)](https://travis-ci.org/mmllr/MMFlowView) [![Coverage Status](https://coveralls.io/repos/mmllr/MMFlowView/badge.png)](https://coveralls.io/r/mmllr/MMFlowView) [![Cocoapods Version](https://cocoapod-badges.herokuapp.com/v/MMFlowView/badge.png)](https://cocoapod-badges.herokuapp.com/v/MMFlowView/badge.png)  
 A full featured cover flow control for Mac OS X.
-![Screenshot](https://raw.github.com/mmllr/MMFlowView/master/Resources/FlowView.png)
+![Screenshot](https://raw.codeberg.org/mmllr/MMFlowView/master/Resources/FlowView.png)
 ## Description
 
 MMFlowView is a class designed to support the "CoverFlow" effect and it is intended to use in a similar way like IKImageBrowserView. It supports all the image types (URLs, NSImage, Icons, QuartzComposerCompositions, QTMovie) as IKImageBrowserView. If you are familiar with IKImageBrowserView you can immediately start using MMFlowView.

@@ -2,7 +2,7 @@
  
  The MIT License (MIT)
  
- Copyright (c) 2014 Markus Müller https://github.com/mmllr All rights reserved.
+ Copyright (c) 2014 Markus Müller https://codeberg.org/mmllr All rights reserved.
  
  Permission is hereby granted, free of charge, to any person obtaining a copy of this
  software and associated documentation files (the "Software"), to deal in the Software
@@ -25,7 +25,7 @@
 //  MMFlowView+NSAccessibility.m
 //
 //  Created by Markus Müller on 07.10.13.
-//  Copyright (c) 2013 www.isnotnil.com. All rights reserved.
+//  Copyright (c) 2013 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
 #import "MMFlowView+NSAccessibility.h"

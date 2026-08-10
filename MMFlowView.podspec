@@ -10,11 +10,11 @@ Pod::Spec.new do |s|
                        It supports both image loading via a datasource or with Cocoa bindings. It is accessibility conforming,
                        features drag&drop und quicklook preview. Its makes use of CoreAnimation to provide smooth and fast animations.
                        DESC
-  s.homepage         = "https://github.com/mmllr/MMFlowView"
-  s.screenshots      = "https://raw.github.com/mmllr/MMFlowView/master/Resources/FlowView.png"
+  s.homepage         = "https://codeberg.org/mmllr/MMFlowView"
+  s.screenshots      = "https://raw.codeberg.org/mmllr/MMFlowView/master/Resources/FlowView.png"
   s.license          = 'MIT'
   s.author           = { "Markus Mueller" => "mmlr@gmx.net" }
-  s.source           = { :git => "https://github.com/mmllr/MMFlowView.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://codeberg.org/mmllr/MMFlowView.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/m_mlr'
 
   s.platform     = :osx, '10.7'
