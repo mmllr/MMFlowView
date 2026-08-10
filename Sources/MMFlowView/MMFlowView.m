@@ -466,6 +466,26 @@ static NSString * const kUTTypeQuartzComposerComposition = @"com.apple.quartz-co
 	return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric);
 }
 
+- (void)viewDidMoveToWindow
+{
+	[super viewDidMoveToWindow];
+	self.titleLayer.contentsScale = [self backingScaleFactor];
+}
+
+- (void)viewDidChangeBackingProperties
+{
+	[super viewDidChangeBackingProperties];
+	self.titleLayer.contentsScale = [self backingScaleFactor];
+}
+
+- (CGFloat)backingScaleFactor
+{
+	if (self.window) {
+		return self.window.backingScaleFactor;
+	}
+	return [NSScreen mainScreen].backingScaleFactor;
+}
+
 #pragma mark -
 #pragma mark IBActions
 
@@ -543,6 +563,7 @@ static NSString * const kUTTypeQuartzComposerComposition = @"com.apple.quartz-co
 	layer.name = kMMFlowViewTitleLayerName;
 	layer.alignmentMode = kCAAlignmentCenter;
 	layer.fontSize = kDefaultTitleSize;
+	layer.contentsScale = [self backingScaleFactor];
 	[layer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMinY
 													relativeTo:NSStringFromSelector(@selector(superlayer))
 													 attribute:kCAConstraintMinY
