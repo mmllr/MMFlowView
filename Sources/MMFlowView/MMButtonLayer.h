@@ -21,32 +21,36 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
-//  AppDelegate.h
-//  FlowView
+//  MMButtonLayer.h
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 07.05.13.
+//  Copyright (c) 2013 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <QuartzCore/QuartzCore.h>
+#import <AppKit/AppKit.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+#pragma mark -
+#pragma mark MMButtonLayer helper class
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
+extern NSString * const kMMButtonLayerStateKey;
+extern NSString * const kMMButtonLayerHighlightedKey;
+extern NSString * const kMMButtonLayerEnabledKey;
+extern NSString * const kMMButtonLayerStateKey;
+extern NSString * const kMMButtonLayerTypeKey;
 
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
+@interface MMButtonLayer : CALayer
 
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
+@property(strong) __attribute__((NSObject)) CGImageRef image;
+@property(strong) __attribute__((NSObject)) CGImageRef alternateImage;
+@property (nonatomic, weak) id<NSObject> target;
+@property (nonatomic, assign) SEL action;
+@property (nonatomic, assign) BOOL highlighted;
+@property (nonatomic, assign) BOOL enabled;
+@property (nonatomic, assign) NSControlStateValue state;
+@property (nonatomic, assign) NSButtonType type;
+
+- (void)performClick:(id)sender;
 
 @end

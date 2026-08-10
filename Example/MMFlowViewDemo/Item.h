@@ -32,7 +32,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <MMFlowView.h>
+@import MMFlowView;
 
 @class PDFPage;
 

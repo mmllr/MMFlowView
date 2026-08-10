@@ -21,32 +21,28 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
-//  AppDelegate.h
-//  FlowView
+//  MMCoverFlowLayoutAttributes.h
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 18.10.13.
+//  Copyright (c) 2013 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+extern NSString * const kMMCoverFlowLayoutAttributesIndexAttributeKey;
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
+@interface MMCoverFlowLayoutAttributes : NSObject
 
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
+@property (readonly, nonatomic) NSUInteger index;
+@property (readonly, nonatomic) CATransform3D transform;
+@property (readonly, nonatomic) CGRect bounds;
+@property (readonly, nonatomic) CGPoint position;
+@property (readonly, nonatomic) CGPoint anchorPoint;
+@property (readonly, nonatomic) CGFloat zPosition;
 
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
+- (id)initWithIndex:(NSUInteger)anIndex position:(CGPoint)aPosition size:(CGSize)aSize anchorPoint:(CGPoint)anAnchorPoint transfrom:(CATransform3D)aTransform zPosition:(CGFloat)aZPosition;
+- (void)applyToLayer:(CALayer*)aLayer;
 
 @end

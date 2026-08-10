@@ -2,7 +2,7 @@
  
  The MIT License (MIT)
  
- Copyright (c) 2014 Markus Müller https://codeberg.org/mmllr All rights reserved.
+ Copyright (c) 2014 Markus Müller https://github.com/mmllr All rights reserved.
  
  Permission is hereby granted, free of charge, to any person obtaining a copy of this
  software and associated documentation files (the "Software"), to deal in the Software
@@ -21,32 +21,22 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
-//  AppDelegate.h
-//  FlowView
+//  CALayer+MMLayerAccessibilityDefaultHandlers.h
+//  MMFlowViewDemo
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 14.01.14.
+//  Copyright (c) 2014 www.isnotnil.com. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <QuartzCore/QuartzCore.h>
+#import <AppKit/AppKit.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+@interface CALayer (MMLayerAccessibilityDefaultHandlers)
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
-
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
-
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
++ (NSArray*)defaultAccessibilityAttributes;
+- (id)mm_defaultPositionAttributeHandler;
+- (id)mm_defaultSizeAttributeHandler;
+- (id)mm_defaultParentAttributeHandler;
 
 @end

@@ -21,32 +21,29 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
-//  AppDelegate.h
-//  FlowView
+//  MMFlowViewImageFactory.h
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 17.12.13.
+//  Copyright (c) 2013 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+@protocol MMImageDecoderProtocol;
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
+@interface MMFlowViewImageFactory : NSObject
 
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
+@property (nonatomic) CGSize maxImageSize;
+@property (strong) NSOperationQueue *operationQueue;
 
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
+- (void)registerClass:(Class)aClass forItemRepresentationType:(NSString*)representationType;
+
+- (BOOL)canDecodeRepresentationType:(NSString*)representationType;
+- (id<MMImageDecoderProtocol>)decoderforItem:(id)anItem withRepresentationType:(NSString*)aRepresentationType;
+- (void)createCGImageFromRepresentation:(id)anItem withType:(NSString*)aRepresentationType completionHandler:(void(^)(CGImageRef))completionHandler;
+
+- (void)cancelPendingDecodings;
 
 @end

@@ -3,54 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2801F60F18D70EF100075E15 /* Test.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2801F60D18D70EF100075E15 /* Test.pdf */; };
-		2801F61018D70EF100075E15 /* TestImage01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2801F60E18D70EF100075E15 /* TestImage01.jpg */; };
-		2801F63118D70F1A00075E15 /* CALayerMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61218D70F1A00075E15 /* CALayerMMAdditionsSpec.m */; };
-		2801F63218D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61318D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m */; };
-		2801F63318D70F1A00075E15 /* MMCoverFlowImageLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61418D70F1A00075E15 /* MMCoverFlowImageLayerSpec.m */; };
-		2801F63418D70F1A00075E15 /* MMCoverFlowLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61518D70F1A00075E15 /* MMCoverFlowLayerSpec.m */; };
-		2801F63518D70F1A00075E15 /* MMCoverFlowLayoutAttributeSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61618D70F1A00075E15 /* MMCoverFlowLayoutAttributeSpec.m */; };
-		2801F63618D70F1A00075E15 /* MMCoverFLowLayoutSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61718D70F1A00075E15 /* MMCoverFLowLayoutSpec.m */; };
-		2801F63718D70F1A00075E15 /* MMFlowViewImageCacheSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61818D70F1A00075E15 /* MMFlowViewImageCacheSpec.m */; };
-		2801F63818D70F1A00075E15 /* MMFlowViewImageFactorySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61918D70F1A00075E15 /* MMFlowViewImageFactorySpec.m */; };
-		2801F63918D70F1A00075E15 /* MMFlowViewItemLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61A18D70F1A00075E15 /* MMFlowViewItemLayerSpec.m */; };
-		2801F63A18D70F1A00075E15 /* MMFlowViewKeyValueObservingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61B18D70F1A00075E15 /* MMFlowViewKeyValueObservingSpec.m */; };
-		2801F63B18D70F1A00075E15 /* MMFlowViewMMCoverFlowLayerDataSourceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61C18D70F1A00075E15 /* MMFlowViewMMCoverFlowLayerDataSourceSpec.m */; };
-		2801F63C18D70F1A00075E15 /* MMFlowViewMMScrollBarDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61D18D70F1A00075E15 /* MMFlowViewMMScrollBarDelegateSpec.m */; };
-		2801F63D18D70F1A00075E15 /* MMFlowViewNSDraggingDestinationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61E18D70F1A00075E15 /* MMFlowViewNSDraggingDestinationSpec.m */; };
-		2801F63E18D70F1A00075E15 /* MMFlowViewNSDraggingSourceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F61F18D70F1A00075E15 /* MMFlowViewNSDraggingSourceSpec.m */; };
-		2801F63F18D70F1A00075E15 /* MMFlowViewNSResponderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62018D70F1A00075E15 /* MMFlowViewNSResponderSpec.m */; };
-		2801F64018D70F1A00075E15 /* MMFlowViewQLPreviewPanelControllerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62118D70F1A00075E15 /* MMFlowViewQLPreviewPanelControllerSpec.m */; };
-		2801F64118D70F1A00075E15 /* MMFlowViewQLPreviewPanelDataSourceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62218D70F1A00075E15 /* MMFlowViewQLPreviewPanelDataSourceSpec.m */; };
-		2801F64218D70F1A00075E15 /* MMFlowViewQLPreviewPanelDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62318D70F1A00075E15 /* MMFlowViewQLPreviewPanelDelegateSpec.m */; };
-		2801F64318D70F1A00075E15 /* MMFlowViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62418D70F1A00075E15 /* MMFlowViewSpec.m */; };
-		2801F64418D70F1A00075E15 /* MMNSBitmapImageRepDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62518D70F1A00075E15 /* MMNSBitmapImageRepDecoderSpec.m */; };
-		2801F64518D70F1A00075E15 /* MMNSDataImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62618D70F1A00075E15 /* MMNSDataImageDecoderSpec.m */; };
-		2801F64618D70F1A00075E15 /* MMNSImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62718D70F1A00075E15 /* MMNSImageDecoderSpec.m */; };
-		2801F64718D70F1A00075E15 /* MMPDFPageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62818D70F1A00075E15 /* MMPDFPageDecoderSpec.m */; };
-		2801F64818D70F1A00075E15 /* MMPDFPageRendererSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62918D70F1A00075E15 /* MMPDFPageRendererSpec.m */; };
-		2801F64918D70F1A00075E15 /* MMQuickLookImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62A18D70F1A00075E15 /* MMQuickLookImageDecoderSpec.m */; };
-		2801F64A18D70F1A00075E15 /* MMScrollBarLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62B18D70F1A00075E15 /* MMScrollBarLayerSpec.m */; };
-		2801F64B18D70F1A00075E15 /* MMScrollKnobLayerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62C18D70F1A00075E15 /* MMScrollKnobLayerSpec.m */; };
-		2801F64C18D70F1A00075E15 /* NSAffineTransformMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62D18D70F1A00075E15 /* NSAffineTransformMMAdditionsSpec.m */; };
-		2801F64D18D70F1A00075E15 /* NSArrayMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62E18D70F1A00075E15 /* NSArrayMMAdditionsSpec.m */; };
-		2801F64E18D70F1A00075E15 /* NSEventMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F62F18D70F1A00075E15 /* NSEventMMAdditionsSpec.m */; };
-		2801F64F18D70F1A00075E15 /* NSValueMMAdditionsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */; };
 		2801F65218D70F2F00075E15 /* Item.m in Sources */ = {isa = PBXBuildFile; fileRef = 2801F65118D70F2F00075E15 /* Item.m */; };
-		2819C46818EDA12B00417731 /* MMTestImageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2819C46718EDA12B00417731 /* MMTestImageItem.m */; };
-		28D0B1E500000000000000A1 /* MMFlowViewTestDoubles.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D0B1E500000000000000A3 /* MMFlowViewTestDoubles.m */; };
-		2819C46A18EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */; };
-		2832C8F318E064F7008849B9 /* MMBaseImageDecoderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */; };
-		285C938918EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */; };
-		286090A918EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */; };
-
-		289C24B918EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C24B818EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m */; };
-		289C24C018EC6A3900D0C046 /* TestingContentContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C24BF18EC6A3900D0C046 /* TestingContentContainer.m */; };
-		289C9C8C18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */; };
+		287EB50B302A7E3F00F5E725 /* MMFlowView in Frameworks */ = {isa = PBXBuildFile; productRef = 287EB50A302A7E3F00F5E725 /* MMFlowView */; };
 		28DDDE6718D70B1E007B5664 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DDDE6618D70B1E007B5664 /* Cocoa.framework */; };
 		28DDDE7118D70B1E007B5664 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DDDE6F18D70B1E007B5664 /* InfoPlist.strings */; };
 		28DDDE7318D70B1E007B5664 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DDDE7218D70B1E007B5664 /* main.m */; };
@@ -58,72 +16,11 @@
 		28DDDE7A18D70B1E007B5664 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28DDDE7918D70B1E007B5664 /* AppDelegate.m */; };
 		28DDDE7D18D70B1E007B5664 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28DDDE7B18D70B1E007B5664 /* MainMenu.xib */; };
 		28DDDE7F18D70B1E007B5664 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28DDDE7E18D70B1E007B5664 /* Images.xcassets */; };
-		28DDDE8618D70B1E007B5664 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DDDE8518D70B1E007B5664 /* XCTest.framework */; };
-		28DDDE8718D70B1E007B5664 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28DDDE6618D70B1E007B5664 /* Cocoa.framework */; };
-		28DDDE8F18D70B1E007B5664 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28DDDE8D18D70B1E007B5664 /* InfoPlist.strings */; };
-		28E1CF5118E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */; };
-		4C3B71169FFDAD44A63DC2BF /* libPods-MMFlowViewDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69E3FFFF5620AC55821CEDCB /* libPods-MMFlowViewDemo.a */; };
-		D6403E30503A3D9F77157810 /* libPods-MMFlowViewDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7FF2CE8F23C1787CE71EB21 /* libPods-MMFlowViewDemoTests.a */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		28DDDE8818D70B1E007B5664 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 28DDDE5B18D70B1E007B5664 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 28DDDE6218D70B1E007B5664;
-			remoteInfo = MMFlowViewDemo;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
-		2801F60D18D70EF100075E15 /* Test.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Test.pdf; sourceTree = "<group>"; };
-		2801F60E18D70EF100075E15 /* TestImage01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TestImage01.jpg; sourceTree = "<group>"; };
-		2801F61218D70F1A00075E15 /* CALayerMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CALayerMMAdditionsSpec.m; sourceTree = "<group>"; };
-		2801F61318D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCGImageSourceDecoderSpec.m; sourceTree = "<group>"; };
-		2801F61418D70F1A00075E15 /* MMCoverFlowImageLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMCoverFlowImageLayerSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61518D70F1A00075E15 /* MMCoverFlowLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMCoverFlowLayerSpec.m; sourceTree = "<group>"; };
-		2801F61618D70F1A00075E15 /* MMCoverFlowLayoutAttributeSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMCoverFlowLayoutAttributeSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61718D70F1A00075E15 /* MMCoverFLowLayoutSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMCoverFLowLayoutSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61818D70F1A00075E15 /* MMFlowViewImageCacheSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewImageCacheSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61918D70F1A00075E15 /* MMFlowViewImageFactorySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewImageFactorySpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61A18D70F1A00075E15 /* MMFlowViewItemLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewItemLayerSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61B18D70F1A00075E15 /* MMFlowViewKeyValueObservingSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewKeyValueObservingSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61C18D70F1A00075E15 /* MMFlowViewMMCoverFlowLayerDataSourceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewMMCoverFlowLayerDataSourceSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61D18D70F1A00075E15 /* MMFlowViewMMScrollBarDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewMMScrollBarDelegateSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61E18D70F1A00075E15 /* MMFlowViewNSDraggingDestinationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewNSDraggingDestinationSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F61F18D70F1A00075E15 /* MMFlowViewNSDraggingSourceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewNSDraggingSourceSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F62018D70F1A00075E15 /* MMFlowViewNSResponderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewNSResponderSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F62118D70F1A00075E15 /* MMFlowViewQLPreviewPanelControllerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewQLPreviewPanelControllerSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		2801F62218D70F1A00075E15 /* MMFlowViewQLPreviewPanelDataSourceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewQLPreviewPanelDataSourceSpec.m; sourceTree = "<group>"; };
-		2801F62318D70F1A00075E15 /* MMFlowViewQLPreviewPanelDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewQLPreviewPanelDelegateSpec.m; sourceTree = "<group>"; };
-		2801F62418D70F1A00075E15 /* MMFlowViewSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewSpec.m; sourceTree = "<group>"; };
-		2801F62518D70F1A00075E15 /* MMNSBitmapImageRepDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSBitmapImageRepDecoderSpec.m; sourceTree = "<group>"; };
-		2801F62618D70F1A00075E15 /* MMNSDataImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSDataImageDecoderSpec.m; sourceTree = "<group>"; };
-		2801F62718D70F1A00075E15 /* MMNSImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMNSImageDecoderSpec.m; sourceTree = "<group>"; };
-		2801F62818D70F1A00075E15 /* MMPDFPageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMPDFPageDecoderSpec.m; sourceTree = "<group>"; };
-		2801F62918D70F1A00075E15 /* MMPDFPageRendererSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMPDFPageRendererSpec.m; sourceTree = "<group>"; };
-		2801F62A18D70F1A00075E15 /* MMQuickLookImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMQuickLookImageDecoderSpec.m; sourceTree = "<group>"; };
-		2801F62B18D70F1A00075E15 /* MMScrollBarLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMScrollBarLayerSpec.m; sourceTree = "<group>"; };
-		2801F62C18D70F1A00075E15 /* MMScrollKnobLayerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMScrollKnobLayerSpec.m; sourceTree = "<group>"; };
-		2801F62D18D70F1A00075E15 /* NSAffineTransformMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSAffineTransformMMAdditionsSpec.m; sourceTree = "<group>"; };
-		2801F62E18D70F1A00075E15 /* NSArrayMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSArrayMMAdditionsSpec.m; sourceTree = "<group>"; };
-		2801F62F18D70F1A00075E15 /* NSEventMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSEventMMAdditionsSpec.m; sourceTree = "<group>"; };
-		2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSValueMMAdditionsSpec.m; sourceTree = "<group>"; };
 		2801F65018D70F2F00075E15 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
 		2801F65118D70F2F00075E15 /* Item.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item.m; sourceTree = "<group>"; };
-		2819C46618EDA12B00417731 /* MMTestImageItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMTestImageItem.h; sourceTree = "<group>"; };
-		2819C46718EDA12B00417731 /* MMTestImageItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMTestImageItem.m; sourceTree = "<group>"; };
-		28D0B1E500000000000000A2 /* MMFlowViewTestDoubles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMFlowViewTestDoubles.h; sourceTree = "<group>"; };
-		28D0B1E500000000000000A3 /* MMFlowViewTestDoubles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewTestDoubles.m; sourceTree = "<group>"; };
-		2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewContentBinderDelegateSpec.m; sourceTree = "<group>"; };
-		2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMBaseImageDecoderSpec.m; sourceTree = "<group>"; };
-		285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewNSViewSpec.m; sourceTree = "<group>"; };
-		286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewDatasourceContentAdapterSpec.m; sourceTree = "<group>"; };
-		289C24B818EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewContentBinderSpec.m; sourceTree = "<group>"; };
-		289C24BE18EC6A3900D0C046 /* TestingContentContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestingContentContainer.h; sourceTree = "<group>"; };
-		289C24BF18EC6A3900D0C046 /* TestingContentContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestingContentContainer.m; sourceTree = "<group>"; };
-		289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MMFlowViewNSAccessibilitySpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		28DDDE6318D70B1E007B5664 /* MMFlowViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MMFlowViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28DDDE6618D70B1E007B5664 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		28DDDE6918D70B1E007B5664 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -138,17 +35,7 @@
 		28DDDE7918D70B1E007B5664 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		28DDDE7C18D70B1E007B5664 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		28DDDE7E18D70B1E007B5664 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		28DDDE8418D70B1E007B5664 /* MMFlowViewDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MMFlowViewDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28DDDE8518D70B1E007B5664 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		28DDDE8C18D70B1E007B5664 /* MMFlowViewDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MMFlowViewDemoTests-Info.plist"; sourceTree = "<group>"; };
-		28DDDE8E18D70B1E007B5664 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMFlowViewCoverFlowLayoutDelegateSpec.m; sourceTree = "<group>"; };
-		37966BA23DD0D2F75048ECC3 /* Pods-MMFlowViewDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemoTests.release.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemoTests/Pods-MMFlowViewDemoTests.release.xcconfig"; sourceTree = "<group>"; };
-		69E3FFFF5620AC55821CEDCB /* libPods-MMFlowViewDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B7FF2CE8F23C1787CE71EB21 /* libPods-MMFlowViewDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MMFlowViewDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BEEE6BD7BCA8A4E6F6F8FA56 /* Pods-MMFlowViewDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemo.debug.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemo/Pods-MMFlowViewDemo.debug.xcconfig"; sourceTree = "<group>"; };
-		CA76DCBC498635962572CDB7 /* Pods-MMFlowViewDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemo.release.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemo/Pods-MMFlowViewDemo.release.xcconfig"; sourceTree = "<group>"; };
-		E0B74DFD2CEAD789D5DCEC40 /* Pods-MMFlowViewDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MMFlowViewDemoTests.debug.xcconfig"; path = "Target Support Files/Pods-MMFlowViewDemoTests/Pods-MMFlowViewDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,77 +44,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				28DDDE6718D70B1E007B5664 /* Cocoa.framework in Frameworks */,
-				4C3B71169FFDAD44A63DC2BF /* libPods-MMFlowViewDemo.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		28DDDE8118D70B1E007B5664 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				28DDDE8718D70B1E007B5664 /* Cocoa.framework in Frameworks */,
-				28DDDE8618D70B1E007B5664 /* XCTest.framework in Frameworks */,
-				D6403E30503A3D9F77157810 /* libPods-MMFlowViewDemoTests.a in Frameworks */,
+				287EB50B302A7E3F00F5E725 /* MMFlowView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2801F61118D70F1A00075E15 /* Specs */ = {
-			isa = PBXGroup;
-			children = (
-				2819C46918EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m */,
-				289C24B818EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m */,
-				286090A818EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m */,
-				285C938818EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m */,
-				28E1CF5018E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m */,
-				2832C8F218E064F7008849B9 /* MMBaseImageDecoderSpec.m */,
-				289C9C8B18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m */,
-				2801F61218D70F1A00075E15 /* CALayerMMAdditionsSpec.m */,
-				2801F61318D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m */,
-				2801F61418D70F1A00075E15 /* MMCoverFlowImageLayerSpec.m */,
-				2801F61518D70F1A00075E15 /* MMCoverFlowLayerSpec.m */,
-				2801F61618D70F1A00075E15 /* MMCoverFlowLayoutAttributeSpec.m */,
-				2801F61718D70F1A00075E15 /* MMCoverFLowLayoutSpec.m */,
-				2801F61818D70F1A00075E15 /* MMFlowViewImageCacheSpec.m */,
-				2801F61918D70F1A00075E15 /* MMFlowViewImageFactorySpec.m */,
-				2801F61A18D70F1A00075E15 /* MMFlowViewItemLayerSpec.m */,
-				2801F61B18D70F1A00075E15 /* MMFlowViewKeyValueObservingSpec.m */,
-				2801F61C18D70F1A00075E15 /* MMFlowViewMMCoverFlowLayerDataSourceSpec.m */,
-				2801F61D18D70F1A00075E15 /* MMFlowViewMMScrollBarDelegateSpec.m */,
-				2801F61E18D70F1A00075E15 /* MMFlowViewNSDraggingDestinationSpec.m */,
-				2801F61F18D70F1A00075E15 /* MMFlowViewNSDraggingSourceSpec.m */,
-				2801F62018D70F1A00075E15 /* MMFlowViewNSResponderSpec.m */,
-				2801F62118D70F1A00075E15 /* MMFlowViewQLPreviewPanelControllerSpec.m */,
-				2801F62218D70F1A00075E15 /* MMFlowViewQLPreviewPanelDataSourceSpec.m */,
-				2801F62318D70F1A00075E15 /* MMFlowViewQLPreviewPanelDelegateSpec.m */,
-				2801F62418D70F1A00075E15 /* MMFlowViewSpec.m */,
-				2801F62518D70F1A00075E15 /* MMNSBitmapImageRepDecoderSpec.m */,
-				2801F62618D70F1A00075E15 /* MMNSDataImageDecoderSpec.m */,
-				2801F62718D70F1A00075E15 /* MMNSImageDecoderSpec.m */,
-				2801F62818D70F1A00075E15 /* MMPDFPageDecoderSpec.m */,
-				2801F62918D70F1A00075E15 /* MMPDFPageRendererSpec.m */,
-				2801F62A18D70F1A00075E15 /* MMQuickLookImageDecoderSpec.m */,
-				2801F62B18D70F1A00075E15 /* MMScrollBarLayerSpec.m */,
-				2801F62C18D70F1A00075E15 /* MMScrollKnobLayerSpec.m */,
-				2801F62D18D70F1A00075E15 /* NSAffineTransformMMAdditionsSpec.m */,
-				2801F62E18D70F1A00075E15 /* NSArrayMMAdditionsSpec.m */,
-				2801F62F18D70F1A00075E15 /* NSEventMMAdditionsSpec.m */,
-				2801F63018D70F1A00075E15 /* NSValueMMAdditionsSpec.m */,
-			);
-			name = Specs;
-			path = ../../Classes/osx/Specs;
-			sourceTree = "<group>";
-		};
 		28DDDE5A18D70B1E007B5664 = {
 			isa = PBXGroup;
 			children = (
 				28DDDE6C18D70B1E007B5664 /* MMFlowViewDemo */,
-				28DDDE8A18D70B1E007B5664 /* MMFlowViewDemoTests */,
 				28DDDE6518D70B1E007B5664 /* Frameworks */,
 				28DDDE6418D70B1E007B5664 /* Products */,
-				EB5D3412D3435B79390E2216 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -235,7 +64,6 @@
 			isa = PBXGroup;
 			children = (
 				28DDDE6318D70B1E007B5664 /* MMFlowViewDemo.app */,
-				28DDDE8418D70B1E007B5664 /* MMFlowViewDemoTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -246,8 +74,6 @@
 				28DDDE6618D70B1E007B5664 /* Cocoa.framework */,
 				28DDDE8518D70B1E007B5664 /* XCTest.framework */,
 				28DDDE6818D70B1E007B5664 /* Other Frameworks */,
-				69E3FFFF5620AC55821CEDCB /* libPods-MMFlowViewDemo.a */,
-				B7FF2CE8F23C1787CE71EB21 /* libPods-MMFlowViewDemoTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -288,44 +114,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		28DDDE8A18D70B1E007B5664 /* MMFlowViewDemoTests */ = {
-			isa = PBXGroup;
-			children = (
-				2801F61118D70F1A00075E15 /* Specs */,
-				28DDDE8B18D70B1E007B5664 /* Supporting Files */,
-				289C24BE18EC6A3900D0C046 /* TestingContentContainer.h */,
-				289C24BF18EC6A3900D0C046 /* TestingContentContainer.m */,
-				2819C46618EDA12B00417731 /* MMTestImageItem.h */,
-				2819C46718EDA12B00417731 /* MMTestImageItem.m */,
-				28D0B1E500000000000000A2 /* MMFlowViewTestDoubles.h */,
-				28D0B1E500000000000000A3 /* MMFlowViewTestDoubles.m */,
-			);
-			path = MMFlowViewDemoTests;
-			sourceTree = "<group>";
-		};
-		28DDDE8B18D70B1E007B5664 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				2801F60D18D70EF100075E15 /* Test.pdf */,
-				2801F60E18D70EF100075E15 /* TestImage01.jpg */,
-				28DDDE8C18D70B1E007B5664 /* MMFlowViewDemoTests-Info.plist */,
-				28DDDE8D18D70B1E007B5664 /* InfoPlist.strings */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		EB5D3412D3435B79390E2216 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				BEEE6BD7BCA8A4E6F6F8FA56 /* Pods-MMFlowViewDemo.debug.xcconfig */,
-				CA76DCBC498635962572CDB7 /* Pods-MMFlowViewDemo.release.xcconfig */,
-				E0B74DFD2CEAD789D5DCEC40 /* Pods-MMFlowViewDemoTests.debug.xcconfig */,
-				37966BA23DD0D2F75048ECC3 /* Pods-MMFlowViewDemoTests.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -333,7 +121,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 28DDDE9418D70B1E007B5664 /* Build configuration list for PBXNativeTarget "MMFlowViewDemo" */;
 			buildPhases = (
-				595B0E1E6996B8977C9398F0 /* [CP] Check Pods Manifest.lock */,
 				28DDDE5F18D70B1E007B5664 /* Sources */,
 				28DDDE6018D70B1E007B5664 /* Frameworks */,
 				28DDDE6118D70B1E007B5664 /* Resources */,
@@ -347,54 +134,34 @@
 			productReference = 28DDDE6318D70B1E007B5664 /* MMFlowViewDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
-		28DDDE8318D70B1E007B5664 /* MMFlowViewDemoTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 28DDDE9718D70B1E007B5664 /* Build configuration list for PBXNativeTarget "MMFlowViewDemoTests" */;
-			buildPhases = (
-				719DC9E20C4C44D6E263694C /* [CP] Check Pods Manifest.lock */,
-				28DDDE8018D70B1E007B5664 /* Sources */,
-				28DDDE8118D70B1E007B5664 /* Frameworks */,
-				28DDDE8218D70B1E007B5664 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				28DDDE8918D70B1E007B5664 /* PBXTargetDependency */,
-			);
-			name = MMFlowViewDemoTests;
-			productName = MMFlowViewDemoTests;
-			productReference = 28DDDE8418D70B1E007B5664 /* MMFlowViewDemoTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		28DDDE5B18D70B1E007B5664 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2660;
 				ORGANIZATIONNAME = "Markus Müller";
-				TargetAttributes = {
-					28DDDE8318D70B1E007B5664 = {
-						TestTargetID = 28DDDE6218D70B1E007B5664;
-					};
-				};
 			};
 			buildConfigurationList = 28DDDE5E18D70B1E007B5664 /* Build configuration list for PBXProject "MMFlowViewDemo" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
 			mainGroup = 28DDDE5A18D70B1E007B5664;
+			packageReferences = (
+				287EB509302A7E3F00F5E725 /* XCLocalSwiftPackageReference "../../MMFlowView" */,
+			);
 			productRefGroup = 28DDDE6418D70B1E007B5664 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				28DDDE6218D70B1E007B5664 /* MMFlowViewDemo */,
-				28DDDE8318D70B1E007B5664 /* MMFlowViewDemoTests */,
 			);
 		};
 /* End PBXProject section */
@@ -411,64 +178,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		28DDDE8218D70B1E007B5664 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2801F60F18D70EF100075E15 /* Test.pdf in Resources */,
-				2801F61018D70EF100075E15 /* TestImage01.jpg in Resources */,
-				28DDDE8F18D70B1E007B5664 /* InfoPlist.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		595B0E1E6996B8977C9398F0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MMFlowViewDemo-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		719DC9E20C4C44D6E263694C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MMFlowViewDemoTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		28DDDE5F18D70B1E007B5664 /* Sources */ = {
@@ -481,63 +191,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		28DDDE8018D70B1E007B5664 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2801F63D18D70F1A00075E15 /* MMFlowViewNSDraggingDestinationSpec.m in Sources */,
-				2801F64918D70F1A00075E15 /* MMQuickLookImageDecoderSpec.m in Sources */,
-				2801F64E18D70F1A00075E15 /* NSEventMMAdditionsSpec.m in Sources */,
-				2801F63518D70F1A00075E15 /* MMCoverFlowLayoutAttributeSpec.m in Sources */,
-				2801F63F18D70F1A00075E15 /* MMFlowViewNSResponderSpec.m in Sources */,
-				2801F63918D70F1A00075E15 /* MMFlowViewItemLayerSpec.m in Sources */,
-				2801F63318D70F1A00075E15 /* MMCoverFlowImageLayerSpec.m in Sources */,
-				2819C46818EDA12B00417731 /* MMTestImageItem.m in Sources */,
-				28D0B1E500000000000000A1 /* MMFlowViewTestDoubles.m in Sources */,
-				2801F64218D70F1A00075E15 /* MMFlowViewQLPreviewPanelDelegateSpec.m in Sources */,
-				2801F64D18D70F1A00075E15 /* NSArrayMMAdditionsSpec.m in Sources */,
-				2801F64718D70F1A00075E15 /* MMPDFPageDecoderSpec.m in Sources */,
-				2801F64F18D70F1A00075E15 /* NSValueMMAdditionsSpec.m in Sources */,
-				2801F64B18D70F1A00075E15 /* MMScrollKnobLayerSpec.m in Sources */,
-				2801F63818D70F1A00075E15 /* MMFlowViewImageFactorySpec.m in Sources */,
-				2801F63618D70F1A00075E15 /* MMCoverFLowLayoutSpec.m in Sources */,
-				286090A918EB232D00DC145B /* MMFlowViewDatasourceContentAdapterSpec.m in Sources */,
-				2801F63E18D70F1A00075E15 /* MMFlowViewNSDraggingSourceSpec.m in Sources */,
-				28E1CF5118E2F25400F7ED85 /* MMFlowViewCoverFlowLayoutDelegateSpec.m in Sources */,
-				2801F64418D70F1A00075E15 /* MMNSBitmapImageRepDecoderSpec.m in Sources */,
-				289C24B918EC4A5400D0C046 /* MMFlowViewContentBinderSpec.m in Sources */,
-				2801F63A18D70F1A00075E15 /* MMFlowViewKeyValueObservingSpec.m in Sources */,
-				2801F63218D70F1A00075E15 /* MMCGImageSourceDecoderSpec.m in Sources */,
-				2801F64C18D70F1A00075E15 /* NSAffineTransformMMAdditionsSpec.m in Sources */,
-				2832C8F318E064F7008849B9 /* MMBaseImageDecoderSpec.m in Sources */,
-				2801F64818D70F1A00075E15 /* MMPDFPageRendererSpec.m in Sources */,
-				2801F63C18D70F1A00075E15 /* MMFlowViewMMScrollBarDelegateSpec.m in Sources */,
-				2801F63718D70F1A00075E15 /* MMFlowViewImageCacheSpec.m in Sources */,
-				289C24C018EC6A3900D0C046 /* TestingContentContainer.m in Sources */,
-				2801F64A18D70F1A00075E15 /* MMScrollBarLayerSpec.m in Sources */,
-				2801F64618D70F1A00075E15 /* MMNSImageDecoderSpec.m in Sources */,
-				2801F63B18D70F1A00075E15 /* MMFlowViewMMCoverFlowLayerDataSourceSpec.m in Sources */,
-				2801F63418D70F1A00075E15 /* MMCoverFlowLayerSpec.m in Sources */,
-				285C938918EAADEB00EBFCC8 /* MMFlowViewNSViewSpec.m in Sources */,
-				2801F64518D70F1A00075E15 /* MMNSDataImageDecoderSpec.m in Sources */,
-				289C9C8C18D767FA00059077 /* MMFlowViewNSAccessibilitySpec.m in Sources */,
-				2801F64018D70F1A00075E15 /* MMFlowViewQLPreviewPanelControllerSpec.m in Sources */,
-				2819C46A18EDA3B700417731 /* MMFlowViewContentBinderDelegateSpec.m in Sources */,
-				2801F63118D70F1A00075E15 /* CALayerMMAdditionsSpec.m in Sources */,
-				2801F64118D70F1A00075E15 /* MMFlowViewQLPreviewPanelDataSourceSpec.m in Sources */,
-				2801F64318D70F1A00075E15 /* MMFlowViewSpec.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		28DDDE8918D70B1E007B5664 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 28DDDE6218D70B1E007B5664 /* MMFlowViewDemo */;
-			targetProxy = 28DDDE8818D70B1E007B5664 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		28DDDE6F18D70B1E007B5664 /* InfoPlist.strings */ = {
@@ -564,14 +218,6 @@
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
-		28DDDE8D18D70B1E007B5664 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				28DDDE8E18D70B1E007B5664 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -580,6 +226,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -588,7 +235,9 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -596,15 +245,26 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -629,6 +289,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				WARNING_CFLAGS = (
 					"-Wunreachable-code",
 					"-Wextra",
@@ -643,6 +304,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -651,7 +313,9 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -659,16 +323,26 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -686,6 +360,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				WARNING_CFLAGS = (
 					"-Wunreachable-code",
 					"-Wextra",
@@ -697,15 +372,17 @@
 		};
 		28DDDE9518D70B1E007B5664 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BEEE6BD7BCA8A4E6F6F8FA56 /* Pods-MMFlowViewDemo.debug.xcconfig */;
 			buildSettings = {
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.isnotnil.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -713,61 +390,19 @@
 		};
 		28DDDE9618D70B1E007B5664 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CA76DCBC498635962572CDB7 /* Pods-MMFlowViewDemo.release.xcconfig */;
 			buildSettings = {
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "MMFlowViewDemo/MMFlowViewDemo-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.isnotnil.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		28DDDE9818D70B1E007B5664 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E0B74DFD2CEAD789D5DCEC40 /* Pods-MMFlowViewDemoTests.debug.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MMFlowViewDemo.app/Contents/MacOS/MMFlowViewDemo";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				INFOPLIST_FILE = "MMFlowViewDemoTests/MMFlowViewDemoTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Debug;
-		};
-		28DDDE9918D70B1E007B5664 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 37966BA23DD0D2F75048ECC3 /* Pods-MMFlowViewDemoTests.release.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MMFlowViewDemo.app/Contents/MacOS/MMFlowViewDemo";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "MMFlowViewDemo/MMFlowViewDemo-Prefix.pch";
-				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				INFOPLIST_FILE = "MMFlowViewDemoTests/MMFlowViewDemoTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
 		};
@@ -792,16 +427,21 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		28DDDE9718D70B1E007B5664 /* Build configuration list for PBXNativeTarget "MMFlowViewDemoTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				28DDDE9818D70B1E007B5664 /* Debug */,
-				28DDDE9918D70B1E007B5664 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		287EB509302A7E3F00F5E725 /* XCLocalSwiftPackageReference "../../MMFlowView" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../MMFlowView;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		287EB50A302A7E3F00F5E725 /* MMFlowView */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MMFlowView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 28DDDE5B18D70B1E007B5664 /* Project object */;
 }

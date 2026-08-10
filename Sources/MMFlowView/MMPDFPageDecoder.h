@@ -23,30 +23,17 @@
  */
 
 //
-//  AppDelegate.h
-//  FlowView
+//  MMPDFPageDecoder.h
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 18.12.13.
+//  Copyright (c) 2013 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <Quartz/Quartz.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+#import "MMImageDecoderProtocol.h"
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
-
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
-
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
+@interface MMPDFPageDecoder : NSObject <MMImageDecoderProtocol>
 
 @end

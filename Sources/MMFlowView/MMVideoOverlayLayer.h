@@ -21,32 +21,32 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
-//  AppDelegate.h
-//  FlowView
+//  MMVideoOverlayLayer.h
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 07.05.13.
+//  Copyright (c) 2013 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <QuartzCore/QuartzCore.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+@class MMButtonLayer;
+@class QTMovie;
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
+extern const CGFloat kMovieOverlayPlayingRadius;
 
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
+extern NSString * const kMMVideoOverlayLayerIndicatorScaleKey;
+extern NSString * const kMMVideoOverlayLayerIndicatorValueKey;
+extern NSString * const kMMVideoOverlayLayerIsPlayingKey;
 
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
+@interface MMVideoOverlayLayer : CALayer
+
+@property (assign, nonatomic) CGFloat indicatorScale;
+@property (assign, nonatomic) CGFloat indicatorValue;
+@property (weak, readonly, nonatomic) QTMovie *movie;
+@property (readonly, strong, nonatomic) MMButtonLayer *buttonLayer;
+
+- (void)expand;
+- (void)collapse;
 
 @end

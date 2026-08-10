@@ -32,7 +32,7 @@
 
 #import "Item.h"
 #import <Quartz/Quartz.h>
-#import "MMFlowView.h"
+@import MMFlowView;
 
 @implementation Item
 

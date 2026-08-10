@@ -1,4 +1,6 @@
+.build
 build
+DerivedData
 *.pbxuser
 *.mode?v3
 .DS_Store
@@ -13,4 +15,3 @@ lint.xml
 compile_commands.json
 xcodebuild.log
 *.xccheckout
-

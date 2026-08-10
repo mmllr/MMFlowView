@@ -31,7 +31,7 @@
 //
 
 #import "AppDelegate.h"
-#import "MMFlowView.h"
+@import MMFlowView;
 #import "Item.h"
 #import <Quartz/Quartz.h>
 

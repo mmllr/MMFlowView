@@ -21,32 +21,25 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
-//  AppDelegate.h
-//  FlowView
+//  MMFlowViewImageCache.h
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 02.01.14.
+//  Copyright (c) 2014 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+@protocol MMFlowViewImageCache <NSObject>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
+- (CGImageRef)imageForUUID:(NSString*)anUUID;
+- (void)cacheImage:(CGImageRef)anImage withUUID:(NSString*)anUUID;
+- (void)removeImageWithUUID:(NSString*)anUUID;
+- (void)reset;
 
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
+@end
 
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
+@interface MMFlowViewImageCache : NSObject <MMFlowViewImageCache>
 
 @end

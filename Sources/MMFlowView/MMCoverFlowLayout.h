@@ -21,32 +21,39 @@
  DEALINGS IN THE SOFTWARE.
  
  */
-
 //
-//  AppDelegate.h
-//  FlowView
+//  MMCoverFlowLayout.h
 //
-//  Created by Markus Müller on 13.01.12.
-//  Copyright (c) 2012 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
+//  Created by Markus Müller on 18.10.13.
+//  Copyright (c) 2013 https://codeberg.org/mmllr/MMFlowView.git. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 
-@import MMFlowView;
-@class IKImageBrowserView;
+@class MMCoverFlowLayoutAttributes;
+@protocol MMCoverFlowLayoutDelegate;
 
-@interface AppDelegate : NSObject <NSApplicationDelegate,MMFlowViewDataSource,MMFlowViewDelegate>
+@interface MMCoverFlowLayout : NSObject<NSCoding>
 
-@property (copy,nonatomic) NSArray *items;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet MMFlowView *flowView;
-@property (weak) IBOutlet NSSlider *reflectionSlider;
-@property (weak) IBOutlet IKImageBrowserView *imageBrowserView;
-@property (weak) IBOutlet NSArrayController *itemArrayController;
+@property (nonatomic) CGSize visibleSize;
+@property (nonatomic, readonly) CGSize contentSize;
+@property (nonatomic, readonly) CGSize itemSize;
+@property (nonatomic) CGFloat interItemSpacing;
+@property (nonatomic) CGFloat stackedAngle;
+@property (nonatomic) NSUInteger selectedItemIndex;
+@property (nonatomic) NSUInteger numberOfItems;
+@property (nonatomic) CGFloat stackedDistance;
+@property (nonatomic) CGFloat verticalMargin;
+@property (nonatomic, weak) id<MMCoverFlowLayoutDelegate> delegate;
 
-- (IBAction)toggleReflection:(id)sender;
-- (IBAction)toggleAngle:(id)sender;
-- (IBAction)toggleSpacing:(id)sender;
-- (IBAction)reflectionChanged:(NSSlider *)sender;
+- (id)initWithVisibleSize:(CGSize)visisbleSize;
+- (MMCoverFlowLayoutAttributes*)layoutAttributesForItemAtIndex:(NSUInteger)itemIndex;
+
+@end
+
+@protocol MMCoverFlowLayoutDelegate <NSObject>
+
+- (CGFloat)coverFLowLayout:(MMCoverFlowLayout*)theLayout aspectRatioForItem:(NSUInteger)itemIndex;
 
 @end

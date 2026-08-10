@@ -1,5 +1,5 @@
 # MMFlowView
-[![Build Status](https://travis-ci.org/mmllr/MMFlowView.png?branch=master)](https://travis-ci.org/mmllr/MMFlowView) [![Coverage Status](https://coveralls.io/repos/mmllr/MMFlowView/badge.png)](https://coveralls.io/r/mmllr/MMFlowView) [![Cocoapods Version](https://cocoapod-badges.herokuapp.com/v/MMFlowView/badge.png)](https://cocoapod-badges.herokuapp.com/v/MMFlowView/badge.png)  
+
 A full featured cover flow control for Mac OS X.
 ![Screenshot](https://raw.codeberg.org/mmllr/MMFlowView/master/Resources/FlowView.png)
 ## Description
@@ -23,10 +23,15 @@ MMFlowView is available under the MIT license. See the LICENSE file for more inf
 
 ## Installation
 
-MMFlowView is available through [CocoaPods](http://cocoapods.org), to install
-it simply add the following line to your Podfile:
+MMFlowView is available as a Swift Package. Add it as a package dependency:
 
-	pod "MMFlowView"
+	https://codeberg.org/mmllr/MMFlowView.git
+
+or with Swift Package Manager directly:
+
+```swift
+.package(url: "https://codeberg.org/mmllr/MMFlowView.git", from: "1.0.4")
+```
 
 ## Protocols
 To use the datasource-approach for loading the images your data items need to implement the MMFlowViewItem protocol (similar to IKImageBrowserItem):
