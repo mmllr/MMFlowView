@@ -31,7 +31,11 @@
 #import "MMVideoOverlayLayer.h"
 
 #import <QuartzCore/QuartzCore.h>
+
+#if __has_include(<QTKit/QTKit.h>)
 #import <QTKit/QTKit.h>
+#define MM_HAS_QTKIT 1
+#endif
 
 #import "MMButtonLayer.h"
 
@@ -215,10 +219,12 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 - (QTMovie*)movie
 {
+#ifdef MM_HAS_QTKIT
 	if ([self.superlayer isKindOfClass:[QTMovieLayer class]]) {
 		QTMovieLayer *movieLayer = (QTMovieLayer*)self.superlayer;
 		return movieLayer.movie;
 	}
+#endif
 	return nil;
 }
 
@@ -275,8 +281,13 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 - (void)buttonClicked:(MMButtonLayer*)button
 {
+#ifdef MM_HAS_QTKIT
 	// is movie playing?
 	BOOL isMoviePlaying = ( [ self.movie rate ] > 0. );
+#else
+	// no QTKit support: toggle based on the current expansion state
+	BOOL isMoviePlaying = ( self.indicatorScale > 0. );
+#endif
 	if ( isMoviePlaying ) {
 		[ self collapse ];
 	}
@@ -311,7 +322,9 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 	animation.timingFunction = [ CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut ];
 	[ self addAnimation:animation forKey:kMMVideoOverlayLayerIndicatorScaleKey ];
 	self.indicatorScale = 0.;
+#ifdef MM_HAS_QTKIT
 	[ self.movie stop ];
+#endif
 	[ self stopMovieUpdateTimer ];
 	self.buttonLayer.state = NSOffState;
 }
@@ -354,6 +367,7 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 
 - (void)updateMovieOverlay:(NSTimer*)theTimer
 {
+#ifdef MM_HAS_QTKIT
 	NSTimeInterval currentTime = 0.;
 	NSTimeInterval duration = 0.;
 	if ( QTGetTimeInterval( self.movie.currentTime, &currentTime ) && QTGetTimeInterval( self.movie.duration, &duration ) ) {
@@ -362,6 +376,10 @@ NSString * const kMMVideoOverlayLayerIsPlayingKey = @"isPlaying";
 	if ( [ self.movie rate ] <= 0. ) {
 		[ self collapse ];
 	}
+#else
+	// no QTKit support: nothing to track without a movie
+	[ self stopMovieUpdateTimer ];
+#endif
 }
 
 #pragma mark -

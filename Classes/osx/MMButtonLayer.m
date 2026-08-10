@@ -30,6 +30,8 @@
 
 #import "MMButtonLayer.h"
 
+#import <CoreImage/CoreImage.h>
+
 NSString * const kMMButtonLayerHighlightedKey = @"highlighted";
 NSString * const kMMButtonLayerEnabledKey = @"enabled";
 NSString * const kMMButtonLayerStateKey = @"state";

@@ -176,7 +176,7 @@
 																	 options:NSDirectoryEnumerationSkipsHiddenFiles
 																errorHandler:nil ];
 		for ( NSURL *url in dirEnumerator ) {
-			NSNumber *isItemDirectory = NO;
+			NSNumber *isItemDirectory = nil;
 			[url getResourceValue:&isItemDirectory
 							forKey:NSURLIsDirectoryKey
 							 error:NULL];
@@ -237,12 +237,12 @@
 
 - (IBAction)toggleAngle:(id)sender
 {
-	self.flowView.stackedAngle = [sender selectedTag];
+	self.flowView.stackedAngle = (CGFloat)[sender selectedTag];
 }
 
 - (IBAction)toggleSpacing:(id)sender
 {
-	self.flowView.spacing = [sender selectedTag];
+	self.flowView.spacing = (CGFloat)[sender selectedTag];
 }
 
 - (IBAction)reflectionChanged:(NSSlider *)sender
